@@ -1,0 +1,15 @@
+{
+  "profession": "Full-Stack Product Engineer",
+  "skills": [
+    "planning/prd-to-plan",
+    "planning/write-a-prd",
+    "execution/react",
+    "execution/nextjs",
+    "execution/tailwind",
+    "execution/mysql",
+    "execution/postgres",
+    "review/qa",
+    "review/playwright",
+    "review/systematic-debugging"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "profession": "Data & AI Engineer",
+  "skills": [
+    "execution/postgres",
+    "execution/mysql",
+    "execution/vitess",
+    "environment/analytics-reporting",
+    "google/gws-sheets",
+    "execution/chart-visualization"
+  ]
+}

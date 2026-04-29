@@ -38,13 +38,31 @@ Use this skill to identify the most relevant tools for a specific persona. These
 - **Communications:** `gws-gmail-triage`, `gws-chat-send`
 - **System:** `setup-pre-commit`, `git-guardrails`
 
-## 6. Growth & Marketing Strategist
-*Core Goal: Amplify brand reach and content consistency.*
-- **Brand:** `brand-guardian`, `brand-voice`
-- **Content:** `press-release`, `media-pitch`, `content-strategist`
-- **Reporting:** `analytics-reporting`
+## 6. SEO & Content Marketer
+*Core Goal: Optimize search visibility and content performance.*
+- **Performance:** `analytics-reporting`, `brand-guardian`
+- **Strategy:** `content-strategist`, `edit-article`
+- **GWS:** `gws-sheets` (for keyword tracking)
 
-## 7. Database Administrator (DBA)
+## 7. Copywriter & Creative Lead
+*Core Goal: Craft compelling, brand-aligned narratives.*
+- **Voice:** `brand-voice`, `brand-guardian`
+- **Production:** `gws-docs`, `edit-article`
+- **Ideation:** `brainstorming`
+
+## 8. Media & PR Specialist
+*Core Goal: Manage public relations and media outreach.*
+- **Outreach:** `media-pitch`, `press-release`
+- **Communication:** `gws-gmail-send`, `gws-chat`
+- **GWS:** `gws-docs` (for press kits)
+
+## 9. Economic & Strategic Analyst
+*Core Goal: Drive decisions through data-backed market analysis.*
+- **Insights:** `chart-visualization`, `analytics-reporting`
+- **Decisioning:** `tradeoff-analysis`, `zoom-out`
+- **Tools:** `gws-sheets`, `gws-slides`
+
+## 10. Database Administrator (DBA)
 *Core Goal: Maintain database health, performance, and integrity.*
 - **Monitoring:** `db_health_checks`, `replication-lag`, `isolation-levels`
 - **Maintenance:** `index-maintenance`, `deadlocks`, `online-ddl`

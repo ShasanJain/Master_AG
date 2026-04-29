@@ -126,7 +126,55 @@ Use this skill to identify the most relevant tools for a specific persona. These
 - **Narrative:** `gws-slides`, `brainstorming`
 - **Design:** `gws-docs`, `brand-guidelines`
 
-## 22. Database Administrator (DBA)
+## 22. Full-Stack Content Creator
+*Core Goal: Produce multi-channel content across video, copy, and visuals.*
+- **Visuals:** `animations`, `figma-generate-design`
+- **Words:** `brand-voice`, `edit-article`
+- **Strategy:** `content-strategist`
+
+## 23. Executive Assistant
+*Core Goal: Maximize leadership productivity through seamless coordination.*
+- **Time:** `gws-calendar`, `gws-tasks`
+- **Inbox:** `gws-gmail-triage`, `gws-workflow-meeting-prep`
+- **People:** `gws-people`
+
+## 24. VC / Investor
+*Core Goal: Evaluate market opportunities and drive strategic growth.*
+- **Analysis:** `analytics-reporting`, `tradeoff-analysis`
+- **Vision:** `zoom-out`, `brainstorming`
+- **Review:** `gws-slides` (deck review)
+
+## 25. Public Speaker / Evangelist
+*Core Goal: Advocate for products and ideas through compelling storytelling.*
+- **Stage:** `gws-slides`, `gws-meet`
+- **Outreach:** `media-pitch`, `brand-voice`
+- **Creative:** `brainstorming`
+
+## 26. Social Media Manager
+*Core Goal: Build and engage online communities with viral potential.*
+- **Assets:** `slack-gif-creator`, `animations`
+- **Engagement:** `gws-chat`, `brand-voice`
+- **Planning:** `content-strategist`
+
+## 27. E-commerce Specialist
+*Core Goal: Optimize digital storefronts and supply chain data.*
+- **Backend:** `mysql`, `gws-sheets`
+- **Brand:** `brand-guardian`, `edit-article`
+- **Insight:** `analytics-reporting`
+
+## 28. Data Scientist (ML Focus)
+*Core Goal: Implement intelligent systems and vector-based search.*
+- **AI/DB:** `postgres` (pgvector), `gws-modelarmor`
+- **Stats:** `analytics-reporting`, `chart-visualization`
+- **Storage:** `gws-sheets`
+
+## 29. Operations Manager
+*Core Goal: Streamline organizational processes and team performance.*
+- **Systems:** `gws-workflow`, `gws-admin-reports`
+- **Coordination:** `gws-calendar`, `gws-tasks`
+- **Triage:** `github-triage`
+
+## 30. Database Administrator (DBA)
 *Core Goal: Maintain database health, performance, and integrity.*
 - **Monitoring:** `db_health_checks`, `replication-lag`, `isolation-levels`
 - **Maintenance:** `index-maintenance`, `deadlocks`, `online-ddl`

@@ -1,0 +1,10 @@
+{
+  "profession": "Operations Manager",
+  "skills": [
+    "google/gws-workflow",
+    "google/gws-admin-reports",
+    "google/gws-calendar",
+    "google/gws-tasks",
+    "review/github-triage"
+  ]
+}

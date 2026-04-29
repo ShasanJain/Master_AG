@@ -96,7 +96,37 @@ Use this skill to identify the most relevant tools for a specific persona. These
 - **Governance:** `gws-admin-reports`, `gws-modelarmor`
 - **Review:** `gws-docs`, `github-triage`
 
-## 16. Database Administrator (DBA)
+## 16. Motion Designer
+*Core Goal: Bring interfaces to life with smooth, purposeful animations.*
+- **Animation:** `animations`, `figma-generate-design`
+- **Quality:** `inclusive-design` (reduced motion compliance)
+
+## 17. Brand Identity Designer
+*Core Goal: Establish and maintain a cohesive visual and verbal identity.*
+- **Identity:** `brand-guidelines`, `brand-guardian`, `brand-voice`
+- **Systems:** `figma-create-design-system-rules`
+
+## 18. Data Visualization Specialist
+*Core Goal: Transform complex data into clear, actionable visual insights.*
+- **Viz:** `chart-visualization`, `gws-sheets`
+- **Context:** `analytics-reporting`, `tradeoff-analysis`
+
+## 19. Accessibility (A11y) Designer
+*Core Goal: Ensure digital experiences are inclusive for all users.*
+- **Compliance:** `inclusive-design`, `multimedia-accessibility`
+- **Review:** `web-design-guidelines`
+
+## 20. Graphic Designer (Digital)
+*Core Goal: Create high-quality digital assets and visual libraries.*
+- **Production:** `figma-generate-library`, `figma-create-new-file`
+- **Assets:** `gws-slides`, `brand-guardian`
+
+## 21. Presentation Designer
+*Core Goal: Deliver high-impact visual narratives for stakeholders.*
+- **Narrative:** `gws-slides`, `brainstorming`
+- **Design:** `gws-docs`, `brand-guidelines`
+
+## 22. Database Administrator (DBA)
 *Core Goal: Maintain database health, performance, and integrity.*
 - **Monitoring:** `db_health_checks`, `replication-lag`, `isolation-levels`
 - **Maintenance:** `index-maintenance`, `deadlocks`, `online-ddl`

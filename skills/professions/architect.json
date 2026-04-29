@@ -1,0 +1,11 @@
+{
+  "profession": "Software Architect",
+  "skills": [
+    "planning/prd-to-plan",
+    "planning/ubiquitous-language",
+    "design/tradeoff-analysis",
+    "meta/zoom-out",
+    "review/diagnose",
+    "planning/request-refactor-plan"
+  ]
+}

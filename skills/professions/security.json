@@ -1,0 +1,10 @@
+{
+  "profession": "Security & Compliance Engineer",
+  "skills": [
+    "google/gws-modelarmor",
+    "google/gws-modelarmor-sanitize-prompt",
+    "google/gws-admin-reports",
+    "environment/git-guardrails-claude-code",
+    "review/diagnose"
+  ]
+}

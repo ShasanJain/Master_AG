@@ -62,7 +62,41 @@ Use this skill to identify the most relevant tools for a specific persona. These
 - **Decisioning:** `tradeoff-analysis`, `zoom-out`
 - **Tools:** `gws-sheets`, `gws-slides`
 
-## 10. Database Administrator (DBA)
+## 10. Software Architect
+*Core Goal: Define robust system structures and navigate technical trade-offs.*
+- **Strategic:** `prd-to-plan`, `ubiquitous-language`
+- **Analysis:** `tradeoff-analysis`, `zoom-out`
+- **Review:** `diagnose`, `request-refactor-plan`
+
+## 11. Security & Compliance Engineer
+*Core Goal: Safeguard data and ensure model/code safety.*
+- **Safety:** `gws-modelarmor`, `gws-modelarmor-sanitize-prompt`
+- **Audit:** `gws-admin-reports`, `git-guardrails`
+- **Diagnosis:** `diagnose`
+
+## 12. Customer Success / Support
+*Core Goal: Resolve user issues and maintain community engagement.*
+- **Tickets:** `gws-gmail-triage`, `gws-gmail-reply`
+- **Chat:** `gws-chat-send`, `slack-gif-creator`
+- **Users:** `gws-people`
+
+## 13. HR & People Operations
+*Core Goal: Manage talent, onboarding, and organizational culture.*
+- **Directory:** `gws-people`, `gws-classroom`
+- **Admin:** `gws-calendar`, `gws-tasks`
+- **Policy:** `gws-docs-write`
+
+## 14. Instructional Designer / Educator
+*Core Goal: Develop curriculum and facilitate learning experiences.*
+- **Learning:** `gws-classroom`, `gws-slides`
+- **Creative:** `brainstorming`, `gws-docs-write`
+
+## 15. Legal & Risk Lead
+*Core Goal: Mitigate organizational risk and ensure regulatory compliance.*
+- **Governance:** `gws-admin-reports`, `gws-modelarmor`
+- **Review:** `gws-docs`, `github-triage`
+
+## 16. Database Administrator (DBA)
 *Core Goal: Maintain database health, performance, and integrity.*
 - **Monitoring:** `db_health_checks`, `replication-lag`, `isolation-levels`
 - **Maintenance:** `index-maintenance`, `deadlocks`, `online-ddl`

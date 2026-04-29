@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "skills": {
+    "antv-s2-expert": {
+      "source": "antvis/chart-visualization-skills",
+      "sourceType": "github",
+      "computedHash": "987abfafbc863d38d5e21a95a229ca75caf7b578d4cd62b6e4f840aacf2d9810"
+    },
+    "antv-skills-maintainer": {
+      "source": "antvis/chart-visualization-skills",
+      "sourceType": "github",
+      "computedHash": "00c9c6f069287759f6789fd30eff614b229f5a863a455a9927d967d76d91afea"
+    },
+    "chart-visualization": {
+      "source": "antvis/chart-visualization-skills",
+      "sourceType": "github",
+      "computedHash": "47d1fccddac7da03f31524321f4fdb10ff6d7372de034c8ebace28094198feac"
+    },
+    "icon-retrieval": {
+      "source": "antvis/chart-visualization-skills",
+      "sourceType": "github",
+      "computedHash": "70008825aa0caf5c5b69f5d23ba01ecfbde608e96e82bcbba6f438be0a46d432"
+    },
+    "infographic-creator": {
+      "source": "antvis/chart-visualization-skills",
+      "sourceType": "github",
+      "computedHash": "7ba6710d1e2eab14018d676a32ad569afca03d52396d75cb772b97de72e88efc"
+    },
+    "mysql": {
+      "source": "planetscale/database-skills",
+      "sourceType": "github",
+      "computedHash": "a74d7d018c4a9cfe4fd6e37f8758ef03272cde3f3dc2444c4f299636f4b3d275"
+    },
+    "narrative-text-visualization": {
+      "source": "antvis/chart-visualization-skills",
+      "sourceType": "github",
+      "computedHash": "1aaec6dd2ec2cf6557876ad74577a6e3ae76bd809f6f08c892f2cd6416eb0fb4"
+    },
+    "neki": {
+      "source": "planetscale/database-skills",
+      "sourceType": "github",
+      "computedHash": "90f086fa9fb4e19e909713378e427f3beac6163c6baa41b1aebfdc21ec0fcf99"
+    },
+    "postgres": {
+      "source": "planetscale/database-skills",
+      "sourceType": "github",
+      "computedHash": "f0632544d951152bf28c4f5cbb02593af296a3abe75f8949d003718c61a9a90b"
+    },
+    "vitess": {
+      "source": "planetscale/database-skills",
+      "sourceType": "github",
+      "computedHash": "160a706dcc059d68bb0705c55df087bb9c8eaecd6a0575fa10555df478a51281"
+    }
+  }
+}

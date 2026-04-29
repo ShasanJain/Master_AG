@@ -1,59 +1,62 @@
 ---
 name: theme-factory
-description: Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reportings, HTML landing pages, etc. There are 10 pre-set themes with colors/fonts that you can apply to any artifact that has been creating, or can generate a new theme on-the-fly.
-license: Complete terms in LICENSE.txt
+description: High-performance design engine for styling artifacts (slides, docs, HTML, dashboards) with rule-dense themes. Includes 10 embedded premium themes and logic for on-the-fly design system generation.
+version: 5.0
 ---
 
+# Theme Factory Design System
 
-# Theme Factory Skill
+This skill industrializes artifact styling by providing embedded design tokens, premium aesthetic rules, and automated theme application logic.
 
-This skill provides a curated collection of professional font and color themes themes, each with carefully selected color palettes and font pairings. Once a theme is chosen, it can be applied to any artifact.
+## 1. Core Implementation Rules
 
-## Purpose
+### Aesthetic Excellence (MANDATORY)
+- **Visual Impact**: Use rich gradients, glassmorphism (blur: 8px-16px), and subtle micro-animations.
+- **Typography**: Headers MUST use Bold/Display weights. Body text MUST prioritize readability (line-height: 1.6).
+- **Accessibility**: Maintain minimum 4.5:1 contrast ratio for all text. Use WCAG 2.1 AA standards.
 
-To apply consistent, professional styling to presentation slide decks, use this skill. Each theme includes:
-- A cohesive color palette with hex codes
-- Complementary font pairings for headers and body text
-- A distinct visual identity suitable for different contexts and audiences
+### Application Workflow
+1. **Token Retrieval**: Identify the target theme from the Embedded Library below.
+2. **Component Mapping**:
+   - **Background**: Primary Dark or Neutral Light.
+   - **Accents**: Primary Accent for buttons/headers; Secondary for highlights.
+   - **Glass**: Apply `backdrop-filter: blur(12px) saturate(180%)` to cards.
+3. **Motion**: Add `transition: all 0.3s ease-in-out` to interactive elements.
 
-## Usage Instructions
+## 2. Embedded Theme Library
 
-To apply styling to a slide deck or other artifact:
+| Theme Name | Primary Palette (Hex) | Typography (Headers / Body) | Visual Aesthetic |
+| :--- | :--- | :--- | :--- |
+| **Ocean Depths** | `#1a2332`, `#2d8b8b`, `#a8dadc`, `#f1faee` | DejaVu Sans Bold / Sans | Deep Navy, Professional, Calm |
+| **Sunset Boulevard** | `#e76f51`, `#f4a261`, `#e9c46a`, `#264653` | DejaVu Serif Bold / Sans | Warm, Vibrant, Energetic |
+| **Forest Canopy** | `#2d4a2b`, `#7d8471`, `#a4ac86`, `#faf9f6` | FreeSerif Bold / Sans | Natural, Grounded, Organic |
+| **Modern Minimalist** | `#36454f`, `#708090`, `#d3d3d3`, `#ffffff` | DejaVu Sans Bold / Sans | Charcoal, Grayscale, Clean |
+| **Golden Hour** | `#f4a900`, `#c1666b`, `#d4b896`, `#4a403a` | FreeSans Bold / Sans | Mustard, Autumnal, Inviting |
+| **Arctic Frost** | `#d4e4f7`, `#4a6fa5`, `#c0c0c0`, `#fafafa` | DejaVu Sans Bold / Sans | Ice Blue, Crisp, Clinical |
+| **Desert Rose** | `#d4a5a5`, `#b87d6d`, `#e8d5c4`, `#5d2e46` | FreeSans Bold / Sans | Dusty Rose, Soft, Sophisticated |
+| **Tech Innovation** | `#0066ff`, `#00ffff`, `#1e1e1e`, `#ffffff` | DejaVu Sans Bold / Sans | Electric Blue, Neon, Bold |
+| **Botanical Garden** | `#4a7c59`, `#f9a620`, `#b7472a`, `#f5f3ed` | DejaVu Serif Bold / Sans | Fern Green, Floral, Fresh |
+| **Midnight Galaxy** | `#2b1e3e`, `#4a4e8f`, `#a490c2`, `#e6e6fa` | FreeSans Bold / Sans | Deep Purple, Cosmic, Impactful |
 
-1. **Show the theme showcase**: Display the `theme-showcase.pdf` file to allow users to see all available themes visually. Do not make any modifications to it; simply show the file for viewing.
-2. **Ask for their choice**: Ask which theme to apply to the deck
-3. **Wait for selection**: Get explicit confirmation about the chosen theme
-4. **Apply the theme**: Once a theme has been chosen, apply the selected theme's colors and fonts to the deck/artifact
+## 3. Premium Design Tokens
 
-## Themes Available
+### Gradients (CSS Patterns)
+- **Vibrant Accent**: `linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)`
+- **Soft Depth**: `radial-gradient(circle at top left, var(--bg-light) 0%, var(--bg-dark) 100%)`
 
-The following 10 themes are available, each showcased in `theme-showcase.pdf`:
+### Glassmorphism System
+- **Standard Card**: `background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(12px);`
+- **Dark Mode Card**: `background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.05);`
 
-1. **Ocean Depths** - Professional and calming maritime theme
-2. **Sunset Boulevard** - Warm and vibrant sunset colors
-3. **Forest Canopy** - Natural and grounded earth tones
-4. **Modern Minimalist** - Clean and contemporary grayscale
-5. **Golden Hour** - Rich and warm autumnal palette
-6. **Arctic Frost** - Cool and crisp winter-inspired theme
-7. **Desert Rose** - Soft and sophisticated dusty tones
-8. **Tech Innovation** - Bold and modern tech aesthetic
-9. **Botanical Garden** - Fresh and organic garden colors
-10. **Midnight Galaxy** - Dramatic and cosmic deep tones
+### Micro-Animations
+- **Hover Scale**: `transform: scale(1.02); transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);`
+- **Fade In**: `@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`
 
-## Theme Details
+## 4. Custom Theme Generation Engine
 
-Each theme is defined in the `themes/` directory with complete specifications including:
-- Cohesive color palette with hex codes
-- Complementary font pairings for headers and body text
-- Distinct visual identity suitable for different contexts and audiences
-
-## Application Process
-
-After a preferred theme is selected:
-1. Read the corresponding theme file from the `themes/` directory
-2. Apply the specified colors and fonts consistently throughout the deck
-3. Ensure proper contrast and readability
-4. Maintain the theme's visual identity across all slides
-
-## Create your Own Theme
-To handle cases where none of the existing themes work for an artifact, create a custom theme. Based on provided inputs, generate a new theme similar to the ones above. Give the theme a similar name describing what the font/color combinations represent. Use any basic description provided to choose appropriate colors/fonts. After generating the theme, show it for review and verification. Following that, apply the theme as described above.
+If the preset library is insufficient, generate a new theme following this formula:
+1. **Core Selection**: Choose 1 Background (Neutral), 1 Dark (Contrast), and 2 Complementary Accents.
+2. **Font Pairing**: Match a Serif/Display header with a high-readability Sans body.
+3. **Contrast Check**: Validate colors using `webaim.org` simulation logic.
+4. **Naming**: Assign a descriptive title (e.g., "Industrial Copper", "Cyber Neon").
+5. **Output**: Present as a markdown table with Hex codes and CSS variable definitions.

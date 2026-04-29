@@ -1,0 +1,15 @@
+{
+  "tool": "generate_bar_chart",
+  "args": {
+    "title": "Fruit Sales 2026",
+    "data": [
+      {"category": "Apples", "value": 50},
+      {"category": "Bananas", "value": 80},
+      {"category": "Cherries", "value": 45},
+      {"category": "Dates", "value": 90}
+    ],
+    "style": {
+      "palette": ["#e76f51", "#f4a261", "#e9c46a", "#264653"]
+    }
+  }
+}

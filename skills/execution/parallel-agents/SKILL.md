@@ -8,11 +8,11 @@ layer: master-skill
 
 # Native Parallel Agents
 
-> Orchestration through Antigravity's built-in Agent Tool
+> Orchestration through Jack's built-in Agent Tool
 
 ## Overview
 
-This skill enables coordinating multiple specialized agents through Antigravity's native agent system. Unlike external scripts, this approach keeps all orchestration within Antigravity's control.
+This skill enables coordinating multiple specialized agents through Jack's native agent system. Unlike external scripts, this approach keeps all orchestration within Jack's control.
 
 ## When to Use Orchestration
 

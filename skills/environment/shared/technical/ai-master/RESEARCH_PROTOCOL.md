@@ -1,7 +1,7 @@
 # 🧠 AI Research & Strategic Intelligence (Fabric Patterns)
 > **Source**: Daniel Miessler / strategic-problem-solving
 
-Quy trình nghiên cứu và xử lý thông tin tiêu chuẩn cho Antigravity Agents.
+Quy trình nghiên cứu và xử lý thông tin tiêu chuẩn cho Jack Agents.
 
 ## 1. Giao thức Trích xuất túi khôn (Wisdom Extraction)
 Khi được yêu cầu đọc tài liệu hoặc research:

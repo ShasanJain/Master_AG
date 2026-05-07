@@ -50,4 +50,4 @@ const container = {
 - **Mobile Apps**: Focus on "Thumb-friendly" touch targets (min 44px).
 
 ---
-*Created by Antigravity Orchestrator - Based on Premium Design Frameworks.*
+*Created by Jack Orchestrator - Based on Premium Design Frameworks.*

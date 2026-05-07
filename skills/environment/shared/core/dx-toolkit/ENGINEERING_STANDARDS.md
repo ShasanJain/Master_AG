@@ -1,4 +1,4 @@
-# 🛠️ Antigravity Engineering Standards (Vercel & Antfu Grade)
+# 🛠️ Jack Engineering Standards (Vercel & Antfu Grade)
 > **Ref**: Anthony Fu / Vercel Engineering / Zero-config patterns
 
 Bộ tiêu chuẩn kỹ thuật nhằm tối ưu tốc độ phát triển (DX) và hiệu năng sản phẩm (Performance).

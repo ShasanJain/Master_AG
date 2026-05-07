@@ -2,7 +2,7 @@
 version: 4.1.0-fractal
 name: viral-generator-builder
 description: "Expert in building shareable generator tools that go viral - name generators, quiz makers, avatar creators, personality tests, and calculator tools. Covers the psychology of sharing, viral mechanics, and building tools people can't resist sharing with friends. Use when: generator tool, quiz maker, name generator, avatar creator, viral tool."
-source: vibeship-spawner-skills (Apache 2.0)
+source: Jack Industrial Registry
 ---
 
 # Viral Generator Builder

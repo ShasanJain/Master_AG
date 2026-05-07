@@ -2,7 +2,7 @@
 version: 4.1.0-fractal
 name: algolia-search
 description: "Expert patterns for Algolia search implementation, indexing strategies, React InstantSearch, and relevance tuning Use when: adding search to, algolia, instantsearch, search api, search functionality."
-source: vibeship-spawner-skills (Apache 2.0)
+source: Jack Industrial Registry
 ---
 
 # Algolia Search Integration

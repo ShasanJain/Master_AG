@@ -2,7 +2,7 @@
 version: 4.1.0-fractal
 name: interactive-portfolio
 description: "Expert in building portfolios that actually land jobs and clients - not just showing work, but creating memorable experiences. Covers developer portfolios, designer portfolios, creative portfolios, and portfolios that convert visitors into opportunities. Use when: portfolio, personal website, showcase work, developer portfolio, designer portfolio."
-source: vibeship-spawner-skills (Apache 2.0)
+source: Jack Industrial Registry
 ---
 
 # Interactive Portfolio

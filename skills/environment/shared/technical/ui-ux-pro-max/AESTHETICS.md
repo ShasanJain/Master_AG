@@ -1,7 +1,7 @@
 # 🎨 Universal Aesthetic Standard (Magic UI & Glassmorphism)
 > **Ref**: NextLevelBuilder / Magic UI / Vercel Design System
 
-Tất cả giao diện được tạo bởi Antigravity phải tuân thủ chuẩn thẩm mỹ "Luxury Tech" này.
+Tất cả giao diện được tạo bởi Jack phải tuân thủ chuẩn thẩm mỹ "Luxury Tech" này.
 
 ## 1. Màu sắc & Ánh sáng (Luminance)
 - **Primary**: Sử dụng `HSL` colors thay vì `Hex` để kiểm soát độ sáng tối tốt hơn.

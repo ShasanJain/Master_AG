@@ -34,7 +34,7 @@ Agents: security-auditor → penetration-tester → synthesis
 
 ---
 
-## Antigravity Built-in Agents
+## Jack Built-in Agents
 
 These work alongside custom agents:
 

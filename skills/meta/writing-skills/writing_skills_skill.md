@@ -644,6 +644,11 @@ How future Claude finds your skill:
 
 **Optimize for this flow** - put searchable terms early and often.
 
+## 🧠 Knowledge Modules (Fractal Skills)
+
+### 1. [internal-comms](./internal-comms.md)
+### 2. [anthropic-best-practices](./anthropic-best-practices.md)
+
 ## The Bottom Line
 
 **Creating skills IS TDD for process documentation.**

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -28,11 +29,11 @@ export default function RootLayout({
           </div>
           
           <nav className="flex-1 space-y-2">
-            <NavItem label="Dashboard" active />
-            <NavItem label="Skill Armory" />
-            <NavItem label="Mission Logs" />
-            <NavItem label="Incubator" />
-            <NavItem label="Settings" />
+            <NavItem label="Dashboard" href="/" />
+            <NavItem label="Skill Armory" href="/skills" />
+            <NavItem label="Mission Logs" href="/logs" />
+            <NavItem label="Incubator" href="/incubator" />
+            <NavItem label="Settings" href="/settings" />
           </nav>
           
           <div className="pt-6 border-t border-white/5 mt-auto">
@@ -52,13 +53,10 @@ export default function RootLayout({
   );
 }
 
-function NavItem({ label, active = false }: { label: string; active?: boolean }) {
+function NavItem({ label, href }: { label: string; href: string }) {
   return (
-    <div className={`
-      px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer
-      ${active ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}
-    `}>
+    <Link href={href} className="block px-4 py-2 rounded-lg text-sm font-medium transition-all text-white/40 hover:text-white/80 hover:bg-white/5">
       {label}
-    </div>
+    </Link>
   );
 }

@@ -47,3 +47,21 @@ It houses over **100 standardized, modular meta-tools** (ranging from React conf
 
 > [!NOTE] 
 > **🧲 Self-Healing Structure:** This workspace operates autonomously to prevent logic rot. Any rogue scripts or unparsed AI interactions dropped into the ecosystem are automatically identified, sorted, and renamed by the internal `organize-skills` meta-tool to guarantee absolute structural integrity over time.
+
+## 🛠️ Available Skills
+
+Master-AG comes pre-loaded with a massive library of modular skills, categorized for rapid orchestration:
+
+- 🎨 **design**: Touch target optimization, table accessibility, and theme factory.
+- 🏗️ **planning**: PRD generation, issue mapping, and refactor planning.
+- 🔍 **review**: Systematic debugging, QA loops, and GitHub triage.
+- 📦 **execution**: TDD loops, Vercel deployment, React components, and MySQL/Postgres.
+- 🤖 **meta**: Skill organization, parallel agent dispatching, and self-maintenance.
+- 📈 **environment**: MCP builders, git guardrails, and analytics reporting.
+- 🎨 **figma**: Code Connect, design system generation, and library sync.
+*And many more...*
+
+---
+
+> [!TIP]
+> Use `npx skills find [query]` to search the full library or `npx skills add <package>` to expand your workspace.

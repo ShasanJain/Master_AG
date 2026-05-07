@@ -2,7 +2,7 @@
   "plugins": [
     {
       "name": "ability-spectrum-mapping",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Ability Spectrum Mapping",
       "source": "./",
       "strict": false,
       "skills": [
@@ -11,7 +11,7 @@
     },
     {
       "name": "accessibility-debt-tracking",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Accessibility Debt Tracking",
       "source": "./",
       "strict": false,
       "skills": [
@@ -20,7 +20,7 @@
     },
     {
       "name": "accessibility-testing-strategy",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Accessibility Testing Strategy",
       "source": "./",
       "strict": false,
       "skills": [
@@ -29,7 +29,7 @@
     },
     {
       "name": "accessible-content-review",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Accessible Content Review",
       "source": "./",
       "strict": false,
       "skills": [
@@ -38,7 +38,7 @@
     },
     {
       "name": "adaptive-personalisation",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Adaptive Personalisation",
       "source": "./",
       "strict": false,
       "skills": [
@@ -46,8 +46,35 @@
       ]
     },
     {
+      "name": "agent-code-guide",
+      "description": "Fractal Mastery: Agent Code Guide",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/agent-code-guide"
+      ]
+    },
+    {
+      "name": "agent-project-guidelines-example",
+      "description": "Fractal Mastery: Agent Project Guidelines Example",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/agent-project-guidelines-example"
+      ]
+    },
+    {
+      "name": "agent-tool-builder",
+      "description": "Fractal Mastery: Agent Tool Builder",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/agent-tool-builder"
+      ]
+    },
+    {
       "name": "alt-text-design",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Alt Text Design",
       "source": "./",
       "strict": false,
       "skills": [
@@ -55,8 +82,26 @@
       ]
     },
     {
+      "name": "api-design-principles",
+      "description": "Fractal Mastery: Api Design Principles",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/api-design-principles"
+      ]
+    },
+    {
+      "name": "app-builder",
+      "description": "Fractal Mastery: App Builder",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/app-builder"
+      ]
+    },
+    {
       "name": "assess-load",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Assess Load",
       "source": "./",
       "strict": false,
       "skills": [
@@ -65,7 +110,7 @@
     },
     {
       "name": "assistive-technology-scenarios",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Assistive Technology Scenarios",
       "source": "./",
       "strict": false,
       "skills": [
@@ -74,7 +119,7 @@
     },
     {
       "name": "audit",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Audit",
       "source": "./",
       "strict": false,
       "skills": [
@@ -83,7 +128,7 @@
     },
     {
       "name": "audit-stories",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Audit Stories",
       "source": "./",
       "strict": false,
       "skills": [
@@ -91,8 +136,17 @@
       ]
     },
     {
+      "name": "backend-dev-guidelines",
+      "description": "Fractal Mastery: Backend Dev Guidelines",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/backend-dev-guidelines"
+      ]
+    },
+    {
       "name": "brand-guidelines",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Brand Guidelines",
       "source": "./",
       "strict": false,
       "skills": [
@@ -100,8 +154,44 @@
       ]
     },
     {
+      "name": "brand-guidelines-anthropic",
+      "description": "Fractal Mastery: Brand Guidelines Anthropic",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/brand-guidelines-anthropic"
+      ]
+    },
+    {
+      "name": "brand-guidelines-community",
+      "description": "Fractal Mastery: Brand Guidelines Community",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/brand-guidelines-community"
+      ]
+    },
+    {
+      "name": "browser-extension-builder",
+      "description": "Fractal Mastery: Browser Extension Builder",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/browser-extension-builder"
+      ]
+    },
+    {
+      "name": "canvas-design",
+      "description": "Fractal Mastery: Canvas Design",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/canvas-design"
+      ]
+    },
+    {
       "name": "cognitive-accessibility-review",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Cognitive Accessibility Review",
       "source": "./",
       "strict": false,
       "skills": [
@@ -110,7 +200,7 @@
     },
     {
       "name": "cognitive-load-assessment",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Cognitive Load Assessment",
       "source": "./",
       "strict": false,
       "skills": [
@@ -119,7 +209,7 @@
     },
     {
       "name": "colour-independence",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Colour Independence",
       "source": "./",
       "strict": false,
       "skills": [
@@ -128,7 +218,7 @@
     },
     {
       "name": "compliance-mapping",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Compliance Mapping",
       "source": "./",
       "strict": false,
       "skills": [
@@ -137,7 +227,7 @@
     },
     {
       "name": "contextual-help-design",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Contextual Help Design",
       "source": "./",
       "strict": false,
       "skills": [
@@ -145,8 +235,17 @@
       ]
     },
     {
+      "name": "database-design",
+      "description": "Fractal Mastery: Database Design",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/database-design"
+      ]
+    },
+    {
       "name": "decision-documentation",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Decision Documentation",
       "source": "./",
       "strict": false,
       "skills": [
@@ -155,7 +254,7 @@
     },
     {
       "name": "design-an-interface",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Design An Interface",
       "source": "./",
       "strict": false,
       "skills": [
@@ -164,7 +263,7 @@
     },
     {
       "name": "design-flow",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Design Flow",
       "source": "./",
       "strict": false,
       "skills": [
@@ -172,8 +271,17 @@
       ]
     },
     {
+      "name": "design-orchestration",
+      "description": "Fractal Mastery: Design Orchestration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/design-orchestration"
+      ]
+    },
+    {
       "name": "disability-inclusive-personas",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Disability Inclusive Personas",
       "source": "./",
       "strict": false,
       "skills": [
@@ -182,7 +290,7 @@
     },
     {
       "name": "document",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Document",
       "source": "./",
       "strict": false,
       "skills": [
@@ -191,7 +299,7 @@
     },
     {
       "name": "edge-case-identification",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Edge Case Identification",
       "source": "./",
       "strict": false,
       "skills": [
@@ -199,8 +307,17 @@
       ]
     },
     {
+      "name": "environment-setup-guide",
+      "description": "Fractal Mastery: Environment Setup Guide",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/environment-setup-guide"
+      ]
+    },
+    {
       "name": "error-prevention-recovery",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Error Prevention Recovery",
       "source": "./",
       "strict": false,
       "skills": [
@@ -208,8 +325,17 @@
       ]
     },
     {
+      "name": "event-store-design",
+      "description": "Fractal Mastery: Event Store Design",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/event-store-design"
+      ]
+    },
+    {
       "name": "feedback-and-status",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Feedback And Status",
       "source": "./",
       "strict": false,
       "skills": [
@@ -218,7 +344,7 @@
     },
     {
       "name": "flexible-typography",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Flexible Typography",
       "source": "./",
       "strict": false,
       "skills": [
@@ -227,7 +353,7 @@
     },
     {
       "name": "focus-attention-design",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Focus Attention Design",
       "source": "./",
       "strict": false,
       "skills": [
@@ -236,7 +362,7 @@
     },
     {
       "name": "form-labelling",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Form Labelling",
       "source": "./",
       "strict": false,
       "skills": [
@@ -245,7 +371,7 @@
     },
     {
       "name": "frontend-design",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Frontend Design",
       "source": "./",
       "strict": false,
       "skills": [
@@ -253,8 +379,17 @@
       ]
     },
     {
+      "name": "frontend-dev-guidelines",
+      "description": "Fractal Mastery: Frontend Dev Guidelines",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/frontend-dev-guidelines"
+      ]
+    },
+    {
       "name": "generate",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Generate",
       "source": "./",
       "strict": false,
       "skills": [
@@ -263,7 +398,7 @@
     },
     {
       "name": "gesture-alternatives",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Gesture Alternatives",
       "source": "./",
       "strict": false,
       "skills": [
@@ -272,7 +407,7 @@
     },
     {
       "name": "handoff",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Handoff",
       "source": "./",
       "strict": false,
       "skills": [
@@ -281,7 +416,7 @@
     },
     {
       "name": "heading-structure",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Heading Structure",
       "source": "./",
       "strict": false,
       "skills": [
@@ -290,7 +425,7 @@
     },
     {
       "name": "icon-retrieval",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Icon Retrieval",
       "source": "./",
       "strict": false,
       "skills": [
@@ -299,16 +434,16 @@
     },
     {
       "name": "improve-codebase-architecture",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Improve Codebase Architecture",
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/execution/improve-codebase-architecture"
+        "./skills/design/improve-codebase-architecture"
       ]
     },
     {
       "name": "inclusive-user-stories",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Inclusive User Stories",
       "source": "./",
       "strict": false,
       "skills": [
@@ -317,7 +452,7 @@
     },
     {
       "name": "infographic-creator",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Infographic Creator",
       "source": "./",
       "strict": false,
       "skills": [
@@ -326,7 +461,7 @@
     },
     {
       "name": "information-density",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Information Density",
       "source": "./",
       "strict": false,
       "skills": [
@@ -335,7 +470,7 @@
     },
     {
       "name": "keyboard-navigation",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Keyboard Navigation",
       "source": "./",
       "strict": false,
       "skills": [
@@ -344,7 +479,7 @@
     },
     {
       "name": "keyboard-review",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Keyboard Review",
       "source": "./",
       "strict": false,
       "skills": [
@@ -352,8 +487,17 @@
       ]
     },
     {
+      "name": "kpi-dashboard-design",
+      "description": "Fractal Mastery: Kpi Dashboard Design",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/kpi-dashboard-design"
+      ]
+    },
+    {
       "name": "link-text-design",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Link Text Design",
       "source": "./",
       "strict": false,
       "skills": [
@@ -361,8 +505,17 @@
       ]
     },
     {
+      "name": "mcp-builder",
+      "description": "Fractal Mastery: Mcp Builder",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/mcp-builder"
+      ]
+    },
+    {
       "name": "memory-load-reduction",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Memory Load Reduction",
       "source": "./",
       "strict": false,
       "skills": [
@@ -371,7 +524,7 @@
     },
     {
       "name": "motion-framer",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Motion Framer",
       "source": "./",
       "strict": false,
       "skills": [
@@ -380,7 +533,7 @@
     },
     {
       "name": "motion-sensitivity",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Motion Sensitivity",
       "source": "./",
       "strict": false,
       "skills": [
@@ -389,7 +542,7 @@
     },
     {
       "name": "multi-modal-input",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Multi Modal Input",
       "source": "./",
       "strict": false,
       "skills": [
@@ -398,7 +551,7 @@
     },
     {
       "name": "multimedia-accessibility",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Multimedia Accessibility",
       "source": "./",
       "strict": false,
       "skills": [
@@ -406,8 +559,17 @@
       ]
     },
     {
+      "name": "personal-tool-builder",
+      "description": "Fractal Mastery: Personal Tool Builder",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/personal-tool-builder"
+      ]
+    },
+    {
       "name": "plain-language-design",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Plain Language Design",
       "source": "./",
       "strict": false,
       "skills": [
@@ -416,7 +578,7 @@
     },
     {
       "name": "preference-audit",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Preference Audit",
       "source": "./",
       "strict": false,
       "skills": [
@@ -424,8 +586,17 @@
       ]
     },
     {
+      "name": "react-ui-patterns",
+      "description": "Fractal Mastery: React Ui Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/react-ui-patterns"
+      ]
+    },
+    {
       "name": "readable-content",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Readable Content",
       "source": "./",
       "strict": false,
       "skills": [
@@ -433,8 +604,26 @@
       ]
     },
     {
+      "name": "reference-builder",
+      "description": "Fractal Mastery: Reference Builder",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/reference-builder"
+      ]
+    },
+    {
+      "name": "remotion-best-practices",
+      "description": "Fractal Mastery: Remotion Best Practices",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/remotion-best-practices"
+      ]
+    },
+    {
       "name": "responsive-accessibility",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Responsive Accessibility",
       "source": "./",
       "strict": false,
       "skills": [
@@ -443,7 +632,7 @@
     },
     {
       "name": "responsive-review",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Responsive Review",
       "source": "./",
       "strict": false,
       "skills": [
@@ -452,7 +641,7 @@
     },
     {
       "name": "review",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Review",
       "source": "./",
       "strict": false,
       "skills": [
@@ -461,7 +650,7 @@
     },
     {
       "name": "rewrite",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Rewrite",
       "source": "./",
       "strict": false,
       "skills": [
@@ -470,7 +659,7 @@
     },
     {
       "name": "scenario-map",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Scenario Map",
       "source": "./",
       "strict": false,
       "skills": [
@@ -479,7 +668,7 @@
     },
     {
       "name": "shadcn-ui",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Shadcn Ui",
       "source": "./",
       "strict": false,
       "skills": [
@@ -488,7 +677,7 @@
     },
     {
       "name": "simplified-views",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Simplified Views",
       "source": "./",
       "strict": false,
       "skills": [
@@ -497,7 +686,7 @@
     },
     {
       "name": "simplify",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Simplify",
       "source": "./",
       "strict": false,
       "skills": [
@@ -506,7 +695,7 @@
     },
     {
       "name": "situational-impairment-mapping",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Situational Impairment Mapping",
       "source": "./",
       "strict": false,
       "skills": [
@@ -514,8 +703,17 @@
       ]
     },
     {
+      "name": "slack-bot-builder",
+      "description": "Fractal Mastery: Slack Bot Builder",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/slack-bot-builder"
+      ]
+    },
+    {
       "name": "specify",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Specify",
       "source": "./",
       "strict": false,
       "skills": [
@@ -524,7 +722,7 @@
     },
     {
       "name": "stakeholder-communication",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Stakeholder Communication",
       "source": "./",
       "strict": false,
       "skills": [
@@ -533,7 +731,7 @@
     },
     {
       "name": "structure",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Structure",
       "source": "./",
       "strict": false,
       "skills": [
@@ -542,7 +740,7 @@
     },
     {
       "name": "table-accessibility",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Table Accessibility",
       "source": "./",
       "strict": false,
       "skills": [
@@ -550,8 +748,44 @@
       ]
     },
     {
+      "name": "tailwind-design-system",
+      "description": "Fractal Mastery: Tailwind Design System",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/tailwind-design-system"
+      ]
+    },
+    {
+      "name": "tailwind-patterns",
+      "description": "Fractal Mastery: Tailwind Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/tailwind-patterns"
+      ]
+    },
+    {
+      "name": "telegram-bot-builder",
+      "description": "Fractal Mastery: Telegram Bot Builder",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/telegram-bot-builder"
+      ]
+    },
+    {
+      "name": "theme-factory",
+      "description": "Fractal Mastery: Theme Factory",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/theme-factory"
+      ]
+    },
+    {
       "name": "touch-target-design",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Touch Target Design",
       "source": "./",
       "strict": false,
       "skills": [
@@ -560,7 +794,7 @@
     },
     {
       "name": "tradeoff-analysis",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Tradeoff Analysis",
       "source": "./",
       "strict": false,
       "skills": [
@@ -568,8 +802,53 @@
       ]
     },
     {
+      "name": "ui-ux-designer",
+      "description": "Fractal Mastery: Ui Ux Designer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/ui-ux-designer"
+      ]
+    },
+    {
+      "name": "ui-ux-pro-max",
+      "description": "Fractal Mastery: Ui Ux Pro Max",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/ui-ux-pro-max"
+      ]
+    },
+    {
+      "name": "ui-ux-pro-max-skill",
+      "description": "Fractal Mastery: Ui Ux Pro Max Skill",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/ui-ux-pro-max-skill"
+      ]
+    },
+    {
+      "name": "ui-visual-validator",
+      "description": "Fractal Mastery: Ui Visual Validator",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/ui-visual-validator"
+      ]
+    },
+    {
+      "name": "ui_ux_pro_max_skill",
+      "description": "Master Logic: Ui_Ux_Pro_Max_Skill",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/ui_ux_pro_max_skill.md"
+      ]
+    },
+    {
       "name": "user-preference-respect",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: User Preference Respect",
       "source": "./",
       "strict": false,
       "skills": [
@@ -577,8 +856,17 @@
       ]
     },
     {
+      "name": "viral-generator-builder",
+      "description": "Fractal Mastery: Viral Generator Builder",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/viral-generator-builder"
+      ]
+    },
+    {
       "name": "voice-interaction",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Voice Interaction",
       "source": "./",
       "strict": false,
       "skills": [
@@ -587,7 +875,7 @@
     },
     {
       "name": "wayfinding-navigation",
-      "description": "Skill from design category.",
+      "description": "Fractal Mastery: Wayfinding Navigation",
       "source": "./",
       "strict": false,
       "skills": [
@@ -595,8 +883,26 @@
       ]
     },
     {
+      "name": "web-artifacts-builder",
+      "description": "Fractal Mastery: Web Artifacts Builder",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/web-artifacts-builder"
+      ]
+    },
+    {
+      "name": "web-design-guidelines",
+      "description": "Fractal Mastery: Web Design Guidelines",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/web-design-guidelines"
+      ]
+    },
+    {
       "name": "analytics-reporting",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Analytics Reporting",
       "source": "./",
       "strict": false,
       "skills": [
@@ -605,7 +911,7 @@
     },
     {
       "name": "brand-guardian",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Brand Guardian",
       "source": "./",
       "strict": false,
       "skills": [
@@ -614,7 +920,7 @@
     },
     {
       "name": "brand-voice",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Brand Voice",
       "source": "./",
       "strict": false,
       "skills": [
@@ -623,7 +929,7 @@
     },
     {
       "name": "claude-api",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Claude Api",
       "source": "./",
       "strict": false,
       "skills": [
@@ -632,7 +938,7 @@
     },
     {
       "name": "content-strategist",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Content Strategist",
       "source": "./",
       "strict": false,
       "skills": [
@@ -641,7 +947,7 @@
     },
     {
       "name": "email-drafting",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Email Drafting",
       "source": "./",
       "strict": false,
       "skills": [
@@ -650,7 +956,7 @@
     },
     {
       "name": "git-guardrails-claude-code",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Git Guardrails Claude Code",
       "source": "./",
       "strict": false,
       "skills": [
@@ -659,7 +965,7 @@
     },
     {
       "name": "internal-comms",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Internal Comms",
       "source": "./",
       "strict": false,
       "skills": [
@@ -668,7 +974,7 @@
     },
     {
       "name": "mcp-builder",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Mcp Builder",
       "source": "./",
       "strict": false,
       "skills": [
@@ -677,7 +983,7 @@
     },
     {
       "name": "media-pitch",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Media Pitch",
       "source": "./",
       "strict": false,
       "skills": [
@@ -685,8 +991,17 @@
       ]
     },
     {
+      "name": "mtls-configuration",
+      "description": "Fractal Mastery: Mtls Configuration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/mtls-configuration"
+      ]
+    },
+    {
       "name": "press-release",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Press Release",
       "source": "./",
       "strict": false,
       "skills": [
@@ -694,8 +1009,17 @@
       ]
     },
     {
+      "name": "sast-configuration",
+      "description": "Fractal Mastery: Sast Configuration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/sast-configuration"
+      ]
+    },
+    {
       "name": "setup-matt-pocock-skills",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Setup Matt Pocock Skills",
       "source": "./",
       "strict": false,
       "skills": [
@@ -704,7 +1028,7 @@
     },
     {
       "name": "setup-pre-commit",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Setup Pre Commit",
       "source": "./",
       "strict": false,
       "skills": [
@@ -712,8 +1036,17 @@
       ]
     },
     {
+      "name": "shared",
+      "description": "Fractal Mastery: Shared",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/shared"
+      ]
+    },
+    {
       "name": "slack-gif-creator",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Slack Gif Creator",
       "source": "./",
       "strict": false,
       "skills": [
@@ -722,7 +1055,7 @@
     },
     {
       "name": "using-git-worktrees",
-      "description": "Skill from environment category.",
+      "description": "Fractal Mastery: Using Git Worktrees",
       "source": "./",
       "strict": false,
       "skills": [
@@ -730,8 +1063,206 @@
       ]
     },
     {
+      "name": "3d-web-experience",
+      "description": "Fractal Mastery: 3D Web Experience",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/3d-web-experience"
+      ]
+    },
+    {
+      "name": "active-directory-attacks",
+      "description": "Fractal Mastery: Active Directory Attacks",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/active-directory-attacks"
+      ]
+    },
+    {
+      "name": "agent-backend-patterns",
+      "description": "Fractal Mastery: Agent Backend Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-backend-patterns"
+      ]
+    },
+    {
+      "name": "agent-clickhouse-io",
+      "description": "Fractal Mastery: Agent Clickhouse Io",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-clickhouse-io"
+      ]
+    },
+    {
+      "name": "agent-coding-standards",
+      "description": "Fractal Mastery: Agent Coding Standards",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-coding-standards"
+      ]
+    },
+    {
+      "name": "agent-continuous-learning",
+      "description": "Fractal Mastery: Agent Continuous Learning",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-continuous-learning"
+      ]
+    },
+    {
+      "name": "agent-d3js-skill",
+      "description": "Fractal Mastery: Agent D3Js Skill",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-d3js-skill"
+      ]
+    },
+    {
+      "name": "agent-evaluation",
+      "description": "Fractal Mastery: Agent Evaluation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-evaluation"
+      ]
+    },
+    {
+      "name": "agent-frontend-patterns",
+      "description": "Fractal Mastery: Agent Frontend Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-frontend-patterns"
+      ]
+    },
+    {
+      "name": "agent-manager-skill",
+      "description": "Fractal Mastery: Agent Manager Skill",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-manager-skill"
+      ]
+    },
+    {
+      "name": "agent-memory-mcp",
+      "description": "Fractal Mastery: Agent Memory Mcp",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-memory-mcp"
+      ]
+    },
+    {
+      "name": "agent-memory-systems",
+      "description": "Fractal Mastery: Agent Memory Systems",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-memory-systems"
+      ]
+    },
+    {
+      "name": "agent-orchestration",
+      "description": "Fractal Mastery: Agent Orchestration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-orchestration"
+      ]
+    },
+    {
+      "name": "agent-orchestration-improve-agent",
+      "description": "Fractal Mastery: Agent Orchestration Improve Agent",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-orchestration-improve-agent"
+      ]
+    },
+    {
+      "name": "agent-orchestration-multi-agent-optimize",
+      "description": "Fractal Mastery: Agent Orchestration Multi Agent Optimize",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-orchestration-multi-agent-optimize"
+      ]
+    },
+    {
+      "name": "agent-strategic-compact",
+      "description": "Fractal Mastery: Agent Strategic Compact",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/agent-strategic-compact"
+      ]
+    },
+    {
+      "name": "ai-agents-architect",
+      "description": "Fractal Mastery: Ai Agents Architect",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/ai-agents-architect"
+      ]
+    },
+    {
+      "name": "ai-engineer",
+      "description": "Fractal Mastery: Ai Engineer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/ai-engineer"
+      ]
+    },
+    {
+      "name": "ai-product",
+      "description": "Fractal Mastery: Ai Product",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/ai-product"
+      ]
+    },
+    {
+      "name": "ai-wrapper-product",
+      "description": "Fractal Mastery: Ai Wrapper Product",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/ai-wrapper-product"
+      ]
+    },
+    {
+      "name": "airflow-dag-patterns",
+      "description": "Fractal Mastery: Airflow Dag Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/airflow-dag-patterns"
+      ]
+    },
+    {
+      "name": "algolia-search",
+      "description": "Fractal Mastery: Algolia Search",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/algolia-search"
+      ]
+    },
+    {
       "name": "algorithmic-art",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Algorithmic Art",
       "source": "./",
       "strict": false,
       "skills": [
@@ -739,8 +1270,35 @@
       ]
     },
     {
+      "name": "angular-migration",
+      "description": "Fractal Mastery: Angular Migration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/angular-migration"
+      ]
+    },
+    {
+      "name": "antfu-coding-style",
+      "description": "Fractal Mastery: Antfu Coding Style",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/antfu-coding-style"
+      ]
+    },
+    {
+      "name": "anti-reversing-techniques",
+      "description": "Fractal Mastery: Anti Reversing Techniques",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/anti-reversing-techniques"
+      ]
+    },
+    {
       "name": "antv-s2-expert",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Antv S2 Expert",
       "source": "./",
       "strict": false,
       "skills": [
@@ -748,8 +1306,305 @@
       ]
     },
     {
+      "name": "api-documentation-generator",
+      "description": "Fractal Mastery: Api Documentation Generator",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/api-documentation-generator"
+      ]
+    },
+    {
+      "name": "api-documenter",
+      "description": "Fractal Mastery: Api Documenter",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/api-documenter"
+      ]
+    },
+    {
+      "name": "api-fuzzing-bug-bounty",
+      "description": "Fractal Mastery: Api Fuzzing Bug Bounty",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/api-fuzzing-bug-bounty"
+      ]
+    },
+    {
+      "name": "api-patterns",
+      "description": "Fractal Mastery: Api Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/api-patterns"
+      ]
+    },
+    {
+      "name": "architect-review",
+      "description": "Fractal Mastery: Architect Review",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/architect-review"
+      ]
+    },
+    {
+      "name": "architecture",
+      "description": "Fractal Mastery: Architecture",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/architecture"
+      ]
+    },
+    {
+      "name": "architecture-decision-records",
+      "description": "Fractal Mastery: Architecture Decision Records",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/architecture-decision-records"
+      ]
+    },
+    {
+      "name": "architecture-patterns",
+      "description": "Fractal Mastery: Architecture Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/architecture-patterns"
+      ]
+    },
+    {
+      "name": "arm-cortex-expert",
+      "description": "Fractal Mastery: Arm Cortex Expert",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/arm-cortex-expert"
+      ]
+    },
+    {
+      "name": "async-python-patterns",
+      "description": "Fractal Mastery: Async Python Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/async-python-patterns"
+      ]
+    },
+    {
+      "name": "attack-tree-construction",
+      "description": "Fractal Mastery: Attack Tree Construction",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/attack-tree-construction"
+      ]
+    },
+    {
+      "name": "autonomous-agent-patterns",
+      "description": "Fractal Mastery: Autonomous Agent Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/autonomous-agent-patterns"
+      ]
+    },
+    {
+      "name": "autonomous-agents",
+      "description": "Fractal Mastery: Autonomous Agents",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/autonomous-agents"
+      ]
+    },
+    {
+      "name": "avalonia-layout-zafiro",
+      "description": "Fractal Mastery: Avalonia Layout Zafiro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/avalonia-layout-zafiro"
+      ]
+    },
+    {
+      "name": "avalonia-viewmodels-zafiro",
+      "description": "Fractal Mastery: Avalonia Viewmodels Zafiro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/avalonia-viewmodels-zafiro"
+      ]
+    },
+    {
+      "name": "avalonia-zafiro-development",
+      "description": "Fractal Mastery: Avalonia Zafiro Development",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/avalonia-zafiro-development"
+      ]
+    },
+    {
+      "name": "backend-architect",
+      "description": "Fractal Mastery: Backend Architect",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/backend-architect"
+      ]
+    },
+    {
+      "name": "backend-development-feature-development",
+      "description": "Fractal Mastery: Backend Development Feature Development",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/backend-development-feature-development"
+      ]
+    },
+    {
+      "name": "billing-automation",
+      "description": "Fractal Mastery: Billing Automation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/billing-automation"
+      ]
+    },
+    {
+      "name": "binary-analysis-patterns",
+      "description": "Fractal Mastery: Binary Analysis Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/binary-analysis-patterns"
+      ]
+    },
+    {
+      "name": "blockchain-developer",
+      "description": "Fractal Mastery: Blockchain Developer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/blockchain-developer"
+      ]
+    },
+    {
+      "name": "blockrun",
+      "description": "Fractal Mastery: Blockrun",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/blockrun"
+      ]
+    },
+    {
+      "name": "brainstorming",
+      "description": "Fractal Mastery: Brainstorming",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/brainstorming"
+      ]
+    },
+    {
+      "name": "browser-automation",
+      "description": "Fractal Mastery: Browser Automation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/browser-automation"
+      ]
+    },
+    {
+      "name": "bullmq-specialist",
+      "description": "Fractal Mastery: Bullmq Specialist",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/bullmq-specialist"
+      ]
+    },
+    {
+      "name": "bun-development",
+      "description": "Fractal Mastery: Bun Development",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/bun-development"
+      ]
+    },
+    {
+      "name": "busybox-on-windows",
+      "description": "Fractal Mastery: Busybox On Windows",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/busybox-on-windows"
+      ]
+    },
+    {
+      "name": "c-pro",
+      "description": "Fractal Mastery: C Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/c-pro"
+      ]
+    },
+    {
+      "name": "c4-architecture-c4-architecture",
+      "description": "Fractal Mastery: C4 Architecture C4 Architecture",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/c4-architecture-c4-architecture"
+      ]
+    },
+    {
+      "name": "c4-code",
+      "description": "Fractal Mastery: C4 Code",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/c4-code"
+      ]
+    },
+    {
+      "name": "c4-component",
+      "description": "Fractal Mastery: C4 Component",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/c4-component"
+      ]
+    },
+    {
+      "name": "c4-container",
+      "description": "Fractal Mastery: C4 Container",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/c4-container"
+      ]
+    },
+    {
+      "name": "c4-context",
+      "description": "Fractal Mastery: C4 Context",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/c4-context"
+      ]
+    },
+    {
       "name": "canvas-design",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Canvas Design",
       "source": "./",
       "strict": false,
       "skills": [
@@ -757,8 +1612,17 @@
       ]
     },
     {
+      "name": "changelog-automation",
+      "description": "Fractal Mastery: Changelog Automation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/changelog-automation"
+      ]
+    },
+    {
       "name": "chart-visualization",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Chart Visualization",
       "source": "./",
       "strict": false,
       "skills": [
@@ -766,8 +1630,152 @@
       ]
     },
     {
+      "name": "clean-code",
+      "description": "Fractal Mastery: Clean Code",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/clean-code"
+      ]
+    },
+    {
+      "name": "code-documentation-code-explain",
+      "description": "Fractal Mastery: Code Documentation Code Explain",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/code-documentation-code-explain"
+      ]
+    },
+    {
+      "name": "code-documentation-doc-generate",
+      "description": "Fractal Mastery: Code Documentation Doc Generate",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/code-documentation-doc-generate"
+      ]
+    },
+    {
+      "name": "code-refactoring-context-restore",
+      "description": "Fractal Mastery: Code Refactoring Context Restore",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/code-refactoring-context-restore"
+      ]
+    },
+    {
+      "name": "code-refactoring-refactor-clean",
+      "description": "Fractal Mastery: Code Refactoring Refactor Clean",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/code-refactoring-refactor-clean"
+      ]
+    },
+    {
+      "name": "code-refactoring-tech-debt",
+      "description": "Fractal Mastery: Code Refactoring Tech Debt",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/code-refactoring-tech-debt"
+      ]
+    },
+    {
+      "name": "code-review-ai-ai-review",
+      "description": "Fractal Mastery: Code Review Ai Ai Review",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/code-review-ai-ai-review"
+      ]
+    },
+    {
+      "name": "code-review-checklist",
+      "description": "Fractal Mastery: Code Review Checklist",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/code-review-checklist"
+      ]
+    },
+    {
+      "name": "code-review-excellence",
+      "description": "Fractal Mastery: Code Review Excellence",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/code-review-excellence"
+      ]
+    },
+    {
+      "name": "code-reviewer",
+      "description": "Fractal Mastery: Code Reviewer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/code-reviewer"
+      ]
+    },
+    {
+      "name": "codebase-cleanup-deps-audit",
+      "description": "Fractal Mastery: Codebase Cleanup Deps Audit",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/codebase-cleanup-deps-audit"
+      ]
+    },
+    {
+      "name": "codebase-cleanup-refactor-clean",
+      "description": "Fractal Mastery: Codebase Cleanup Refactor Clean",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/codebase-cleanup-refactor-clean"
+      ]
+    },
+    {
+      "name": "codebase-cleanup-tech-debt",
+      "description": "Fractal Mastery: Codebase Cleanup Tech Debt",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/codebase-cleanup-tech-debt"
+      ]
+    },
+    {
+      "name": "codex-review",
+      "description": "Fractal Mastery: Codex Review",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/codex-review"
+      ]
+    },
+    {
+      "name": "competitive-landscape",
+      "description": "Fractal Mastery: Competitive Landscape",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/competitive-landscape"
+      ]
+    },
+    {
+      "name": "competitor-alternatives",
+      "description": "Fractal Mastery: Competitor Alternatives",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/competitor-alternatives"
+      ]
+    },
+    {
       "name": "composition-patterns",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Composition Patterns",
       "source": "./",
       "strict": false,
       "skills": [
@@ -775,8 +1783,341 @@
       ]
     },
     {
+      "name": "comprehensive-review-full-review",
+      "description": "Fractal Mastery: Comprehensive Review Full Review",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/comprehensive-review-full-review"
+      ]
+    },
+    {
+      "name": "comprehensive-review-pr-enhance",
+      "description": "Fractal Mastery: Comprehensive Review Pr Enhance",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/comprehensive-review-pr-enhance"
+      ]
+    },
+    {
+      "name": "computer-use-agents",
+      "description": "Fractal Mastery: Computer Use Agents",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/computer-use-agents"
+      ]
+    },
+    {
+      "name": "conductor-implement",
+      "description": "Fractal Mastery: Conductor Implement",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/conductor-implement"
+      ]
+    },
+    {
+      "name": "conductor-manage",
+      "description": "Fractal Mastery: Conductor Manage",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/conductor-manage"
+      ]
+    },
+    {
+      "name": "conductor-new-track",
+      "description": "Fractal Mastery: Conductor New Track",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/conductor-new-track"
+      ]
+    },
+    {
+      "name": "conductor-revert",
+      "description": "Fractal Mastery: Conductor Revert",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/conductor-revert"
+      ]
+    },
+    {
+      "name": "conductor-setup",
+      "description": "Fractal Mastery: Conductor Setup",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/conductor-setup"
+      ]
+    },
+    {
+      "name": "conductor-status",
+      "description": "Fractal Mastery: Conductor Status",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/conductor-status"
+      ]
+    },
+    {
+      "name": "conductor-validator",
+      "description": "Fractal Mastery: Conductor Validator",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/conductor-validator"
+      ]
+    },
+    {
+      "name": "context-driven-development",
+      "description": "Fractal Mastery: Context Driven Development",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/context-driven-development"
+      ]
+    },
+    {
+      "name": "context-management-context-restore",
+      "description": "Fractal Mastery: Context Management Context Restore",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/context-management-context-restore"
+      ]
+    },
+    {
+      "name": "context-management-context-save",
+      "description": "Fractal Mastery: Context Management Context Save",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/context-management-context-save"
+      ]
+    },
+    {
+      "name": "context-manager",
+      "description": "Fractal Mastery: Context Manager",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/context-manager"
+      ]
+    },
+    {
+      "name": "context-window-management",
+      "description": "Fractal Mastery: Context Window Management",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/context-window-management"
+      ]
+    },
+    {
+      "name": "context7-auto-research",
+      "description": "Fractal Mastery: Context7 Auto Research",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/context7-auto-research"
+      ]
+    },
+    {
+      "name": "conversation-memory",
+      "description": "Fractal Mastery: Conversation Memory",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/conversation-memory"
+      ]
+    },
+    {
+      "name": "core-components",
+      "description": "Fractal Mastery: Core Components",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/core-components"
+      ]
+    },
+    {
+      "name": "cost-optimization",
+      "description": "Fractal Mastery: Cost Optimization",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/cost-optimization"
+      ]
+    },
+    {
+      "name": "cpp-pro",
+      "description": "Fractal Mastery: Cpp Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/cpp-pro"
+      ]
+    },
+    {
+      "name": "cqrs-implementation",
+      "description": "Fractal Mastery: Cqrs Implementation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/cqrs-implementation"
+      ]
+    },
+    {
+      "name": "crewai",
+      "description": "Fractal Mastery: Crewai",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/crewai"
+      ]
+    },
+    {
+      "name": "csharp-pro",
+      "description": "Fractal Mastery: Csharp Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/csharp-pro"
+      ]
+    },
+    {
+      "name": "customer-support",
+      "description": "Fractal Mastery: Customer Support",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/customer-support"
+      ]
+    },
+    {
+      "name": "daily-news-report",
+      "description": "Fractal Mastery: Daily News Report",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/daily-news-report"
+      ]
+    },
+    {
+      "name": "data-engineer",
+      "description": "Fractal Mastery: Data Engineer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/data-engineer"
+      ]
+    },
+    {
+      "name": "data-engineering-data-driven-feature",
+      "description": "Fractal Mastery: Data Engineering Data Driven Feature",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/data-engineering-data-driven-feature"
+      ]
+    },
+    {
+      "name": "data-scientist",
+      "description": "Fractal Mastery: Data Scientist",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/data-scientist"
+      ]
+    },
+    {
+      "name": "data-storytelling",
+      "description": "Fractal Mastery: Data Storytelling",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/data-storytelling"
+      ]
+    },
+    {
+      "name": "database-admin",
+      "description": "Fractal Mastery: Database Admin",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/database-admin"
+      ]
+    },
+    {
+      "name": "database-architect",
+      "description": "Fractal Mastery: Database Architect",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/database-architect"
+      ]
+    },
+    {
+      "name": "database-migration",
+      "description": "Fractal Mastery: Database Migration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/database-migration"
+      ]
+    },
+    {
+      "name": "database-migrations-sql-migrations",
+      "description": "Fractal Mastery: Database Migrations Sql Migrations",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/database-migrations-sql-migrations"
+      ]
+    },
+    {
+      "name": "database-optimizer",
+      "description": "Fractal Mastery: Database Optimizer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/database-optimizer"
+      ]
+    },
+    {
+      "name": "dbt-transformation-patterns",
+      "description": "Fractal Mastery: Dbt Transformation Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/dbt-transformation-patterns"
+      ]
+    },
+    {
+      "name": "defi-protocol-templates",
+      "description": "Fractal Mastery: Defi Protocol Templates",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/defi-protocol-templates"
+      ]
+    },
+    {
+      "name": "dependency-upgrade",
+      "description": "Fractal Mastery: Dependency Upgrade",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/dependency-upgrade"
+      ]
+    },
+    {
       "name": "deploy-to-vercel",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Deploy To Vercel",
       "source": "./",
       "strict": false,
       "skills": [
@@ -784,17 +2125,44 @@
       ]
     },
     {
-      "name": "dispatching-parallel-agents",
-      "description": "Multi-subagent orchestration.",
+      "name": "discord-bot-architect",
+      "description": "Fractal Mastery: Discord Bot Architect",
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/planning/dispatching-parallel-agents"
+        "./skills/execution/discord-bot-architect"
+      ]
+    },
+    {
+      "name": "dispatching-parallel-agents",
+      "description": "Fractal Mastery: Dispatching Parallel Agents",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/dispatching-parallel-agents"
+      ]
+    },
+    {
+      "name": "distributed-tracing",
+      "description": "Fractal Mastery: Distributed Tracing",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/distributed-tracing"
+      ]
+    },
+    {
+      "name": "django-pro",
+      "description": "Fractal Mastery: Django Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/django-pro"
       ]
     },
     {
       "name": "doc-coauthoring",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Doc Coauthoring",
       "source": "./",
       "strict": false,
       "skills": [
@@ -802,8 +2170,35 @@
       ]
     },
     {
+      "name": "docs-architect",
+      "description": "Fractal Mastery: Docs Architect",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/docs-architect"
+      ]
+    },
+    {
+      "name": "documentation-generation-doc-generate",
+      "description": "Fractal Mastery: Documentation Generation Doc Generate",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/documentation-generation-doc-generate"
+      ]
+    },
+    {
+      "name": "documentation-templates",
+      "description": "Fractal Mastery: Documentation Templates",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/documentation-templates"
+      ]
+    },
+    {
       "name": "docx",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Docx",
       "source": "./",
       "strict": false,
       "skills": [
@@ -811,8 +2206,80 @@
       ]
     },
     {
+      "name": "docx-official",
+      "description": "Fractal Mastery: Docx Official",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/docx-official"
+      ]
+    },
+    {
+      "name": "dotnet-architect",
+      "description": "Fractal Mastery: Dotnet Architect",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/dotnet-architect"
+      ]
+    },
+    {
+      "name": "dotnet-backend-patterns",
+      "description": "Fractal Mastery: Dotnet Backend Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/dotnet-backend-patterns"
+      ]
+    },
+    {
+      "name": "dx-optimizer",
+      "description": "Fractal Mastery: Dx Optimizer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/dx-optimizer"
+      ]
+    },
+    {
+      "name": "econ_writing_skill",
+      "description": "Master Logic: Econ_Writing_Skill",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/econ_writing_skill.md"
+      ]
+    },
+    {
+      "name": "elixir-pro",
+      "description": "Fractal Mastery: Elixir Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/elixir-pro"
+      ]
+    },
+    {
+      "name": "embedding-strategies",
+      "description": "Fractal Mastery: Embedding Strategies",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/embedding-strategies"
+      ]
+    },
+    {
+      "name": "employment-contract-templates",
+      "description": "Fractal Mastery: Employment Contract Templates",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/employment-contract-templates"
+      ]
+    },
+    {
       "name": "enhance-prompt",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Enhance Prompt",
       "source": "./",
       "strict": false,
       "skills": [
@@ -820,8 +2287,80 @@
       ]
     },
     {
+      "name": "error-debugging-multi-agent-review",
+      "description": "Fractal Mastery: Error Debugging Multi Agent Review",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/error-debugging-multi-agent-review"
+      ]
+    },
+    {
+      "name": "error-detective",
+      "description": "Fractal Mastery: Error Detective",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/error-detective"
+      ]
+    },
+    {
+      "name": "error-diagnostics-error-analysis",
+      "description": "Fractal Mastery: Error Diagnostics Error Analysis",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/error-diagnostics-error-analysis"
+      ]
+    },
+    {
+      "name": "error-diagnostics-error-trace",
+      "description": "Fractal Mastery: Error Diagnostics Error Trace",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/error-diagnostics-error-trace"
+      ]
+    },
+    {
+      "name": "error-diagnostics-smart-debug",
+      "description": "Fractal Mastery: Error Diagnostics Smart Debug",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/error-diagnostics-smart-debug"
+      ]
+    },
+    {
+      "name": "error-handling-patterns",
+      "description": "Fractal Mastery: Error Handling Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/error-handling-patterns"
+      ]
+    },
+    {
+      "name": "event-sourcing-architect",
+      "description": "Fractal Mastery: Event Sourcing Architect",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/event-sourcing-architect"
+      ]
+    },
+    {
+      "name": "exa-search",
+      "description": "Fractal Mastery: Exa Search",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/exa-search"
+      ]
+    },
+    {
       "name": "executing-plans",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Executing Plans",
       "source": "./",
       "strict": false,
       "skills": [
@@ -829,8 +2368,602 @@
       ]
     },
     {
+      "name": "fastapi-pro",
+      "description": "Fractal Mastery: Fastapi Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/fastapi-pro"
+      ]
+    },
+    {
+      "name": "fastapi-templates",
+      "description": "Fractal Mastery: Fastapi Templates",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/fastapi-templates"
+      ]
+    },
+    {
+      "name": "file-organizer",
+      "description": "Fractal Mastery: File Organizer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/file-organizer"
+      ]
+    },
+    {
+      "name": "file-path-traversal",
+      "description": "Fractal Mastery: File Path Traversal",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/file-path-traversal"
+      ]
+    },
+    {
+      "name": "filesystem-mcp",
+      "description": "Fractal Mastery: Filesystem Mcp",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/filesystem-mcp"
+      ]
+    },
+    {
+      "name": "finishing-a-development-branch",
+      "description": "Fractal Mastery: Finishing A Development Branch",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/finishing-a-development-branch"
+      ]
+    },
+    {
+      "name": "firebase",
+      "description": "Fractal Mastery: Firebase",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/firebase"
+      ]
+    },
+    {
+      "name": "firecrawl-scraper",
+      "description": "Fractal Mastery: Firecrawl Scraper",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/firecrawl-scraper"
+      ]
+    },
+    {
+      "name": "firmware-analyst",
+      "description": "Fractal Mastery: Firmware Analyst",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/firmware-analyst"
+      ]
+    },
+    {
+      "name": "framework-migration-code-migrate",
+      "description": "Fractal Mastery: Framework Migration Code Migrate",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/framework-migration-code-migrate"
+      ]
+    },
+    {
+      "name": "framework-migration-deps-upgrade",
+      "description": "Fractal Mastery: Framework Migration Deps Upgrade",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/framework-migration-deps-upgrade"
+      ]
+    },
+    {
+      "name": "framework-migration-legacy-modernize",
+      "description": "Fractal Mastery: Framework Migration Legacy Modernize",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/framework-migration-legacy-modernize"
+      ]
+    },
+    {
+      "name": "free-tool-strategy",
+      "description": "Fractal Mastery: Free Tool Strategy",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/free-tool-strategy"
+      ]
+    },
+    {
+      "name": "frontend-developer",
+      "description": "Fractal Mastery: Frontend Developer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/frontend-developer"
+      ]
+    },
+    {
+      "name": "full-stack-orchestration-full-stack-feature",
+      "description": "Fractal Mastery: Full Stack Orchestration Full Stack Feature",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/full-stack-orchestration-full-stack-feature"
+      ]
+    },
+    {
+      "name": "full-stack-scaffold",
+      "description": "Fractal Mastery: Full Stack Scaffold",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/full-stack-scaffold"
+      ]
+    },
+    {
+      "name": "game-development",
+      "description": "Fractal Mastery: Game Development",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/game-development"
+      ]
+    },
+    {
+      "name": "geo-fundamentals",
+      "description": "Fractal Mastery: Geo Fundamentals",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/geo-fundamentals"
+      ]
+    },
+    {
+      "name": "go-concurrency-patterns",
+      "description": "Fractal Mastery: Go Concurrency Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/go-concurrency-patterns"
+      ]
+    },
+    {
+      "name": "godot-gdscript-patterns",
+      "description": "Fractal Mastery: Godot Gdscript Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/godot-gdscript-patterns"
+      ]
+    },
+    {
+      "name": "golang-pro",
+      "description": "Fractal Mastery: Golang Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/golang-pro"
+      ]
+    },
+    {
+      "name": "graphql",
+      "description": "Fractal Mastery: Graphql",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/graphql"
+      ]
+    },
+    {
+      "name": "graphql-architect",
+      "description": "Fractal Mastery: Graphql Architect",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/graphql-architect"
+      ]
+    },
+    {
+      "name": "haskell-pro",
+      "description": "Fractal Mastery: Haskell Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/haskell-pro"
+      ]
+    },
+    {
+      "name": "hr-pro",
+      "description": "Fractal Mastery: Hr Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/hr-pro"
+      ]
+    },
+    {
+      "name": "html-injection-testing",
+      "description": "Fractal Mastery: Html Injection Testing",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/html-injection-testing"
+      ]
+    },
+    {
+      "name": "hubspot-integration",
+      "description": "Fractal Mastery: Hubspot Integration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/hubspot-integration"
+      ]
+    },
+    {
+      "name": "hybrid-search-implementation",
+      "description": "Fractal Mastery: Hybrid Search Implementation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/hybrid-search-implementation"
+      ]
+    },
+    {
+      "name": "i18n-localization",
+      "description": "Fractal Mastery: I18N Localization",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/i18n-localization"
+      ]
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "description": "Fractal Mastery: Improve Codebase Architecture",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/improve-codebase-architecture"
+      ]
+    },
+    {
+      "name": "incident-responder",
+      "description": "Fractal Mastery: Incident Responder",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/incident-responder"
+      ]
+    },
+    {
+      "name": "incident-response-incident-response",
+      "description": "Fractal Mastery: Incident Response Incident Response",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/incident-response-incident-response"
+      ]
+    },
+    {
+      "name": "incident-response-smart-fix",
+      "description": "Fractal Mastery: Incident Response Smart Fix",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/incident-response-smart-fix"
+      ]
+    },
+    {
+      "name": "incident-runbook-templates",
+      "description": "Fractal Mastery: Incident Runbook Templates",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/incident-runbook-templates"
+      ]
+    },
+    {
+      "name": "infinite-gratitude",
+      "description": "Fractal Mastery: Infinite Gratitude",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/infinite-gratitude"
+      ]
+    },
+    {
+      "name": "inngest",
+      "description": "Fractal Mastery: Inngest",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/inngest"
+      ]
+    },
+    {
+      "name": "intelligent-routing",
+      "description": "Fractal Mastery: Intelligent Routing",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/intelligent-routing"
+      ]
+    },
+    {
+      "name": "interactive-portfolio",
+      "description": "Fractal Mastery: Interactive Portfolio",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/interactive-portfolio"
+      ]
+    },
+    {
+      "name": "internal-comms-anthropic",
+      "description": "Fractal Mastery: Internal Comms Anthropic",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/internal-comms-anthropic"
+      ]
+    },
+    {
+      "name": "internal-comms-community",
+      "description": "Fractal Mastery: Internal Comms Community",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/internal-comms-community"
+      ]
+    },
+    {
+      "name": "istio-traffic-management",
+      "description": "Fractal Mastery: Istio Traffic Management",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/istio-traffic-management"
+      ]
+    },
+    {
+      "name": "java-pro",
+      "description": "Fractal Mastery: Java Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/java-pro"
+      ]
+    },
+    {
+      "name": "javascript-mastery",
+      "description": "Fractal Mastery: Javascript Mastery",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/javascript-mastery"
+      ]
+    },
+    {
+      "name": "javascript-pro",
+      "description": "Fractal Mastery: Javascript Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/javascript-pro"
+      ]
+    },
+    {
+      "name": "javascript-typescript-typescript-scaffold",
+      "description": "Fractal Mastery: Javascript Typescript Typescript Scaffold",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/javascript-typescript-typescript-scaffold"
+      ]
+    },
+    {
+      "name": "julia-pro",
+      "description": "Fractal Mastery: Julia Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/julia-pro"
+      ]
+    },
+    {
+      "name": "kaizen",
+      "description": "Fractal Mastery: Kaizen",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/kaizen"
+      ]
+    },
+    {
+      "name": "langchain-architecture",
+      "description": "Fractal Mastery: Langchain Architecture",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/langchain-architecture"
+      ]
+    },
+    {
+      "name": "langfuse",
+      "description": "Fractal Mastery: Langfuse",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/langfuse"
+      ]
+    },
+    {
+      "name": "langgraph",
+      "description": "Fractal Mastery: Langgraph",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/langgraph"
+      ]
+    },
+    {
+      "name": "langgraph-engineering",
+      "description": "Fractal Mastery: Langgraph Engineering",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/langgraph-engineering"
+      ]
+    },
+    {
+      "name": "last30days",
+      "description": "Fractal Mastery: Last30Days",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/last30days"
+      ]
+    },
+    {
+      "name": "launch-strategy",
+      "description": "Fractal Mastery: Launch Strategy",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/launch-strategy"
+      ]
+    },
+    {
+      "name": "legacy-modernizer",
+      "description": "Fractal Mastery: Legacy Modernizer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/legacy-modernizer"
+      ]
+    },
+    {
+      "name": "legal-advisor",
+      "description": "Fractal Mastery: Legal Advisor",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/legal-advisor"
+      ]
+    },
+    {
+      "name": "linkerd-patterns",
+      "description": "Fractal Mastery: Linkerd Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/linkerd-patterns"
+      ]
+    },
+    {
+      "name": "llm-app-patterns",
+      "description": "Fractal Mastery: Llm App Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/llm-app-patterns"
+      ]
+    },
+    {
+      "name": "llm-application-dev-ai-assistant",
+      "description": "Fractal Mastery: Llm Application Dev Ai Assistant",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/llm-application-dev-ai-assistant"
+      ]
+    },
+    {
+      "name": "llm-application-dev-langchain-agent",
+      "description": "Fractal Mastery: Llm Application Dev Langchain Agent",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/llm-application-dev-langchain-agent"
+      ]
+    },
+    {
+      "name": "llm-evaluation",
+      "description": "Fractal Mastery: Llm Evaluation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/llm-evaluation"
+      ]
+    },
+    {
+      "name": "loki-mode",
+      "description": "Fractal Mastery: Loki Mode",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/loki-mode"
+      ]
+    },
+    {
+      "name": "machine-learning-ops-ml-pipeline",
+      "description": "Fractal Mastery: Machine Learning Ops Ml Pipeline",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/machine-learning-ops-ml-pipeline"
+      ]
+    },
+    {
+      "name": "market-sizing-analysis",
+      "description": "Fractal Mastery: Market Sizing Analysis",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/market-sizing-analysis"
+      ]
+    },
+    {
+      "name": "memory-safety-patterns",
+      "description": "Fractal Mastery: Memory Safety Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/memory-safety-patterns"
+      ]
+    },
+    {
+      "name": "mermaid-expert",
+      "description": "Fractal Mastery: Mermaid Expert",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/mermaid-expert"
+      ]
+    },
+    {
+      "name": "metasploit-framework",
+      "description": "Fractal Mastery: Metasploit Framework",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/metasploit-framework"
+      ]
+    },
+    {
       "name": "migrate-to-shoehorn",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Migrate To Shoehorn",
       "source": "./",
       "strict": false,
       "skills": [
@@ -838,8 +2971,116 @@
       ]
     },
     {
+      "name": "minecraft-bukkit-pro",
+      "description": "Fractal Mastery: Minecraft Bukkit Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/minecraft-bukkit-pro"
+      ]
+    },
+    {
+      "name": "ml-engineer",
+      "description": "Fractal Mastery: Ml Engineer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/ml-engineer"
+      ]
+    },
+    {
+      "name": "ml-pipeline-workflow",
+      "description": "Fractal Mastery: Ml Pipeline Workflow",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/ml-pipeline-workflow"
+      ]
+    },
+    {
+      "name": "mlops-engineer",
+      "description": "Fractal Mastery: Mlops Engineer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/mlops-engineer"
+      ]
+    },
+    {
+      "name": "modern-javascript-patterns",
+      "description": "Fractal Mastery: Modern Javascript Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/modern-javascript-patterns"
+      ]
+    },
+    {
+      "name": "modern-web-architect",
+      "description": "Fractal Mastery: Modern Web Architect",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/modern-web-architect"
+      ]
+    },
+    {
+      "name": "modern-web-performance",
+      "description": "Fractal Mastery: Modern Web Performance",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/modern-web-performance"
+      ]
+    },
+    {
+      "name": "monorepo-architect",
+      "description": "Fractal Mastery: Monorepo Architect",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/monorepo-architect"
+      ]
+    },
+    {
+      "name": "monorepo-management",
+      "description": "Fractal Mastery: Monorepo Management",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/monorepo-management"
+      ]
+    },
+    {
+      "name": "moodle-external-api-development",
+      "description": "Fractal Mastery: Moodle External Api Development",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/moodle-external-api-development"
+      ]
+    },
+    {
+      "name": "multi-agent-brainstorming",
+      "description": "Fractal Mastery: Multi Agent Brainstorming",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/multi-agent-brainstorming"
+      ]
+    },
+    {
+      "name": "multi-platform-apps-multi-platform",
+      "description": "Fractal Mastery: Multi Platform Apps Multi Platform",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/multi-platform-apps-multi-platform"
+      ]
+    },
+    {
       "name": "mysql",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Mysql",
       "source": "./",
       "strict": false,
       "skills": [
@@ -848,7 +3089,7 @@
     },
     {
       "name": "narrative-text-visualization",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Narrative Text Visualization",
       "source": "./",
       "strict": false,
       "skills": [
@@ -857,7 +3098,7 @@
     },
     {
       "name": "neki",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Neki",
       "source": "./",
       "strict": false,
       "skills": [
@@ -865,8 +3106,152 @@
       ]
     },
     {
+      "name": "neon-postgres",
+      "description": "Fractal Mastery: Neon Postgres",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/neon-postgres"
+      ]
+    },
+    {
+      "name": "nestjs-expert",
+      "description": "Fractal Mastery: Nestjs Expert",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/nestjs-expert"
+      ]
+    },
+    {
+      "name": "network-101",
+      "description": "Fractal Mastery: Network 101",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/network-101"
+      ]
+    },
+    {
+      "name": "network-engineer",
+      "description": "Fractal Mastery: Network Engineer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/network-engineer"
+      ]
+    },
+    {
+      "name": "nextjs-app-router-patterns",
+      "description": "Fractal Mastery: Nextjs App Router Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/nextjs-app-router-patterns"
+      ]
+    },
+    {
+      "name": "nextjs-best-practices",
+      "description": "Fractal Mastery: Nextjs Best Practices",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/nextjs-best-practices"
+      ]
+    },
+    {
+      "name": "nextjs-react-expert",
+      "description": "Fractal Mastery: Nextjs React Expert",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/nextjs-react-expert"
+      ]
+    },
+    {
+      "name": "nft-standards",
+      "description": "Fractal Mastery: Nft Standards",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/nft-standards"
+      ]
+    },
+    {
+      "name": "nodejs-backend-patterns",
+      "description": "Fractal Mastery: Nodejs Backend Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/nodejs-backend-patterns"
+      ]
+    },
+    {
+      "name": "nodejs-best-practices",
+      "description": "Fractal Mastery: Nodejs Best Practices",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/nodejs-best-practices"
+      ]
+    },
+    {
+      "name": "nosql-expert",
+      "description": "Fractal Mastery: Nosql Expert",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/nosql-expert"
+      ]
+    },
+    {
+      "name": "notebooklm",
+      "description": "Fractal Mastery: Notebooklm",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/notebooklm"
+      ]
+    },
+    {
+      "name": "notion-mcp",
+      "description": "Fractal Mastery: Notion Mcp",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/notion-mcp"
+      ]
+    },
+    {
+      "name": "obsidian-clipper-template-creator",
+      "description": "Fractal Mastery: Obsidian Clipper Template Creator",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/obsidian-clipper-template-creator"
+      ]
+    },
+    {
+      "name": "on-call-handoff-patterns",
+      "description": "Fractal Mastery: On Call Handoff Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/on-call-handoff-patterns"
+      ]
+    },
+    {
+      "name": "openapi-spec-generation",
+      "description": "Fractal Mastery: Openapi Spec Generation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/openapi-spec-generation"
+      ]
+    },
+    {
       "name": "oracle-dba",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Oracle Dba",
       "source": "./",
       "strict": false,
       "skills": [
@@ -874,8 +3259,35 @@
       ]
     },
     {
+      "name": "parallel-agents",
+      "description": "Fractal Mastery: Parallel Agents",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/parallel-agents"
+      ]
+    },
+    {
+      "name": "payment-integration",
+      "description": "Fractal Mastery: Payment Integration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/payment-integration"
+      ]
+    },
+    {
+      "name": "paypal-integration",
+      "description": "Fractal Mastery: Paypal Integration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/paypal-integration"
+      ]
+    },
+    {
       "name": "pdf",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Pdf",
       "source": "./",
       "strict": false,
       "skills": [
@@ -883,8 +3295,44 @@
       ]
     },
     {
+      "name": "pdf-official",
+      "description": "Fractal Mastery: Pdf Official",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/pdf-official"
+      ]
+    },
+    {
+      "name": "performance-testing-review-ai-review",
+      "description": "Fractal Mastery: Performance Testing Review Ai Review",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/performance-testing-review-ai-review"
+      ]
+    },
+    {
+      "name": "php-pro",
+      "description": "Fractal Mastery: Php Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/php-pro"
+      ]
+    },
+    {
+      "name": "plaid-fintech",
+      "description": "Fractal Mastery: Plaid Fintech",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/plaid-fintech"
+      ]
+    },
+    {
       "name": "postgres",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Postgres",
       "source": "./",
       "strict": false,
       "skills": [
@@ -892,8 +3340,44 @@
       ]
     },
     {
+      "name": "postgres-best-practices",
+      "description": "Fractal Mastery: Postgres Best Practices",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/postgres-best-practices"
+      ]
+    },
+    {
+      "name": "postgres-mcp",
+      "description": "Fractal Mastery: Postgres Mcp",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/postgres-mcp"
+      ]
+    },
+    {
+      "name": "postgresql",
+      "description": "Fractal Mastery: Postgresql",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/postgresql"
+      ]
+    },
+    {
+      "name": "postmortem-writing",
+      "description": "Fractal Mastery: Postmortem Writing",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/postmortem-writing"
+      ]
+    },
+    {
       "name": "pptx",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Pptx",
       "source": "./",
       "strict": false,
       "skills": [
@@ -901,8 +3385,125 @@
       ]
     },
     {
+      "name": "pptx-official",
+      "description": "Fractal Mastery: Pptx Official",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/pptx-official"
+      ]
+    },
+    {
+      "name": "prisma-expert",
+      "description": "Fractal Mastery: Prisma Expert",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/prisma-expert"
+      ]
+    },
+    {
+      "name": "privilege-escalation-methods",
+      "description": "Fractal Mastery: Privilege Escalation Methods",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/privilege-escalation-methods"
+      ]
+    },
+    {
+      "name": "projection-patterns",
+      "description": "Fractal Mastery: Projection Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/projection-patterns"
+      ]
+    },
+    {
+      "name": "protocol-reverse-engineering",
+      "description": "Fractal Mastery: Protocol Reverse Engineering",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/protocol-reverse-engineering"
+      ]
+    },
+    {
+      "name": "python-development-python-scaffold",
+      "description": "Fractal Mastery: Python Development Python Scaffold",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/python-development-python-scaffold"
+      ]
+    },
+    {
+      "name": "python-packaging",
+      "description": "Fractal Mastery: Python Packaging",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/python-packaging"
+      ]
+    },
+    {
+      "name": "python-patterns",
+      "description": "Fractal Mastery: Python Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/python-patterns"
+      ]
+    },
+    {
+      "name": "python-performance-optimization",
+      "description": "Fractal Mastery: Python Performance Optimization",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/python-performance-optimization"
+      ]
+    },
+    {
+      "name": "python-pro",
+      "description": "Fractal Mastery: Python Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/python-pro"
+      ]
+    },
+    {
+      "name": "quant-analyst",
+      "description": "Fractal Mastery: Quant Analyst",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/quant-analyst"
+      ]
+    },
+    {
+      "name": "rag-engineer",
+      "description": "Fractal Mastery: Rag Engineer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/rag-engineer"
+      ]
+    },
+    {
+      "name": "rag-implementation",
+      "description": "Fractal Mastery: Rag Implementation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/rag-implementation"
+      ]
+    },
+    {
       "name": "react-best-practices",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: React Best Practices",
       "source": "./",
       "strict": false,
       "skills": [
@@ -911,7 +3512,7 @@
     },
     {
       "name": "react-components",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: React Components",
       "source": "./",
       "strict": false,
       "skills": [
@@ -919,8 +3520,17 @@
       ]
     },
     {
+      "name": "react-modernization",
+      "description": "Fractal Mastery: React Modernization",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/react-modernization"
+      ]
+    },
+    {
       "name": "react-native-skills",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: React Native Skills",
       "source": "./",
       "strict": false,
       "skills": [
@@ -928,8 +3538,26 @@
       ]
     },
     {
+      "name": "react-patterns",
+      "description": "Fractal Mastery: React Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/react-patterns"
+      ]
+    },
+    {
+      "name": "react-state-management",
+      "description": "Fractal Mastery: React State Management",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/react-state-management"
+      ]
+    },
+    {
       "name": "react-view-transitions",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: React View Transitions",
       "source": "./",
       "strict": false,
       "skills": [
@@ -937,8 +3565,26 @@
       ]
     },
     {
+      "name": "receiving-code-review",
+      "description": "Fractal Mastery: Receiving Code Review",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/receiving-code-review"
+      ]
+    },
+    {
+      "name": "referral-program",
+      "description": "Fractal Mastery: Referral Program",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/referral-program"
+      ]
+    },
+    {
       "name": "remotion",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Remotion",
       "source": "./",
       "strict": false,
       "skills": [
@@ -946,8 +3592,98 @@
       ]
     },
     {
+      "name": "requesting-code-review",
+      "description": "Fractal Mastery: Requesting Code Review",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/requesting-code-review"
+      ]
+    },
+    {
+      "name": "research-engineer",
+      "description": "Fractal Mastery: Research Engineer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/research-engineer"
+      ]
+    },
+    {
+      "name": "research_paper_writing_skill",
+      "description": "Master Logic: Research_Paper_Writing_Skill",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/research_paper_writing_skill.md"
+      ]
+    },
+    {
+      "name": "reverse-engineer",
+      "description": "Fractal Mastery: Reverse Engineer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/reverse-engineer"
+      ]
+    },
+    {
+      "name": "risk-manager",
+      "description": "Fractal Mastery: Risk Manager",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/risk-manager"
+      ]
+    },
+    {
+      "name": "risk-metrics-calculation",
+      "description": "Fractal Mastery: Risk Metrics Calculation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/risk-metrics-calculation"
+      ]
+    },
+    {
+      "name": "ruby-pro",
+      "description": "Fractal Mastery: Ruby Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/ruby-pro"
+      ]
+    },
+    {
+      "name": "rust-async-patterns",
+      "description": "Fractal Mastery: Rust Async Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/rust-async-patterns"
+      ]
+    },
+    {
+      "name": "rust-pro",
+      "description": "Fractal Mastery: Rust Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/rust-pro"
+      ]
+    },
+    {
+      "name": "saga-orchestration",
+      "description": "Fractal Mastery: Saga Orchestration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/saga-orchestration"
+      ]
+    },
+    {
       "name": "scaffold-exercises",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Scaffold Exercises",
       "source": "./",
       "strict": false,
       "skills": [
@@ -955,8 +3691,215 @@
       ]
     },
     {
+      "name": "scala-pro",
+      "description": "Fractal Mastery: Scala Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/scala-pro"
+      ]
+    },
+    {
+      "name": "schema-markup",
+      "description": "Fractal Mastery: Schema Markup",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/schema-markup"
+      ]
+    },
+    {
+      "name": "scientific_writing_skill",
+      "description": "Master Logic: Scientific_Writing_Skill",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/scientific_writing_skill.md"
+      ]
+    },
+    {
+      "name": "search-specialist",
+      "description": "Fractal Mastery: Search Specialist",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/search-specialist"
+      ]
+    },
+    {
+      "name": "secrets-management",
+      "description": "Fractal Mastery: Secrets Management",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/secrets-management"
+      ]
+    },
+    {
+      "name": "segment-cdp",
+      "description": "Fractal Mastery: Segment Cdp",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/segment-cdp"
+      ]
+    },
+    {
+      "name": "senior-architect",
+      "description": "Fractal Mastery: Senior Architect",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/senior-architect"
+      ]
+    },
+    {
+      "name": "senior-fullstack",
+      "description": "Fractal Mastery: Senior Fullstack",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/senior-fullstack"
+      ]
+    },
+    {
+      "name": "seo-fundamentals",
+      "description": "Fractal Mastery: Seo Fundamentals",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/seo-fundamentals"
+      ]
+    },
+    {
+      "name": "service-mesh-expert",
+      "description": "Fractal Mastery: Service Mesh Expert",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/service-mesh-expert"
+      ]
+    },
+    {
+      "name": "shodan-reconnaissance",
+      "description": "Fractal Mastery: Shodan Reconnaissance",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/shodan-reconnaissance"
+      ]
+    },
+    {
+      "name": "shopify-apps",
+      "description": "Fractal Mastery: Shopify Apps",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/shopify-apps"
+      ]
+    },
+    {
+      "name": "shopify-development",
+      "description": "Fractal Mastery: Shopify Development",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/shopify-development"
+      ]
+    },
+    {
+      "name": "similarity-search-patterns",
+      "description": "Fractal Mastery: Similarity Search Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/similarity-search-patterns"
+      ]
+    },
+    {
+      "name": "skill-creator",
+      "description": "Fractal Mastery: Skill Creator",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/skill-creator"
+      ]
+    },
+    {
+      "name": "skill-developer",
+      "description": "Fractal Mastery: Skill Developer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/skill-developer"
+      ]
+    },
+    {
+      "name": "slack-gif-creator",
+      "description": "Fractal Mastery: Slack Gif Creator",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/slack-gif-creator"
+      ]
+    },
+    {
+      "name": "slo-implementation",
+      "description": "Fractal Mastery: Slo Implementation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/slo-implementation"
+      ]
+    },
+    {
+      "name": "software-architecture",
+      "description": "Fractal Mastery: Software Architecture",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/software-architecture"
+      ]
+    },
+    {
+      "name": "spark-optimization",
+      "description": "Fractal Mastery: Spark Optimization",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/spark-optimization"
+      ]
+    },
+    {
+      "name": "sql-optimization-patterns",
+      "description": "Fractal Mastery: Sql Optimization Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/sql-optimization-patterns"
+      ]
+    },
+    {
+      "name": "sql-pro",
+      "description": "Fractal Mastery: Sql Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/sql-pro"
+      ]
+    },
+    {
+      "name": "startup-financial-modeling",
+      "description": "Fractal Mastery: Startup Financial Modeling",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/startup-financial-modeling"
+      ]
+    },
+    {
       "name": "stitch-loop",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Stitch Loop",
       "source": "./",
       "strict": false,
       "skills": [
@@ -964,8 +3907,26 @@
       ]
     },
     {
+      "name": "strategic-research",
+      "description": "Fractal Mastery: Strategic Research",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/strategic-research"
+      ]
+    },
+    {
+      "name": "stripe-integration",
+      "description": "Fractal Mastery: Stripe Integration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/stripe-integration"
+      ]
+    },
+    {
       "name": "subagent-driven-development",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Subagent Driven Development",
       "source": "./",
       "strict": false,
       "skills": [
@@ -973,8 +3934,26 @@
       ]
     },
     {
+      "name": "systems-programming-rust-project",
+      "description": "Fractal Mastery: Systems Programming Rust Project",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/systems-programming-rust-project"
+      ]
+    },
+    {
+      "name": "tavily-web",
+      "description": "Fractal Mastery: Tavily Web",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/tavily-web"
+      ]
+    },
+    {
       "name": "tdd",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Tdd",
       "source": "./",
       "strict": false,
       "skills": [
@@ -982,8 +3961,53 @@
       ]
     },
     {
+      "name": "team-collaboration-issue",
+      "description": "Fractal Mastery: Team Collaboration Issue",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/team-collaboration-issue"
+      ]
+    },
+    {
+      "name": "team-collaboration-standup-notes",
+      "description": "Fractal Mastery: Team Collaboration Standup Notes",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/team-collaboration-standup-notes"
+      ]
+    },
+    {
+      "name": "team-composition-analysis",
+      "description": "Fractal Mastery: Team Composition Analysis",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/team-composition-analysis"
+      ]
+    },
+    {
+      "name": "telegram-mini-app",
+      "description": "Fractal Mastery: Telegram Mini App",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/telegram-mini-app"
+      ]
+    },
+    {
+      "name": "temporal-python-pro",
+      "description": "Fractal Mastery: Temporal Python Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/temporal-python-pro"
+      ]
+    },
+    {
       "name": "test-driven-development",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Test Driven Development",
       "source": "./",
       "strict": false,
       "skills": [
@@ -992,7 +4016,7 @@
     },
     {
       "name": "theme-factory",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Theme Factory",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1001,7 +4025,7 @@
     },
     {
       "name": "to-issues",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: To Issues",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1009,8 +4033,143 @@
       ]
     },
     {
+      "name": "top-web-vulnerabilities",
+      "description": "Fractal Mastery: Top Web Vulnerabilities",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/top-web-vulnerabilities"
+      ]
+    },
+    {
+      "name": "track-management",
+      "description": "Fractal Mastery: Track Management",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/track-management"
+      ]
+    },
+    {
+      "name": "trigger-dev",
+      "description": "Fractal Mastery: Trigger Dev",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/trigger-dev"
+      ]
+    },
+    {
+      "name": "tutorial-engineer",
+      "description": "Fractal Mastery: Tutorial Engineer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/tutorial-engineer"
+      ]
+    },
+    {
+      "name": "twilio-communications",
+      "description": "Fractal Mastery: Twilio Communications",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/twilio-communications"
+      ]
+    },
+    {
+      "name": "typescript-advanced-types",
+      "description": "Fractal Mastery: Typescript Advanced Types",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/typescript-advanced-types"
+      ]
+    },
+    {
+      "name": "typescript-expert",
+      "description": "Fractal Mastery: Typescript Expert",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/typescript-expert"
+      ]
+    },
+    {
+      "name": "typescript-pro",
+      "description": "Fractal Mastery: Typescript Pro",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/typescript-pro"
+      ]
+    },
+    {
+      "name": "unity-developer",
+      "description": "Fractal Mastery: Unity Developer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/unity-developer"
+      ]
+    },
+    {
+      "name": "unity-ecs-patterns",
+      "description": "Fractal Mastery: Unity Ecs Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/unity-ecs-patterns"
+      ]
+    },
+    {
+      "name": "upstash-qstash",
+      "description": "Fractal Mastery: Upstash Qstash",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/upstash-qstash"
+      ]
+    },
+    {
+      "name": "using-superpowers",
+      "description": "Fractal Mastery: Using Superpowers",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/using-superpowers"
+      ]
+    },
+    {
+      "name": "uv-package-manager",
+      "description": "Fractal Mastery: Uv Package Manager",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/uv-package-manager"
+      ]
+    },
+    {
+      "name": "vector-database-engineer",
+      "description": "Fractal Mastery: Vector Database Engineer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/vector-database-engineer"
+      ]
+    },
+    {
+      "name": "vector-index-tuning",
+      "description": "Fractal Mastery: Vector Index Tuning",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/vector-index-tuning"
+      ]
+    },
+    {
       "name": "vercel-cli-with-tokens",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Vercel Cli With Tokens",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1018,8 +4177,17 @@
       ]
     },
     {
+      "name": "verification-before-completion",
+      "description": "Fractal Mastery: Verification Before Completion",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/verification-before-completion"
+      ]
+    },
+    {
       "name": "vitess",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Vitess",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1027,8 +4195,35 @@
       ]
     },
     {
+      "name": "voice-agents",
+      "description": "Fractal Mastery: Voice Agents",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/voice-agents"
+      ]
+    },
+    {
+      "name": "voice-ai-development",
+      "description": "Fractal Mastery: Voice Ai Development",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/voice-ai-development"
+      ]
+    },
+    {
+      "name": "voice-ai-engine-development",
+      "description": "Fractal Mastery: Voice Ai Engine Development",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/voice-ai-engine-development"
+      ]
+    },
+    {
       "name": "web-artifacts-builder",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Web Artifacts Builder",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1036,8 +4231,17 @@
       ]
     },
     {
+      "name": "web-performance-optimization",
+      "description": "Fractal Mastery: Web Performance Optimization",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/web-performance-optimization"
+      ]
+    },
+    {
       "name": "webapp-testing",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Webapp Testing",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1045,8 +4249,26 @@
       ]
     },
     {
+      "name": "windows-privilege-escalation",
+      "description": "Fractal Mastery: Windows Privilege Escalation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/windows-privilege-escalation"
+      ]
+    },
+    {
+      "name": "wireshark-analysis",
+      "description": "Fractal Mastery: Wireshark Analysis",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/wireshark-analysis"
+      ]
+    },
+    {
       "name": "xlsx",
-      "description": "Skill from execution category.",
+      "description": "Fractal Mastery: Xlsx",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1054,8 +4276,35 @@
       ]
     },
     {
+      "name": "xlsx-official",
+      "description": "Fractal Mastery: Xlsx Official",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/xlsx-official"
+      ]
+    },
+    {
+      "name": "xss-html-injection",
+      "description": "Fractal Mastery: Xss Html Injection",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/xss-html-injection"
+      ]
+    },
+    {
+      "name": "zapier-make-patterns",
+      "description": "Fractal Mastery: Zapier Make Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/zapier-make-patterns"
+      ]
+    },
+    {
       "name": "figma-code-connect",
-      "description": "Skill from figma category.",
+      "description": "Fractal Mastery: Figma Code Connect",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1064,7 +4313,7 @@
     },
     {
       "name": "figma-create-design-system-rules",
-      "description": "Skill from figma category.",
+      "description": "Fractal Mastery: Figma Create Design System Rules",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1073,7 +4322,7 @@
     },
     {
       "name": "figma-create-new-file",
-      "description": "Skill from figma category.",
+      "description": "Fractal Mastery: Figma Create New File",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1082,7 +4331,7 @@
     },
     {
       "name": "figma-generate-design",
-      "description": "Skill from figma category.",
+      "description": "Fractal Mastery: Figma Generate Design",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1091,7 +4340,7 @@
     },
     {
       "name": "figma-generate-library",
-      "description": "Skill from figma category.",
+      "description": "Fractal Mastery: Figma Generate Library",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1100,7 +4349,7 @@
     },
     {
       "name": "figma-implement-design",
-      "description": "Skill from figma category.",
+      "description": "Fractal Mastery: Figma Implement Design",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1109,7 +4358,7 @@
     },
     {
       "name": "figma-use",
-      "description": "Skill from figma category.",
+      "description": "Fractal Mastery: Figma Use",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1118,7 +4367,7 @@
     },
     {
       "name": "gws-admin-reports",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Admin Reports",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1127,7 +4376,7 @@
     },
     {
       "name": "gws-calendar",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Calendar",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1136,7 +4385,7 @@
     },
     {
       "name": "gws-calendar-agenda",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Calendar Agenda",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1145,7 +4394,7 @@
     },
     {
       "name": "gws-calendar-insert",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Calendar Insert",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1154,7 +4403,7 @@
     },
     {
       "name": "gws-chat",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Chat",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1163,7 +4412,7 @@
     },
     {
       "name": "gws-chat-send",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Chat Send",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1172,7 +4421,7 @@
     },
     {
       "name": "gws-classroom",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Classroom",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1181,7 +4430,7 @@
     },
     {
       "name": "gws-docs",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Docs",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1190,7 +4439,7 @@
     },
     {
       "name": "gws-docs-write",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Docs Write",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1199,7 +4448,7 @@
     },
     {
       "name": "gws-drive",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Drive",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1208,7 +4457,7 @@
     },
     {
       "name": "gws-drive-upload",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Drive Upload",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1217,7 +4466,7 @@
     },
     {
       "name": "gws-events",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Events",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1226,7 +4475,7 @@
     },
     {
       "name": "gws-events-renew",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Events Renew",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1235,7 +4484,7 @@
     },
     {
       "name": "gws-events-subscribe",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Events Subscribe",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1244,7 +4493,7 @@
     },
     {
       "name": "gws-forms",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Forms",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1253,7 +4502,7 @@
     },
     {
       "name": "gws-gmail",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Gmail",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1262,7 +4511,7 @@
     },
     {
       "name": "gws-gmail-forward",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Gmail Forward",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1271,7 +4520,7 @@
     },
     {
       "name": "gws-gmail-read",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Gmail Read",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1280,7 +4529,7 @@
     },
     {
       "name": "gws-gmail-reply",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Gmail Reply",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1289,7 +4538,7 @@
     },
     {
       "name": "gws-gmail-reply-all",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Gmail Reply All",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1298,7 +4547,7 @@
     },
     {
       "name": "gws-gmail-send",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Gmail Send",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1307,7 +4556,7 @@
     },
     {
       "name": "gws-gmail-triage",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Gmail Triage",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1316,7 +4565,7 @@
     },
     {
       "name": "gws-gmail-watch",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Gmail Watch",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1325,7 +4574,7 @@
     },
     {
       "name": "gws-keep",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Keep",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1334,7 +4583,7 @@
     },
     {
       "name": "gws-meet",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Meet",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1343,7 +4592,7 @@
     },
     {
       "name": "gws-modelarmor",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Modelarmor",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1352,7 +4601,7 @@
     },
     {
       "name": "gws-modelarmor-create-template",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Modelarmor Create Template",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1361,7 +4610,7 @@
     },
     {
       "name": "gws-modelarmor-sanitize-prompt",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Modelarmor Sanitize Prompt",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1370,7 +4619,7 @@
     },
     {
       "name": "gws-modelarmor-sanitize-response",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Modelarmor Sanitize Response",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1379,7 +4628,7 @@
     },
     {
       "name": "gws-people",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws People",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1388,7 +4637,7 @@
     },
     {
       "name": "gws-script",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Script",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1397,7 +4646,7 @@
     },
     {
       "name": "gws-script-push",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Script Push",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1406,7 +4655,7 @@
     },
     {
       "name": "gws-shared",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Shared",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1415,7 +4664,7 @@
     },
     {
       "name": "gws-sheets",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Sheets",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1424,7 +4673,7 @@
     },
     {
       "name": "gws-sheets-append",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Sheets Append",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1433,7 +4682,7 @@
     },
     {
       "name": "gws-sheets-read",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Sheets Read",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1442,7 +4691,7 @@
     },
     {
       "name": "gws-slides",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Slides",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1451,7 +4700,7 @@
     },
     {
       "name": "gws-tasks",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Tasks",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1460,7 +4709,7 @@
     },
     {
       "name": "gws-workflow",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Workflow",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1469,7 +4718,7 @@
     },
     {
       "name": "gws-workflow-email-to-task",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Workflow Email To Task",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1478,7 +4727,7 @@
     },
     {
       "name": "gws-workflow-file-announce",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Workflow File Announce",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1487,7 +4736,7 @@
     },
     {
       "name": "gws-workflow-meeting-prep",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Workflow Meeting Prep",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1496,7 +4745,7 @@
     },
     {
       "name": "gws-workflow-standup-report",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Workflow Standup Report",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1505,7 +4754,7 @@
     },
     {
       "name": "gws-workflow-weekly-digest",
-      "description": "Skill from google category.",
+      "description": "Fractal Mastery: Gws Workflow Weekly Digest",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1514,7 +4763,7 @@
     },
     {
       "name": "antv-skills-maintainer",
-      "description": "Skill from meta category.",
+      "description": "Fractal Mastery: Antv Skills Maintainer",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1522,8 +4771,17 @@
       ]
     },
     {
+      "name": "behavioral-modes",
+      "description": "Fractal Mastery: Behavioral Modes",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/behavioral-modes"
+      ]
+    },
+    {
       "name": "caveman",
-      "description": "Skill from meta category.",
+      "description": "Fractal Mastery: Caveman",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1532,7 +4790,7 @@
     },
     {
       "name": "edit-article",
-      "description": "Skill from meta category.",
+      "description": "Fractal Mastery: Edit Article",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1541,7 +4799,7 @@
     },
     {
       "name": "find-skills",
-      "description": "Skill from meta category.",
+      "description": "Fractal Mastery: Find Skills",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1550,16 +4808,25 @@
     },
     {
       "name": "grill-me",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Grill Me",
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/review/grill-me"
+        "./skills/meta/grill-me"
+      ]
+    },
+    {
+      "name": "llm-application-dev-prompt-optimize",
+      "description": "Fractal Mastery: Llm Application Dev Prompt Optimize",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/llm-application-dev-prompt-optimize"
       ]
     },
     {
       "name": "obsidian-vault",
-      "description": "Skill from meta category.",
+      "description": "Fractal Mastery: Obsidian Vault",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1568,7 +4835,7 @@
     },
     {
       "name": "organize-skills",
-      "description": "Skill from meta category.",
+      "description": "Fractal Mastery: Organize Skills",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1576,8 +4843,71 @@
       ]
     },
     {
+      "name": "professions",
+      "description": "Fractal Mastery: Professions",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/professions"
+      ]
+    },
+    {
+      "name": "professions_skill",
+      "description": "Master Logic: Professions_Skill",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/professions_skill.md"
+      ]
+    },
+    {
+      "name": "prompt-caching",
+      "description": "Fractal Mastery: Prompt Caching",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/prompt-caching"
+      ]
+    },
+    {
+      "name": "prompt-engineer",
+      "description": "Fractal Mastery: Prompt Engineer",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/prompt-engineer"
+      ]
+    },
+    {
+      "name": "prompt-engineering",
+      "description": "Fractal Mastery: Prompt Engineering",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/prompt-engineering"
+      ]
+    },
+    {
+      "name": "prompt-engineering-patterns",
+      "description": "Fractal Mastery: Prompt Engineering Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/prompt-engineering-patterns"
+      ]
+    },
+    {
+      "name": "prompt-library",
+      "description": "Fractal Mastery: Prompt Library",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/prompt-library"
+      ]
+    },
+    {
       "name": "using-superpowers",
-      "description": "Skill from meta category.",
+      "description": "Fractal Mastery: Using Superpowers",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1586,7 +4916,7 @@
     },
     {
       "name": "write-a-skill",
-      "description": "Skill from meta category.",
+      "description": "Fractal Mastery: Write A Skill",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1594,8 +4924,17 @@
       ]
     },
     {
+      "name": "writing-skills",
+      "description": "Fractal Mastery: Writing Skills",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/writing-skills"
+      ]
+    },
+    {
       "name": "zoom-out",
-      "description": "Skill from meta category.",
+      "description": "Fractal Mastery: Zoom Out",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1604,7 +4943,7 @@
     },
     {
       "name": "brainstorming",
-      "description": "Skill from planning category.",
+      "description": "Fractal Mastery: Brainstorming",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1612,8 +4951,71 @@
       ]
     },
     {
+      "name": "cicd-automation-workflow-automate",
+      "description": "Fractal Mastery: Cicd Automation Workflow Automate",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/cicd-automation-workflow-automate"
+      ]
+    },
+    {
+      "name": "concise-planning",
+      "description": "Fractal Mastery: Concise Planning",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/concise-planning"
+      ]
+    },
+    {
+      "name": "dispatching-parallel-agents",
+      "description": "Fractal Mastery: Dispatching Parallel Agents",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/dispatching-parallel-agents"
+      ]
+    },
+    {
+      "name": "executing-plans",
+      "description": "Fractal Mastery: Executing Plans",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/executing-plans"
+      ]
+    },
+    {
+      "name": "orchestrate_skill",
+      "description": "Master Logic: Orchestrate_Skill",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/orchestrate_skill.md"
+      ]
+    },
+    {
+      "name": "plan-writing",
+      "description": "Fractal Mastery: Plan Writing",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/plan-writing"
+      ]
+    },
+    {
+      "name": "planning-with-files",
+      "description": "Fractal Mastery: Planning With Files",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/planning-with-files"
+      ]
+    },
+    {
       "name": "prd-to-issues",
-      "description": "Skill from planning category.",
+      "description": "Fractal Mastery: Prd To Issues",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1622,7 +5024,7 @@
     },
     {
       "name": "prd-to-plan",
-      "description": "Skill from planning category.",
+      "description": "Fractal Mastery: Prd To Plan",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1631,7 +5033,7 @@
     },
     {
       "name": "request-refactor-plan",
-      "description": "Skill from planning category.",
+      "description": "Fractal Mastery: Request Refactor Plan",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1640,7 +5042,7 @@
     },
     {
       "name": "to-prd",
-      "description": "Skill from planning category.",
+      "description": "Fractal Mastery: To Prd",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1649,7 +5051,7 @@
     },
     {
       "name": "ubiquitous-language",
-      "description": "Skill from planning category.",
+      "description": "Fractal Mastery: Ubiquitous Language",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1657,8 +5059,44 @@
       ]
     },
     {
+      "name": "workflow-automation",
+      "description": "Fractal Mastery: Workflow Automation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/workflow-automation"
+      ]
+    },
+    {
+      "name": "workflow-orchestration-patterns",
+      "description": "Fractal Mastery: Workflow Orchestration Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/workflow-orchestration-patterns"
+      ]
+    },
+    {
+      "name": "workflow-patterns",
+      "description": "Fractal Mastery: Workflow Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/workflow-patterns"
+      ]
+    },
+    {
+      "name": "workflows",
+      "description": "Fractal Mastery: Workflows",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/workflows"
+      ]
+    },
+    {
       "name": "write-a-prd",
-      "description": "Skill from planning category.",
+      "description": "Fractal Mastery: Write A Prd",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1667,7 +5105,7 @@
     },
     {
       "name": "writing-plans",
-      "description": "Skill from planning category.",
+      "description": "Fractal Mastery: Writing Plans",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1675,8 +5113,26 @@
       ]
     },
     {
+      "name": "application-performance-performance-optimization",
+      "description": "Fractal Mastery: Application Performance Performance Optimization",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/application-performance-performance-optimization"
+      ]
+    },
+    {
+      "name": "dependency-management-deps-audit",
+      "description": "Fractal Mastery: Dependency Management Deps Audit",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/dependency-management-deps-audit"
+      ]
+    },
+    {
       "name": "diagnose",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Diagnose",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1685,7 +5141,7 @@
     },
     {
       "name": "finishing-a-development-branch",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Finishing A Development Branch",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1694,7 +5150,7 @@
     },
     {
       "name": "github-triage",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Github Triage",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1702,8 +5158,17 @@
       ]
     },
     {
+      "name": "grill-me",
+      "description": "Fractal Mastery: Grill Me",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/grill-me"
+      ]
+    },
+    {
       "name": "grill-with-docs",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Grill With Docs",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1711,8 +5176,17 @@
       ]
     },
     {
+      "name": "lint-and-validate",
+      "description": "Fractal Mastery: Lint And Validate",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/lint-and-validate"
+      ]
+    },
+    {
       "name": "performance-engineer",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Performance Engineer",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1720,8 +5194,26 @@
       ]
     },
     {
+      "name": "performance-profiling",
+      "description": "Fractal Mastery: Performance Profiling",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/performance-profiling"
+      ]
+    },
+    {
+      "name": "performance-testing-review-multi-agent-review",
+      "description": "Fractal Mastery: Performance Testing Review Multi Agent Review",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/performance-testing-review-multi-agent-review"
+      ]
+    },
+    {
       "name": "qa",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Qa",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1730,7 +5222,7 @@
     },
     {
       "name": "receiving-code-review",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Receiving Code Review",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1739,7 +5231,7 @@
     },
     {
       "name": "requesting-code-review",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Requesting Code Review",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1748,7 +5240,7 @@
     },
     {
       "name": "security-review",
-      "description": "High-rigor security code auditing and safety checks.",
+      "description": "Fractal Mastery: Security Review",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1757,7 +5249,7 @@
     },
     {
       "name": "systematic-debugging",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Systematic Debugging",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1766,7 +5258,7 @@
     },
     {
       "name": "triage",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Triage",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1775,7 +5267,7 @@
     },
     {
       "name": "triage-issue",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Triage Issue",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1784,7 +5276,7 @@
     },
     {
       "name": "verification-before-completion",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Verification Before Completion",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1792,8 +5284,26 @@
       ]
     },
     {
+      "name": "vulnerability-scanner",
+      "description": "Fractal Mastery: Vulnerability Scanner",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/vulnerability-scanner"
+      ]
+    },
+    {
+      "name": "wcag-audit-patterns",
+      "description": "Fractal Mastery: Wcag Audit Patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/wcag-audit-patterns"
+      ]
+    },
+    {
       "name": "web-design-guidelines",
-      "description": "Skill from review category.",
+      "description": "Fractal Mastery: Web Design Guidelines",
       "source": "./",
       "strict": false,
       "skills": [
@@ -1801,30 +5311,246 @@
       ]
     },
     {
-      "name": "writing-skills",
-      "description": "Advanced skill creation & Anthropic best practices.",
+      "name": "/api",
+      "description": "Slash Command: /api",
       "source": "./",
-      "strict": false,
+      "strict": true,
       "skills": [
-        "./skills/meta/writing-skills"
+        "./skills/planning/workflows/api.md"
       ]
     },
     {
-      "name": "ui-ux-pro-max",
-      "description": "Elite UI/UX design engine with 50+ styles.",
+      "name": "/audit",
+      "description": "Slash Command: /audit",
       "source": "./",
-      "strict": false,
+      "strict": true,
       "skills": [
-        "./skills/design/ui-ux-pro-max"
+        "./skills/planning/workflows/audit.md"
       ]
     },
     {
-      "name": "orchestrate",
-      "description": "Advanced multi-agent orchestration.",
+      "name": "/blog",
+      "description": "Slash Command: /blog",
       "source": "./",
-      "strict": false,
+      "strict": true,
       "skills": [
-        "./skills/planning/orchestrate_skill.md"
+        "./skills/planning/workflows/blog.md"
+      ]
+    },
+    {
+      "name": "/brainstorm",
+      "description": "Slash Command: /brainstorm",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/brainstorm.md"
+      ]
+    },
+    {
+      "name": "/compliance",
+      "description": "Slash Command: /compliance",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/compliance.md"
+      ]
+    },
+    {
+      "name": "/create",
+      "description": "Slash Command: /create",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/create.md"
+      ]
+    },
+    {
+      "name": "/debug",
+      "description": "Slash Command: /debug",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/debug.md"
+      ]
+    },
+    {
+      "name": "/deploy",
+      "description": "Slash Command: /deploy",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/deploy.md"
+      ]
+    },
+    {
+      "name": "/document",
+      "description": "Slash Command: /document",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/document.md"
+      ]
+    },
+    {
+      "name": "/enhance",
+      "description": "Slash Command: /enhance",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/enhance.md"
+      ]
+    },
+    {
+      "name": "/explain",
+      "description": "Slash Command: /explain",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/explain.md"
+      ]
+    },
+    {
+      "name": "/log-error",
+      "description": "Slash Command: /log-error",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/log-error.md"
+      ]
+    },
+    {
+      "name": "/mobile",
+      "description": "Slash Command: /mobile",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/mobile.md"
+      ]
+    },
+    {
+      "name": "/monitor",
+      "description": "Slash Command: /monitor",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/monitor.md"
+      ]
+    },
+    {
+      "name": "/onboard",
+      "description": "Slash Command: /onboard",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/onboard.md"
+      ]
+    },
+    {
+      "name": "/orchestrate",
+      "description": "Slash Command: /orchestrate",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/orchestrate.md"
+      ]
+    },
+    {
+      "name": "/performance",
+      "description": "Slash Command: /performance",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/performance.md"
+      ]
+    },
+    {
+      "name": "/plan",
+      "description": "Slash Command: /plan",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/plan.md"
+      ]
+    },
+    {
+      "name": "/portfolio",
+      "description": "Slash Command: /portfolio",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/portfolio.md"
+      ]
+    },
+    {
+      "name": "/preview",
+      "description": "Slash Command: /preview",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/preview.md"
+      ]
+    },
+    {
+      "name": "/realtime",
+      "description": "Slash Command: /realtime",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/realtime.md"
+      ]
+    },
+    {
+      "name": "/security",
+      "description": "Slash Command: /security",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/security.md"
+      ]
+    },
+    {
+      "name": "/seo",
+      "description": "Slash Command: /seo",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/seo.md"
+      ]
+    },
+    {
+      "name": "/status",
+      "description": "Slash Command: /status",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/status.md"
+      ]
+    },
+    {
+      "name": "/test",
+      "description": "Slash Command: /test",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/test.md"
+      ]
+    },
+    {
+      "name": "/ui-ux-pro-max",
+      "description": "Slash Command: /ui-ux-pro-max",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/ui-ux-pro-max.md"
+      ]
+    },
+    {
+      "name": "/visually",
+      "description": "Slash Command: /visually",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/planning/workflows/visually.md"
       ]
     }
   ]

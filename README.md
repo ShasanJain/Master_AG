@@ -3,12 +3,28 @@
   <p><i>A hyper-optimized, error-proof agentic workspace architecture.</i></p>
 
   ![Architecture](https://img.shields.io/badge/Architecture-3--Layer-blueviolet?style=for-the-badge)
-  ![Skills](https://img.shields.io/badge/Skills-100%2B-success?style=for-the-badge)
+  ![Skills](https://img.shields.io/badge/Skills-600%2B-success?style=for-the-badge)
 </div>
 
 <br>
 
-Master-AG is a specialized, high-velocity workspace engineered to safely accelerate autonomous agent workflows. By completely segregating human intent from execution logic, Master-AG natively eliminates AI hallucinations and folder rot.
+Master-AG is a specialized, high-velocity workspace engineered to safely accelerate autonomous agent workflows. By completely segregating human intent from execution logic, Master-AG natively eliminates AI hallucinations and folder rot. 
+
+This environment is powered by the **Fractal Mastery** logic—ensuring that every task is broken down into progressively more deterministic sub-skills until completion is guaranteed.
+
+## ⌨️ Slash Command Arsenal
+
+Trigger professional workflows instantly using these slash commands. Every command invokes a specific Standard Operating Procedure (SOP).
+
+| Command | Purpose | Action |
+| :--- | :--- | :--- |
+| `/create` | **Product Engine** | Scaffolds a full feature or project from PRD to Code. |
+| `/audit` | **Quality Gate** | Performs a full-spectrum code and architecture review. |
+| `/security` | **Hardening** | Scans for vulnerabilities and applies "Security Armor." |
+| `/ui-ux` | **Art Director** | Generates premium design systems and advanced visuals. |
+| `/debug` | **Surgical Fix** | Root-cause analysis and systemic error remediation. |
+| `/performance` | **Optimization** | Vitals audit and bottleneck removal. |
+| `/orchestrate` | **Multi-Agent** | Dispatches parallel sub-agents for complex tasks. |
 
 ## 🧠 The Architecture Pipeline
 
@@ -22,46 +38,26 @@ graph TD
 
     A[Layer 1: Directives & SOPs<br>AGENTS.md]:::directive --> B
     B{Layer 2: Orchestration<br>AI Autonomy}:::orchestration -->|Triggers| C
-    C[Layer 3: Execution<br>100+ Meta-Skills]:::execution --> D
+    C[Layer 3: Execution<br>617+ Fractal Skills]:::execution --> D
     
     D{Validation Gate<br>Zero-Error Rules}:::validation -->|Fails Tests| B
     D -->|Passes Clean| E((Deployment)):::deploy
 ```
 
-## 🏗️ Core Structural Layers
+## 🛠️ Global Component Matrix
 
-### 1️⃣ Layer 1: Directives (Intent)
-The highest level of control mapped out in `AGENTS.md`. These Natural Language Standard Operating Procedures dictate the macro-behavior loop of the agent.
+Master-AG houses over **617 standardized, modular meta-tools** categorized into 8 core domains for rapid orchestration:
 
-> [!IMPORTANT]
-> **The Strict Validation Gate:** Working as an absolute fail-safe, the layer-1 directives physically lock the agent from handing over code without *first* passing native zero-error tests locally (`npm run build`, `npm run lint`, etc.). No exceptions.
-
-### 2️⃣ Layer 2: Orchestration (Decision-Making)
-The cognitive brain. Instead of blindly executing guesses, the LLM reads the directives and routes tasks to the correct specialized skills, creating an intelligent bridge between raw intent and final execution.
-
-### 3️⃣ Layer 3: Execution (Doing The Work)
-The deterministic execution engine running entirely out of the `/skills` folder. 
-It houses over **100 standardized, modular meta-tools** (ranging from React configuration generators to systemic debuggers), perfectly adhering to fluid `_[name]_skill.md` architecture to prevent workspace clutter.
-
-<br>
-
-> [!NOTE] 
-> **🧲 Self-Healing Structure:** This workspace operates autonomously to prevent logic rot. Any rogue scripts or unparsed AI interactions dropped into the ecosystem are automatically identified, sorted, and renamed by the internal `organize-skills` meta-tool to guarantee absolute structural integrity over time.
-
-## 🛠️ Available Skills
-
-Master-AG comes pre-loaded with a massive library of modular skills, categorized for rapid orchestration:
-
-- 🎨 **design**: Touch target optimization, table accessibility, and theme factory.
-- 🏗️ **planning**: PRD generation, issue mapping, and refactor planning.
-- 🔍 **review**: Systematic debugging, QA loops, and GitHub triage.
-- 📦 **execution**: TDD loops, Vercel deployment, React components, and MySQL/Postgres.
-- 🤖 **meta**: Skill organization, parallel agent dispatching, and self-maintenance.
-- 📈 **environment**: MCP builders, git guardrails, and analytics reporting.
-- 🎨 **figma**: Code Connect, design system generation, and library sync.
-*And many more...*
+- 🎨 **design**: Art Director logic, Motion Framer, and Theme Factory.
+- 🏗️ **planning**: PRD generation, Fractal Roadmap, and Slash Command Workflows.
+- 🔍 **review**: Vulnerability Scanner, Security Armor, and Systematic Debugging.
+- 📦 **execution**: TDD loops, RAG engineering, Monorepo Architecture, and ML-Ops.
+- 🤖 **meta**: Skill Creation, Self-Annealing Loops, and Mastery Registry.
+- 📈 **environment**: MCP Builders, OCI ADB Best Practices, and Performance Profiling.
+- 🎨 **figma**: Code Connect, Design System Generation, and Library Sync.
+- 🛡️ **safety**: Automatic GitHub Snapshots before all major changes.
 
 ---
 
 > [!TIP]
-> Use `npx skills find [query]` to search the full library or `npx skills add <package>` to expand your workspace.
+> To add a new skill, use `/create skill [name]` and it will automatically be indexed into the global registry.

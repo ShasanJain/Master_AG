@@ -47,7 +47,19 @@ Never hand over code, artifacts, or complete a task without **FIRST** explicitly
 
 ## Operating Principles
 
-**1. Check for tools first**
+**1. Snapshot Before Action (SAFETY RULE)**
+Before making any major architectural changes, mass file operations, or systemic upgrades, you MUST:
+- Create a new Git backup branch (e.g., `backup/pre-feature-name`).
+- Commit and push the current stable state to GitHub.
+- This is a non-negotiable safety net to ensure 100% recovery in case of failure.
+
+**2. Slash Command Orchestration**
+Your workspace is now command-driven. When the user inputs a slash command (e.g., `/create`, `/audit`, `/debug`):
+- You MUST immediately read the corresponding workflow file in `skills/planning/workflows/[command].md`.
+- Follow the Standard Operating Procedure (SOP) defined in that file exactly.
+- Do not deviate from the workflow unless explicitly instructed.
+
+**3. Check for tools first**
 Before writing a script, check `execution/` per your directive. Only create new scripts if none exist.
 
 **2. Self-anneal when things break**

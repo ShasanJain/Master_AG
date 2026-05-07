@@ -1,0 +1,1831 @@
+{
+  "plugins": [
+    {
+      "name": "ability-spectrum-mapping",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/ability-spectrum-mapping"
+      ]
+    },
+    {
+      "name": "accessibility-debt-tracking",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/accessibility-debt-tracking"
+      ]
+    },
+    {
+      "name": "accessibility-testing-strategy",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/accessibility-testing-strategy"
+      ]
+    },
+    {
+      "name": "accessible-content-review",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/accessible-content-review"
+      ]
+    },
+    {
+      "name": "adaptive-personalisation",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/adaptive-personalisation"
+      ]
+    },
+    {
+      "name": "alt-text-design",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/alt-text-design"
+      ]
+    },
+    {
+      "name": "assess-load",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/assess-load"
+      ]
+    },
+    {
+      "name": "assistive-technology-scenarios",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/assistive-technology-scenarios"
+      ]
+    },
+    {
+      "name": "audit",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/audit"
+      ]
+    },
+    {
+      "name": "audit-stories",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/audit-stories"
+      ]
+    },
+    {
+      "name": "brand-guidelines",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/brand-guidelines"
+      ]
+    },
+    {
+      "name": "cognitive-accessibility-review",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/cognitive-accessibility-review"
+      ]
+    },
+    {
+      "name": "cognitive-load-assessment",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/cognitive-load-assessment"
+      ]
+    },
+    {
+      "name": "colour-independence",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/colour-independence"
+      ]
+    },
+    {
+      "name": "compliance-mapping",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/compliance-mapping"
+      ]
+    },
+    {
+      "name": "contextual-help-design",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/contextual-help-design"
+      ]
+    },
+    {
+      "name": "decision-documentation",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/decision-documentation"
+      ]
+    },
+    {
+      "name": "design-an-interface",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/design-an-interface"
+      ]
+    },
+    {
+      "name": "design-flow",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/design-flow"
+      ]
+    },
+    {
+      "name": "disability-inclusive-personas",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/disability-inclusive-personas"
+      ]
+    },
+    {
+      "name": "document",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/document"
+      ]
+    },
+    {
+      "name": "edge-case-identification",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/edge-case-identification"
+      ]
+    },
+    {
+      "name": "error-prevention-recovery",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/error-prevention-recovery"
+      ]
+    },
+    {
+      "name": "feedback-and-status",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/feedback-and-status"
+      ]
+    },
+    {
+      "name": "flexible-typography",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/flexible-typography"
+      ]
+    },
+    {
+      "name": "focus-attention-design",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/focus-attention-design"
+      ]
+    },
+    {
+      "name": "form-labelling",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/form-labelling"
+      ]
+    },
+    {
+      "name": "frontend-design",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/frontend-design"
+      ]
+    },
+    {
+      "name": "generate",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/generate"
+      ]
+    },
+    {
+      "name": "gesture-alternatives",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/gesture-alternatives"
+      ]
+    },
+    {
+      "name": "handoff",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/handoff"
+      ]
+    },
+    {
+      "name": "heading-structure",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/heading-structure"
+      ]
+    },
+    {
+      "name": "icon-retrieval",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/icon-retrieval"
+      ]
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/improve-codebase-architecture"
+      ]
+    },
+    {
+      "name": "inclusive-user-stories",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/inclusive-user-stories"
+      ]
+    },
+    {
+      "name": "infographic-creator",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/infographic-creator"
+      ]
+    },
+    {
+      "name": "information-density",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/information-density"
+      ]
+    },
+    {
+      "name": "keyboard-navigation",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/keyboard-navigation"
+      ]
+    },
+    {
+      "name": "keyboard-review",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/keyboard-review"
+      ]
+    },
+    {
+      "name": "link-text-design",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/link-text-design"
+      ]
+    },
+    {
+      "name": "memory-load-reduction",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/memory-load-reduction"
+      ]
+    },
+    {
+      "name": "motion-framer",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/motion-framer"
+      ]
+    },
+    {
+      "name": "motion-sensitivity",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/motion-sensitivity"
+      ]
+    },
+    {
+      "name": "multi-modal-input",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/multi-modal-input"
+      ]
+    },
+    {
+      "name": "multimedia-accessibility",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/multimedia-accessibility"
+      ]
+    },
+    {
+      "name": "plain-language-design",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/plain-language-design"
+      ]
+    },
+    {
+      "name": "preference-audit",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/preference-audit"
+      ]
+    },
+    {
+      "name": "readable-content",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/readable-content"
+      ]
+    },
+    {
+      "name": "responsive-accessibility",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/responsive-accessibility"
+      ]
+    },
+    {
+      "name": "responsive-review",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/responsive-review"
+      ]
+    },
+    {
+      "name": "review",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/review"
+      ]
+    },
+    {
+      "name": "rewrite",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/rewrite"
+      ]
+    },
+    {
+      "name": "scenario-map",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/scenario-map"
+      ]
+    },
+    {
+      "name": "shadcn-ui",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/shadcn-ui"
+      ]
+    },
+    {
+      "name": "simplified-views",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/simplified-views"
+      ]
+    },
+    {
+      "name": "simplify",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/simplify"
+      ]
+    },
+    {
+      "name": "situational-impairment-mapping",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/situational-impairment-mapping"
+      ]
+    },
+    {
+      "name": "specify",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/specify"
+      ]
+    },
+    {
+      "name": "stakeholder-communication",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/stakeholder-communication"
+      ]
+    },
+    {
+      "name": "structure",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/structure"
+      ]
+    },
+    {
+      "name": "table-accessibility",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/table-accessibility"
+      ]
+    },
+    {
+      "name": "touch-target-design",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/touch-target-design"
+      ]
+    },
+    {
+      "name": "tradeoff-analysis",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/tradeoff-analysis"
+      ]
+    },
+    {
+      "name": "user-preference-respect",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/user-preference-respect"
+      ]
+    },
+    {
+      "name": "voice-interaction",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/voice-interaction"
+      ]
+    },
+    {
+      "name": "wayfinding-navigation",
+      "description": "Skill from design category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/wayfinding-navigation"
+      ]
+    },
+    {
+      "name": "analytics-reporting",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/analytics-reporting"
+      ]
+    },
+    {
+      "name": "brand-guardian",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/brand-guardian"
+      ]
+    },
+    {
+      "name": "brand-voice",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/brand-voice"
+      ]
+    },
+    {
+      "name": "claude-api",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/claude-api"
+      ]
+    },
+    {
+      "name": "content-strategist",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/content-strategist"
+      ]
+    },
+    {
+      "name": "email-drafting",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/email-drafting"
+      ]
+    },
+    {
+      "name": "git-guardrails-claude-code",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/git-guardrails-claude-code"
+      ]
+    },
+    {
+      "name": "internal-comms",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/internal-comms"
+      ]
+    },
+    {
+      "name": "mcp-builder",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/mcp-builder"
+      ]
+    },
+    {
+      "name": "media-pitch",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/media-pitch"
+      ]
+    },
+    {
+      "name": "press-release",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/press-release"
+      ]
+    },
+    {
+      "name": "setup-matt-pocock-skills",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/setup-matt-pocock-skills"
+      ]
+    },
+    {
+      "name": "setup-pre-commit",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/setup-pre-commit"
+      ]
+    },
+    {
+      "name": "slack-gif-creator",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/slack-gif-creator"
+      ]
+    },
+    {
+      "name": "using-git-worktrees",
+      "description": "Skill from environment category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/environment/using-git-worktrees"
+      ]
+    },
+    {
+      "name": "algorithmic-art",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/algorithmic-art"
+      ]
+    },
+    {
+      "name": "antv-s2-expert",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/antv-s2-expert"
+      ]
+    },
+    {
+      "name": "canvas-design",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/canvas-design"
+      ]
+    },
+    {
+      "name": "chart-visualization",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/chart-visualization"
+      ]
+    },
+    {
+      "name": "composition-patterns",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/composition-patterns"
+      ]
+    },
+    {
+      "name": "deploy-to-vercel",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/deploy-to-vercel"
+      ]
+    },
+    {
+      "name": "dispatching-parallel-agents",
+      "description": "Multi-subagent orchestration.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/dispatching-parallel-agents"
+      ]
+    },
+    {
+      "name": "doc-coauthoring",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/doc-coauthoring"
+      ]
+    },
+    {
+      "name": "docx",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/docx"
+      ]
+    },
+    {
+      "name": "enhance-prompt",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/enhance-prompt"
+      ]
+    },
+    {
+      "name": "executing-plans",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/executing-plans"
+      ]
+    },
+    {
+      "name": "migrate-to-shoehorn",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/migrate-to-shoehorn"
+      ]
+    },
+    {
+      "name": "mysql",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/mysql"
+      ]
+    },
+    {
+      "name": "narrative-text-visualization",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/narrative-text-visualization"
+      ]
+    },
+    {
+      "name": "neki",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/neki"
+      ]
+    },
+    {
+      "name": "oracle-dba",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/oracle-dba"
+      ]
+    },
+    {
+      "name": "pdf",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/pdf"
+      ]
+    },
+    {
+      "name": "postgres",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/postgres"
+      ]
+    },
+    {
+      "name": "pptx",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/pptx"
+      ]
+    },
+    {
+      "name": "react-best-practices",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/react-best-practices"
+      ]
+    },
+    {
+      "name": "react-components",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/react-components"
+      ]
+    },
+    {
+      "name": "react-native-skills",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/react-native-skills"
+      ]
+    },
+    {
+      "name": "react-view-transitions",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/react-view-transitions"
+      ]
+    },
+    {
+      "name": "remotion",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/remotion"
+      ]
+    },
+    {
+      "name": "scaffold-exercises",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/scaffold-exercises"
+      ]
+    },
+    {
+      "name": "stitch-loop",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/stitch-loop"
+      ]
+    },
+    {
+      "name": "subagent-driven-development",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/subagent-driven-development"
+      ]
+    },
+    {
+      "name": "tdd",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/tdd"
+      ]
+    },
+    {
+      "name": "test-driven-development",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/test-driven-development"
+      ]
+    },
+    {
+      "name": "theme-factory",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/theme-factory"
+      ]
+    },
+    {
+      "name": "to-issues",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/to-issues"
+      ]
+    },
+    {
+      "name": "vercel-cli-with-tokens",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/vercel-cli-with-tokens"
+      ]
+    },
+    {
+      "name": "vitess",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/vitess"
+      ]
+    },
+    {
+      "name": "web-artifacts-builder",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/web-artifacts-builder"
+      ]
+    },
+    {
+      "name": "webapp-testing",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/webapp-testing"
+      ]
+    },
+    {
+      "name": "xlsx",
+      "description": "Skill from execution category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/execution/xlsx"
+      ]
+    },
+    {
+      "name": "figma-code-connect",
+      "description": "Skill from figma category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/figma/figma-code-connect"
+      ]
+    },
+    {
+      "name": "figma-create-design-system-rules",
+      "description": "Skill from figma category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/figma/figma-create-design-system-rules"
+      ]
+    },
+    {
+      "name": "figma-create-new-file",
+      "description": "Skill from figma category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/figma/figma-create-new-file"
+      ]
+    },
+    {
+      "name": "figma-generate-design",
+      "description": "Skill from figma category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/figma/figma-generate-design"
+      ]
+    },
+    {
+      "name": "figma-generate-library",
+      "description": "Skill from figma category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/figma/figma-generate-library"
+      ]
+    },
+    {
+      "name": "figma-implement-design",
+      "description": "Skill from figma category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/figma/figma-implement-design"
+      ]
+    },
+    {
+      "name": "figma-use",
+      "description": "Skill from figma category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/figma/figma-use"
+      ]
+    },
+    {
+      "name": "gws-admin-reports",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-admin-reports"
+      ]
+    },
+    {
+      "name": "gws-calendar",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-calendar"
+      ]
+    },
+    {
+      "name": "gws-calendar-agenda",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-calendar-agenda"
+      ]
+    },
+    {
+      "name": "gws-calendar-insert",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-calendar-insert"
+      ]
+    },
+    {
+      "name": "gws-chat",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-chat"
+      ]
+    },
+    {
+      "name": "gws-chat-send",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-chat-send"
+      ]
+    },
+    {
+      "name": "gws-classroom",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-classroom"
+      ]
+    },
+    {
+      "name": "gws-docs",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-docs"
+      ]
+    },
+    {
+      "name": "gws-docs-write",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-docs-write"
+      ]
+    },
+    {
+      "name": "gws-drive",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-drive"
+      ]
+    },
+    {
+      "name": "gws-drive-upload",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-drive-upload"
+      ]
+    },
+    {
+      "name": "gws-events",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-events"
+      ]
+    },
+    {
+      "name": "gws-events-renew",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-events-renew"
+      ]
+    },
+    {
+      "name": "gws-events-subscribe",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-events-subscribe"
+      ]
+    },
+    {
+      "name": "gws-forms",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-forms"
+      ]
+    },
+    {
+      "name": "gws-gmail",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-gmail"
+      ]
+    },
+    {
+      "name": "gws-gmail-forward",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-gmail-forward"
+      ]
+    },
+    {
+      "name": "gws-gmail-read",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-gmail-read"
+      ]
+    },
+    {
+      "name": "gws-gmail-reply",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-gmail-reply"
+      ]
+    },
+    {
+      "name": "gws-gmail-reply-all",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-gmail-reply-all"
+      ]
+    },
+    {
+      "name": "gws-gmail-send",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-gmail-send"
+      ]
+    },
+    {
+      "name": "gws-gmail-triage",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-gmail-triage"
+      ]
+    },
+    {
+      "name": "gws-gmail-watch",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-gmail-watch"
+      ]
+    },
+    {
+      "name": "gws-keep",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-keep"
+      ]
+    },
+    {
+      "name": "gws-meet",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-meet"
+      ]
+    },
+    {
+      "name": "gws-modelarmor",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-modelarmor"
+      ]
+    },
+    {
+      "name": "gws-modelarmor-create-template",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-modelarmor-create-template"
+      ]
+    },
+    {
+      "name": "gws-modelarmor-sanitize-prompt",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-modelarmor-sanitize-prompt"
+      ]
+    },
+    {
+      "name": "gws-modelarmor-sanitize-response",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-modelarmor-sanitize-response"
+      ]
+    },
+    {
+      "name": "gws-people",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-people"
+      ]
+    },
+    {
+      "name": "gws-script",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-script"
+      ]
+    },
+    {
+      "name": "gws-script-push",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-script-push"
+      ]
+    },
+    {
+      "name": "gws-shared",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-shared"
+      ]
+    },
+    {
+      "name": "gws-sheets",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-sheets"
+      ]
+    },
+    {
+      "name": "gws-sheets-append",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-sheets-append"
+      ]
+    },
+    {
+      "name": "gws-sheets-read",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-sheets-read"
+      ]
+    },
+    {
+      "name": "gws-slides",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-slides"
+      ]
+    },
+    {
+      "name": "gws-tasks",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-tasks"
+      ]
+    },
+    {
+      "name": "gws-workflow",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-workflow"
+      ]
+    },
+    {
+      "name": "gws-workflow-email-to-task",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-workflow-email-to-task"
+      ]
+    },
+    {
+      "name": "gws-workflow-file-announce",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-workflow-file-announce"
+      ]
+    },
+    {
+      "name": "gws-workflow-meeting-prep",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-workflow-meeting-prep"
+      ]
+    },
+    {
+      "name": "gws-workflow-standup-report",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-workflow-standup-report"
+      ]
+    },
+    {
+      "name": "gws-workflow-weekly-digest",
+      "description": "Skill from google category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google/gws-workflow-weekly-digest"
+      ]
+    },
+    {
+      "name": "antv-skills-maintainer",
+      "description": "Skill from meta category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/antv-skills-maintainer"
+      ]
+    },
+    {
+      "name": "caveman",
+      "description": "Skill from meta category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/caveman"
+      ]
+    },
+    {
+      "name": "edit-article",
+      "description": "Skill from meta category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/edit-article"
+      ]
+    },
+    {
+      "name": "find-skills",
+      "description": "Skill from meta category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/find-skills"
+      ]
+    },
+    {
+      "name": "grill-me",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/grill-me"
+      ]
+    },
+    {
+      "name": "obsidian-vault",
+      "description": "Skill from meta category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/obsidian-vault"
+      ]
+    },
+    {
+      "name": "organize-skills",
+      "description": "Skill from meta category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/organize-skills"
+      ]
+    },
+    {
+      "name": "using-superpowers",
+      "description": "Skill from meta category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/using-superpowers"
+      ]
+    },
+    {
+      "name": "write-a-skill",
+      "description": "Skill from meta category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/write-a-skill"
+      ]
+    },
+    {
+      "name": "zoom-out",
+      "description": "Skill from meta category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/zoom-out"
+      ]
+    },
+    {
+      "name": "brainstorming",
+      "description": "Skill from planning category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/brainstorming"
+      ]
+    },
+    {
+      "name": "prd-to-issues",
+      "description": "Skill from planning category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/prd-to-issues"
+      ]
+    },
+    {
+      "name": "prd-to-plan",
+      "description": "Skill from planning category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/prd-to-plan"
+      ]
+    },
+    {
+      "name": "request-refactor-plan",
+      "description": "Skill from planning category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/request-refactor-plan"
+      ]
+    },
+    {
+      "name": "to-prd",
+      "description": "Skill from planning category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/to-prd"
+      ]
+    },
+    {
+      "name": "ubiquitous-language",
+      "description": "Skill from planning category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/ubiquitous-language"
+      ]
+    },
+    {
+      "name": "write-a-prd",
+      "description": "Skill from planning category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/write-a-prd"
+      ]
+    },
+    {
+      "name": "writing-plans",
+      "description": "Skill from planning category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/writing-plans"
+      ]
+    },
+    {
+      "name": "diagnose",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/diagnose"
+      ]
+    },
+    {
+      "name": "finishing-a-development-branch",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/finishing-a-development-branch"
+      ]
+    },
+    {
+      "name": "github-triage",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/github-triage"
+      ]
+    },
+    {
+      "name": "grill-with-docs",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/grill-with-docs"
+      ]
+    },
+    {
+      "name": "performance-engineer",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/performance-engineer"
+      ]
+    },
+    {
+      "name": "qa",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/qa"
+      ]
+    },
+    {
+      "name": "receiving-code-review",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/receiving-code-review"
+      ]
+    },
+    {
+      "name": "requesting-code-review",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/requesting-code-review"
+      ]
+    },
+    {
+      "name": "security-review",
+      "description": "High-rigor security code auditing and safety checks.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/security-review"
+      ]
+    },
+    {
+      "name": "systematic-debugging",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/systematic-debugging"
+      ]
+    },
+    {
+      "name": "triage",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/triage"
+      ]
+    },
+    {
+      "name": "triage-issue",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/triage-issue"
+      ]
+    },
+    {
+      "name": "verification-before-completion",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/verification-before-completion"
+      ]
+    },
+    {
+      "name": "web-design-guidelines",
+      "description": "Skill from review category.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/review/web-design-guidelines"
+      ]
+    },
+    {
+      "name": "writing-skills",
+      "description": "Advanced skill creation & Anthropic best practices.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/meta/writing-skills"
+      ]
+    },
+    {
+      "name": "ui-ux-pro-max",
+      "description": "Elite UI/UX design engine with 50+ styles.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/design/ui-ux-pro-max"
+      ]
+    },
+    {
+      "name": "orchestrate",
+      "description": "Advanced multi-agent orchestration.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/planning/orchestrate_skill.md"
+      ]
+    }
+  ]
+}

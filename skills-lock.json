@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "agent-performance-engineer": {
+      "source": "tony363/superclaude",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/agent-performance-engineer/SKILL.md",
+      "computedHash": "adb20e22bef96763d1591485a801effcac80f5e39513f44760e9c308ba5a6e8a"
+    },
     "antv-s2-expert": {
       "source": "antvis/chart-visualization-skills",
       "sourceType": "github",
@@ -26,6 +32,12 @@
       "sourceType": "github",
       "computedHash": "7ba6710d1e2eab14018d676a32ad569afca03d52396d75cb772b97de72e88efc"
     },
+    "motion-framer": {
+      "source": "freshtechbro/claudedesignskills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/motion-framer/SKILL.md",
+      "computedHash": "b18cf4fbfd179942f73d770f3f1d4597ea512fbdf67b2aa03f01cfd726558b6e"
+    },
     "mysql": {
       "source": "planetscale/database-skills",
       "sourceType": "github",
@@ -40,6 +52,18 @@
       "source": "planetscale/database-skills",
       "sourceType": "github",
       "computedHash": "90f086fa9fb4e19e909713378e427f3beac6163c6baa41b1aebfdc21ec0fcf99"
+    },
+    "oracle-dba": {
+      "source": "acedergren/agentic-tools",
+      "sourceType": "github",
+      "skillPath": "skills/oracle-dba/SKILL.md",
+      "computedHash": "39eb71bfead8d9fd4fab83f749951ede930d3aa6597397e7879bca4e063adfa2"
+    },
+    "performing-security-code-review": {
+      "source": "aaaaqwq/claude-code-skills",
+      "sourceType": "github",
+      "skillPath": "skills/performing-security-code-review/SKILL.md",
+      "computedHash": "51cd534cbf68715ecbf3c774c37dad6376581795e6f1306b0e51121140c4bbfa"
     },
     "postgres": {
       "source": "planetscale/database-skills",

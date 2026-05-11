@@ -1,0 +1,16 @@
+2026-05-11 18:54:26 [INFO] Using SQLiteVectorStore
+2026-05-11 18:54:27 [INFO] [DB] Connecting to openmemory.db
+2026-05-11 18:54:27 [INFO] STORED [semantic] for user 'jack': User wants to build a Life Assistant mobile app...
+2026-05-11 18:54:33 [INFO] Using SQLiteVectorStore
+2026-05-11 18:54:34 [INFO] [DB] Connecting to openmemory.db
+2026-05-11 18:54:34 [INFO] STORED [procedural] for user 'jack': Dashboard uses Next.js with Tailwind CSS v4 and dual theme system...
+2026-05-11 18:54:40 [INFO] Using SQLiteVectorStore
+2026-05-11 18:54:41 [INFO] [DB] Connecting to openmemory.db
+2026-05-11 18:54:41 [INFO] STORED [episodic] for user 'jack': [Session 2026-05-11 18:54] Completed UI industrialization of Jack Command Center...
+2026-05-11 18:54:41 [INFO] AUTO-CAPTURED session summary for user 'jack'
+2026-05-11 18:54:47 [INFO] Using SQLiteVectorStore
+2026-05-11 18:54:48 [INFO] [DB] Connecting to openmemory.db
+2026-05-11 18:54:48 [INFO] RECALL query='What tech stack does the dashboard use?' user='jack' hits=4
+2026-05-11 18:54:52 [INFO] Using SQLiteVectorStore
+2026-05-11 18:54:53 [INFO] [DB] Connecting to openmemory.db
+2026-05-11 18:54:53 [INFO] LIST user='jack' total=4

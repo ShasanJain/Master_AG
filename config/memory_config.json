@@ -1,0 +1,8 @@
+{
+  "engine": "openmemory",
+  "default_user": "jack",
+  "sectors": ["episodic", "semantic", "procedural"],
+  "auto_capture": true,
+  "embedding_provider": "synthetic",
+  "notes": "Using OpenMemory local SQLite with synthetic embeddings (free, no API key needed)"
+}

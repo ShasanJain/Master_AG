@@ -2,59 +2,122 @@
 
 :root {
   --background: #0a0b0e;
-  --foreground: #e2e8f0;
+  --foreground: #ffffff;
   --primary: #3b82f6;
-  --primary-glow: rgba(59, 130, 246, 0.5);
+  --primary-glow: rgba(59, 130, 246, 0.3);
   --accent: #10b981;
-  --surface: rgba(255, 255, 255, 0.03);
+  --surface: rgba(10, 11, 14, 0.75);
   --border: rgba(255, 255, 255, 0.1);
-  --glass: backdrop-filter: blur(12px);
+  --grid-line: rgba(255, 255, 255, 0.02);
+  --glass: blur(20px);
+  --sidebar-bg: #0a0b0e;
+  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --faint: rgba(255, 255, 255, 0.1);
+  --muted: rgba(255, 255, 255, 0.4);
+  --status-emerald: #34d399;
+  --status-emerald-bg: rgba(16, 185, 129, 0.1);
+  --status-blue: #60a5fa;
+  --status-blue-bg: rgba(59, 130, 246, 0.1);
+  --status-rose: #fb7185;
+  --status-rose-bg: rgba(244, 63, 94, 0.1);
+}
+
+:root.light-mode {
+  --background: #F5F5F0; /* Ivory */
+  --foreground: #2A1D15; /* Deep Walnut */
+  --primary: #5D4037; /* Walnut Brown */
+  --primary-glow: rgba(93, 64, 55, 0.1);
+  --accent: #8D6E63;
+  --surface: rgba(245, 245, 240, 0.75);
+  --border: rgba(42, 29, 21, 0.15);
+  --grid-line: rgba(42, 29, 21, 0.03);
+  --glass: blur(20px);
+  --sidebar-bg: #EBEAE4;
+  --card-shadow: 0 4px 20px 0 rgba(42, 29, 21, 0.05);
+  --faint: rgba(42, 29, 21, 0.45); /* Significantly increased for light mode */
+  --muted: rgba(42, 29, 21, 0.85); /* Significantly increased for light mode */
+  --status-emerald: #059669;
+  --status-emerald-bg: rgba(5, 150, 105, 0.08);
+  --status-blue: #2563eb;
+  --status-blue-bg: rgba(37, 99, 235, 0.08);
+  --status-rose: #e11d48;
+  --status-rose-bg: rgba(225, 29, 72, 0.08);
 }
 
 @theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui;
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  transition: background-color 0.4s ease, color 0.4s ease;
   overflow-x: hidden;
+  position: relative;
+  scrollbar-gutter: stable;
 }
 
-/* Custom Industrial Utilities */
+/* Noise Texture Overlay */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 9999;
+}
+
 .glass-card {
   background: var(--surface);
-  backdrop-filter: blur(12px);
+  backdrop-filter: var(--glass);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
   border-color: var(--primary);
-  box-shadow: 0 0 20px var(--primary-glow);
-}
-
-.neon-text {
-  text-shadow: 0 0 10px var(--primary-glow);
+  background: var(--surface);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px -10px var(--primary-glow);
 }
 
 .industrial-grid {
-  background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
-  background-size: 24px 24px;
+  background-image: 
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.neon-text {
+  text-shadow: 0 0 8px var(--primary-glow);
+}
+
+.animate-spin-slow {
+  animation: spin 8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: var(--faint);
   border-radius: 10px;
 }
 

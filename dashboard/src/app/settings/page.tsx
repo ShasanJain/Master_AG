@@ -1,11 +1,16 @@
 'use client';
 
 import { useState, useEffect } from "react";
+
 import { StatusBadge } from "../components/StatusBadge";
+import { getConfig, updateConfig } from "../actions/config";
 
 export default function SettingsPage() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [isFloatingEnabled, setIsFloatingEnabled] = useState(false);
+
+  const [isLocalInference, setIsLocalInference] = useState(false);
+  const [ollamaModel, setOllamaModel] = useState('llama3.2');
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('jack-theme') as 'dark' | 'light';
@@ -15,6 +20,12 @@ export default function SettingsPage() {
       applyTheme(new Event('init') as any, savedTheme);
     }
     setIsFloatingEnabled(floating);
+
+    // Fetch engine config
+    getConfig(['LOCAL_INFERENCE', 'OLLAMA_MODEL']).then(config => {
+      setIsLocalInference(config['LOCAL_INFERENCE'] === 'true');
+      if (config['OLLAMA_MODEL']) setOllamaModel(config['OLLAMA_MODEL']);
+    });
   }, []);
 
   const applyTheme = (e: React.MouseEvent | Event, newTheme: 'dark' | 'light') => {
@@ -33,7 +44,13 @@ export default function SettingsPage() {
     const newState = !isFloatingEnabled;
     setIsFloatingEnabled(newState);
     localStorage.setItem('jack-floating-enabled', newState.toString());
-    window.location.reload(); // Quickest way to sync the global component state
+    window.location.reload(); 
+  };
+
+  const toggleLocalInference = async () => {
+    const newState = !isLocalInference;
+    setIsLocalInference(newState);
+    await updateConfig('LOCAL_INFERENCE', newState.toString());
   };
 
   return (
@@ -106,9 +123,40 @@ export default function SettingsPage() {
         <div className="space-y-6">
           <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-[var(--muted)] border-b border-[var(--border)] pb-4">Identity & Access</h3>
           <div className="glass-card p-0 divide-y divide-[var(--border)]">
+            <ApiItem provider="Ollama" status="CONNECTED" />
             <ApiItem provider="OpenRouter" status="CONNECTED" />
             <ApiItem provider="GitHub" status="CONNECTED" />
-            <ApiItem provider="Google Cloud" status="OFFLINE" />
+          </div>
+        </div>
+
+        {/* Neural Engine */}
+        <div className="space-y-6">
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-[var(--muted)] border-b border-[var(--border)] pb-4">Neural Engine</h3>
+          <div className="grid grid-cols-1 gap-4">
+             <div className="glass-card p-6 flex items-center justify-between group">
+               <div className="space-y-1">
+                 <h4 className="font-bold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors">Local Inference Mode</h4>
+                 <p className="text-xs text-[var(--muted)]">Route all cognitive logic to local Ollama models (Zero Token Cost).</p>
+               </div>
+               <div 
+                 onClick={toggleLocalInference}
+                 className={`w-12 h-6 rounded-full relative transition-all cursor-pointer ${isLocalInference ? 'bg-[var(--primary)]' : 'bg-[var(--surface)] border border-[var(--border)]'}`}
+               >
+                 <div className={`absolute top-1 w-4 h-4 rounded-full bg-[var(--background)] transition-all ${isLocalInference ? 'left-7' : 'left-1'}`} />
+               </div>
+             </div>
+
+             <div className="glass-card p-6 flex items-center justify-between group">
+               <div className="space-y-1">
+                 <h4 className="font-bold text-[var(--foreground)]">Active Local Model</h4>
+                 <p className="text-xs text-[var(--muted)]">Specify the primary model used for local chat completions.</p>
+               </div>
+               <div className="flex items-center gap-3">
+                 <span className="text-[10px] font-mono font-bold px-2 py-1 rounded bg-[var(--surface)] border border-[var(--border)] text-[var(--primary)]">
+                    {ollamaModel}
+                 </span>
+               </div>
+             </div>
           </div>
         </div>
 

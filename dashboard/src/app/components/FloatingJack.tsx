@@ -53,6 +53,7 @@ export function FloatingJack() {
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
+    if (!position) return;
     offsetRef.current = {
       x: e.clientX - position.x,
       y: e.clientY - position.y

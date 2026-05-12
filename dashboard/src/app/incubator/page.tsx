@@ -22,12 +22,6 @@ export default function IncubatorPage() {
           desc="Self-healing code engine using real-time LSP analysis and backpropagation." 
           tags={["PYTHON", "LSP"]}
         />
-        <DraftCard 
-          title="Vector Memory v2" 
-          progress={42} 
-          desc="Long-term episodic memory for Jack using localized vector embeddings." 
-          tags={["ML", "RAG"]}
-        />
       </section>
 
       {/* New Project Prompt */}

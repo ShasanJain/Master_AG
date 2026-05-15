@@ -65,6 +65,7 @@ export default function RootLayout({
             <NavItem label="Cognitive Memory" href="/memory" icon={<IconDashboard className="w-4 h-4" />} />
             <NavItem label="Incubator" href="/incubator" icon={<IconIncubator className="w-4 h-4" />} />
             <NavItem href="/chat" label="Neural Link" icon={<span className="text-sm">📡</span>} />
+            <NavItem href="/neural" label="Neural Map" icon={<span className="text-sm">🧠</span>} />
             <div className="pt-4 mt-4 border-t border-[var(--border)]">
               <NavItem label="Settings" href="/settings" icon={<IconSettings className="w-4 h-4" />} />
             </div>

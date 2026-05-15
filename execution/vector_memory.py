@@ -3,6 +3,12 @@ import sys
 import json
 import logging
 import asyncio
+import io
+
+# Fix Windows encoding issues
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
 from dotenv import load_dotenv
 
 # Load .env first
@@ -56,7 +62,7 @@ async def forget_memory(memory_id: str):
 async def list_memories(user_id: str = "jack"):
     """List all memories for a user."""
     mem = get_memory()
-    results = await mem.search("", user_id=user_id, limit=100)
+    results = await mem.search("*", user_id=user_id, limit=100)
     return results
 
 async def get_stats(user_id: str = "jack"):
@@ -70,6 +76,24 @@ async def get_stats(user_id: str = "jack"):
         sectors[sec] = sectors.get(sec, 0) + 1
     return {"total": len(results), "sectors": sectors}
 
+async def search_memory(query: str, user_id: str = "jack", limit: int = 10):
+    """Search for memories."""
+    mem = get_memory()
+    return await mem.search(query, user_id=user_id, limit=limit)
+
+async def purge_memories(sector: str = None):
+    """Delete all memories or by sector."""
+    mem = get_memory()
+    # OpenMemory doesn't have a direct 'purge all' for a user yet in some versions
+    # So we search all and delete individually
+    results = await mem.search("*", limit=1000)
+    count = 0
+    for r in results:
+        if not sector or r.get('metadata', {}).get('sector') == sector:
+            await mem.delete(r['id'])
+            count += 1
+    return count
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
@@ -79,9 +103,19 @@ if __name__ == "__main__":
     p_store.add_argument("text")
     p_store.add_argument("--sector", default="semantic")
     
-    p_list = sub.add_parser("list")
+    sub.add_parser("list")
+    sub.add_parser("stats")
     
-    p_stats = sub.add_parser("stats")
+    p_search = sub.add_parser("search")
+    p_search.add_argument("query")
+    p_search.add_argument("--limit", type=int, default=10)
+
+    p_forget = sub.add_parser("forget")
+    p_forget.add_argument("id")
+
+    p_purge = sub.add_parser("purge")
+    p_purge.add_argument("--sector")
+    p_purge.add_argument("--all", action="store_true")
     
     args = parser.parse_args()
     
@@ -93,6 +127,19 @@ if __name__ == "__main__":
         for r in res:
             sec = r.get('metadata', {}).get('sector') or r.get('primary_sector', 'unknown')
             print(f"[{sec.upper()}] {r.get('content')}")
+    elif args.command == "search":
+        res = asyncio.run(search_memory(args.query, limit=args.limit))
+        print(json.dumps(res))
+    elif args.command == "forget":
+        asyncio.run(forget_memory(args.id))
+        print(f"Deleted memory {args.id}")
+    elif args.command == "purge":
+        if args.all:
+            count = asyncio.run(purge_memories())
+            print(f"Purged all {count} memories.")
+        elif args.sector:
+            count = asyncio.run(purge_memories(args.sector))
+            print(f"Purged {count} memories from {args.sector}.")
     elif args.command == "stats":
         res = asyncio.run(get_stats())
         print(json.dumps(res))

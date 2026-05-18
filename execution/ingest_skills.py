@@ -8,7 +8,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SKILLS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "skills"))
+GLOBAL_SKILLS_DIR = os.path.abspath(os.path.expanduser("~/.gemini/skills"))
+LOCAL_SKILLS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "skills"))
+SKILLS_DIR = GLOBAL_SKILLS_DIR if os.path.exists(GLOBAL_SKILLS_DIR) else LOCAL_SKILLS_DIR
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 EMBED_MODEL = "nomic-embed-text"
 
@@ -48,13 +50,13 @@ async def ingest_batch(batch_data):
         })
     print(f" > Successfully batched {len(batch_data)} skills.")
 
-async def migrate_industrial():
+async def migrate_industrial(overwrite=False):
     """Industrial-grade batch migration with resume support."""
-    ds = init_vault(overwrite=False)
+    ds = init_vault(overwrite=overwrite)
     
     # Get existing paths to skip
     existing_paths = set()
-    if len(ds) > 0:
+    if len(ds) > 0 and not overwrite:
         print(f"[INFO] Fetching {len(ds)} existing paths from vault...")
         # Load metadata in chunks if needed, but for 4k it's fine
         metas = ds.metadata.data()["value"]
@@ -107,4 +109,8 @@ async def migrate_industrial():
     print(f"\n[COMPLETE] Synchronized {total_count} new skills. Skipped {skip_count} existing. Total vault: {len(ds)}")
 
 if __name__ == "__main__":
-    asyncio.run(migrate_industrial())
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--reset", action="store_true", help="Reset and rebuild the entire vault index.")
+    args = parser.parse_args()
+    asyncio.run(migrate_industrial(overwrite=args.reset))

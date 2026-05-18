@@ -1,0 +1,22 @@
+{
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/.tmp": true,
+    "**/*.db": true,
+    "**/*.log": true
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/.tmp": true,
+    "**/*.db": true
+  },
+  "python.analysis.extraPaths": [
+    "./execution"
+  ],
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
+}

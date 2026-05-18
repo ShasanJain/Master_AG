@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import MemoryStats from "../incubator/MemoryStats";
 import { execSync } from "child_process";
 import path from "path";

@@ -59,6 +59,24 @@ async def list_memories(user_id: str = "jack"):
     results = await mem.search("", user_id=user_id, limit=100)
     return results
 
+async def recall_memory(query: str, user_id: str = "jack", limit: int = 100):
+    """Semantic search for memories."""
+    mem = get_memory()
+    results = await mem.search(query, user_id=user_id, limit=limit)
+    return results
+
+async def purge_memories(sector: str = None, user_id: str = "jack"):
+    """Purge memories. If sector is None, purge all."""
+    mem = get_memory()
+    results = await mem.search("*", user_id=user_id, limit=1000)
+    deleted_count = 0
+    for r in results:
+        sec = r.get('metadata', {}).get('sector') or r.get('primary_sector', 'unknown')
+        if sector is None or sec == sector:
+            await mem.delete(r['id'])
+            deleted_count += 1
+    return deleted_count
+
 async def get_stats(user_id: str = "jack"):
     """Get memory statistics."""
     mem = get_memory()
@@ -80,8 +98,20 @@ if __name__ == "__main__":
     p_store.add_argument("--sector", default="semantic")
     
     p_list = sub.add_parser("list")
+    p_list.add_argument("--json", action="store_true")
     
     p_stats = sub.add_parser("stats")
+    
+    p_forget = sub.add_parser("forget")
+    p_forget.add_argument("memory_id")
+    
+    p_purge = sub.add_parser("purge")
+    p_purge.add_argument("--sector", default=None)
+    p_purge.add_argument("--all", action="store_true")
+    
+    p_recall = sub.add_parser("recall")
+    p_recall.add_argument("query")
+    p_recall.add_argument("--limit", type=int, default=100)
     
     args = parser.parse_args()
     
@@ -90,9 +120,30 @@ if __name__ == "__main__":
         print(f"Stored in {args.sector}.")
     elif args.command == "list":
         res = asyncio.run(list_memories())
-        for r in res:
-            sec = r.get('metadata', {}).get('sector') or r.get('primary_sector', 'unknown')
-            print(f"[{sec.upper()}] {r.get('content')}")
+        if args.json:
+            print(json.dumps([{
+                "id": r.get("id"),
+                "content": r.get("content"),
+                "metadata": r.get("metadata") or r.get("meta") or {}
+            } for r in res]))
+        else:
+            for r in res:
+                sec = r.get('metadata', {}).get('sector') or r.get('primary_sector', 'unknown')
+                print(f"[{sec.upper()}] {r.get('content')}")
     elif args.command == "stats":
         res = asyncio.run(get_stats())
         print(json.dumps(res))
+    elif args.command == "forget":
+        asyncio.run(forget_memory(args.memory_id))
+        print(f"Forgotten memory {args.memory_id}.")
+    elif args.command == "purge":
+        sec = args.sector if not args.all else None
+        count = asyncio.run(purge_memories(sector=sec))
+        print(f"Purged {count} memories.")
+    elif args.command == "recall":
+        res = asyncio.run(recall_memory(args.query, limit=args.limit))
+        print(json.dumps([{
+            "id": r.get("id"),
+            "content": r.get("content"),
+            "metadata": r.get("metadata") or r.get("meta") or {}
+        } for r in res]))

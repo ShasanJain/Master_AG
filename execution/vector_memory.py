@@ -3,12 +3,18 @@ import sys
 import json
 import logging
 import asyncio
+import io
+
+# Fix Windows encoding issues
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
 from dotenv import load_dotenv
 
 # Load .env first
 load_dotenv()
 
-# CRITICAL: Set environment variables BEFORE importing OpenMemory
+# Set environment variables
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DB_PATH = os.path.join(BASE_DIR, "openmemory.db")
 os.environ["OM_EMBED_KIND"] = os.getenv("OM_EMBED_KIND", "ollama")
@@ -44,7 +50,6 @@ async def store_memory(text: str, user_id: str = "jack", sector: str = "semantic
         "source": "jack-cli",
         "tags": tags or []
     }
-    # OpenMemory uses 'meta' keyword
     result = await mem.add(text, user_id=user_id, meta=metadata)
     return result
 
@@ -56,7 +61,7 @@ async def forget_memory(memory_id: str):
 async def list_memories(user_id: str = "jack"):
     """List all memories for a user."""
     mem = get_memory()
-    results = await mem.search("", user_id=user_id, limit=100)
+    results = await mem.search("*", user_id=user_id, limit=100)
     return results
 
 async def recall_memory(query: str, user_id: str = "jack", limit: int = 100):
@@ -80,7 +85,6 @@ async def purge_memories(sector: str = None, user_id: str = "jack"):
 async def get_stats(user_id: str = "jack"):
     """Get memory statistics."""
     mem = get_memory()
-    # Search for '*' to get all memories safely
     results = await mem.search("*", user_id=user_id, limit=1000)
     sectors = {}
     for r in results:
@@ -113,6 +117,11 @@ if __name__ == "__main__":
     p_recall.add_argument("query")
     p_recall.add_argument("--limit", type=int, default=100)
     
+    # Add search alias mapping to recall
+    p_search = sub.add_parser("search")
+    p_search.add_argument("query")
+    p_search.add_argument("--limit", type=int, default=100)
+    
     args = parser.parse_args()
     
     if args.command == "store":
@@ -135,12 +144,12 @@ if __name__ == "__main__":
         print(json.dumps(res))
     elif args.command == "forget":
         asyncio.run(forget_memory(args.memory_id))
-        print(f"Forgotten memory {args.memory_id}.")
+        print(f"Deleted memory {args.memory_id}")
     elif args.command == "purge":
         sec = args.sector if not args.all else None
         count = asyncio.run(purge_memories(sector=sec))
         print(f"Purged {count} memories.")
-    elif args.command == "recall":
+    elif args.command in ["recall", "search"]:
         res = asyncio.run(recall_memory(args.query, limit=args.limit))
         print(json.dumps([{
             "id": r.get("id"),

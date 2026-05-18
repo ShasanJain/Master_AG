@@ -4,6 +4,7 @@ import os
 import re
 from dotenv import load_dotenv
 from vector_memory import get_memory, store_memory, forget_memory
+from deep_lake_vault import search_vault
 import asyncio
 
 load_dotenv()
@@ -13,13 +14,9 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 async def execute_cognitive_tags(text):
-    """
-    Parse and execute cognitive tags from text.
-    New support for File System Agency.
-    """
     actions_taken = []
     
-    # <store sector="semantic">content</store>
+    # Memory Storage
     store_matches = re.finditer(r'<store\s+sector="([^"]+)">([\s\S]*?)</store>', text)
     for match in store_matches:
         sector, content = match.group(1), match.group(2).strip()
@@ -28,7 +25,7 @@ async def execute_cognitive_tags(text):
             actions_taken.append(f"Memory: Archived in {sector}.")
         except Exception as e: actions_taken.append(f"Memory Error: {e}")
 
-    # <read_file path="relative/path" />
+    # File Agency
     read_matches = re.finditer(r'<read_file\s+path="([^"]+)"\s*/>', text)
     for match in read_matches:
         path = os.path.join(BASE_DIR, match.group(1))
@@ -36,11 +33,10 @@ async def execute_cognitive_tags(text):
             if os.path.exists(path):
                 with open(path, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
-                actions_taken.append(f"FILE_READ: {match.group(1)}\n{content[:500]}...") # Limit preview
+                actions_taken.append(f"FILE_READ: {match.group(1)}\n{content[:500]}...")
             else: actions_taken.append(f"Read Error: File not found {match.group(1)}")
         except Exception as e: actions_taken.append(f"Read Error: {e}")
 
-    # <write_file path="relative/path">content</write_file>
     write_matches = re.finditer(r'<write_file\s+path="([^"]+)">([\s\S]*?)</write_file>', text)
     for match in write_matches:
         path = os.path.join(BASE_DIR, match.group(1))
@@ -55,37 +51,46 @@ async def execute_cognitive_tags(text):
     return actions_taken
 
 def clean_tags(text):
-    """Clean all cognitive tags for the user view."""
     text = re.sub(r'<store\s+sector="([^"]+)">([\s\S]*?)</store>', '', text)
     text = re.sub(r'<read_file\s+path="([^"]+)"\s*/>', '', text)
     text = re.sub(r'<write_file\s+path="([^"]+)">([\s\S]*?)</write_file>', '', text)
     return text.strip()
 
 async def get_context(query: str):
-    """Search for relevant context."""
+    """
+    Hybrid Retrieval: OpenMemory (Personal) + Deep Lake (Industrial).
+    """
+    context = ""
+    
+    # 1. Search OpenMemory (Episodic/Semantic/Preferences)
     try:
         mem = get_memory()
-        results = await mem.search(query, limit=2)
-        if not results: return ""
-        context = "\n--- RELEVANT CONTEXT ---\n"
-        for r in results:
-            sector = r.get('metadata', {}).get('sector') or r.get('primary_sector', 'knowledge')
-            context += f"[{sector.upper()}] {r.get('content')}\n"
-        return context + "------------------------\n"
-    except: return ""
+        om_results = await mem.search(query, limit=2)
+        if om_results:
+            context += "\n--- PERSONAL CONTEXT (OpenMemory) ---\n"
+            for r in om_results:
+                context += f"{r.get('content')}\n"
+    except: pass
+
+    # 2. Search Deep Lake (Procedural Skills Registry)
+    try:
+        dl_results = await search_vault(query, limit=2)
+        if dl_results:
+            context += "\n--- INDUSTRIAL SKILLS (Deep Lake Vault) ---\n"
+            for r in dl_results:
+                context += f"{r.get('content')}\n"
+    except: pass
+    
+    return context + "\n------------------------\n" if context else ""
 
 async def chat_complete(messages, model=None, context="", depth=0):
-    """Recursive chat with File System Agency and Memory."""
     if depth > 2: return "Recursive limit reached."
     
     url = f"{OLLAMA_URL}/api/chat"
     system_msg = (
-        "You are Jack, a local autonomous engineer. You have FILE SYSTEM ACCESS.\n"
-        "Available Tags:\n"
-        "- <read_file path=\"relative/path\" />\n"
-        "- <write_file path=\"relative/path\">content</write_file>\n"
-        "- <store sector=\"semantic\">content</store>\n"
-        "Use these tags to inspect code or create files. Respond in natural language."
+        "You are Jack, a local autonomous engineer with DUAL-CORE memory.\n"
+        "You have access to Personal Context (OpenMemory) and Industrial Skills (Deep Lake).\n"
+        "Use your File System tags and memory tags to assist the user. Speak naturally."
     )
     if context and depth == 0:
         system_msg += f"\n\nContext:\n{context}"
@@ -93,26 +98,41 @@ async def chat_complete(messages, model=None, context="", depth=0):
     final_messages = [{"role": "system", "content": system_msg}] + messages
 
     try:
+        print(f"[THINKING] Model: {model or OLLAMA_MODEL} | Depth: {depth}")
         loop = asyncio.get_event_loop()
         response = await loop.run_in_executor(None, lambda: requests.post(url, json={
             "model": model or OLLAMA_MODEL,
             "messages": final_messages,
             "stream": False,
             "options": {"num_ctx": 4096}
-        }, timeout=60))
+        }, timeout=120))
         response.raise_for_status()
         raw_content = response.json().get("message", {}).get("content", "")
         
         actions = await execute_cognitive_tags(raw_content)
         
         if actions:
-            # Add action results to history and recurse for natural confirmation
+            print(f"[ACTION] Jack executed {len(actions)} tasks.")
             messages.append({"role": "assistant", "content": raw_content})
             messages.append({"role": "user", "content": f"ACTION_RESULTS:\n{chr(10).join(actions)}"})
             return await chat_complete(messages, model=model, depth=depth + 1)
             
         return clean_tags(raw_content)
     except Exception as e: return f"Neural Error: {str(e)}"
+
+def query_ollama(prompt, model=None):
+    """Simple synchronous prompt-response helper."""
+    url = f"{OLLAMA_URL}/api/generate"
+    try:
+        response = requests.post(url, json={
+            "model": model or OLLAMA_MODEL,
+            "prompt": prompt,
+            "stream": False
+        }, timeout=120)
+        response.raise_for_status()
+        return response.json().get("response", "")
+    except Exception as e:
+        return f"Error: {e}"
 
 async def main():
     import sys
@@ -130,7 +150,7 @@ async def main():
         
     res = await chat_complete(msgs, context=context)
     
-    # Save the final interaction to Episodic Memory for history
+    # Save the final interaction to Episodic Memory
     full_exchange = f"User: {last_query}\nJack: {res}"
     await store_memory(full_exchange, sector="episodic", tags=["chat_history"])
     

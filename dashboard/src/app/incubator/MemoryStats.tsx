@@ -24,7 +24,7 @@ export default async function MemoryStats() {
     );
   }
 
-  const total = stats?.total_memories || 0;
+  const total = stats?.total || 0;
   const sectors = stats?.sectors || {};
   const semantic = sectors.semantic || 0;
   const episodic = sectors.episodic || 0;

@@ -1,0 +1,33 @@
+{
+    "chunk_compression": null,
+    "dtype": "float32",
+    "hidden": false,
+    "htype": "generic",
+    "is_link": false,
+    "is_sequence": false,
+    "length": 4173,
+    "links": {
+        "_embedding_id": {
+            "extend": "extend_id",
+            "flatten_sequence": false
+        },
+        "_embedding_shape": {
+            "extend": "extend_shape",
+            "flatten_sequence": true,
+            "update": "update_shape"
+        }
+    },
+    "max_chunk_size": null,
+    "max_shape": [
+        768
+    ],
+    "min_shape": [
+        768
+    ],
+    "name": "embedding",
+    "sample_compression": null,
+    "tiling_threshold": null,
+    "typestr": "<f4",
+    "verify": true,
+    "version": "3.9.52"
+}

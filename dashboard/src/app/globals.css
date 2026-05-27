@@ -124,3 +124,48 @@ body::before {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
 }
+
+/* Sidebar Minimization */
+#sidebar-toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#sidebar-toggle:checked ~ aside {
+  width: 5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  align-items: center;
+}
+
+#sidebar-toggle:checked ~ aside .mb-12 div div,
+#sidebar-toggle:checked ~ aside .sidebar-label,
+#sidebar-toggle:checked ~ aside .mt-auto {
+  display: none !important;
+}
+
+#sidebar-toggle:checked ~ aside nav a {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#sidebar-toggle:checked ~ aside nav a div {
+  margin: 0;
+}
+
+#sidebar-toggle:checked ~ aside .toggle-btn span {
+  display: none;
+}
+
+#sidebar-toggle:checked ~ aside .toggle-btn::before {
+  content: "▶";
+  font-size: 10px;
+}
+
+#sidebar-toggle:not(:checked) ~ aside .toggle-btn::before {
+  content: "◀";
+  font-size: 10px;
+  margin-right: 8px;
+}

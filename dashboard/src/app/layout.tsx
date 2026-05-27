@@ -44,10 +44,11 @@ export default function RootLayout({
         />
       </head>
       <body className={`${outfit.variable} font-sans antialiased industrial-grid min-h-screen flex text-[var(--foreground)]`}>
+        <input type="checkbox" id="sidebar-toggle" />
         {/* Sidebar */}
-        <aside className="w-72 border-r border-[var(--border)] bg-[var(--sidebar-bg)] backdrop-blur-2xl flex flex-col p-8 sticky top-0 h-screen z-50">
+        <aside className="w-72 border-r border-[var(--border)] bg-[var(--sidebar-bg)] backdrop-blur-2xl flex flex-col p-8 sticky top-0 h-screen z-50 transition-all duration-300">
           <div className="mb-12">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-[var(--primary)] flex items-center justify-center shadow-[0_0_20px_var(--primary-glow)]">
                 <span className="text-xl font-bold text-white tracking-tighter italic">J</span>
               </div>
@@ -56,6 +57,9 @@ export default function RootLayout({
                 <p className="text-[9px] uppercase tracking-[0.2em] text-[var(--muted)] font-bold">Industrial Engine</p>
               </div>
             </div>
+            <label htmlFor="sidebar-toggle" className="toggle-btn cursor-pointer p-2 rounded-lg bg-[var(--faint)] border border-[var(--border)] hover:bg-[var(--primary-glow)] transition-all flex items-center justify-center text-[8px] font-bold uppercase tracking-widest">
+              <span>Minimize</span>
+            </label>
           </div>
           
           <nav className="flex-1 space-y-1">
@@ -123,7 +127,7 @@ function NavItem({ label, href, icon }: { label: string; href: string; icon: Rea
       <div className="text-[var(--muted)] group-hover:text-[var(--primary)] transition-colors">
         {icon}
       </div>
-      {label}
+      <span className="sidebar-label">{label}</span>
     </Link>
   );
 }

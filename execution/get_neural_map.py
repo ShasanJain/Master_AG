@@ -12,7 +12,23 @@ os.environ["DEEPLAKE_LOG_LEVEL"] = "error"
 
 from vector_memory import DB_PATH
 from deep_lake_vault import VAULT_PATH
-import deeplake
+
+class SilenceStdout:
+    def __enter__(self):
+        sys.stdout.flush()
+        self.old_stdout_fd = os.dup(1)
+        self.null_fd = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(self.null_fd, 1)
+        os.close(self.null_fd)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout.flush()
+        os.dup2(self.old_stdout_fd, 1)
+        os.close(self.old_stdout_fd)
+
+# Silence low-level stdout during import of deeplake
+with SilenceStdout():
+    import deeplake
 
 def decode_vector(blob):
     """Decode SQLite BLOB vector to numpy array (assumes float32)."""
@@ -78,7 +94,8 @@ async def generate_graph(limit_mem=100, limit_skills=100, threshold=0.75):
     skills_data = []
     if os.path.exists(VAULT_PATH):
         try:
-            ds = deeplake.load(VAULT_PATH, read_only=True)
+            with SilenceStdout():
+                ds = deeplake.load(VAULT_PATH, read_only=True)
             num_skills = min(len(ds), limit_skills)
             if num_skills > 0:
                 texts = ds.text.data()["value"][:num_skills]
@@ -108,7 +125,46 @@ async def generate_graph(limit_mem=100, limit_skills=100, threshold=0.75):
         except Exception:
             pass
 
-    # 3. Combine vectors and calculate semantic proximity clusters
+    # 3. Fetch Graphify AST structure from graphify-out/graph.json
+    graphify_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "graphify-out", "graph.json")
+    if os.path.exists(graphify_path):
+        try:
+            with open(graphify_path, "r", encoding="utf-8") as f:
+                graphify_data = json.load(f)
+            
+            # Map graphify node IDs to keep track
+            graphify_node_ids = set()
+            for g_node in graphify_data.get("nodes", []):
+                node_id = g_node.get("id")
+                # Group as 'ast' for distinction
+                node = {
+                    "id": node_id,
+                    "label": g_node.get("label", node_id),
+                    "group": "ast",
+                    "content": f"AST: {g_node.get('file_type', 'code')} in {g_node.get('source_file')}",
+                    "sector": "structural",
+                    "salience": 0.8,
+                    "source_file": g_node.get("source_file"),
+                    "source_location": g_node.get("source_location")
+                }
+                nodes.append(node)
+                graphify_node_ids.add(node_id)
+            
+            # Merge graphify links
+            for g_link in graphify_data.get("links", []):
+                src = g_link.get("source")
+                tgt = g_link.get("target")
+                if src in graphify_node_ids and tgt in graphify_node_ids:
+                    links.append({
+                        "source": src,
+                        "target": tgt,
+                        "value": g_link.get("weight", 0.5),
+                        "relation": g_link.get("relation", "contains")
+                    })
+        except Exception as e:
+            sys.stderr.write(f"Warning loading Graphify: {e}\n")
+
+    # 4. Combine vectors and calculate semantic proximity clusters
     all_vectors = memories_data + skills_data
     
     # Calculate relationships (Cosine Similarity)
@@ -138,8 +194,25 @@ async def generate_graph(limit_mem=100, limit_skills=100, threshold=0.75):
                 links.append({
                     "source": node_id_i,
                     "target": target_id,
-                    "value": val
+                    "value": val,
+                    "relation": "semantic_similarity"
                 })
+
+    # 5. Connect AST nodes to corresponding industrial skills/memories based on filename matches
+    for node in nodes:
+        if node["group"] == "ast" and node.get("source_file"):
+            # Check if any skill or memory corresponds to this file
+            src_file = node["source_file"].replace("/", "\\").lower()
+            for other in nodes:
+                if other["group"] == "industrial" and other.get("content") and "skill" in other.get("content").lower():
+                    # Check if file path is in the content
+                    if src_file in other.get("content").lower() or other["label"].lower() in src_file:
+                        links.append({
+                            "source": node["id"],
+                            "target": other["id"],
+                            "value": 1.0,
+                            "relation": "implements"
+                        })
 
     return {
         "nodes": nodes,

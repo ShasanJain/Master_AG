@@ -56,30 +56,75 @@ def clean_tags(text):
     text = re.sub(r'<write_file\s+path="([^"]+)">([\s\S]*?)</write_file>', '', text)
     return text.strip()
 
+import subprocess
+
+def classify_query(query: str) -> str:
+    """Classify query complexity for routing."""
+    q = query.lower()
+    structural_terms = ["architecture", "structure", "how does", "connect", "dependency", "import", "flow", "call", "path"]
+    global_terms = ["summary", "overview", "all", "general", "high-level", "big picture", "communities", "clusters"]
+    
+    if any(t in q for t in global_terms): return "global"
+    if any(t in q for t in structural_terms): return "structural"
+    return "simple"
+
 async def get_context(query: str):
     """
-    Hybrid Retrieval: OpenMemory (Personal) + Deep Lake (Industrial).
+    Hybrid Retrieval Router (Phase 4).
+    Routes to Vector Search, Graph Traversal, or Global Summaries based on query.
     """
     context = ""
+    q_type = classify_query(query)
+    context += f"--- RETRIEVAL ROUTER (Mode: {q_type.upper()}) ---\n"
     
-    # 1. Search OpenMemory (Episodic/Semantic/Preferences)
-    try:
-        mem = get_memory()
-        om_results = await mem.search(query, limit=2)
-        if om_results:
-            context += "\n--- PERSONAL CONTEXT (OpenMemory) ---\n"
-            for r in om_results:
-                context += f"{r.get('content')}\n"
-    except: pass
-
-    # 2. Search Deep Lake (Procedural Skills Registry)
-    try:
-        dl_results = await search_vault(query, limit=2)
-        if dl_results:
-            context += "\n--- INDUSTRIAL SKILLS (Deep Lake Vault) ---\n"
-            for r in dl_results:
-                context += f"{r.get('content')}\n"
-    except: pass
+    if q_type == "global":
+        # Global: Fetch Community Summaries
+        report_path = os.path.join(BASE_DIR, "graphify-out", "GRAPH_REPORT.md")
+        try:
+            if os.path.exists(report_path):
+                with open(report_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    import re
+                    match = re.search(r'## Communities.*?(?=##|$)', content, re.DOTALL)
+                    if match:
+                        context += match.group(0)[:2000] + "\n"
+                    else:
+                        context += "No community summaries found.\n"
+        except Exception as e:
+            context += f"Failed to load global graph context: {e}\n"
+            
+    elif q_type == "structural":
+        # Structural: Run graphify query
+        try:
+            loop = asyncio.get_event_loop()
+            output = await loop.run_in_executor(
+                None, 
+                lambda: subprocess.check_output(
+                    ["npx", "-y", "graphify", "query", query, "--budget", "1500"], 
+                    cwd=BASE_DIR, text=True, stderr=subprocess.STDOUT
+                )
+            )
+            context += output + "\n"
+        except Exception as e:
+            context += f"Graph traversal failed: {e}\n"
+            
+    else:
+        # Simple: Vector Search (OpenMemory + Deep Lake)
+        try:
+            mem = get_memory()
+            om_results = await mem.search(query, limit=2)
+            if om_results:
+                context += "\n--- PERSONAL CONTEXT (OpenMemory) ---\n"
+                for r in om_results:
+                    context += f"{r.get('content')}\n"
+        except: pass
+        try:
+            dl_results = await search_vault(query, limit=2)
+            if dl_results:
+                context += "\n--- INDUSTRIAL SKILLS (Deep Lake Vault) ---\n"
+                for r in dl_results:
+                    context += f"{r.get('content')}\n"
+        except: pass
     
     return context + "\n------------------------\n" if context else ""
 

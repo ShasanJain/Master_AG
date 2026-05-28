@@ -46,7 +46,7 @@ export default function RootLayout({
       <body className={`${outfit.variable} font-sans antialiased industrial-grid min-h-screen flex text-[var(--foreground)]`}>
         <input type="checkbox" id="sidebar-toggle" />
         {/* Sidebar */}
-        <aside className="w-72 border-r border-[var(--border)] bg-[var(--sidebar-bg)] backdrop-blur-2xl flex flex-col p-8 sticky top-0 h-screen z-50 transition-all duration-300">
+        <aside className="relative w-72 shrink-0 border-r border-[var(--border)] bg-[var(--sidebar-bg)] backdrop-blur-2xl flex flex-col p-8 sticky top-0 h-screen z-50 transition-all duration-300">
           <div className="mb-12">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-[var(--primary)] flex items-center justify-center shadow-[0_0_20px_var(--primary-glow)]">
@@ -57,10 +57,17 @@ export default function RootLayout({
                 <p className="text-[9px] uppercase tracking-[0.2em] text-[var(--muted)] font-bold">Industrial Engine</p>
               </div>
             </div>
-            <label htmlFor="sidebar-toggle" className="toggle-btn cursor-pointer p-2 rounded-lg bg-[var(--faint)] border border-[var(--border)] hover:bg-[var(--primary-glow)] transition-all flex items-center justify-center text-[8px] font-bold uppercase tracking-widest">
-              <span>Minimize</span>
-            </label>
           </div>
+          
+          {/* Small circular toggle label for sidebar */}
+          <label
+            htmlFor="sidebar-toggle"
+            className="absolute top-10 -right-3 w-6 h-6 bg-[var(--background)] hover:bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center rounded-full cursor-pointer shadow-lg z-50 transition-all toggle-btn text-[var(--muted)] hover:text-[var(--foreground)]"
+          >
+            <svg className="w-3 h-3 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+            </svg>
+          </label>
           
           <nav className="flex-1 space-y-1">
             <NavItem label="Dashboard" href="/" icon={<IconDashboard className="w-4 h-4" />} />
@@ -87,7 +94,7 @@ export default function RootLayout({
         </aside>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-h-screen relative">
+        <div className="flex-1 flex flex-col min-h-screen relative min-w-0">
           {/* Global Header */}
           <header className="h-20 border-b border-[var(--border)] flex items-center justify-between px-10 sticky top-0 bg-[var(--background)]/80 backdrop-blur-md z-40">
             <div className="flex items-center gap-4">

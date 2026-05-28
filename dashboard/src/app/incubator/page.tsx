@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { StatusBadge } from "../components/StatusBadge";
 import MemoryStats from "./MemoryStats";
 import SovereigntyPanel from "./SovereigntyPanel";

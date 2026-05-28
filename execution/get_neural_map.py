@@ -1,10 +1,12 @@
 import os
 import sys
 import json
+import re
 import sqlite3
 import numpy as np
 import warnings
 import asyncio
+from collections import Counter
 
 # Suppress all noisy library warnings to guarantee clean JSON stdout
 warnings.filterwarnings("ignore")
@@ -15,18 +17,9 @@ from deep_lake_vault import VAULT_PATH
 
 class SilenceStdout:
     def __enter__(self):
-        sys.stdout.flush()
-        self.old_stdout_fd = os.dup(1)
-        self.null_fd = os.open(os.devnull, os.O_WRONLY)
-        os.dup2(self.null_fd, 1)
-        os.close(self.null_fd)
-
+        pass
     def __exit__(self, exc_type, exc_val, exc_tb):
-        sys.stdout.flush()
-        os.dup2(self.old_stdout_fd, 1)
-        os.close(self.old_stdout_fd)
-
-# Silence low-level stdout during import of deeplake
+        pass
 with SilenceStdout():
     import deeplake
 
@@ -46,6 +39,49 @@ def cosine_similarity(v1, v2):
     if norm_v1 == 0 or norm_v2 == 0:
         return 0.0
     return float(np.dot(v1, v2) / (norm_v1 * norm_v2))
+
+
+def parse_community_summaries(report_path):
+    """
+    Parse GRAPH_REPORT.md to extract community summaries.
+    Returns a dict: { community_id: { "cohesion": float, "nodes_text": str, "node_count": int } }
+    """
+    communities = {}
+    if not os.path.exists(report_path):
+        return communities
+
+    try:
+        with open(report_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        # Match community sections:  ### Community N - "..."
+        pattern = r'### Community (\d+) - "([^"]*)"\s*\nCohesion: ([\d.]+)\s*\nNodes \((\d+)\): (.+?)(?=\n###|\n##|\Z)'
+        matches = re.findall(pattern, content, re.DOTALL)
+
+        for match in matches:
+            comm_id = int(match[0])
+            cohesion = float(match[2])
+            node_count = int(match[3])
+            nodes_text = match[4].strip()
+            communities[comm_id] = {
+                "cohesion": cohesion,
+                "node_count": node_count,
+                "nodes_text": nodes_text,
+            }
+    except Exception:
+        pass
+
+    return communities
+
+
+def compute_degrees(graphify_links):
+    """Compute degree count per node ID from graphify links."""
+    degree = Counter()
+    for link in graphify_links:
+        degree[link.get("source", "")] += 1
+        degree[link.get("target", "")] += 1
+    return degree
+
 
 async def generate_graph(limit_mem=100, limit_skills=100, threshold=0.75):
     nodes = []
@@ -105,9 +141,7 @@ async def generate_graph(limit_mem=100, limit_skills=100, threshold=0.75):
                 for i in range(num_skills):
                     skill_id = f"skill_{i}"
                     meta = metadatas[i] or {}
-                    title = meta.get("title", f"Skill {i}")
-                    if not title:
-                        title = meta.get("file", f"Skill {i}")
+                    title = meta.get("name") or meta.get("title") or meta.get("file") or f"Skill {i}"
                     
                     node = {
                         "id": skill_id,
@@ -127,31 +161,50 @@ async def generate_graph(limit_mem=100, limit_skills=100, threshold=0.75):
 
     # 3. Fetch Graphify AST structure from graphify-out/graph.json
     graphify_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "graphify-out", "graph.json")
+    report_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "graphify-out", "GRAPH_REPORT.md")
+
     if os.path.exists(graphify_path):
         try:
             with open(graphify_path, "r", encoding="utf-8") as f:
                 graphify_data = json.load(f)
             
-            # Map graphify node IDs to keep track
+            graphify_links = graphify_data.get("links", [])
+            degree = compute_degrees(graphify_links)
+
+            # ── Phase 1: Prune isolated nodes (degree ≤ 1) ──
             graphify_node_ids = set()
+            community_members = {}  # community_id -> list of node IDs
+
             for g_node in graphify_data.get("nodes", []):
                 node_id = g_node.get("id")
-                # Group as 'ast' for distinction
+                node_degree = degree.get(node_id, 0)
+
+                # Skip isolated nodes — they have no structural value
+                if node_degree <= 1:
+                    continue
+
+                comm_id = g_node.get("community")
+
                 node = {
                     "id": node_id,
                     "label": g_node.get("label", node_id),
                     "group": "ast",
                     "content": f"AST: {g_node.get('file_type', 'code')} in {g_node.get('source_file')}",
                     "sector": "structural",
-                    "salience": 0.8,
+                    "salience": min(0.3 + (node_degree * 0.1), 1.0),  # Degree-weighted salience
                     "source_file": g_node.get("source_file"),
-                    "source_location": g_node.get("source_location")
+                    "source_location": g_node.get("source_location"),
+                    "cluster": comm_id,  # Phase 1: attach community cluster ID
                 }
                 nodes.append(node)
                 graphify_node_ids.add(node_id)
+
+                # Track community membership for Phase 2
+                if comm_id is not None:
+                    community_members.setdefault(comm_id, []).append(node_id)
             
-            # Merge graphify links
-            for g_link in graphify_data.get("links", []):
+            # Merge graphify links (only between non-pruned nodes)
+            for g_link in graphify_links:
                 src = g_link.get("source")
                 tgt = g_link.get("target")
                 if src in graphify_node_ids and tgt in graphify_node_ids:
@@ -161,6 +214,59 @@ async def generate_graph(limit_mem=100, limit_skills=100, threshold=0.75):
                         "value": g_link.get("weight", 0.5),
                         "relation": g_link.get("relation", "contains")
                     })
+
+            # ── Phase 2: Inject Community Summary Nodes ──
+            comm_summaries = parse_community_summaries(report_path)
+
+            for comm_id, member_ids in community_members.items():
+                if len(member_ids) < 2:
+                    continue  # Skip trivial communities with <2 connected members
+
+                summary = comm_summaries.get(comm_id, {})
+                cohesion = summary.get("cohesion", 0)
+                node_count = summary.get("node_count", len(member_ids))
+                nodes_text = summary.get("nodes_text", "")
+
+                comm_node_id = f"community_{comm_id}"
+                if nodes_text:
+                    top_nodes = [n.strip().replace("()", "") for n in nodes_text.split(",")[:2]]
+                    short_desc = ", ".join(top_nodes)
+                    comm_label = short_desc or f"Cluster {comm_id}"
+                    description = f"Community {comm_id} ({node_count} members, cohesion {cohesion:.2f}): {nodes_text}"
+                else:
+                    member_labels = []
+                    for n in nodes:
+                        if n.get("cluster") == comm_id and n["group"] == "ast":
+                            member_labels.append(n["label"])
+                    top_nodes = [n.replace("()", "") for n in member_labels[:2]]
+                    short_desc = ", ".join(top_nodes)
+                    comm_label = short_desc or f"Cluster {comm_id}"
+                    description = f"Community {comm_id} ({len(member_labels)} connected members): {', '.join(member_labels[:8])}"
+                    if len(member_labels) > 8:
+                        description += f" (+{len(member_labels) - 8} more)"
+
+                community_node = {
+                    "id": comm_node_id,
+                    "label": comm_label,
+                    "group": "community",
+                    "content": description,
+                    "sector": "structural",
+                    "salience": min(0.5 + cohesion, 1.0),
+                    "cluster": comm_id,
+                    "cohesion": cohesion,
+                    "member_count": len(member_ids),
+                }
+                nodes.append(community_node)
+
+                # Link community node to each member (lightweight hub-spoke)
+                for mid in member_ids:
+                    links.append({
+                        "source": comm_node_id,
+                        "target": mid,
+                        "value": 0.3,
+                        "relation": "community_member"
+                    })
+
         except Exception as e:
             sys.stderr.write(f"Warning loading Graphify: {e}\n")
 

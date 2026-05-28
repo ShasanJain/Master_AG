@@ -155,17 +155,6 @@ body::before {
   margin: 0;
 }
 
-#sidebar-toggle:checked ~ aside .toggle-btn span {
-  display: none;
-}
-
-#sidebar-toggle:checked ~ aside .toggle-btn::before {
-  content: "▶";
-  font-size: 10px;
-}
-
-#sidebar-toggle:not(:checked) ~ aside .toggle-btn::before {
-  content: "◀";
-  font-size: 10px;
-  margin-right: 8px;
+#sidebar-toggle:checked ~ aside .toggle-btn svg {
+  transform: rotate(180deg);
 }

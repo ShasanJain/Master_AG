@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { StatusBadge } from "./components/StatusBadge";
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";import { TokenWidget } from "./components/TokenWidget";
 
 export default function Dashboard() {
   return (
@@ -28,6 +28,23 @@ export default function Dashboard() {
         <StatCard label="Active Missions" value="06" unit="Tasks" />
         <StatCard label="Token Efficiency" value="98.4" unit="%" trend="optimal" />
         <StatCard label="Uptime" value="142" unit="Hrs" />
+      </section>
+
+      {/* Dynamic Widgets */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-1 min-h-[220px]">
+          <TokenWidget />
+        </div>
+        <div className="md:col-span-2 glass-card p-6 flex flex-col justify-center items-center border border-[var(--border)] relative overflow-hidden group">
+           <div className="absolute inset-0 bg-[var(--surface)] opacity-50"></div>
+           <div className="relative z-10 text-center">
+             <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest flex items-center gap-2 justify-center mb-2">
+               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+               System Telemetry
+             </span>
+             <p className="text-xs text-[var(--faint)] font-mono">Listening for live orchestration streams...</p>
+           </div>
+        </div>
       </section>
 
       {/* Skill Armory Section */}

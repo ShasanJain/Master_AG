@@ -53,6 +53,9 @@ Before making any major architectural changes, mass file operations, or systemic
 - Commit and push the current stable state to GitHub.
 - This is a non-negotiable safety net to ensure 100% recovery in case of failure.
 
+**2. Execution Paradigm Gate (MANDATORY)**
+Before embarking on any major implementation task (e.g., scaffolding a project, heavy refactoring, writing >100 lines of code), you MUST explicitly ask the USER whether they prefer the **Cursor Method** (autonomous self-annealing with max 2 retries) or the **Cline Method** (step-by-step sequential validation). If the user does not specify, default to the **Cursor Method**.
+
 **2. Slash Command Orchestration**
 Your workspace is now command-driven. When the user inputs a slash command (e.g., `/create`, `/audit`, `/debug`):
 - You MUST immediately read the corresponding workflow file in `skills/planning/workflows/[command].md`.

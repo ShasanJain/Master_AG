@@ -36,7 +36,7 @@ export default function NeuralMapPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
-  const [selectedGroup, setSelectedGroup] = useState<string>('ALL');
+  const [selectedGroups, setSelectedGroups] = useState<string[]>(['ALL']);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
   const fgRef = useRef<any>(null);
@@ -122,8 +122,8 @@ export default function NeuralMapPage() {
     let nodes = graphData.nodes;
     let links = graphData.links;
 
-    if (selectedGroup !== 'ALL') {
-      nodes = nodes.filter(n => n.group === selectedGroup || n.sector === selectedGroup);
+    if (!selectedGroups.includes('ALL') && selectedGroups.length > 0) {
+      nodes = nodes.filter(n => selectedGroups.includes(n.group) || (n.sector && selectedGroups.includes(n.sector)));
       const nodeIds = new Set(nodes.map(n => n.id));
       links = links.filter(l => {
         const sourceId = typeof l.source === 'object' ? (l.source as any).id : l.source;
@@ -147,7 +147,7 @@ export default function NeuralMapPage() {
     }
 
     setFilteredData({ nodes, links });
-  }, [searchTerm, selectedGroup, graphData]);
+  }, [searchTerm, selectedGroups, graphData]);
 
   const handleNodeClick = (node: any) => {
     setSelectedNode(node);
@@ -213,34 +213,62 @@ export default function NeuralMapPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                  <label className="text-[9px] font-bold text-[var(--faint)] uppercase tracking-widest">Filter Sector</label>
-                  <div className="relative">
-                    <select
-                      value={selectedGroup}
-                      onChange={(e) => setSelectedGroup(e.target.value)}
-                      className="w-full bg-black/40 border border-[var(--border)] rounded-lg px-3 py-2 text-[10px] font-bold tracking-widest uppercase text-white appearance-none outline-none focus:border-[var(--primary)] transition-all cursor-pointer hover:bg-white/5"
-                    >
-                      {['ALL', 'personal', 'industrial', 'ast', 'community', 'semantic', 'procedural'].map((group) => (
-                        <option key={group} value={group} className="bg-[#0f1115] text-[10px] font-bold tracking-wider uppercase">
-                          {group}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-[var(--faint)]">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
+              <div className="space-y-2 relative">
+                  <label className="text-[9px] font-bold text-[var(--faint)] uppercase tracking-widest">Filter Sectors (Multi-Select)</label>
+                  
+                  <details className="group relative">
+                    <summary className="w-full bg-black/40 border border-[var(--border)] rounded-lg px-3 py-2 text-[10px] font-bold tracking-widest uppercase text-white outline-none focus:border-[var(--primary)] transition-all cursor-pointer hover:bg-white/5 list-none flex justify-between items-center select-none">
+                      <span className="truncate">
+                        {selectedGroups.includes('ALL') ? 'ALL SECTORS' : selectedGroups.join(', ')}
+                      </span>
+                      <svg className="w-3 h-3 transition-transform group-open:rotate-180 text-[var(--faint)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
+                    </summary>
+                    
+                    <div className="absolute top-full left-0 mt-1 w-full z-30 bg-[#0f1115] border border-[var(--border)] rounded-lg shadow-xl overflow-hidden">
+                      <div className="max-h-48 overflow-y-auto p-2 flex flex-col gap-1">
+                        {['ALL', 'personal', 'industrial', 'ast', 'community', 'semantic', 'procedural'].map((group) => (
+                          <label key={group} className="flex items-center gap-2 cursor-pointer bg-white/5 px-3 py-2 rounded border border-transparent hover:border-white/10 hover:bg-white/10 transition-colors">
+                            <input 
+                              type="checkbox" 
+                              checked={selectedGroups.includes(group)}
+                              onChange={() => {
+                                if (group === 'ALL') {
+                                   setSelectedGroups(['ALL']);
+                                } else {
+                                   let newGroups = selectedGroups.filter(g => g !== 'ALL');
+                                   if (newGroups.includes(group)) {
+                                       newGroups = newGroups.filter(g => g !== group);
+                                   } else {
+                                       newGroups.push(group);
+                                   }
+                                   if (newGroups.length === 0) newGroups = ['ALL'];
+                                   setSelectedGroups(newGroups);
+                                }
+                              }}
+                              className="w-3.5 h-3.5 accent-[var(--primary)]"
+                            />
+                            <span className="text-[10px] font-bold tracking-wider uppercase text-white/80">
+                              {group}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  </details>
+                  
                 {/* Sector Description */}
-                <div className="p-2 rounded bg-white/5 border border-white/5 mt-1">
+                <div className="p-2 rounded bg-white/5 border border-white/5 mt-2">
                   <p className="text-[8px] leading-normal text-[var(--muted)] font-mono uppercase tracking-wider">
-                    {selectedGroup === 'ALL' && "Unified view of codebase structure & cognitive/procedural memory systems."}
-                    {selectedGroup === 'personal' && "Cognitive memory traces, episodic events, and fact retention."}
-                    {selectedGroup === 'industrial' && "Automated procedural script workflow instructions."}
-                    {selectedGroup === 'ast' && "Structural code elements (files, components, imports, syntax)."}
-                    {selectedGroup === 'community' && "Leiden-detected architectural clusters. Hub nodes summarizing code communities."}
-                    {selectedGroup === 'semantic' && "Long-term general factual relations and concept links."}
-                    {selectedGroup === 'procedural' && "Active system execution scripts and procedural tasks."}
+                    {selectedGroups.includes('ALL') && "Unified view of codebase structure & cognitive/procedural memory systems."}
+                    {!selectedGroups.includes('ALL') && selectedGroups.map(g => {
+                      if (g === 'personal') return "Cognitive memory traces, episodic events, and fact retention. ";
+                      if (g === 'industrial') return "Automated procedural script workflow instructions. ";
+                      if (g === 'ast') return "Structural code elements (files, components, imports, syntax). ";
+                      if (g === 'community') return "Leiden-detected architectural clusters. Hub nodes summarizing code communities. ";
+                      if (g === 'semantic') return "Long-term general factual relations and concept links. ";
+                      if (g === 'procedural') return "Active system execution scripts and procedural tasks. ";
+                      return "";
+                    }).join("")}
                   </p>
                 </div>
               </div>

@@ -4,4 +4,6 @@ token.json
 .tmp/
 __pycache__/
 *.pyc
+*.dbscratch/
+temp_*.md
 *.db

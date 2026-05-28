@@ -70,15 +70,15 @@ export default function RootLayout({
           </label>
           
           <nav className="flex-1 space-y-1">
-            <NavItem label="Dashboard" href="/" icon={<IconDashboard className="w-4 h-4" />} />
-            <NavItem label="Skill Armory" href="/skills" icon={<IconSkills className="w-4 h-4" />} />
-            <NavItem label="Mission Logs" href="/logs" icon={<IconLogs className="w-4 h-4" />} />
-            <NavItem label="Cognitive Memory" href="/memory" icon={<IconDashboard className="w-4 h-4" />} />
-            <NavItem label="Incubator" href="/incubator" icon={<IconIncubator className="w-4 h-4" />} />
-            <NavItem href="/chat" label="Neural Link" icon={<span className="text-sm">📡</span>} />
-            <NavItem href="/neural" label="Neural Map" icon={<span className="text-sm">🧠</span>} />
+            <NavItem label="Dashboard" href="/" icon={<IconDashboard className="w-4 h-4" />} colorClass="group-hover:text-emerald-400" />
+            <NavItem label="Skill Armory" href="/skills" icon={<IconSkills className="w-4 h-4" />} colorClass="group-hover:text-amber-400" />
+            <NavItem label="Mission Logs" href="/logs" icon={<IconLogs className="w-4 h-4" />} colorClass="group-hover:text-blue-400" />
+            <NavItem label="Cognitive Memory" href="/memory" icon={<IconDashboard className="w-4 h-4" />} colorClass="group-hover:text-purple-400" />
+            <NavItem label="Incubator" href="/incubator" icon={<IconIncubator className="w-4 h-4" />} colorClass="group-hover:text-rose-400" />
+            <NavItem href="/chat" label="Neural Link" icon={<span className="text-sm">📡</span>} colorClass="group-hover:text-cyan-400" />
+            <NavItem href="/neural" label="Neural Map" icon={<span className="text-sm">🧠</span>} colorClass="group-hover:text-fuchsia-400" />
             <div className="pt-4 mt-4 border-t border-[var(--border)]">
-              <NavItem label="Settings" href="/settings" icon={<IconSettings className="w-4 h-4" />} />
+              <NavItem label="Settings" href="/settings" icon={<IconSettings className="w-4 h-4" />} colorClass="group-hover:text-slate-400" />
             </div>
           </nav>
           
@@ -128,10 +128,10 @@ export default function RootLayout({
   );
 }
 
-function NavItem({ label, href, icon }: { label: string; href: string; icon: React.ReactNode }) {
+function NavItem({ label, href, icon, colorClass = "group-hover:text-[var(--primary)]" }: { label: string; href: string; icon: React.ReactNode; colorClass?: string }) {
   return (
     <Link href={href} className="flex items-center gap-4 px-4 py-3 rounded-xl text-xs font-bold tracking-widest uppercase transition-all text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface)] group">
-      <div className="text-[var(--muted)] group-hover:text-[var(--primary)] transition-colors">
+      <div className={`text-[var(--muted)] ${colorClass} transition-colors`}>
         {icon}
       </div>
       <span className="sidebar-label">{label}</span>

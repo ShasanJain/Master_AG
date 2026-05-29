@@ -1,0 +1,147 @@
+{
+  "audio_path": "./scratch\\narration.mp3",
+  "srt_path": "./scratch\\timings.srt",
+  "word_timings": [
+    {
+      "word": "Stop",
+      "start": 0.0,
+      "end": 0.58
+    },
+    {
+      "word": "scrolling.",
+      "start": 0.58,
+      "end": 1.04
+    },
+    {
+      "word": "You",
+      "start": 1.56,
+      "end": 1.66
+    },
+    {
+      "word": "need",
+      "start": 1.66,
+      "end": 1.88
+    },
+    {
+      "word": "to",
+      "start": 1.88,
+      "end": 2.02
+    },
+    {
+      "word": "hear",
+      "start": 2.02,
+      "end": 2.2
+    },
+    {
+      "word": "this.",
+      "start": 2.2,
+      "end": 2.8
+    },
+    {
+      "word": "El",
+      "start": 3.16,
+      "end": 3.22
+    },
+    {
+      "word": "Nino",
+      "start": 3.22,
+      "end": 3.48
+    },
+    {
+      "word": "in",
+      "start": 3.48,
+      "end": 3.78
+    },
+    {
+      "word": "India.",
+      "start": 3.78,
+      "end": 4.06
+    },
+    {
+      "word": "This",
+      "start": 4.6,
+      "end": 4.82
+    },
+    {
+      "word": "changes",
+      "start": 4.82,
+      "end": 5.18
+    },
+    {
+      "word": "everything",
+      "start": 5.18,
+      "end": 5.7
+    },
+    {
+      "word": "we",
+      "start": 5.7,
+      "end": 5.94
+    },
+    {
+      "word": "thought",
+      "start": 5.94,
+      "end": 6.16
+    },
+    {
+      "word": "we",
+      "start": 6.16,
+      "end": 6.38
+    },
+    {
+      "word": "knew.",
+      "start": 6.38,
+      "end": 6.76
+    },
+    {
+      "word": "Share",
+      "start": 7.16,
+      "end": 7.42
+    },
+    {
+      "word": "this",
+      "start": 7.42,
+      "end": 7.64
+    },
+    {
+      "word": "with",
+      "start": 7.64,
+      "end": 7.92
+    },
+    {
+      "word": "a",
+      "start": 7.92,
+      "end": 8.0
+    },
+    {
+      "word": "friend",
+      "start": 8.0,
+      "end": 8.24
+    },
+    {
+      "word": "who",
+      "start": 8.24,
+      "end": 8.44
+    },
+    {
+      "word": "needs",
+      "start": 8.44,
+      "end": 8.66
+    },
+    {
+      "word": "their",
+      "start": 8.66,
+      "end": 8.92
+    },
+    {
+      "word": "mind",
+      "start": 8.92,
+      "end": 9.2
+    },
+    {
+      "word": "blown.",
+      "start": 9.2,
+      "end": 9.5
+    }
+  ],
+  "total_duration": 9.5
+}

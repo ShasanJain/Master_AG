@@ -65,6 +65,9 @@ Your workspace is now command-driven. When the user inputs a slash command (e.g.
 **3. Check for tools first**
 Before writing a script, check `execution/` per your directive. Only create new scripts if none exist.
 
+**4. Layered Implementation Protocol (MANDATORY)**
+For any complex feature build, you MUST adhere to the [Layered Implementation Protocol](file:///C:/Users/swaya/.gemini/skills/meta/agent/behavioral-modes/sub-skills/layered-implementation.md). Build features in three distinct passes: (1) Logic & Backend Engine, (2) User Interface & Layout Skeleton, and (3) Aesthetic Polish & Micro-interactions.
+
 **2. Self-anneal when things break**
 
 - Read error message and stack trace
@@ -96,6 +99,7 @@ Errors are learning opportunities. When something breaks:
 
 - `.tmp/` - All intermediate files (dossiers, scraped data, temp exports). Never commit, always regenerated.
 - `skills/` - Specialized capabilities and resources for the agent. Contains a `[folder_name]_skill.md` inside each feature folder. (NOTE: Do NOT rely on SKILL.md. Scan for the specific `*_skill.md` file.)
+  - **Standard Templates**: Standard documentation templates are stored in `C:\Users\swaya\.gemini\skills\meta\templates\`. These include [prd-guide.md](file:///C:/Users/swaya/.gemini/skills/meta/templates/prd-guide.md), [runbooks-guide.md](file:///C:/Users/swaya/.gemini/skills/meta/templates/runbooks-guide.md), [incident-response-guide.md](file:///C:/Users/swaya/.gemini/skills/meta/templates/incident-response-guide.md), and [system-architecture-guide.md](file:///C:/Users/swaya/.gemini/skills/meta/templates/system-architecture-guide.md). Use them when creating project guides or plans.
 - `execution/` - Python scripts (the deterministic tools)
 - `directives/` - SOPs in Markdown (the instruction set)
 - `.env` - Environment variables and API keys

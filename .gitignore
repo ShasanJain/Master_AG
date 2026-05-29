@@ -7,3 +7,8 @@ __pycache__/
 *.dbscratch/
 temp_*.md
 *.db
+
+scratch/claude-mem/
+scratch/graphify/
+scratch/prompts-repo/
+scratch/seo-skill-repo/

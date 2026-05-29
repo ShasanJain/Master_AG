@@ -60,7 +60,28 @@ export default function Dashboard() {
           </Link>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <SkillCard 
+            title="audio-studio" 
+            desc="Professional DSP engine for mixing, equalization, and local audio stem rendering." 
+            category="PRODUCTION"
+            status="OPTIMAL"
+            href="/audio-studio"
+          />
+          <SkillCard 
+            title="reel-studio" 
+            desc="AI-powered timeline sequence editor with live preview, voice generation, and media processing." 
+            category="MEDIA"
+            status="OPTIMAL"
+            href="/reel-studio"
+          />
+          <SkillCard 
+            title="seo-analyzer" 
+            desc="Live page auditing, semantic structure mapping, and AI search (GEO) optimization engine." 
+            category="MARKETING"
+            status="OPTIMAL"
+            href="/seo-analyzer"
+          />
           <SkillCard 
             title="writing-skills" 
             desc="High-Density BLUF Communication for executive reports. Industrial core module." 
@@ -128,7 +149,7 @@ function StatCard({ label, value, unit, trend }: { label: string; value: string;
   );
 }
 
-function SkillCard({ title, desc, category, status }: { title: string; desc: string; category: string; status: any }) {
+function SkillCard({ title, desc, category, status, href = "/skills" }: { title: string; desc: string; category: string; status: any; href?: string }) {
   return (
     <div className="glass-card p-8 flex flex-col h-full group border-b-2 border-b-transparent hover:border-b-[var(--primary)]">
       <div className="flex justify-between items-start mb-6">
@@ -139,7 +160,7 @@ function SkillCard({ title, desc, category, status }: { title: string; desc: str
         <StatusBadge status={status} />
       </div>
       <p className="text-sm text-[var(--muted)] leading-relaxed mb-8 flex-1">{desc}</p>
-      <Link href="/skills">
+      <Link href={href}>
         <button className="w-full py-3 rounded-xl bg-[var(--primary-glow)] border border-[var(--primary)] text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-[var(--primary)] hover:text-white transition-all shadow-xl text-[var(--primary)]">
           Initialize Session
         </button>

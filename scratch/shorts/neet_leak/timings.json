@@ -1,0 +1,327 @@
+{
+  "audio_path": ".\\scratch\\shorts\\neet_leak\\narration.mp3",
+  "srt_path": ".\\scratch\\shorts\\neet_leak\\timings.srt",
+  "word_timings": [
+    {
+      "word": "The",
+      "start": 0.0,
+      "end": 0.32
+    },
+    {
+      "word": "biggest",
+      "start": 0.32,
+      "end": 0.68
+    },
+    {
+      "word": "medical",
+      "start": 0.68,
+      "end": 1.04
+    },
+    {
+      "word": "exam",
+      "start": 1.04,
+      "end": 1.42
+    },
+    {
+      "word": "in",
+      "start": 1.42,
+      "end": 1.66
+    },
+    {
+      "word": "India",
+      "start": 1.66,
+      "end": 1.9
+    },
+    {
+      "word": "is",
+      "start": 1.9,
+      "end": 2.26
+    },
+    {
+      "word": "under",
+      "start": 2.26,
+      "end": 2.52
+    },
+    {
+      "word": "fire.",
+      "start": 2.52,
+      "end": 3.0
+    },
+    {
+      "word": "Millions",
+      "start": 3.76,
+      "end": 3.76
+    },
+    {
+      "word": "of",
+      "start": 3.76,
+      "end": 4.02
+    },
+    {
+      "word": "students",
+      "start": 4.02,
+      "end": 4.36
+    },
+    {
+      "word": "take",
+      "start": 4.36,
+      "end": 4.68
+    },
+    {
+      "word": "the",
+      "start": 4.68,
+      "end": 4.86
+    },
+    {
+      "word": "inning",
+      "start": 4.86,
+      "end": 5.0
+    },
+    {
+      "word": "every",
+      "start": 5.0,
+      "end": 5.34
+    },
+    {
+      "word": "year.",
+      "start": 5.34,
+      "end": 5.86
+    },
+    {
+      "word": "But",
+      "start": 6.32,
+      "end": 6.54
+    },
+    {
+      "word": "recent",
+      "start": 6.54,
+      "end": 6.86
+    },
+    {
+      "word": "massive",
+      "start": 6.86,
+      "end": 7.26
+    },
+    {
+      "word": "paper",
+      "start": 7.26,
+      "end": 7.62
+    },
+    {
+      "word": "leaks",
+      "start": 7.62,
+      "end": 7.86
+    },
+    {
+      "word": "have",
+      "start": 7.86,
+      "end": 8.24
+    },
+    {
+      "word": "sparked",
+      "start": 8.24,
+      "end": 8.4
+    },
+    {
+      "word": "outrage",
+      "start": 8.4,
+      "end": 8.86
+    },
+    {
+      "word": "across",
+      "start": 8.86,
+      "end": 9.24
+    },
+    {
+      "word": "the",
+      "start": 9.24,
+      "end": 9.54
+    },
+    {
+      "word": "country.",
+      "start": 9.54,
+      "end": 9.88
+    },
+    {
+      "word": "Top",
+      "start": 10.54,
+      "end": 10.62
+    },
+    {
+      "word": "politicians",
+      "start": 10.62,
+      "end": 11.18
+    },
+    {
+      "word": "are",
+      "start": 11.18,
+      "end": 11.64
+    },
+    {
+      "word": "now",
+      "start": 11.64,
+      "end": 11.82
+    },
+    {
+      "word": "demanding",
+      "start": 11.82,
+      "end": 12.24
+    },
+    {
+      "word": "the",
+      "start": 12.24,
+      "end": 12.54
+    },
+    {
+      "word": "resignation",
+      "start": 12.54,
+      "end": 12.96
+    },
+    {
+      "word": "of",
+      "start": 12.96,
+      "end": 13.3
+    },
+    {
+      "word": "the",
+      "start": 13.3,
+      "end": 13.68
+    },
+    {
+      "word": "Education",
+      "start": 13.68,
+      "end": 14.06
+    },
+    {
+      "word": "Minister.",
+      "start": 14.06,
+      "end": 14.52
+    },
+    {
+      "word": "Students",
+      "start": 15.2,
+      "end": 15.44
+    },
+    {
+      "word": "are",
+      "start": 15.44,
+      "end": 15.78
+    },
+    {
+      "word": "protesting",
+      "start": 15.78,
+      "end": 16.22
+    },
+    {
+      "word": "asking",
+      "start": 16.22,
+      "end": 16.84
+    },
+    {
+      "word": "for",
+      "start": 16.84,
+      "end": 17.12
+    },
+    {
+      "word": "a",
+      "start": 17.12,
+      "end": 17.24
+    },
+    {
+      "word": "full",
+      "start": 17.24,
+      "end": 17.44
+    },
+    {
+      "word": "-proof",
+      "start": 17.44,
+      "end": 17.72
+    },
+    {
+      "word": "secure",
+      "start": 17.72,
+      "end": 18.1
+    },
+    {
+      "word": "system.",
+      "start": 18.1,
+      "end": 18.68
+    },
+    {
+      "word": "Will",
+      "start": 19.1,
+      "end": 19.3
+    },
+    {
+      "word": "the",
+      "start": 19.3,
+      "end": 19.54
+    },
+    {
+      "word": "exams",
+      "start": 19.54,
+      "end": 19.8
+    },
+    {
+      "word": "be",
+      "start": 19.8,
+      "end": 20.14
+    },
+    {
+      "word": "cancelled?",
+      "start": 20.14,
+      "end": 20.46
+    },
+    {
+      "word": "The",
+      "start": 21.02,
+      "end": 21.22
+    },
+    {
+      "word": "future",
+      "start": 21.22,
+      "end": 21.48
+    },
+    {
+      "word": "of",
+      "start": 21.48,
+      "end": 21.86
+    },
+    {
+      "word": "India's",
+      "start": 21.86,
+      "end": 22.42
+    },
+    {
+      "word": "medical",
+      "start": 22.42,
+      "end": 22.52
+    },
+    {
+      "word": "field",
+      "start": 22.52,
+      "end": 22.88
+    },
+    {
+      "word": "hangs",
+      "start": 22.88,
+      "end": 23.16
+    },
+    {
+      "word": "in",
+      "start": 23.16,
+      "end": 23.38
+    },
+    {
+      "word": "the",
+      "start": 23.38,
+      "end": 23.54
+    },
+    {
+      "word": "balance.",
+      "start": 23.54,
+      "end": 23.84
+    }
+  ],
+  "total_duration": 23.84
+}

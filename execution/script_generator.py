@@ -112,8 +112,11 @@ def generate_viral_script(output_dir="./scratch", topic=None, script=None):
             if social_script:
                 final_script = social_script
             else:
-                # Fallback
-                final_script = f"Did you know about {topic}? It is one of the most interesting things on the internet right now. Follow for more facts."
+                # Better template fallback: construct dynamic 3-part structure
+                hook = f"This fact about {topic} is actually insane."
+                body = f"Many people don't realize that {topic} has massive global impact and is shifting rapidly in today's landscape."
+                cta = f"Drop a comment if you want to know more about {topic}."
+                final_script = f"{hook} {body} {cta}"
         else:
             print("[Script Generator] Fetching latest viral topics...")
             topics = fetch_trending_topics()

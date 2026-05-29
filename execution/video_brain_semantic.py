@@ -42,10 +42,17 @@ def perform_semantic_matching(timings_file: str, output_dir: str, force_gpu: boo
     import glob
     import difflib
     broll_dir = os.path.join(os.path.dirname(__file__), "..", "assets", "broll")
-    broll_files = glob.glob(os.path.join(broll_dir, "*.mp4"))
-    
+    all_broll = glob.glob(os.path.join(broll_dir, "*.mp4"))
+
+    # Filter out broken/placeholder files (Wikimedia 403 responses = 60 bytes)
+    MIN_CLIP_BYTES = 50_000
+    broll_files = [f for f in all_broll if os.path.getsize(f) >= MIN_CLIP_BYTES]
+    skipped = len(all_broll) - len(broll_files)
+    if skipped:
+        print(f"[Brain Semantic] Skipping {skipped} invalid/broken clip(s) (< {MIN_CLIP_BYTES} bytes)")
+
     if not broll_files:
-        print("[Brain Semantic] Error: No mp4 files found in assets/broll/")
+        print("[Brain Semantic] Error: No valid mp4 files found in assets/broll/")
         sys.exit(1)
         
     for word_data in word_timings:

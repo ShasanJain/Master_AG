@@ -29,6 +29,11 @@ export default function Studio() {
   const [isGeneratingVoice, setIsGeneratingVoice] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   
+  // Avatar Settings
+  const [enableAvatar, setEnableAvatar] = useState(false);
+  const [avatarImagePath, setAvatarImagePath] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  
   // Viral topic picker
   const [trendingTopics, setTrendingTopics] = useState<{topic: string; traffic: string}[]>([]);
   const [selectedViralTopic, setSelectedViralTopic] = useState<string | null>(null);
@@ -178,7 +183,11 @@ export default function Studio() {
       const res = await fetch('/api/render', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profile: renderProfile }),
+        body: JSON.stringify({ 
+            profile: renderProfile, 
+            enableAvatar, 
+            avatarImagePath 
+        }),
       });
       const data = await res.json();
       if (data.success) {
@@ -224,6 +233,38 @@ export default function Studio() {
     
     setIsUploading(false);
     // Reset file input
+    e.target.value = '';
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    
+    setIsUploadingAvatar(true);
+    setRenderLogs(`Uploading Presenter Face: ${file.name}...\n`);
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', 'avatar');
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        setRenderLogs(prev => prev + `Face upload complete: ${file.name}\n`);
+        setAvatarImagePath(data.filePath);
+      } else {
+        setRenderLogs(prev => prev + `Upload failed: ${data.error}\n`);
+      }
+    } catch (err) {
+      setRenderLogs(prev => prev + 'Failed to upload file.\n');
+    }
+    
+    setIsUploadingAvatar(false);
     e.target.value = '';
   };
 
@@ -442,6 +483,30 @@ export default function Studio() {
               <p className="text-[10px] text-gray-600 font-mono">No scraping. Your exact words go straight into the voice engine.</p>
             </div>
           )}
+          
+          <div className="pt-4 border-t border-white/10 mt-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <div className={`w-10 h-5 rounded-full p-1 transition-colors ${enableAvatar ? 'bg-orange-500' : 'bg-gray-700'}`}>
+                  <div className={`bg-white w-3 h-3 rounded-full transition-transform ${enableAvatar ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                </div>
+                <span className="text-xs font-semibold text-gray-300">Enable Split-Screen Avatar</span>
+              </label>
+              <input type="checkbox" className="hidden" checked={enableAvatar} onChange={() => setEnableAvatar(!enableAvatar)} />
+            </div>
+            
+            {enableAvatar && (
+              <div className="flex items-center gap-3">
+                {avatarImagePath && (
+                  <span className="text-[10px] text-green-400 font-mono">✓ Face Ready</span>
+                )}
+                <label className="cursor-pointer px-3 py-1.5 text-[10px] font-bold bg-white text-black hover:bg-gray-200 rounded transition-colors flex items-center gap-2">
+                  {isUploadingAvatar ? 'Uploading...' : 'Upload Presenter Face (PNG/JPG)'}
+                  <input type="file" className="hidden" accept="image/jpeg,image/png" onChange={handleAvatarUpload} disabled={isUploadingAvatar} />
+                </label>
+              </div>
+            )}
+          </div>
         </section>
 
 

@@ -1,0 +1,17 @@
+[
+    {
+        "shot": 1,
+        "visual_prompt": "A cinematic establishing shot related to The History of Rome",
+        "narration": "Did you know about The History of Rome?"
+    },
+    {
+        "shot": 2,
+        "visual_prompt": "Detailed close up showing the intricacies of The History of Rome",
+        "narration": "It is one of the most fascinating subjects."
+    },
+    {
+        "shot": 3,
+        "visual_prompt": "A wide beautiful shot summarizing The History of Rome",
+        "narration": "Subscribe to learn more."
+    }
+]

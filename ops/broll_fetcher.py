@@ -15,6 +15,14 @@ import shutil
 import argparse
 import subprocess
 
+# Add execution path to sys.path to allow importing generate_broll_ai
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'execution')))
+try:
+    from generate_broll_ai import AIVideoEngine
+    AI_AVAILABLE = True
+except ImportError:
+    AI_AVAILABLE = False
+
 MAX_CLIP_SEC  = 20       # seconds to grab from each YouTube video
 MIN_FILE_BYTES = 100_000  # reject anything smaller (error pages / corrupt)
 
@@ -145,8 +153,47 @@ def use_builtin_fallback(topic: str, output_dir: str, max_clips: int = 3) -> int
 
 # ─── main ─────────────────────────────────────────────────────────────────────
 
-def fetch_broll(topic: str, output_dir: str, max_clips: int = 3) -> int:
+def fetch_broll(topic: str, output_dir: str, max_clips: int = 3, use_ai: bool = True) -> int:
     os.makedirs(output_dir, exist_ok=True)
+    
+    stem = safe_stem(topic)
+    
+    if use_ai and AI_AVAILABLE:
+        print("[B-Roll] Attempting AI Video Generation first...")
+        engine = AIVideoEngine(output_dir)
+        ai_success = 0
+        
+        # Check if an Agentic storyboard exists
+        storyboard_path = os.path.join(os.path.dirname(__file__), "..", "scratch", "storyboard.json")
+        if os.path.exists(storyboard_path):
+            print("[B-Roll] Found Agentic Storyboard! Generating exact shots...")
+            with open(storyboard_path, "r", encoding="utf-8") as f:
+                storyboard = json.load(f)
+                
+            for shot in storyboard:
+                # We can try to grab the visual_prompt or fallback to topic
+                prompt = shot.get("visual_prompt", f"Cinematic b-roll footage of {topic}")
+                shot_idx = shot.get("shot", ai_success)
+                
+                out_path = engine.generate_broll(prompt, f"{stem}_ai_shot_{shot_idx}")
+                if out_path:
+                    ai_success += 1
+        else:
+            # We try to generate max_clips using variations of the prompt
+            for i in range(max_clips):
+                prompt = f"Cinematic b-roll footage of {topic}. 4k, high quality, highly detailed."
+                if i > 0:
+                    prompt += f" Version {i+1}."
+                    
+                out_path = engine.generate_broll(prompt, f"{stem}_ai_{i}")
+                if out_path:
+                    ai_success += 1
+                
+        if ai_success > 0:
+            print(f"[B-Roll] AI Engine succeeded in generating {ai_success} clips.")
+            return ai_success
+            
+        print("[B-Roll] AI Engine failed. Falling back to yt-dlp scraper.")
 
     n = fetch_youtube(topic, output_dir, max_clips)
 

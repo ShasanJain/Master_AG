@@ -7,6 +7,7 @@ import argparse
 # Add parent dir to path to import ops
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from ops.viral_scraper import fetch_trending_topics, search_social_topic
+from execution.agent_director import AgentDirector
 
 def clean_topic(topic_raw):
     cleaned = topic_raw.replace("TIL", "").replace("that", "").strip(" -:,.!")
@@ -138,14 +139,41 @@ def generate_viral_script(output_dir="./scratch", topic=None, script=None):
     print(f"[Script Generator] Saved to {script_path}")
     return script_path
 
+def generate_agentic_script(topic: str, output_dir="./scratch"):
+    """Uses the ViMax Hybrid Agent Director to generate a storyboard and script."""
+    print("[Script Generator] Using Agentic Director (ViMax Hybrid)...")
+    director = AgentDirector()
+    storyboard = director.generate_storyboard(topic)
+    
+    # Extract the full narration for the TTS engine
+    full_script = " ".join([shot.get("narration", "") for shot in storyboard])
+    
+    # Save the full script
+    os.makedirs(output_dir, exist_ok=True)
+    script_path = os.path.join(output_dir, "viral_script.txt")
+    with open(script_path, "w", encoding="utf-8") as f:
+        f.write(full_script)
+        
+    # Save the storyboard for the broll fetcher
+    storyboard_path = os.path.join(output_dir, "storyboard.json")
+    with open(storyboard_path, "w", encoding="utf-8") as f:
+        json.dump(storyboard, f, indent=4)
+        
+    print(f"[Script Generator] Saved Agentic Script to {script_path}")
+    print(f"[Script Generator] Saved Storyboard to {storyboard_path}")
+    return script_path
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--topic", type=str, default=None, help="Custom topic: social search + hook wrapping")
     parser.add_argument("--viral-topic", type=str, default=None, dest="viral_topic", help="A raw Reddit post title to turn directly into a script")
     parser.add_argument("--script", type=str, default=None, help="Exact script to use verbatim")
+    parser.add_argument("--agentic", action="store_true", help="Use ViMax Hybrid Agent Director")
     args = parser.parse_args()
 
-    if args.viral_topic:
+    if args.agentic and (args.topic or args.viral_topic):
+        generate_agentic_script(args.topic or args.viral_topic)
+    elif args.viral_topic:
         print(f"[Script Generator] Mode: Viral Topic (direct Reddit title)")
         final = generate_viral_from_title(args.viral_topic)
         print(f"\n[Script Generator] Generated Script:\n{final}\n")

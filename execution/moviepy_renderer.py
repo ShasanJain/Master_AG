@@ -86,7 +86,7 @@ def load_profile(profile_name):
             "bg_music_volume": 0.1, "sfx_enabled": False, "transitions": "rapid"
         }
 
-def render_beautiful_video(timeline_json: str, timings_json: str, output_path: str, profile_name: str, bg_music_path: str = None):
+def render_beautiful_video(timeline_json: str, timings_json: str, output_path: str, profile_name: str, bg_music_path: str = None, avatar_video_path: str = None):
     print(f"[MoviePy Renderer] Loading profile: {profile_name}")
     profile = load_profile(profile_name)
     
@@ -125,19 +125,36 @@ def render_beautiful_video(timeline_json: str, timings_json: str, output_path: s
                     v_clip = v_clip.subclipped(0, duration)
                 
             w, h = v_clip.size
+            clip_aspect = w / h if h != 0 else 1
             target_aspect = target_w / target_h
-            clip_aspect = w / h
-            
-            if clip_aspect > target_aspect:
-                new_w = int(h * target_aspect)
-                x1 = (w - new_w) // 2
-                v_clip = v_clip.cropped(x1=x1, y1=0, width=new_w, height=h)
-            else:
-                new_h = int(w / target_aspect)
-                y1 = (h - new_h) // 2
-                v_clip = v_clip.cropped(x1=0, y1=y1, width=w, height=new_h)
+            if avatar_video_path and os.path.exists(avatar_video_path) and avatar_video_path != "FAILED":
+                # Split screen mode: B-roll on bottom half
+                target_h_broll = target_h // 2
+                target_aspect = target_w / target_h_broll
                 
-            v_clip = v_clip.resized((target_w, target_h))
+                if clip_aspect > target_aspect:
+                    new_w = int(h * target_aspect)
+                    x1 = (w - new_w) // 2
+                    v_clip = v_clip.cropped(x1=x1, y1=0, width=new_w, height=h)
+                else:
+                    new_h = int(w / target_aspect)
+                    y1 = (h - new_h) // 2
+                    v_clip = v_clip.cropped(x1=0, y1=y1, width=w, height=new_h)
+                    
+                v_clip = v_clip.resized((target_w, target_h_broll))
+                v_clip = v_clip.with_position(("center", "bottom"))
+            else:
+                # Full screen mode
+                if clip_aspect > target_aspect:
+                    new_w = int(h * target_aspect)
+                    x1 = (w - new_w) // 2
+                    v_clip = v_clip.cropped(x1=x1, y1=0, width=new_w, height=h)
+                else:
+                    new_h = int(w / target_aspect)
+                    y1 = (h - new_h) // 2
+                    v_clip = v_clip.cropped(x1=0, y1=y1, width=w, height=new_h)
+                    
+                v_clip = v_clip.resized((target_w, target_h))
             
             if profile["transitions"] == "crossfade" and start_t > 0:
                 from moviepy.video.fx import CrossFadeIn
@@ -174,6 +191,23 @@ def render_beautiful_video(timeline_json: str, timings_json: str, output_path: s
                     audio_clips.append(sfx)
             
     print("[MoviePy Renderer] Compositing clips...")
+    
+    if avatar_video_path == "FAILED":
+        print("[MoviePy Renderer] Avatar generation failed. Adding fallback text overlay...")
+        from moviepy.video.VideoClip import TextClip
+        try:
+            fallback_text = TextClip("Avatar couldn't render", fontsize=50, color='red', bg_color='black')
+            fallback_text = fallback_text.with_position(("center", "top")).with_duration(AudioFileClip(audio_file).duration)
+            subtitle_clips.append(fallback_text)
+        except Exception as e:
+            print(f"[MoviePy Renderer] Could not create TextClip: {e}")
+            
+    if avatar_video_path and os.path.exists(avatar_video_path) and avatar_video_path != "FAILED":
+        print(f"[MoviePy Renderer] Adding Avatar clip (Split-Screen): {avatar_video_path}")
+        avatar_clip = VideoFileClip(avatar_video_path)
+        avatar_clip = avatar_clip.resized((target_w, target_h // 2)).with_position(("center", "top"))
+        video_clips.insert(0, avatar_clip)
+        
     final_video_track = CompositeVideoClip(video_clips + subtitle_clips, size=(target_w, target_h))
     
     final_duration = AudioFileClip(audio_file).duration
@@ -207,5 +241,6 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=str, default="./scratch/final_output.mp4")
     parser.add_argument("--profile", type=str, default="FastViral")
     parser.add_argument("--music", type=str, default=None)
+    parser.add_argument("--avatar", type=str, default=None)
     args = parser.parse_args()
-    render_beautiful_video(args.timeline, args.timings, args.output, args.profile, args.music)
+    render_beautiful_video(args.timeline, args.timings, args.output, args.profile, args.music, args.avatar)

@@ -3,655 +3,360 @@
   "srt_path": "./scratch\\timings.srt",
   "word_timings": [
     {
-      "word": "You",
+      "word": "I",
       "start": 0.0,
-      "end": 0.32
+      "end": 0.34
     },
     {
-      "word": "won't",
-      "start": 0.32,
-      "end": 0.56
-    },
-    {
-      "word": "believe",
-      "start": 0.56,
-      "end": 0.86
-    },
-    {
-      "word": "this,",
-      "start": 0.86,
-      "end": 1.22
-    },
-    {
-      "word": "but",
-      "start": 1.3,
-      "end": 1.36
-    },
-    {
-      "word": "November",
-      "start": 1.36,
-      "end": 1.76
-    },
-    {
-      "word": "3,",
-      "start": 1.76,
-      "end": 2.2
-    },
-    {
-      "word": "2025",
-      "start": 2.48,
-      "end": 2.88
-    },
-    {
-      "word": "O1",
-      "start": 2.88,
-      "end": 3.36
-    },
-    {
-      "word": "employment",
-      "start": 3.36,
-      "end": 3.66
-    },
-    {
-      "word": "can",
-      "start": 3.66,
-      "end": 3.98
-    },
-    {
-      "word": "be",
-      "start": 3.98,
-      "end": 4.14
-    },
-    {
-      "word": "defined",
-      "start": 4.14,
-      "end": 4.46
-    },
-    {
-      "word": "as",
-      "start": 4.46,
-      "end": 4.76
-    },
-    {
-      "word": "the",
-      "start": 4.76,
-      "end": 4.94
-    },
-    {
-      "word": "unavailability",
-      "start": 4.94,
-      "end": 5.46
-    },
-    {
-      "word": "of",
-      "start": 5.46,
-      "end": 5.8
-    },
-    {
-      "word": "a",
-      "start": 5.8,
-      "end": 5.96
-    },
-    {
-      "word": "job",
-      "start": 5.96,
-      "end": 6.2
-    },
-    {
-      "word": "for",
-      "start": 6.2,
-      "end": 6.42
-    },
-    {
-      "word": "working",
-      "start": 6.42,
-      "end": 6.68
-    },
-    {
-      "word": "age",
-      "start": 6.68,
-      "end": 7.0
-    },
-    {
-      "word": "people,",
-      "start": 7.0,
-      "end": 7.42
-    },
-    {
-      "word": "who",
-      "start": 7.74,
-      "end": 7.88
-    },
-    {
-      "word": "are",
-      "start": 7.88,
-      "end": 8.02
-    },
-    {
-      "word": "part",
-      "start": 8.02,
-      "end": 8.24
-    },
-    {
-      "word": "of",
-      "start": 8.24,
-      "end": 8.42
-    },
-    {
-      "word": "the",
-      "start": 8.42,
-      "end": 8.6
-    },
-    {
-      "word": "labor",
-      "start": 8.6,
-      "end": 8.76
-    },
-    {
-      "word": "force",
-      "start": 8.76,
-      "end": 9.16
-    },
-    {
-      "word": "and",
-      "start": 9.16,
-      "end": 9.3
-    },
-    {
-      "word": "are",
-      "start": 9.3,
-      "end": 9.54
-    },
-    {
-      "word": "actively",
-      "start": 9.54,
-      "end": 9.86
-    },
-    {
-      "word": "searching.",
-      "start": 9.86,
-      "end": 10.46
-    },
-    {
-      "word": "Drop",
-      "start": 11.04,
-      "end": 11.28
-    },
-    {
-      "word": "a",
-      "start": 11.28,
-      "end": 11.52
-    },
-    {
-      "word": "comment",
-      "start": 11.52,
-      "end": 11.78
-    },
-    {
-      "word": "if",
-      "start": 11.78,
-      "end": 12.02
-    },
-    {
-      "word": "you",
-      "start": 12.02,
-      "end": 12.42
-    },
-    {
-      "word": "already",
-      "start": 12.42,
-      "end": 12.46
-    },
-    {
-      "word": "knew",
-      "start": 12.46,
-      "end": 12.72
-    },
-    {
-      "word": "this.",
-      "start": 12.72,
-      "end": 13.3
-    },
-    {
-      "word": "November",
-      "start": 13.66,
-      "end": 13.9
-    },
-    {
-      "word": "3,",
-      "start": 13.9,
-      "end": 14.44
-    },
-    {
-      "word": "2025",
-      "start": 14.94,
-      "end": 15.06
-    },
-    {
-      "word": "O1",
-      "start": 15.06,
-      "end": 15.6
-    },
-    {
-      "word": "employment",
-      "start": 15.6,
-      "end": 16.06
-    },
-    {
-      "word": "can",
-      "start": 16.06,
-      "end": 16.24
-    },
-    {
-      "word": "be",
-      "start": 16.24,
-      "end": 16.64
-    },
-    {
-      "word": "defined",
-      "start": 16.64,
-      "end": 16.78
-    },
-    {
-      "word": "as",
-      "start": 16.78,
-      "end": 17.06
-    },
-    {
-      "word": "the",
-      "start": 17.06,
-      "end": 17.24
-    },
-    {
-      "word": "unavailability",
-      "start": 17.24,
-      "end": 17.78
-    },
-    {
-      "word": "of",
-      "start": 17.78,
-      "end": 18.16
-    },
-    {
-      "word": "a",
-      "start": 18.16,
-      "end": 18.26
-    },
-    {
-      "word": "job",
-      "start": 18.26,
-      "end": 18.5
-    },
-    {
-      "word": "for",
-      "start": 18.5,
-      "end": 18.76
-    },
-    {
-      "word": "working",
-      "start": 18.76,
-      "end": 19.0
-    },
-    {
-      "word": "age",
-      "start": 19.0,
-      "end": 19.34
-    },
-    {
-      "word": "people,",
-      "start": 19.34,
-      "end": 19.78
-    },
-    {
-      "word": "who",
-      "start": 20.1,
-      "end": 20.3
-    },
-    {
-      "word": "are",
-      "start": 20.3,
-      "end": 20.42
-    },
-    {
-      "word": "part",
-      "start": 20.42,
-      "end": 20.66
-    },
-    {
-      "word": "of",
-      "start": 20.66,
-      "end": 20.82
-    },
-    {
-      "word": "the",
-      "start": 20.82,
-      "end": 21.04
-    },
-    {
-      "word": "labor",
-      "start": 21.04,
-      "end": 21.26
-    },
-    {
-      "word": "force",
-      "start": 21.26,
-      "end": 21.62
-    },
-    {
-      "word": "and",
-      "start": 21.62,
-      "end": 21.78
-    },
-    {
-      "word": "are",
-      "start": 21.78,
-      "end": 22.04
-    },
-    {
-      "word": "actively",
-      "start": 22.04,
-      "end": 22.4
-    },
-    {
-      "word": "searching.",
-      "start": 22.4,
-      "end": 22.94
-    },
-    {
-      "word": "Job",
-      "start": 23.4,
-      "end": 23.7
-    },
-    {
-      "word": "creation",
-      "start": 23.7,
-      "end": 24.12
-    },
-    {
-      "word": "and",
-      "start": 24.12,
-      "end": 24.4
-    },
-    {
-      "word": "unemployment",
-      "start": 24.4,
-      "end": 24.84
-    },
-    {
-      "word": "are",
-      "start": 24.84,
-      "end": 25.22
-    },
-    {
-      "word": "affected",
-      "start": 25.22,
-      "end": 25.46
-    },
-    {
-      "word": "by",
-      "start": 25.46,
-      "end": 25.8
-    },
-    {
-      "word": "factors",
-      "start": 25.8,
-      "end": 26.24
-    },
-    {
-      "word": "such",
-      "start": 26.24,
-      "end": 26.54
-    },
-    {
-      "word": "as",
-      "start": 26.54,
-      "end": 26.72
-    },
-    {
-      "word": "economic",
-      "start": 26.72,
-      "end": 27.16
-    },
-    {
-      "word": "conditions,",
-      "start": 27.16,
-      "end": 27.76
-    },
-    {
-      "word": "global",
-      "start": 28.46,
-      "end": 28.66
-    },
-    {
-      "word": "competition,",
-      "start": 28.66,
-      "end": 29.48
-    },
-    {
-      "word": "education,",
-      "start": 30.7,
-      "end": 30.7
-    },
-    {
-      "word": "automation",
-      "start": 31.4,
-      "end": 31.56
-    },
-    {
-      "word": "and",
-      "start": 31.56,
-      "end": 32.0
-    },
-    {
-      "word": "demographics.",
-      "start": 32.0,
-      "end": 32.56
-    },
-    {
-      "word": "These,",
-      "start": 33.86,
-      "end": 33.86
-    },
-    {
-      "word": "July",
-      "start": 34.24,
-      "end": 34.54
-    },
-    {
-      "word": "23,",
-      "start": 34.54,
-      "end": 35.08
-    },
-    {
-      "word": "2025",
-      "start": 35.56,
-      "end": 36.02
-    },
-    {
-      "word": "O1",
-      "start": 36.02,
-      "end": 36.56
-    },
-    {
-      "word": "employment",
-      "start": 36.56,
-      "end": 36.94
-    },
-    {
-      "word": "is",
-      "start": 36.94,
-      "end": 37.52
-    },
-    {
-      "word": "one",
-      "start": 37.52,
-      "end": 37.72
-    },
-    {
-      "word": "of",
-      "start": 37.72,
-      "end": 37.86
-    },
-    {
-      "word": "the",
-      "start": 37.86,
-      "end": 38.1
-    },
-    {
-      "word": "most",
-      "start": 38.1,
-      "end": 38.2
-    },
-    {
-      "word": "important",
-      "start": 38.2,
-      "end": 38.64
-    },
-    {
-      "word": "problems",
-      "start": 38.64,
-      "end": 39.08
-    },
-    {
-      "word": "that",
-      "start": 39.08,
-      "end": 39.3
-    },
-    {
-      "word": "can",
-      "start": 39.3,
-      "end": 39.42
-    },
-    {
-      "word": "be",
-      "start": 39.42,
-      "end": 39.64
+      "word": "just",
+      "start": 0.34,
+      "end": 0.6
     },
     {
       "word": "found",
-      "start": 39.64,
-      "end": 39.84
+      "start": 0.6,
+      "end": 0.8
     },
     {
-      "word": "in",
-      "start": 39.84,
-      "end": 40.12
+      "word": "this",
+      "start": 0.8,
+      "end": 1.08
     },
     {
-      "word": "any",
-      "start": 40.12,
-      "end": 40.34
+      "word": "crazy",
+      "start": 1.08,
+      "end": 1.36
     },
     {
-      "word": "country",
-      "start": 40.34,
-      "end": 40.66
+      "word": "fact",
+      "start": 1.36,
+      "end": 1.74
     },
     {
-      "word": "in",
-      "start": 40.66,
-      "end": 40.86
+      "word": "on",
+      "start": 1.74,
+      "end": 1.96
+    },
+    {
+      "word": "Reddit.",
+      "start": 1.96,
+      "end": 2.26
+    },
+    {
+      "word": "When",
+      "start": 2.74,
+      "end": 2.88
     },
     {
       "word": "the",
-      "start": 40.86,
-      "end": 41.0
+      "start": 2.88,
+      "end": 3.06
     },
     {
-      "word": "world,",
-      "start": 41.0,
-      "end": 41.54
+      "word": "writers",
+      "start": 3.06,
+      "end": 3.28
     },
     {
-      "word": "regardless",
-      "start": 41.96,
-      "end": 42.28
+      "word": "were",
+      "start": 3.28,
+      "end": 3.58
     },
     {
-      "word": "of",
-      "start": 42.28,
-      "end": 42.6
+      "word": "writing",
+      "start": 3.58,
+      "end": 3.84
     },
     {
-      "word": "its",
-      "start": 42.6,
-      "end": 42.82
-    },
-    {
-      "word": "economic",
-      "start": 42.82,
-      "end": 43.28
-    },
-    {
-      "word": "condition.",
-      "start": 43.28,
-      "end": 43.96
-    },
-    {
-      "word": "Oh,",
-      "start": 44.92,
-      "end": 44.98
-    },
-    {
-      "word": "follow",
-      "start": 45.1,
-      "end": 45.28
+      "word": "scripts",
+      "start": 3.84,
+      "end": 4.16
     },
     {
       "word": "for",
-      "start": 45.28,
-      "end": 45.54
+      "start": 4.16,
+      "end": 4.44
     },
     {
-      "word": "more",
-      "start": 45.54,
-      "end": 45.76
+      "word": "the",
+      "start": 4.44,
+      "end": 4.62
     },
     {
-      "word": "facts",
-      "start": 45.76,
-      "end": 46.06
+      "word": "TV",
+      "start": 4.62,
+      "end": 4.9
+    },
+    {
+      "word": "series",
+      "start": 4.9,
+      "end": 5.26
+    },
+    {
+      "word": "community,",
+      "start": 5.26,
+      "end": 5.84
+    },
+    {
+      "word": "they",
+      "start": 6.22,
+      "end": 6.4
+    },
+    {
+      "word": "often",
+      "start": 6.4,
+      "end": 6.66
+    },
+    {
+      "word": "wrote",
+      "start": 6.66,
+      "end": 6.9
+    },
+    {
+      "word": "into",
+      "start": 6.9,
+      "end": 7.14
+    },
+    {
+      "word": "the",
+      "start": 7.14,
+      "end": 7.3
+    },
+    {
+      "word": "end",
+      "start": 7.3,
+      "end": 7.42
+    },
+    {
+      "word": "of",
+      "start": 7.42,
+      "end": 7.56
+    },
+    {
+      "word": "the",
+      "start": 7.56,
+      "end": 7.78
+    },
+    {
+      "word": "scene,",
+      "start": 7.78,
+      "end": 8.08
+    },
+    {
+      "word": "and",
+      "start": 8.6,
+      "end": 8.78
+    },
+    {
+      "word": "then",
+      "start": 8.78,
+      "end": 8.96
+    },
+    {
+      "word": "Donald",
+      "start": 8.96,
+      "end": 9.16
+    },
+    {
+      "word": "says",
+      "start": 9.16,
+      "end": 9.52
+    },
+    {
+      "word": "something",
+      "start": 9.52,
+      "end": 9.88
+    },
+    {
+      "word": "funny.",
+      "start": 9.88,
+      "end": 10.3
+    },
+    {
+      "word": "Meaning",
+      "start": 11.18,
+      "end": 11.22
+    },
+    {
+      "word": "Donald",
+      "start": 11.22,
+      "end": 11.62
+    },
+    {
+      "word": "Glover",
+      "start": 11.62,
+      "end": 11.86
+    },
+    {
+      "word": "would",
+      "start": 11.86,
+      "end": 12.14
+    },
+    {
+      "word": "just",
+      "start": 12.14,
+      "end": 12.32
+    },
+    {
+      "word": "do",
+      "start": 12.32,
+      "end": 12.56
+    },
+    {
+      "word": "improv.",
+      "start": 12.56,
+      "end": 12.88
+    },
+    {
+      "word": "Donald's",
+      "start": 13.64,
+      "end": 14.16
+    },
+    {
+      "word": "response",
+      "start": 14.16,
+      "end": 14.44
+    },
+    {
+      "word": "would",
+      "start": 14.44,
+      "end": 14.64
+    },
+    {
+      "word": "be",
+      "start": 14.64,
+      "end": 14.84
+    },
+    {
+      "word": "to",
+      "start": 14.84,
+      "end": 15.02
+    },
+    {
+      "word": "riff",
+      "start": 15.02,
+      "end": 15.16
+    },
+    {
+      "word": "a",
+      "start": 15.16,
+      "end": 15.34
+    },
+    {
+      "word": "line",
+      "start": 15.34,
+      "end": 15.6
+    },
+    {
+      "word": "funnier",
+      "start": 15.6,
+      "end": 15.98
+    },
+    {
+      "word": "than",
+      "start": 15.98,
+      "end": 16.2
+    },
+    {
+      "word": "we",
+      "start": 16.2,
+      "end": 16.4
+    },
+    {
+      "word": "could",
+      "start": 16.4,
+      "end": 16.52
+    },
+    {
+      "word": "have",
+      "start": 16.52,
+      "end": 16.7
+    },
+    {
+      "word": "come",
+      "start": 16.7,
+      "end": 16.88
+    },
+    {
+      "word": "up",
+      "start": 16.88,
+      "end": 17.12
+    },
+    {
+      "word": "with.",
+      "start": 17.12,
+      "end": 17.58
+    },
+    {
+      "word": "Dan",
+      "start": 17.84,
+      "end": 18.12
+    },
+    {
+      "word": "Harmon",
+      "start": 18.12,
+      "end": 18.42
+    },
+    {
+      "word": "said,",
+      "start": 18.42,
+      "end": 18.8
+    },
+    {
+      "word": "Did",
+      "start": 19.18,
+      "end": 19.36
+    },
+    {
+      "word": "you",
+      "start": 19.36,
+      "end": 19.5
+    },
+    {
+      "word": "know",
+      "start": 19.5,
+      "end": 19.7
     },
     {
       "word": "about",
-      "start": 46.06,
-      "end": 46.42
+      "start": 19.7,
+      "end": 20.02
     },
     {
-      "word": "unemployment",
-      "start": 46.42,
-      "end": 46.98
+      "word": "this?",
+      "start": 20.02,
+      "end": 20.5
     },
     {
-      "word": "India",
-      "start": 46.98,
-      "end": 47.36
+      "word": "Let",
+      "start": 20.76,
+      "end": 20.96
     },
     {
-      "word": "that",
-      "start": 47.36,
-      "end": 47.62
+      "word": "me",
+      "start": 20.96,
+      "end": 21.1
     },
     {
-      "word": "no",
-      "start": 47.62,
-      "end": 47.78
+      "word": "know",
+      "start": 21.1,
+      "end": 21.28
     },
     {
-      "word": "one",
-      "start": 47.78,
-      "end": 47.98
+      "word": "in",
+      "start": 21.28,
+      "end": 21.4
     },
     {
-      "word": "talks",
-      "start": 47.98,
-      "end": 48.2
+      "word": "the",
+      "start": 21.4,
+      "end": 21.64
     },
     {
-      "word": "about.",
-      "start": 48.2,
-      "end": 48.6
+      "word": "comments.",
+      "start": 21.64,
+      "end": 21.98
     }
   ],
-  "total_duration": 48.6
+  "total_duration": 21.98
 }

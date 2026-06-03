@@ -97,15 +97,15 @@ export function FloatingJack() {
         {/* Draggable Header */}
         <div 
           onMouseDown={handleMouseDown}
-          className="p-4 bg-white/[0.03] border-b border-white/5 flex items-center justify-between cursor-grab active:cursor-grabbing select-none"
+          className="p-4 bg-white/[0.03] border-b border-[var(--border)] flex items-center justify-between cursor-grab active:cursor-grabbing select-none"
         >
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-            <span className="text-[10px] font-bold text-white uppercase tracking-[0.2em]">Live Diagnostics</span>
+            <span className="text-[10px] font-bold text-[var(--foreground)] uppercase tracking-[0.2em]">Live Diagnostics</span>
           </div>
           <div className="flex gap-2">
-             <button onClick={() => setActiveTab('LOGS')} className={`text-[9px] font-bold uppercase tracking-widest ${activeTab === 'LOGS' ? 'text-blue-400' : 'text-white/20'}`}>Logs</button>
-             <button onClick={() => setActiveTab('CHAT')} className={`text-[9px] font-bold uppercase tracking-widest ${activeTab === 'CHAT' ? 'text-blue-400' : 'text-white/20'}`}>Chat</button>
+             <button onClick={() => setActiveTab('LOGS')} className={`text-[9px] font-bold uppercase tracking-widest ${activeTab === 'LOGS' ? 'text-blue-400' : 'text-[var(--foreground)]/20'}`}>Logs</button>
+             <button onClick={() => setActiveTab('CHAT')} className={`text-[9px] font-bold uppercase tracking-widest ${activeTab === 'CHAT' ? 'text-blue-400' : 'text-[var(--foreground)]/20'}`}>Chat</button>
           </div>
         </div>
 
@@ -115,11 +115,11 @@ export function FloatingJack() {
             <div className="space-y-3">
               {logs.map((log, i) => (
                 <div key={log.id} className="text-[10px] font-mono border-l border-blue-500/30 pl-3 py-1 animate-in fade-in slide-in-from-left-1" style={{ animationDelay: `${i * 50}ms` }}>
-                  <div className="text-white/20 flex justify-between">
+                  <div className="text-[var(--foreground)]/20 flex justify-between">
                     <span>{new Date(log.timestamp).toLocaleTimeString()}</span>
                     <span className="text-blue-500/50">[{log.skill}]</span>
                   </div>
-                  <p className="text-white/60 mt-1 leading-relaxed">{log.mission}</p>
+                  <p className="text-[var(--foreground)]/60 mt-1 leading-relaxed">{log.mission}</p>
                 </div>
               ))}
             </div>
@@ -127,7 +127,7 @@ export function FloatingJack() {
             <div className="h-full flex flex-col">
                <div className="flex-1 space-y-3 overflow-y-auto custom-scrollbar pr-2">
                   {messages.map((msg, i) => (
-                    <div key={i} className={`text-[10px] font-mono p-3 rounded-lg leading-relaxed border ${msg.role === 'JACK' ? 'bg-white/5 text-white/60 border-white/5' : 'bg-blue-600/20 text-blue-300 border-blue-500/30 self-end'}`}>
+                    <div key={i} className={`text-[10px] font-mono p-3 rounded-lg leading-relaxed border ${msg.role === 'JACK' ? 'bg-[var(--surface)] text-[var(--foreground)]/60 border-[var(--border)]' : 'bg-blue-600/20 text-blue-300 border-blue-500/30 self-end'}`}>
                       <span className={`font-bold mr-2 ${msg.role === 'JACK' ? 'text-blue-400' : 'text-emerald-400'}`}>{msg.role === 'JACK' ? 'JACK:' : 'USER:'}</span>
                       {msg.text}
                     </div>
@@ -135,18 +135,18 @@ export function FloatingJack() {
                </div>
                <form 
                  onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-                 className="mt-4 pt-4 border-t border-white/5 flex gap-2"
+                 className="mt-4 pt-4 border-t border-[var(--border)] flex gap-2"
                >
                   <input 
                     type="text" 
                     placeholder="TRANSMIT TO ENGINE..." 
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    className="flex-1 bg-white/5 border border-white/5 rounded-lg px-3 py-2 text-[10px] font-bold tracking-widest text-white/80 placeholder:text-white/20 outline-none focus:border-blue-500/50 transition-all"
+                    className="flex-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-[10px] font-bold tracking-widest text-[var(--foreground)]/80 placeholder:text-[var(--foreground)]/20 outline-none focus:border-blue-500/50 transition-all"
                   />
                   <button 
                     type="submit"
-                    className="p-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-lg shadow-blue-600/20"
+                    className="p-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-[var(--foreground)] transition-all shadow-lg shadow-blue-600/20"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
                   </button>
@@ -156,8 +156,8 @@ export function FloatingJack() {
         </div>
         
         {/* Footer */}
-        <div className="p-3 bg-white/[0.02] border-t border-white/5 flex items-center justify-between">
-           <span className="text-[8px] font-bold text-white/10 uppercase tracking-widest italic">Jack-05 Diagnostics v1.2</span>
+        <div className="p-3 bg-white/[0.02] border-t border-[var(--border)] flex items-center justify-between">
+           <span className="text-[8px] font-bold text-[var(--foreground)]/10 uppercase tracking-widest italic">Jack-05 Diagnostics v1.2</span>
            <button 
              onClick={() => {
                 setIsOpen(false);

@@ -10,7 +10,13 @@ export async function getChatHistory() {
   try {
     const scriptPath = path.resolve(process.cwd(), "../execution/vector_memory.py");
     const output = execSync(`python ${scriptPath} list --json`, { encoding: 'utf-8' });
-    const results = JSON.parse(output.trim());
+    let results;
+    const match = output.match(/\[[\s\S]*\]/);
+    if (match) {
+      results = JSON.parse(match[0]);
+    } else {
+      results = JSON.parse(output.trim());
+    }
     return results
       .filter((r: any) => r.metadata?.tags?.includes('chat_history'))
       .map((r: any) => ({
@@ -43,8 +49,8 @@ export async function sendLocalMessage(message: string, history: { role: string,
 
     // 2. Store in Vector Memory (Background-ish)
     try {
-      const storeCmd = `python ${VM_PATH} store "${message.substring(0, 100)}..." --sector episodic`;
-      execSync(storeCmd);
+      const { execFileSync } = require('child_process');
+      execFileSync('python', [VM_PATH, 'store', message.substring(0, 500), '--sector', 'episodic'], { encoding: 'utf-8' });
     } catch (e) {
       console.error("Memory Storage Error:", e);
     }

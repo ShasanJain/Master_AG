@@ -64,8 +64,11 @@ export default function LogsPage() {
   }, [logs, search, sortBy]);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12">
-      <section className="flex justify-between items-start">
+    <>
+      <div className="atmospheric-orb orb-emerald"></div>
+      <div className="atmospheric-orb orb-sapphire"></div>
+      <div className="max-w-6xl mx-auto space-y-12 relative z-10 p-6">
+        <section className="flex justify-between items-start">
         <div className="space-y-3">
           <div className="flex items-center gap-4">
             <h2 className="text-5xl font-bold tracking-tighter text-[var(--foreground)]">Mission Logs</h2>
@@ -77,7 +80,7 @@ export default function LogsPage() {
         </div>
         <button 
           onClick={() => setShowStats(!showStats)}
-          className={`px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border ${showStats ? 'bg-blue-600 border-blue-500 text-white' : 'bg-[var(--surface)] border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)]'}`}
+          className={`px-8 py-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all border ${showStats ? 'shiny-button active' : 'bg-[var(--surface)] border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)]'}`}
         >
           {showStats ? 'Close Analytics' : 'Engine Analytics'}
         </button>
@@ -93,8 +96,8 @@ export default function LogsPage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-             <div className="glass-card p-8 bg-[var(--faint)] space-y-6">
-                <h3 className="text-[10px] font-bold text-[var(--faint)] uppercase tracking-[0.2em]">Usage Frequency // TODAY</h3>
+             <div className="glass-card p-8 bg-[var(--surface)] space-y-6">
+                <h3 className="text-xs font-bold text-[var(--faint)] uppercase tracking-[0.2em]">Usage Frequency // TODAY</h3>
                 <div className="space-y-4">
                    <UsageBar label="polyglot-master" percentage={85} count={12} />
                    <UsageBar label="task-scheduler" percentage={60} count={8} />
@@ -102,13 +105,21 @@ export default function LogsPage() {
                    <UsageBar label="prd-to-plan" percentage={30} count={4} />
                 </div>
              </div>
-             <div className="glass-card p-8 bg-[var(--faint)] flex flex-col justify-center items-center text-center space-y-4">
-                <div className="w-24 h-24 rounded-full border-4 border-blue-500/20 border-t-blue-500 animate-spin-slow flex items-center justify-center">
-                   <span className="text-2xl font-bold text-[var(--foreground)]">94%</span>
+             <div className="glass-card p-8 bg-[var(--surface)] flex flex-col justify-center items-center text-center space-y-4 border-beam">
+                <div className="flex flex-col items-center gap-6">
+                   <div className="flex items-end gap-2">
+                     <span className="pixel-3d text-5xl">94</span>
+                     <span className="pixel-3d text-2xl">%</span>
+                   </div>
+                   <div className="flex gap-2">
+                     {[...Array(20)].map((_, i) => (
+                       <div key={i} className={`w-1.5 h-1.5 rounded-full ${i < 19 ? 'bg-[var(--foreground)] shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'bg-[var(--surface)] border border-[var(--border)]'}`} />
+                     ))}
+                   </div>
                 </div>
                 <div>
-                   <h3 className="text-[10px] font-bold text-[var(--faint)] uppercase tracking-[0.2em]">System Optimization</h3>
-                   <p className="text-xs text-[var(--muted)] mt-1">Engine performing at peak industrial capacity.</p>
+                   <h3 className="text-xs font-bold text-[var(--faint)] uppercase tracking-[0.2em]">System Optimization</h3>
+                   <p className="text-sm text-[var(--muted)] mt-1">Engine performing at peak industrial capacity.</p>
                 </div>
              </div>
           </div>
@@ -134,7 +145,7 @@ export default function LogsPage() {
             <select 
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-blue-400 outline-none cursor-pointer"
+              className="bg-transparent text-xs font-bold uppercase tracking-widest text-[var(--primary)] outline-none cursor-pointer"
             >
               <option value="DATE">Newest First</option>
               <option value="MISSION">Mission Name</option>
@@ -143,14 +154,14 @@ export default function LogsPage() {
           </div>
         </div>
 
-        <div className="glass-card overflow-hidden bg-[var(--faint)]">
+        <div className="glass-card overflow-hidden bg-[var(--surface)] shadow-lg">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[var(--faint)] border-b border-[var(--faint)]">
-                <th className="px-8 py-5 text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--muted)]">Timestamp / Date</th>
-                <th className="px-8 py-5 text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--muted)]">Mission / Operation</th>
-                <th className="px-8 py-5 text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--muted)]">System Status</th>
-                <th className="px-8 py-5 text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--muted)]">Assigned Agent</th>
+              <tr className="bg-[var(--surface)] border-b border-[var(--border)]">
+                <th className="px-8 py-5 text-xs uppercase tracking-[0.2em] font-bold text-[var(--muted)]">Timestamp / Date</th>
+                <th className="px-8 py-5 text-xs uppercase tracking-[0.2em] font-bold text-[var(--muted)]">Mission / Operation</th>
+                <th className="px-8 py-5 text-xs uppercase tracking-[0.2em] font-bold text-[var(--muted)]">System Status</th>
+                <th className="px-8 py-5 text-xs uppercase tracking-[0.2em] font-bold text-[var(--muted)]">Assigned Agent</th>
               </tr>
             </thead>
             <tbody className="text-sm">
@@ -175,18 +186,19 @@ export default function LogsPage() {
         </div>
       </section>
     </div>
+    </>
   );
 }
 
 function StatCard({ label, value, delta, sub, status }: { label: string; value: string; delta?: string; sub?: string; status?: string }) {
   return (
-    <div className="glass-card p-6 bg-[var(--faint)] space-y-2">
-      <span className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-[0.2em]">{label}</span>
+    <div className="glass-card p-6 bg-[var(--surface)] space-y-2 hover:border-[var(--primary)] transition-all">
+      <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-[0.2em]">{label}</span>
       <div className="flex items-end justify-between">
         <h4 className="text-2xl font-bold text-[var(--foreground)]">{value}</h4>
-        {delta && <span className={`text-[10px] font-bold ${status === 'OPTIMAL' ? 'text-emerald-500' : 'text-blue-500'}`}>{delta}</span>}
+        {delta && <span className={`text-[10px] font-bold ${status === 'OPTIMAL' ? 'text-emerald-500' : 'text-[var(--primary)]'}`}>{delta}</span>}
       </div>
-      {sub && <p className="text-[10px] text-[var(--faint)] font-medium">{sub}</p>}
+      {sub && <p className="text-xs text-[var(--faint)] font-medium">{sub}</p>}
     </div>
   );
 }
@@ -194,12 +206,12 @@ function StatCard({ label, value, delta, sub, status }: { label: string; value: 
 function UsageBar({ label, percentage, count }: { label: string; percentage: number; count: number }) {
   return (
     <div className="space-y-2">
-      <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest">
+      <div className="flex justify-between text-xs font-bold uppercase tracking-widest">
         <span className="text-[var(--muted)]">{label}</span>
-        <span className="text-blue-500">{count} OPS</span>
+        <span className="text-[var(--primary)]">{count} OPS</span>
       </div>
-      <div className="h-1 w-full bg-[var(--faint)] rounded-full overflow-hidden">
-        <div className="h-full bg-blue-600 transition-all duration-1000" style={{ width: `${percentage}%` }}></div>
+      <div className="h-1 w-full bg-[var(--background)] rounded-full overflow-hidden">
+        <div className="h-full bg-[var(--primary)] transition-all duration-1000" style={{ width: `${percentage}%` }}></div>
       </div>
     </div>
   );
@@ -212,19 +224,19 @@ function LogEntry({ timestamp, mission, status, agent, id, skill }: MissionLog) 
   const dateAbbr = dateObj.toLocaleDateString([], { month: 'short', day: '2-digit' }).toUpperCase();
   
   return (
-    <tr className="border-b border-[var(--border)] hover:bg-[var(--surface)] transition-all group">
-      <td className="px-8 py-6 group-hover:text-blue-400 transition-colors">
+    <tr className="border-b border-[var(--border)] hover:bg-[var(--background)] transition-all group">
+      <td className="px-8 py-6 group-hover:text-[var(--primary)] transition-colors">
         <div className="flex flex-col">
           <span className="text-[10px] font-bold text-[var(--faint)] uppercase tracking-tighter">{dateAbbr}</span>
-          <span className="font-mono text-xs text-[var(--muted)] group-hover:text-blue-400">{time}</span>
+          <span className="font-mono text-xs text-[var(--muted)] group-hover:text-[var(--primary)]">{time}</span>
         </div>
       </td>
       <td className="px-8 py-6">
         <div className="flex flex-col gap-1">
           <span className="font-bold text-[var(--foreground)] group-hover:text-[var(--foreground)] transition-colors">{mission}</span>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-[var(--faint)] uppercase tracking-widest font-mono">ID // {id}</span>
-            <span className="text-[10px] text-blue-500/40 uppercase tracking-widest font-bold">SKILL // {skill}</span>
+            <span className="text-xs text-[var(--faint)] uppercase tracking-widest font-mono">ID // {id}</span>
+            <span className="text-xs text-[var(--primary)]/60 uppercase tracking-widest font-bold">SKILL // {skill}</span>
           </div>
         </div>
       </td>

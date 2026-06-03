@@ -321,21 +321,24 @@ export default function Studio() {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-white font-mono text-sm">Loading Environment...</div>;
+    return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-[var(--foreground)] font-mono text-sm">Loading Environment...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-[#000000] text-gray-100 font-sans tracking-tight">
-      <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
+    <>
+      <div className="atmospheric-orb orb-emerald"></div>
+      <div className="atmospheric-orb orb-sapphire"></div>
+      <div className="min-h-screen bg-transparent text-[var(--foreground)] font-sans tracking-tight relative z-10">
+        <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
         
         {/* Minimal Header */}
-        <header className="flex justify-between items-center pb-8 border-b border-white/10">
+        <header className="flex justify-between items-center pb-8 border-b border-[var(--border)]">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tighter text-white">
+            <h1 className="text-2xl font-semibold tracking-tighter text-[var(--foreground)]">
               Studio Workspace
             </h1>
             <div className="mt-4 flex items-center gap-4">
-              <span className="flex items-center gap-2 text-[11px] text-gray-400 font-mono">
+              <span className="flex items-center gap-2 text-xs text-[var(--muted)] font-mono">
                 <span className="h-1.5 w-1.5 rounded-full bg-green-500"></span> Online
               </span>
               <audio ref={audioRef} controls src={`/api/audio?v=${refreshKey}`} className="h-6 opacity-60 hover:opacity-100 transition-opacity filter invert-[0.9] grayscale" />
@@ -346,13 +349,12 @@ export default function Studio() {
           
           <div className="flex gap-6 items-center relative">
             
-            
-            <div className="flex flex-col gap-1.5 border-l border-white/10 pl-6">
-              <label className="text-[10px] text-gray-500 font-medium uppercase">Engine</label>
+            <div className="flex flex-col gap-1.5 border-l border-[var(--border)] pl-6">
+              <label className="text-xs text-[var(--muted)] font-medium uppercase">Engine</label>
               <select 
                 value={voiceEngine} 
                 onChange={e => setVoiceEngine(e.target.value)}
-                className="bg-transparent border border-white/10 rounded-md px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-white/30 cursor-pointer"
+                className="bg-transparent border border-[var(--border)] rounded-md px-3 py-1.5 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] cursor-pointer"
               >
                 <option value="edge">Edge TTS</option>
                 <option value="piper">Piper (CPU)</option>
@@ -363,17 +365,17 @@ export default function Studio() {
             <button 
               onClick={handleGenerateVoice}
               disabled={isGeneratingVoice || isRendering}
-              className="mt-5 text-sm text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+              className="mt-5 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors disabled:opacity-50"
             >
               {isGeneratingVoice ? 'Generating...' : 'Regenerate Voice'}
             </button>
 
-            <div className="flex flex-col gap-1.5 border-l border-white/10 pl-6">
-              <label className="text-[10px] text-gray-500 font-medium uppercase">Profile</label>
+            <div className="flex flex-col gap-1.5 border-l border-[var(--border)] pl-6">
+              <label className="text-xs text-[var(--muted)] font-medium uppercase">Profile</label>
               <select 
                 value={renderProfile} 
                 onChange={e => setRenderProfile(e.target.value)}
-                className="bg-transparent border border-white/10 rounded-md px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-white/30 cursor-pointer"
+                className="bg-transparent border border-[var(--border)] rounded-md px-3 py-1.5 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] cursor-pointer"
               >
                 <option value="FastViral">FastViral</option>
                 <option value="CorporateClean">CorporateClean</option>
@@ -382,14 +384,14 @@ export default function Studio() {
             
             <button 
               onClick={handleSave}
-              className="mt-5 text-sm text-gray-400 hover:text-white transition-colors"
+              className="mt-5 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
             >
               Save Timeline
             </button>
             <button 
               onClick={handleRender}
               disabled={isRendering || isGeneratingVoice}
-              className="mt-5 bg-white text-black px-4 py-1.5 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mt-5 px-8 py-2 rounded-md text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed shiny-button"
             >
               {isRendering ? 'Rendering...' : 'Build Video'}
             </button>
@@ -397,15 +399,15 @@ export default function Studio() {
         </header>
 
         {/* Content Generation Control Panel */}
-        <section className="bg-[#111] border border-white/10 rounded-xl p-6 space-y-4">
+        <section className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 space-y-4 hover:border-[var(--primary)] transition-all">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-300">Content Generation</h2>
+            <h2 className="text-sm font-semibold text-[var(--foreground)]">Content Generation</h2>
             <div className="flex gap-2">
               {(['auto', 'topic', 'script'] as const).map(type => (
                 <button 
                   key={type}
                   onClick={() => { setScriptInputType(type); setSelectedViralTopic(null); setTrendingTopics([]); }}
-                  className={`px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded transition-colors ${scriptInputType === type ? 'bg-white text-black' : 'bg-black text-gray-500 border border-white/10 hover:border-white/30'}`}
+                  className={`px-6 py-2 text-xs font-bold uppercase tracking-widest rounded transition-colors ${scriptInputType === type ? 'shiny-button active' : 'bg-[var(--background)] text-[var(--muted)] border border-[var(--border)] hover:border-[var(--primary)]'}`}
                 >
                   {type === 'auto' ? '🔥 Viral' : type === 'topic' ? '🔍 Topic' : '✍️ Script'}
                 </button>
@@ -420,16 +422,16 @@ export default function Studio() {
                 <button
                   onClick={handleFetchTrends}
                   disabled={isFetchingTrends}
-                  className="flex items-center gap-2 px-4 py-2 text-xs font-semibold bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 text-orange-300 rounded-lg transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 py-2 text-xs font-bold bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 border border-[var(--primary)]/30 text-[var(--primary)] rounded-lg transition-colors disabled:opacity-50"
                 >
                   {isFetchingTrends ? (
-                    <><div className="w-3 h-3 border border-orange-400 border-t-transparent rounded-full animate-spin" /> Fetching...</>
+                    <><div className="w-3 h-3 border border-[var(--primary)] border-t-transparent rounded-full animate-spin" /> Fetching...</>
                   ) : (
                     <>⚡ Fetch Today&apos;s Trending Topics</>
                   )}
                 </button>
                 {selectedViralTopic && (
-                  <span className="text-[10px] text-green-400 font-mono">✓ Ready — hit Regenerate Voice</span>
+                  <span className="text-xs text-green-400 font-mono">✓ Ready — hit Regenerate Voice</span>
                 )}
               </div>
               {trendingTopics.length > 0 && (
@@ -440,18 +442,18 @@ export default function Studio() {
                       onClick={() => setSelectedViralTopic(t.topic)}
                       className={`w-full text-left px-4 py-3 rounded-lg text-xs border transition-all ${
                         selectedViralTopic === t.topic
-                          ? 'border-orange-500/60 bg-orange-500/10 text-orange-100'
-                          : 'border-white/10 bg-black hover:border-white/30 text-gray-400 hover:text-gray-200'
+                          ? 'border-[var(--primary)]/60 bg-[var(--primary)]/10 text-[var(--foreground)]'
+                          : 'border-[var(--border)] bg-[var(--background)] hover:border-[var(--primary)] text-[var(--muted)] hover:text-[var(--foreground)]'
                       }`}
                     >
-                      <span className="text-gray-600 mr-2 font-mono">#{i+1}</span>
+                      <span className="text-[var(--muted)] mr-2 font-mono">#{i+1}</span>
                       {t.topic.replace(/^TIL\s*(that)?\s*/i, '')}
                     </button>
                   ))}
                 </div>
               )}
               {trendingTopics.length === 0 && !isFetchingTrends && (
-                <p className="text-xs text-gray-600 font-mono">Hit &quot;Fetch&quot; to load today&apos;s top Reddit facts and pick one.</p>
+                <p className="text-xs text-[var(--faint)] font-mono">Hit &quot;Fetch&quot; to load today&apos;s top Reddit facts and pick one.</p>
               )}
             </div>
           )}
@@ -464,9 +466,9 @@ export default function Studio() {
                 value={topicInput}
                 onChange={e => setTopicInput(e.target.value)}
                 placeholder="Enter a topic (e.g. The history of AI, Space exploration)" 
-                className="w-full bg-black border border-white/20 rounded-lg px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-white/50 transition-colors font-mono text-sm"
+                className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg px-4 py-3 text-[var(--foreground)] placeholder:text-[var(--faint)] focus:outline-none focus:border-[var(--primary)] transition-colors font-mono text-sm"
               />
-              <p className="text-[10px] text-gray-600 font-mono">Agent will search Reddit + Twitter/TikTok for the most viral post on this topic and build a hook from it.</p>
+              <p className="text-xs text-[var(--faint)] font-mono">Agent will search Reddit + Twitter/TikTok for the most viral post on this topic and build a hook from it.</p>
             </div>
           )}
 
@@ -478,19 +480,19 @@ export default function Studio() {
                 onChange={e => setScriptInput(e.target.value)}
                 placeholder="Paste your exact script here — read word for word by the AI voice." 
                 rows={4}
-                className="w-full bg-black border border-white/20 rounded-lg px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-white/50 transition-colors font-mono text-sm resize-none"
+                className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg px-4 py-3 text-[var(--foreground)] placeholder:text-[var(--faint)] focus:outline-none focus:border-[var(--primary)] transition-colors font-mono text-sm resize-none"
               />
-              <p className="text-[10px] text-gray-600 font-mono">No scraping. Your exact words go straight into the voice engine.</p>
+              <p className="text-xs text-[var(--faint)] font-mono">No scraping. Your exact words go straight into the voice engine.</p>
             </div>
           )}
           
-          <div className="pt-4 border-t border-white/10 mt-4 flex items-center justify-between">
+          <div className="pt-4 border-t border-[var(--border)] mt-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <label className="flex items-center gap-2 cursor-pointer">
-                <div className={`w-10 h-5 rounded-full p-1 transition-colors ${enableAvatar ? 'bg-orange-500' : 'bg-gray-700'}`}>
+                <div className={`w-10 h-5 rounded-full p-1 transition-colors ${enableAvatar ? 'bg-[var(--primary)]' : 'bg-[var(--surface)] border border-[var(--border)]'}`}>
                   <div className={`bg-white w-3 h-3 rounded-full transition-transform ${enableAvatar ? 'translate-x-5' : 'translate-x-0'}`}></div>
                 </div>
-                <span className="text-xs font-semibold text-gray-300">Enable Split-Screen Avatar</span>
+                <span className="text-xs font-semibold text-[var(--foreground)]">Enable Split-Screen Avatar</span>
               </label>
               <input type="checkbox" className="hidden" checked={enableAvatar} onChange={() => setEnableAvatar(!enableAvatar)} />
             </div>
@@ -498,9 +500,9 @@ export default function Studio() {
             {enableAvatar && (
               <div className="flex items-center gap-3">
                 {avatarImagePath && (
-                  <span className="text-[10px] text-green-400 font-mono">✓ Face Ready</span>
+                  <span className="text-xs text-green-400 font-mono">✓ Face Ready</span>
                 )}
-                <label className="cursor-pointer px-3 py-1.5 text-[10px] font-bold bg-white text-black hover:bg-gray-200 rounded transition-colors flex items-center gap-2">
+                <label className="cursor-pointer px-6 py-2 text-xs font-bold rounded flex items-center gap-2 shiny-button">
                   {isUploadingAvatar ? 'Uploading...' : 'Upload Presenter Face (PNG/JPG)'}
                   <input type="file" className="hidden" accept="image/jpeg,image/png" onChange={handleAvatarUpload} disabled={isUploadingAvatar} />
                 </label>
@@ -512,10 +514,10 @@ export default function Studio() {
 
         {/* Minimal Terminal Log */}
         {(isRendering || isGeneratingVoice || renderLogs) && (
-          <div className="bg-[#111] border border-white/10 rounded-lg p-4 relative">
-            <button className="absolute top-4 right-4 text-xs text-gray-600 hover:text-gray-300 transition-colors" onClick={() => setRenderLogs('')}>Clear</button>
-            <h3 className="text-xs text-gray-500 uppercase tracking-widest font-mono mb-3">Build Output</h3>
-            <pre className="text-[11px] text-gray-400 whitespace-pre-wrap max-h-32 overflow-y-auto font-mono scrollbar-hide">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 relative hover:border-[var(--primary)] transition-all">
+            <button className="absolute top-4 right-4 text-xs text-[var(--faint)] hover:text-[var(--foreground)] transition-colors" onClick={() => setRenderLogs('')}>Clear</button>
+            <h3 className="text-xs text-[var(--muted)] uppercase tracking-widest font-mono mb-3">Build Output</h3>
+            <pre className="text-xs text-[var(--foreground)] whitespace-pre-wrap max-h-32 overflow-y-auto font-mono scrollbar-hide">
               {renderLogs || "Waiting for signal..."}
             </pre>
           </div>
@@ -525,18 +527,18 @@ export default function Studio() {
           
           {/* Structured Timeline Editor */}
           <div className="col-span-6 space-y-4">
-            <h2 className="text-sm font-semibold text-gray-300">
+            <h2 className="text-sm font-semibold text-[var(--foreground)]">
               Sequence Editor
             </h2>
             
-            <div className="flex flex-col gap-2 overflow-y-auto h-[60vh] pr-2 scrollbar-thin scrollbar-thumb-white/10">
+            <div className="flex flex-col gap-2 overflow-y-auto h-[60vh] pr-2 scrollbar-thin scrollbar-thumb-[var(--border)]">
               {timeline?.segments.map((seg, idx) => (
                 <div 
                   key={idx} 
                   className={`relative p-4 rounded-md cursor-pointer transition-all border ${
                     selectedSegmentIdx === idx 
-                      ? 'border-white/30 bg-[#111] z-10' 
-                      : 'border-transparent hover:bg-[#111]/50'
+                      ? 'border-[var(--primary)] bg-[var(--surface)] z-10' 
+                      : 'border-[var(--border)] hover:border-[var(--primary)] bg-[var(--background)]'
                   }`}
                   onClick={() => {
                     setSelectedSegmentIdx(idx);
@@ -544,24 +546,24 @@ export default function Studio() {
                   }}
                 >
                   <div className="flex items-center gap-4 mb-2">
-                    <span className="font-mono text-[10px] text-gray-500">
+                    <span className="font-mono text-xs text-[var(--faint)]">
                       {seg.start.toFixed(2)}s &rarr; {seg.end.toFixed(2)}s
                     </span>
-                    <span className="text-[10px] bg-[#222] text-gray-300 px-2 py-0.5 rounded border border-white/5 truncate max-w-[150px]">
+                    <span className="text-xs bg-[var(--background)] text-[var(--foreground)] px-2 py-0.5 rounded border border-[var(--border)] truncate max-w-[150px]">
                       {seg.clip_path.split('\\').pop()?.split('/').pop()}
                     </span>
                   </div>
                   
                   {selectedSegmentIdx === idx ? (
                      <textarea 
-                       className="w-full bg-black border border-white/20 rounded text-sm text-gray-200 p-2 mt-1 focus:outline-none focus:border-white/40 resize-none transition-colors"
+                       className="w-full bg-[var(--background)] border border-[var(--border)] rounded text-sm text-[var(--foreground)] p-2 mt-1 focus:outline-none focus:border-[var(--primary)] resize-none transition-colors"
                        rows={2}
                        value={seg.text}
                        onChange={(e) => updateSegmentText(e.target.value)}
                        onClick={(e) => e.stopPropagation()}
                      />
                   ) : (
-                    <p className="text-sm text-gray-400 group-hover:text-gray-200 transition-colors">{seg.text}</p>
+                    <p className="text-sm text-[var(--muted)] group-hover:text-[var(--foreground)] transition-colors">{seg.text}</p>
                   )}
                 </div>
               ))}
@@ -571,17 +573,17 @@ export default function Studio() {
           {/* Clean Video Asset Gallery */}
           <div className="col-span-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-gray-300">
+              <h2 className="text-sm font-semibold text-[var(--foreground)]">
                 Media Library
               </h2>
               
               <div className="flex items-center gap-3">
                 {selectedSegmentIdx !== null && (
-                  <span className="text-[10px] text-gray-500 font-mono">Targeting Sequence {selectedSegmentIdx + 1}</span>
+                  <span className="text-xs text-[var(--muted)] font-mono">Targeting Sequence {selectedSegmentIdx + 1}</span>
                 )}
-                <label className="cursor-pointer bg-[#222] hover:bg-[#333] border border-white/10 text-gray-300 px-3 py-1 rounded text-xs font-medium transition-colors flex items-center gap-2">
+                <label className="cursor-pointer bg-[var(--surface)] hover:bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)] px-3 py-1 rounded text-xs font-medium transition-colors flex items-center gap-2">
                   {isUploading ? (
-                    <span className="flex items-center gap-1"><div className="w-2 h-2 border border-white/50 border-t-white rounded-full animate-spin"/> Uploading...</span>
+                    <span className="flex items-center gap-1"><div className="w-2 h-2 border border-[var(--primary)] border-t-transparent rounded-full animate-spin"/> Uploading...</span>
                   ) : (
                     <>
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
@@ -594,7 +596,7 @@ export default function Studio() {
             </div>
             
             {selectedSegmentIdx !== null ? (
-              <div className="h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 pr-2">
+              <div className="h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--border)] pr-2">
                 <div className="grid grid-cols-3 gap-4">
                   {assets.map((asset, i) => {
                     const isSelected = timeline?.segments[selectedSegmentIdx].clip_path === asset;
@@ -607,8 +609,8 @@ export default function Studio() {
                         onClick={() => updateSegmentClip(asset)}
                         className={`group relative aspect-[9/16] rounded-md cursor-pointer overflow-hidden border transition-colors ${
                           isSelected 
-                            ? 'border-white' 
-                            : 'border-white/10 hover:border-white/40'
+                            ? 'border-[var(--primary)] shadow-[0_0_15px_var(--primary)]' 
+                            : 'border-[var(--border)] hover:border-[var(--primary)]'
                         }`}
                       >
                         <video
@@ -618,19 +620,19 @@ export default function Studio() {
                           playsInline
                           onMouseEnter={handleVideoHover}
                           onMouseLeave={handleVideoLeave}
-                          className="absolute inset-0 w-full h-full object-cover bg-[#0a0a0a]"
+                          className="absolute inset-0 w-full h-full object-cover bg-[var(--background)]"
                         />
                         
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
                         
                         <div className="absolute bottom-0 left-0 right-0 p-2 pointer-events-none">
-                          <span className="text-[10px] font-medium text-gray-300 truncate block w-full drop-shadow-md">
+                          <span className="text-xs font-medium text-[var(--foreground)] truncate block w-full drop-shadow-md">
                             {asset.split('\\').pop()?.split('/').pop()?.replace('.mp4', '')}
                           </span>
                         </div>
                         
                         {isSelected && (
-                          <div className="absolute top-2 right-2 bg-white text-black rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold">
+                          <div className="absolute top-2 right-2 bg-[var(--primary)] text-[var(--foreground)] rounded-full w-4 h-4 flex items-center justify-center text-xs font-bold">
                             ✓
                           </div>
                         )}
@@ -642,7 +644,7 @@ export default function Studio() {
                               e.stopPropagation();
                               setEditingAsset(asset);
                             }}
-                            className="bg-black/60 hover:bg-black/80 backdrop-blur border border-white/20 text-white p-1.5 rounded-full"
+                            className="bg-[var(--background)]/60 hover:bg-[var(--background)]/80 backdrop-blur border border-[var(--border)] text-[var(--foreground)] p-1.5 rounded-full"
                           >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                           </button>
@@ -653,45 +655,45 @@ export default function Studio() {
                 </div>
               </div>
             ) : (
-              <div className="border border-dashed border-white/10 rounded-lg p-12 text-center flex flex-col items-center justify-center h-[60vh]">
-                <p className="text-gray-500 text-sm">Select a sequence to browse media.</p>
+              <div className="border border-dashed border-[var(--border)] rounded-lg p-12 text-center flex flex-col items-center justify-center h-[60vh]">
+                <p className="text-[var(--faint)] text-sm">Select a sequence to browse media.</p>
               </div>
             )}
           </div>
         </main>
 
         {/* Full-width History Section */}
-        <div className="border border-white/10 rounded-lg overflow-hidden bg-[#0a0a0a]">
+        <div className="border border-[var(--border)] rounded-lg overflow-hidden bg-[var(--background)]">
           <button 
             onClick={() => setShowHistory(!showHistory)}
-            className="w-full p-4 flex justify-between items-center bg-[#111] hover:bg-[#1a1a1a] transition-colors"
+            className="w-full p-4 flex justify-between items-center bg-[var(--surface)] hover:bg-[var(--surface)] transition-colors"
           >
-            <h2 className="text-sm font-semibold text-gray-300">Version History ({history.length})</h2>
-            <span className="text-gray-500">{showHistory ? '▲' : '▼'}</span>
+            <h2 className="text-sm font-semibold text-[var(--foreground)]">Version History ({history.length})</h2>
+            <span className="text-[var(--faint)]">{showHistory ? '▲' : '▼'}</span>
           </button>
           
           {showHistory && (
-            <div className="p-4 border-t border-white/5">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[40vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/10">
+            <div className="p-4 border-t border-[var(--border)]">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[40vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[var(--border)]">
                 {history.length === 0 ? (
-                  <div className="col-span-full text-center text-xs text-gray-500 py-8">No history found.</div>
+                  <div className="col-span-full text-center text-xs text-[var(--faint)] py-8">No history found.</div>
                 ) : (
                   history.map((v, i) => (
-                    <div key={v.id} className="p-4 border border-white/5 bg-[#111] rounded-md hover:border-white/20 transition-colors flex flex-col gap-3">
+                    <div key={v.id} className="p-4 border border-[var(--border)] bg-[var(--surface)] rounded-md hover:border-[var(--primary)] transition-colors flex flex-col gap-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-[11px] font-mono text-gray-300">{new Date(v.timestamp).toLocaleString()}</span>
-                        <span className="text-[10px] bg-[#222] px-2 py-1 rounded text-gray-400">{v.engine} | {v.profile}</span>
+                        <span className="text-[11px] font-mono text-[var(--muted)]">{new Date(v.timestamp).toLocaleString()}</span>
+                        <span className="text-xs bg-[var(--background)] px-2 py-1 rounded text-[var(--faint)]">{v.engine} | {v.profile}</span>
                       </div>
                       <div className="flex gap-2 mt-2">
                         <button 
                           onClick={() => handleRestoreVersion(v.id)}
-                          className="flex-1 text-[11px] py-1.5 bg-white/10 hover:bg-white/20 text-white rounded transition-colors"
+                          className="flex-1 text-[11px] py-1.5 bg-[var(--background)] hover:bg-[var(--border)] text-[var(--foreground)] border border-[var(--border)] rounded transition-colors"
                         >
                           Restore
                         </button>
                         <button 
                           onClick={() => handlePinVersion(v.id)}
-                          className={`text-[11px] px-3 py-1.5 rounded transition-colors ${v.pinned ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/50' : 'bg-transparent border border-white/10 text-gray-400 hover:text-white'}`}
+                          className={`text-[11px] px-3 py-1.5 rounded transition-colors ${v.pinned ? 'bg-[var(--primary)]/20 text-[var(--primary)] border border-[var(--primary)]' : 'bg-transparent border border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] hover:border-[var(--primary)]'}`}
                         >
                           {v.pinned ? 'Pinned 📌' : 'Pin'}
                         </button>
@@ -707,15 +709,15 @@ export default function Studio() {
 
       {/* Editor Modal */}
       {editingAsset && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#111] border border-white/10 rounded-xl p-6 w-[400px] max-w-[90vw] shadow-2xl">
-            <div className="flex justify-between items-center mb-5 border-b border-white/5 pb-3">
-              <h3 className="text-sm font-semibold text-white">Media Editor</h3>
-              <button onClick={() => setEditingAsset(null)} className="text-gray-500 hover:text-white">✕</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--background)]/80 backdrop-blur-sm">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 w-[400px] max-w-[90vw] shadow-[0_0_50px_var(--primary)]">
+            <div className="flex justify-between items-center mb-5 border-b border-[var(--border)] pb-3">
+              <h3 className="text-sm font-semibold text-[var(--foreground)]">Media Editor</h3>
+              <button onClick={() => setEditingAsset(null)} className="text-[var(--muted)] hover:text-[var(--foreground)]">✕</button>
             </div>
             
             <div className="space-y-6">
-              <div className="flex justify-center bg-black/50 rounded-lg p-4 h-[200px] items-center border border-white/5 overflow-hidden relative">
+              <div className="flex justify-center bg-[var(--background)] rounded-lg p-4 h-[200px] items-center border border-[var(--border)] overflow-hidden relative">
                 {editingAsset.toLowerCase().endsWith('.mp4') ? (
                   <video 
                     src={`/api/video?path=${encodeURIComponent(editingAsset)}&v=${refreshKey}`} 
@@ -736,16 +738,16 @@ export default function Studio() {
               
               <div className="space-y-4">
                 <div className="flex flex-col gap-2">
-                  <label className="text-[10px] text-gray-400 uppercase tracking-wider flex justify-between">
-                    Rotation <span>{editRotate}°</span>
+                  <label className="text-xs text-[var(--faint)] uppercase tracking-wider flex justify-between">
+                    Rotation <span className="text-[var(--foreground)]">{editRotate}°</span>
                   </label>
                   <div className="flex gap-2">
                     {[0, 90, 180, 270].map(deg => (
                       <button 
                         key={deg}
                         onClick={() => setEditRotate(deg)}
-                        className={`flex-1 py-1.5 rounded text-xs border transition-colors ${
-                          editRotate === deg ? 'bg-white text-black border-white' : 'bg-transparent text-gray-400 border-white/10 hover:border-white/30'
+                        className={`flex-1 py-2 rounded text-xs font-bold border transition-colors ${
+                          editRotate === deg ? 'shiny-button active' : 'bg-transparent text-[var(--muted)] border-[var(--border)] hover:border-[var(--primary)]'
                         }`}
                       >
                         {deg}°
@@ -755,14 +757,14 @@ export default function Studio() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-[10px] text-gray-400 uppercase tracking-wider flex justify-between">
-                    Brightness <span>{editBrightness.toFixed(1)}x</span>
+                  <label className="text-xs text-[var(--faint)] uppercase tracking-wider flex justify-between">
+                    Brightness <span className="text-[var(--foreground)]">{editBrightness.toFixed(1)}x</span>
                   </label>
                   <input 
                     type="range" min="0.1" max="2.0" step="0.1" 
                     value={editBrightness} 
                     onChange={e => setEditBrightness(parseFloat(e.target.value))}
-                    className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-1 bg-[var(--border)] rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
               </div>
@@ -770,14 +772,14 @@ export default function Studio() {
               <div className="flex gap-3 pt-2">
                 <button 
                   onClick={() => setEditingAsset(null)}
-                  className="flex-1 py-2 text-xs font-medium border border-white/10 rounded hover:bg-white/5 transition-colors"
+                  className="flex-1 py-2 text-xs font-medium border border-[var(--border)] text-[var(--foreground)] rounded hover:bg-[var(--background)] transition-colors"
                 >
                   Cancel
                 </button>
                 <button 
                   onClick={handleProcessMedia}
                   disabled={isProcessing}
-                  className="flex-1 py-2 text-xs font-medium bg-white text-black rounded hover:bg-gray-200 transition-colors disabled:opacity-50"
+                  className="flex-1 py-3 text-xs font-bold rounded disabled:opacity-50 shiny-button"
                 >
                   {isProcessing ? 'Processing...' : 'Apply & Save'}
                 </button>
@@ -787,5 +789,6 @@ export default function Studio() {
         </div>
       )}
     </div>
+    </>
   );
 }

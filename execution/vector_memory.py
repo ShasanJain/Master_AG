@@ -83,14 +83,33 @@ async def purge_memories(sector: str = None, user_id: str = "jack"):
     return deleted_count
 
 async def get_stats(user_id: str = "jack"):
-    """Get memory statistics."""
-    mem = get_memory()
-    results = await mem.search("*", user_id=user_id, limit=1000)
+    """Get memory statistics bypassing expensive embedding calls."""
+    import sqlite3
     sectors = {}
-    for r in results:
-        sec = r.get('metadata', {}).get('sector') or r.get('primary_sector', 'unknown')
-        sectors[sec] = sectors.get(sec, 0) + 1
-    return {"total": len(results), "sectors": sectors}
+    total = 0
+    if os.path.exists(DB_PATH):
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+            cursor.execute("SELECT primary_sector, meta FROM memories WHERE user_id = ?", (user_id,))
+            rows = cursor.fetchall()
+            for row in rows:
+                sec = row[0]
+                meta_str = row[1]
+                if meta_str:
+                    try:
+                        meta = json.loads(meta_str)
+                        if meta.get('sector'):
+                            sec = meta['sector']
+                    except:
+                        pass
+                if not sec: sec = 'unknown'
+                sectors[sec] = sectors.get(sec, 0) + 1
+                total += 1
+            conn.close()
+        except Exception as e:
+            pass
+    return {"total": total, "sectors": sectors}
 
 if __name__ == "__main__":
     import argparse

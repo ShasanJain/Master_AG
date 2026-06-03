@@ -38,8 +38,8 @@ export function TokenWidget() {
   if (loading) {
     return (
       <div className="glass-card p-6 h-full flex flex-col justify-between animate-pulse">
-        <div className="h-4 w-24 bg-white/10 rounded mb-4"></div>
-        <div className="h-12 w-full bg-white/5 rounded"></div>
+        <div className="h-4 w-24 bg-[var(--border)] rounded mb-4"></div>
+        <div className="h-12 w-full bg-[var(--surface)] rounded"></div>
       </div>
     );
   }
@@ -71,7 +71,7 @@ export function TokenWidget() {
 
       <div className="flex-1 flex flex-col justify-center z-10">
         <div className="flex items-end gap-2">
-          <h3 className="text-3xl font-bold tracking-tighter text-white">
+          <h3 className="text-3xl font-bold tracking-tighter text-[var(--foreground)]">
             {todayTotal.toLocaleString()}
           </h3>
           <span className="text-xs font-bold text-[var(--faint)] uppercase tracking-widest mb-1.5">Tokens / 24h</span>
@@ -81,7 +81,7 @@ export function TokenWidget() {
           {data.today.slice(0, 4).map(u => (
             <div key={u.model} className="flex justify-between border-b border-[var(--border)] pb-1">
               <span className="truncate pr-2">{u.model.replace('-latest', '').replace('claude-3-5-', '')}</span>
-              <span className="text-white">{(u.prompt_tokens + u.completion_tokens).toLocaleString()}</span>
+              <span className="text-[var(--foreground)]">{(u.prompt_tokens + u.completion_tokens).toLocaleString()}</span>
             </div>
           ))}
         </div>
@@ -97,7 +97,7 @@ export function TokenWidget() {
                 className="w-full bg-cyan-500/20 rounded-sm hover:bg-cyan-400 transition-all cursor-pointer"
                 style={{ height: `${heightPct}%` }}
               ></div>
-              <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 bg-black text-white text-[8px] px-1 py-0.5 rounded font-mono pointer-events-none transition-opacity z-20 whitespace-nowrap">
+              <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 bg-[var(--background)] text-[var(--foreground)] text-[8px] px-1 py-0.5 rounded font-mono pointer-events-none transition-opacity z-20 whitespace-nowrap">
                 {val.toLocaleString()}
               </div>
             </div>

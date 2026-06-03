@@ -41,20 +41,23 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex gap-8 h-[calc(100vh-160px)]">
+    <>
+      <div className="atmospheric-orb orb-emerald"></div>
+      <div className="atmospheric-orb orb-sapphire"></div>
+      <div className="flex gap-8 h-[calc(100vh-160px)] relative z-10">
       {/* Sidebar: Signal Archive */}
       <aside className="w-64 glass-card p-6 flex flex-col gap-6 border-[var(--border)] overflow-hidden hidden md:flex">
         <div className="space-y-1">
-          <h3 className="text-xs font-bold text-[var(--muted)] uppercase tracking-widest">Signal Archive</h3>
-          <p className="text-[10px] text-[var(--faint)]">EPISODIC TRACES</p>
+          <h3 className="text-sm font-bold text-[var(--muted)] uppercase tracking-widest">Signal Archive</h3>
+          <p className="text-xs text-[var(--faint)]">EPISODIC TRACES</p>
         </div>
         <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
           {history.length === 0 && (
-            <p className="text-[10px] text-[var(--faint)] italic">No previous signals found.</p>
+            <p className="text-xs text-[var(--faint)] italic">No previous signals found.</p>
           )}
           {history.map((item) => (
-            <div key={item.id} className="p-3 rounded-lg bg-white/5 border border-white/5 hover:border-blue-500/30 transition-all cursor-pointer group">
-              <p className="text-[10px] text-blue-500 font-mono mb-1">{new Date(item.timestamp).toLocaleTimeString()}</p>
+            <div key={item.id} className="p-3 rounded-lg bg-[var(--background)]/20 border border-[var(--border)] hover:border-[var(--primary)] transition-all cursor-pointer group">
+              <p className="text-xs text-[var(--primary)] font-mono mb-1">{new Date(item.timestamp).toLocaleTimeString()}</p>
               <p className="text-xs text-[var(--muted)] line-clamp-2 group-hover:text-[var(--foreground)] transition-colors">
                 {item.content.split('Jack:')[0].replace('User:', '')}
               </p>
@@ -68,13 +71,13 @@ export default function ChatPage() {
         {/* Header */}
         <header className="flex items-center justify-between border-b border-[var(--border)] pb-6">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-xl shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+            <div className="w-10 h-10 rounded-xl bg-[var(--background)] border border-[var(--primary)] flex items-center justify-center text-xl shadow-[0_0_20px_var(--primary-glow)]">
               📡
             </div>
             <div>
               <h2 className="text-3xl font-bold tracking-tighter text-[var(--foreground)]">Neural Link</h2>
-              <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <p className="text-xs font-bold text-[var(--muted)] uppercase tracking-widest flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse shadow-[0_0_8px_var(--primary-glow)]"></span>
                 Secure Offline Channel // Full Agency Mode
               </p>
             </div>
@@ -109,8 +112,8 @@ export default function ChatPage() {
             >
               <div className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
                 msg.role === 'user' 
-                  ? 'bg-[var(--primary)] text-white rounded-tr-none shadow-lg' 
-                  : 'glass-card rounded-tl-none border-l-4 border-l-blue-500/40 shadow-sm'
+                  ? 'bg-[var(--primary)] text-[var(--background)] rounded-tr-none shadow-lg' 
+                  : 'glass-card rounded-tl-none border-l-4 border-l-[var(--primary)] shadow-sm'
               }`}>
                 {msg.content}
               </div>
@@ -143,7 +146,7 @@ export default function ChatPage() {
           <button 
             type="submit"
             disabled={!input.trim() || isTyping}
-            className="w-10 h-10 rounded-xl bg-[var(--primary)] text-white flex items-center justify-center hover:bg-blue-600 transition-all disabled:opacity-50 disabled:grayscale shadow-lg shadow-blue-500/20"
+            className="w-12 h-12 rounded-xl flex items-center justify-center disabled:opacity-50 disabled:grayscale shadow-[0_0_15px_var(--primary-glow)] shiny-button"
           >
             <span className="transform rotate-90 text-xl">➤</span>
           </button>
@@ -163,5 +166,6 @@ export default function ChatPage() {
         }
       `}</style>
     </div>
+    </>
   );
 }

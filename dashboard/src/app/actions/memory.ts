@@ -31,3 +31,18 @@ export async function purgeMemory(action: 'all' | 'short' | 'long' | 'id', id?: 
     console.error("Purge error:", error);
   }
 }
+
+export async function syncSystemMemory() {
+  try {
+    const scriptPath = path.resolve(process.cwd(), "../execution/sync_neural_memory.py");
+    const { execFileSync } = require('child_process');
+    // Using execFileSync blocks the Node thread during sync, but we want it to wait and return results
+    const output = execFileSync('python', [scriptPath], { encoding: 'utf-8' });
+    revalidatePath('/memory');
+    revalidatePath('/neural');
+    return { success: true, message: output.trim() };
+  } catch (error: any) {
+    console.error("Sync error:", error);
+    return { success: false, message: error.message || "Failed to synchronize memory." };
+  }
+}

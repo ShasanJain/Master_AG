@@ -1,0 +1,162 @@
+{
+  "audio_path": "./scratch\\narration.mp3",
+  "srt_path": "./scratch\\timings.srt",
+  "word_timings": [
+    {
+      "word": "Stop",
+      "start": 0.0,
+      "end": 0.6
+    },
+    {
+      "word": "scrolling.",
+      "start": 0.6,
+      "end": 1.02
+    },
+    {
+      "word": "Did",
+      "start": 1.52,
+      "end": 1.72
+    },
+    {
+      "word": "you",
+      "start": 1.72,
+      "end": 1.88
+    },
+    {
+      "word": "know",
+      "start": 1.88,
+      "end": 2.06
+    },
+    {
+      "word": "in",
+      "start": 2.06,
+      "end": 2.36
+    },
+    {
+      "word": "2024,",
+      "start": 2.36,
+      "end": 2.94
+    },
+    {
+      "word": "archaeologists",
+      "start": 3.42,
+      "end": 3.82
+    },
+    {
+      "word": "in",
+      "start": 3.82,
+      "end": 4.26
+    },
+    {
+      "word": "Spain",
+      "start": 4.26,
+      "end": 4.52
+    },
+    {
+      "word": "found",
+      "start": 4.52,
+      "end": 4.76
+    },
+    {
+      "word": "the",
+      "start": 4.76,
+      "end": 4.96
+    },
+    {
+      "word": "skeleton",
+      "start": 4.96,
+      "end": 5.24
+    },
+    {
+      "word": "of",
+      "start": 5.24,
+      "end": 5.54
+    },
+    {
+      "word": "a",
+      "start": 5.54,
+      "end": 5.8
+    },
+    {
+      "word": "six",
+      "start": 5.8,
+      "end": 5.9
+    },
+    {
+      "word": "-year",
+      "start": 5.9,
+      "end": 6.06
+    },
+    {
+      "word": "-old",
+      "start": 6.06,
+      "end": 6.26
+    },
+    {
+      "word": "Neanderthal",
+      "start": 6.26,
+      "end": 6.9
+    },
+    {
+      "word": "with",
+      "start": 6.9,
+      "end": 7.1
+    },
+    {
+      "word": "Down",
+      "start": 7.1,
+      "end": 7.36
+    },
+    {
+      "word": "syndrome?",
+      "start": 7.36,
+      "end": 7.74
+    },
+    {
+      "word": "Let",
+      "start": 8.92,
+      "end": 9.06
+    },
+    {
+      "word": "me",
+      "start": 9.06,
+      "end": 9.2
+    },
+    {
+      "word": "know",
+      "start": 9.2,
+      "end": 9.38
+    },
+    {
+      "word": "what",
+      "start": 9.38,
+      "end": 9.52
+    },
+    {
+      "word": "you",
+      "start": 9.52,
+      "end": 9.68
+    },
+    {
+      "word": "think",
+      "start": 9.68,
+      "end": 9.88
+    },
+    {
+      "word": "in",
+      "start": 9.88,
+      "end": 10.06
+    },
+    {
+      "word": "the",
+      "start": 10.06,
+      "end": 10.3
+    },
+    {
+      "word": "comments.",
+      "start": 10.3,
+      "end": 10.58
+    }
+  ],
+  "total_duration": 10.58
+}

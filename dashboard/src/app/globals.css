@@ -1,24 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #0a0b0e;
-  --foreground: #ffffff;
-  --primary: #3b82f6;
-  --primary-glow: rgba(59, 130, 246, 0.3);
-  --accent: #10b981;
-  --surface: rgba(10, 11, 14, 0.75);
-  --border: rgba(255, 255, 255, 0.1);
-  --grid-line: rgba(255, 255, 255, 0.02);
-  --glass: blur(20px);
-  --sidebar-bg: #0a0b0e;
-  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  --faint: rgba(255, 255, 255, 0.1);
-  --muted: rgba(255, 255, 255, 0.4);
-  --status-emerald: #34d399;
-  --status-emerald-bg: rgba(16, 185, 129, 0.1);
-  --status-blue: #60a5fa;
-  --status-blue-bg: rgba(59, 130, 246, 0.1);
-  --status-rose: #fb7185;
+  --background: #020617;
+  --foreground: #F8FAFC;
+  --primary: #22C55E;
+  --primary-glow: rgba(34, 197, 94, 0.3);
+  --accent: #22C55E;
+  --surface: #0F172A;
+  --border: #1E293B;
+  --grid-line: rgba(255, 255, 255, 0.05);
+  --glass: blur(10px);
+  --sidebar-bg: #0F172A;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --faint: rgba(248, 250, 252, 0.1);
+  --muted: rgba(248, 250, 252, 0.5);
+  --status-emerald: #22C55E;
+  --status-emerald-bg: rgba(34, 197, 94, 0.1);
+  --status-blue: #38BDF8;
+  --status-blue-bg: rgba(56, 189, 248, 0.1);
+  --status-rose: #F43F5E;
   --status-rose-bg: rgba(244, 63, 94, 0.1);
 }
 
@@ -157,4 +158,155 @@ body::before {
 
 #sidebar-toggle:checked ~ aside .toggle-btn svg {
   transform: rotate(180deg);
+}
+
+/* UI UX Pro Max Premium Animations */
+
+.pixel-3d {
+  font-family: 'Press Start 2P', cursive;
+  color: #fde047; /* yellow-300 */
+  text-shadow: 
+    1px 1px 0 #ea580c, 
+    2px 2px 0 #ea580c, 
+    3px 3px 0 #ea580c, 
+    4px 4px 0 #9a3412,
+    5px 5px 0 #9a3412;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  backdrop-filter: blur(4px);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.shiny-button {
+  background-color: transparent !important;
+  color: var(--primary) !important;
+  border: 1px solid var(--primary) !important;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.shiny-button::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid var(--primary);
+  opacity: 0.5;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.shiny-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--primary);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -2;
+}
+
+.shiny-button:hover {
+  color: var(--background) !important;
+}
+
+.shiny-button:hover::before {
+  border-color: var(--background);
+  inset: 2px;
+  opacity: 1;
+}
+
+.shiny-button:hover::after {
+  transform: scaleY(1);
+}
+
+.shiny-button.active {
+  color: var(--background) !important;
+}
+
+.shiny-button.active::before {
+  border-color: var(--background);
+  inset: 2px;
+  opacity: 1;
+}
+
+.shiny-button.active::after {
+  transform: scaleY(1);
+}
+
+.atmospheric-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+.orb-emerald {
+  background: var(--primary);
+  width: 40vw;
+  height: 40vw;
+  top: -10vw;
+  right: -10vw;
+  animation: float 20s infinite ease-in-out alternate;
+}
+
+.orb-sapphire {
+  background: #3B82F6;
+  width: 50vw;
+  height: 50vw;
+  bottom: -20vw;
+  left: -10vw;
+  animation: float 25s infinite ease-in-out alternate-reverse;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(5%, 5%) scale(1.1); }
+}
+
+.border-beam {
+  position: relative;
+}
+
+.border-beam::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--primary) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: border-beam-anim 3s infinite linear;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+@keyframes border-beam-anim {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }

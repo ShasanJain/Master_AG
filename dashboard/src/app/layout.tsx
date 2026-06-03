@@ -1,14 +1,20 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
+import { Fira_Code, Fira_Sans } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 import { IconDashboard, IconSkills, IconLogs, IconIncubator, IconSettings } from "./components/Icons";
 import { StatusBadge } from "./components/StatusBadge";
 import { FloatingJack } from "./components/FloatingJack";
 
-const outfit = Outfit({
+const firaCode = Fira_Code({
   subsets: ["latin"],
-  variable: "--font-outfit",
+  variable: "--font-fira-code",
+});
+
+const firaSans = Fira_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-fira-sans",
 });
 
 export const metadata: Metadata = {
@@ -43,14 +49,14 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${outfit.variable} font-sans antialiased industrial-grid min-h-screen flex text-[var(--foreground)]`}>
+      <body className={`${firaSans.variable} ${firaCode.variable} font-sans antialiased industrial-grid min-h-screen flex text-[var(--foreground)]`}>
         <input type="checkbox" id="sidebar-toggle" />
         {/* Sidebar */}
-        <aside className="relative w-72 shrink-0 border-r border-[var(--border)] bg-[var(--sidebar-bg)] backdrop-blur-2xl flex flex-col p-8 sticky top-0 h-screen z-50 transition-all duration-300">
-          <div className="mb-12">
+        <aside className="relative w-64 shrink-0 border-r border-[var(--border)] bg-[var(--sidebar-bg)] flex flex-col p-6 sticky top-0 h-screen z-50 transition-all duration-300">
+          <div className="mb-10">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-[var(--primary)] flex items-center justify-center shadow-[0_0_20px_var(--primary-glow)]">
-                <span className="text-xl font-bold text-white tracking-tighter italic">J</span>
+                <span className="text-xl font-bold text-[var(--foreground)] tracking-tighter italic">J</span>
               </div>
               <div>
                 <h1 className="text-xl font-bold tracking-tighter text-[var(--foreground)]">JACK-05</h1>
@@ -96,7 +102,7 @@ export default function RootLayout({
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-h-screen relative min-w-0">
           {/* Global Header */}
-          <header className="h-20 border-b border-[var(--border)] flex items-center justify-between px-10 sticky top-0 bg-[var(--background)]/80 backdrop-blur-md z-40">
+          <header className="h-16 border-b border-[var(--border)] flex items-center justify-between px-8 sticky top-0 bg-[var(--background)] z-40">
             <div className="flex items-center gap-4">
               <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-[0.3em]">Session // 0xAF32</span>
               <div className="h-4 w-px bg-[var(--border)]" />
@@ -118,7 +124,7 @@ export default function RootLayout({
             </div>
           </header>
 
-          <main className="flex-1 p-10 overflow-y-auto">
+          <main className="flex-1 p-6 overflow-y-auto">
             {children}
           </main>
         </div>

@@ -225,6 +225,7 @@ These are frequently overlooked issues that make UI look unprofessional:
 | Rule | Do | Don't |
 |------|----|----- |
 | **No emoji icons** | Use SVG icons (Heroicons, Lucide, Simple Icons) | Use emojis like 🎨 🚀 ⚙️ as UI icons |
+| **Iconography over Text** | Prioritize icons instead of text labels for common actions | Clutter UI with text buttons for recognizable actions |
 | **Stable hover states** | Use color/opacity transitions on hover | Use scale transforms that shift layout |
 | **Correct brand logos** | Research official SVG from Simple Icons | Guess or use incorrect logo paths |
 | **Consistent icon sizing** | Use fixed viewBox (24x24) with w-6 h-6 | Mix different icon sizes randomly |
@@ -251,6 +252,7 @@ These are frequently overlooked issues that make UI look unprofessional:
 | Rule | Do | Don't |
 |------|----|----- |
 | **Floating navbar** | Add `top-4 left-4 right-4` spacing | Stick navbar to `top-0 left-0 right-0` |
+| **Container Margins** | Enforce clean margins/padding around ALL containers and bars | Let containers touch screen edges or look cramped |
 | **Content padding** | Account for fixed navbar height | Let content hide behind fixed elements |
 | **Consistent max-width** | Use same `max-w-6xl` or `max-w-7xl` | Mix different container widths |
 

@@ -111,7 +111,6 @@ async def generate_graph(limit_mem=500, threshold=0.65):
                 title = content[:40] + "..." if len(content) > 40 else content
                 group = "personal"
                 
-                # Determine group and label based on meta
                 if meta.get("ast_id"):
                     group = "ast"
                     title = meta.get("ast_id")
@@ -140,6 +139,90 @@ async def generate_graph(limit_mem=500, threshold=0.65):
             conn.close()
         except Exception as e:
             sys.stderr.write(f"DB Error: {e}\n")
+
+    # 1.5 Inject File System Skills and Cluster Hubs
+    try:
+        home_dir = os.environ.get("USERPROFILE") or os.environ.get("HOME") or ""
+        scan_dirs = [
+            os.path.join(home_dir, ".gemini", "skills"),
+            os.path.abspath(os.path.join(os.getcwd(), "..", ".agent", "skills")),
+            os.path.abspath(os.path.join(os.getcwd(), "..", "skills"))
+        ]
+        
+        category_counts = Counter()
+        skill_nodes = []
+        processed_titles = set()
+        
+        for d in scan_dirs:
+            if not os.path.exists(d): continue
+            for root_dir, _, files in os.walk(d):
+                for f in files:
+                    if f == "SKILL.md" or f.endswith("_skill.md"):
+                        filepath = os.path.join(root_dir, f)
+                        try:
+                            with open(filepath, "r", encoding="utf-8") as file_obj:
+                                content = file_obj.read()
+                            # Parse YAML frontmatter manually
+                            meta = {}
+                            match = re.search(r"^---\n([\s\S]*?)\n---", content)
+                            if match:
+                                for line in match.group(1).split("\n"):
+                                    if ":" in line:
+                                        k, v = line.split(":", 1)
+                                        meta[k.strip()] = v.strip().strip("'").strip('"')
+                            
+                            title = meta.get("name") or os.path.basename(os.path.dirname(filepath))
+                            if title in processed_titles: continue
+                            processed_titles.add(title)
+                            
+                            cat = "CORE"
+                            file_lower = filepath.lower()
+                            if meta.get("category"): cat = meta["category"].upper()
+                            elif "design" in file_lower or "ui" in file_lower: cat = "DESIGN"
+                            elif "execution" in file_lower or "dev" in file_lower or "code" in file_lower: cat = "DEV"
+                            elif "planning" in file_lower: cat = "PLANNING"
+                            elif "review" in file_lower or "security" in file_lower or "ops" in file_lower: cat = "SRE"
+                            elif "automation" in file_lower: cat = "AUTOMATION"
+                            
+                            category_counts[cat] += 1
+                            node_id = f"skill_{title}"
+                            skill_nodes.append({
+                                "id": node_id,
+                                "label": title,
+                                "group": "industrial",
+                                "content": meta.get("description", "Dynamic Skill Module"),
+                                "sector": cat,
+                                "salience": 2.0,
+                                "source_file": filepath
+                            })
+                            
+                        except Exception:
+                            pass
+        
+        # Add Hub Nodes for each Category and link skills to them
+        for cat, count in category_counts.items():
+            hub_id = f"hub_{cat}"
+            nodes.append({
+                "id": hub_id,
+                "label": cat,
+                "group": "community",
+                "content": f"Central hub for {cat} modules.",
+                "member_count": count,
+                "salience": float(count) * 2.0
+            })
+            
+            # Link each skill in this category to the hub
+            for snode in skill_nodes:
+                if snode["sector"] == cat:
+                    links.append({
+                        "source": snode["id"],
+                        "target": hub_id,
+                        "value": 10.0, # High gravity to pull them close
+                        "relation": "belongs_to_category"
+                    })
+        nodes.extend(skill_nodes)
+    except Exception as e:
+        sys.stderr.write(f"Skill injection Error: {e}\n")
 
     # 2. Calculate pure semantic relationships (Cosine Similarity)
     n = len(all_vectors)

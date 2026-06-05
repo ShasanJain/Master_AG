@@ -13,6 +13,13 @@
       "schedule": "09:00",
       "last_run": null,
       "enabled": true
+    },
+    {
+      "id": "lazy-memory-enricher",
+      "command": "python execution/lazy_enrich_memory.py",
+      "schedule": "10m",
+      "last_run": "2026-06-05T15:54:20.195552",
+      "enabled": true
     }
   ]
 }

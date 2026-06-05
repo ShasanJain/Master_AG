@@ -46,3 +46,25 @@ export async function syncSystemMemory() {
     return { success: false, message: error.message || "Failed to synchronize memory." };
   }
 }
+
+export async function fetchMemories(page: number, limit: number, sector: string, search: string) {
+  try {
+    const scriptPath = path.resolve(process.cwd(), "../execution/vector_memory.py");
+    const { execFileSync } = require('child_process');
+    
+    let args = ['list_paginated', '--limit', limit.toString(), '--offset', ((page - 1) * limit).toString()];
+    if (sector && sector !== 'all') {
+      args.push('--sector', sector);
+    }
+    if (search && search.trim() !== '') {
+      args.push('--search', search.trim());
+    }
+    
+    const output = execFileSync('python', [scriptPath, ...args], { encoding: 'utf-8' });
+    const data = JSON.parse(output.trim());
+    return data;
+  } catch (error) {
+    console.error("fetchMemories error:", error);
+    return { items: [], total: 0 };
+  }
+}

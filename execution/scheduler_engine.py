@@ -40,7 +40,12 @@ def execute_task(task_id, command):
     logging.info(f"Triggering Task [{task_id}]: {command}")
     
     try:
-        result = subprocess.run(command, shell=True, capture_output=True, text=True)
+        import shlex
+        if isinstance(command, str):
+            cmd_args = shlex.split(command, posix=False)
+        else:
+            cmd_args = command
+        result = subprocess.run(cmd_args, capture_output=True, text=True)
         if result.returncode == 0:
             logging.info(f"Task [{task_id}] SUCCESS. Output: {result.stdout.strip()}")
         else:
@@ -71,8 +76,17 @@ def setup_scheduler():
         command = task.get("command")
         
         if time_str and task_id:
-            schedule.every().day.at(time_str).do(execute_task, task_id, command)
-            logging.info(f"Scheduled Task [{task_id}] at {time_str}")
+            if time_str.endswith("m") and time_str[:-1].isdigit():
+                minutes = int(time_str[:-1])
+                schedule.every(minutes).minutes.do(execute_task, task_id, command)
+                logging.info(f"Scheduled Task [{task_id}] every {minutes} minutes")
+            elif time_str.endswith("h") and time_str[:-1].isdigit():
+                hours = int(time_str[:-1])
+                schedule.every(hours).hours.do(execute_task, task_id, command)
+                logging.info(f"Scheduled Task [{task_id}] every {hours} hours")
+            else:
+                schedule.every().day.at(time_str).do(execute_task, task_id, command)
+                logging.info(f"Scheduled Task [{task_id}] at {time_str}")
 
 def main():
     logging.info("Industrial Scheduler Engine Started.")

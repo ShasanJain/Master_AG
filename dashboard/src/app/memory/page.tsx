@@ -7,79 +7,12 @@ import path from "path";
 import { purgeMemory } from "../actions/memory";
 import { getConfig } from "../actions/config";
 import { Suspense } from "react";
+import { SyncButton, ConfirmForm } from "./MemoryActions";
+import MemoryMatrix from "./MemoryMatrix";
 
 const execAsync = promisify(exec);
 
-async function MemoryList() {
-  let memories = [];
-  try {
-    const scriptPath = path.resolve(process.cwd(), "../execution/vector_memory.py");
-    const { stdout } = await execAsync(`python "${scriptPath}" list --json`);
-    const match = stdout.match(/\[[\s\S]*\]/);
-    if (match) {
-      memories = JSON.parse(match[0]);
-    } else {
-      memories = JSON.parse(stdout.trim());
-    }
-  } catch (err) {
-    console.error("Memory parsing error:", err);
-    return <p className="text-red-500">Failed to load memory matrix.</p>;
-  }
-
-  if (!memories || memories.length === 0) {
-    return (
-      <div className="glass-card p-12 flex flex-col items-center justify-center text-center space-y-4">
-        <div className="w-16 h-16 rounded-full bg-[var(--surface)] flex items-center justify-center text-2xl text-[var(--faint)]">
-          ∅
-        </div>
-        <div>
-          <p className="text-sm font-bold text-[var(--foreground)] uppercase tracking-widest">Neural Void</p>
-          <p className="text-xs text-[var(--faint)]">No cognitive traces detected in the current sector.</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {memories.map((mem: any, i: number) => {
-        const isEpisodic = mem.sector === 'episodic';
-        const isSemantic = mem.sector === 'semantic';
-        const isProcedural = mem.sector === 'procedural';
-        
-        const accentColor = isEpisodic ? 'border-l-blue-500' : isSemantic ? 'border-l-purple-500' : 'border-l-emerald-500';
-        const glowColor = isEpisodic ? 'text-blue-500/40' : isSemantic ? 'text-purple-500/40' : 'text-emerald-500/40';
-
-        return (
-          <div key={mem.id || i} className={`glass-card p-6 flex flex-col group relative overflow-hidden border-l-4 ${accentColor} hover:shadow-[0_0_30px_-10px] hover:shadow-current transition-all duration-500`}>
-            <div className="absolute top-0 right-0 p-3">
-               <span className={`text-[9px] font-mono ${glowColor}`}>ID: {mem.id?.substring(0, 8)}</span>
-            </div>
-            <div className="flex gap-2 mb-4">
-              <span className={`text-[9px] font-bold px-2 py-0.5 rounded bg-[var(--surface)] ${isEpisodic ? 'text-blue-400' : isSemantic ? 'text-purple-400' : 'text-emerald-400'} tracking-widest uppercase`}>
-                {mem.sector}
-              </span>
-              <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[var(--surface)] text-[var(--muted)] tracking-widest uppercase">
-                SCORE: {(mem.score || 0).toFixed(2)}
-              </span>
-            </div>
-            <p className="text-sm text-[var(--foreground)] leading-relaxed flex-1 italic font-light">
-              "{mem.content}"
-            </p>
-            <div className="mt-6 pt-4 border-t border-[var(--border)] flex justify-between items-center">
-               <span className="text-[10px] text-[var(--faint)] uppercase font-mono">{new Date().toLocaleDateString()}</span>
-               <form action={purgeMemory.bind(null, 'id', mem.id)}>
-                 <button type="submit" className="text-[10px] font-bold uppercase tracking-widest text-red-500/20 hover:text-red-500 transition-colors shiny-button bg-red-500/5 px-3 py-1 rounded">
-                   Forget Trace
-                 </button>
-               </form>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+// MemoryList removed, replaced by MemoryMatrix Client Component
 
 export default async function MemoryPage() {
   const config = await getConfig(['OLLAMA_MODEL', 'LOCAL_INFERENCE']);
@@ -108,15 +41,16 @@ export default async function MemoryPage() {
             <p className="text-[var(--muted)] max-w-xl text-sm leading-relaxed">
               Persistent vector memory engine. Stores episodic, semantic, and procedural facts using Ollama embeddings and local SQLite.
             </p>
-            <form action={async () => {
-              'use server';
-              const { syncSystemMemory } = await import('../actions/memory');
-              await syncSystemMemory();
-            }}>
-              <button type="submit" className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-black font-bold uppercase tracking-widest text-xs rounded transition-all">
-                Sync Knowledge
-              </button>
-            </form>
+            <ConfirmForm 
+              action={async () => {
+                'use server';
+                const { syncSystemMemory } = await import('../actions/memory');
+                await syncSystemMemory();
+              }}
+              confirmMessage="This will parse the AST and DeepLake skills and embed them. It may take some time. Proceed?"
+            >
+              <SyncButton />
+            </ConfirmForm>
           </div>
         </div>
 
@@ -155,7 +89,7 @@ export default async function MemoryPage() {
             </div>
           </div>
           <Suspense fallback={<MemoryListSkeleton />}>
-            <MemoryList />
+            <MemoryMatrix />
           </Suspense>
         </div>
       </section>

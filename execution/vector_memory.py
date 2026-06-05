@@ -111,6 +111,57 @@ async def get_stats(user_id: str = "jack"):
             pass
     return {"total": total, "sectors": sectors}
 
+async def list_paginated(limit: int = 12, offset: int = 0, sector: str = None, search: str = None, user_id: str = "jack"):
+    """Get paginated memories bypassing expensive embedding calls, directly from sqlite."""
+    import sqlite3
+    if not os.path.exists(DB_PATH):
+        return {"items": [], "total": 0}
+        
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        
+        query = "SELECT id, content, meta, primary_sector FROM memories WHERE user_id = ?"
+        count_query = "SELECT COUNT(*) FROM memories WHERE user_id = ?"
+        params = [user_id]
+        
+        if sector and sector != 'all':
+            query += " AND primary_sector = ?"
+            count_query += " AND primary_sector = ?"
+            params.append(sector)
+            
+        if search:
+            query += " AND content LIKE ?"
+            count_query += " AND content LIKE ?"
+            params.append(f"%{search}%")
+            
+        query += " ORDER BY id DESC LIMIT ? OFFSET ?"
+        
+        cursor.execute(count_query, params)
+        total = cursor.fetchone()[0]
+        
+        cursor.execute(query, params + [limit, offset])
+        rows = cursor.fetchall()
+        
+        items = []
+        for row in rows:
+            meta = {}
+            if row[2]:
+                try:
+                    meta = json.loads(row[2])
+                except: pass
+            items.append({
+                "id": row[0],
+                "content": row[1],
+                "metadata": meta,
+                "sector": row[3]
+            })
+            
+        conn.close()
+        return {"items": items, "total": total}
+    except Exception as e:
+        return {"error": str(e), "items": [], "total": 0}
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
@@ -122,6 +173,12 @@ if __name__ == "__main__":
     
     p_list = sub.add_parser("list")
     p_list.add_argument("--json", action="store_true")
+    
+    p_list_paginated = sub.add_parser("list_paginated")
+    p_list_paginated.add_argument("--limit", type=int, default=12)
+    p_list_paginated.add_argument("--offset", type=int, default=0)
+    p_list_paginated.add_argument("--sector", default=None)
+    p_list_paginated.add_argument("--search", default=None)
     
     p_stats = sub.add_parser("stats")
     
@@ -158,6 +215,9 @@ if __name__ == "__main__":
             for r in res:
                 sec = r.get('metadata', {}).get('sector') or r.get('primary_sector', 'unknown')
                 print(f"[{sec.upper()}] {r.get('content')}")
+    elif args.command == "list_paginated":
+        res = asyncio.run(list_paginated(limit=args.limit, offset=args.offset, sector=args.sector, search=args.search))
+        print(json.dumps(res))
     elif args.command == "stats":
         res = asyncio.run(get_stats())
         print(json.dumps(res))

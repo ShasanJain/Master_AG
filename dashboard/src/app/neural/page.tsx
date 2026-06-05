@@ -181,7 +181,7 @@ export default function NeuralMapPage() {
       if (node.sector === 'procedural') return '#34d399'; // Emerald
       return '#c084fc'; // Purple (Semantic)
     }
-    if (node.group === 'industrial') return '#10b981'; // Green
+    if (node.group === 'industrial') return '#06b6d4'; // Cyan (distinct from Emerald)
     return '#fbbf24'; // Amber (AST / structural)
   };
 
@@ -302,7 +302,7 @@ export default function NeuralMapPage() {
                   <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#60a5fa] block shadow-[0_0_8px_#60a5fa80]"></span> <span className="truncate">Episodic</span></div>
                   <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#c084fc] block shadow-[0_0_8px_#c084fc80]"></span> <span className="truncate">Semantic</span></div>
                   <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#34d399] block shadow-[0_0_8px_#34d39980]"></span> <span className="truncate">Procedural</span></div>
-                  <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#10b981] block shadow-[0_0_8px_#10b98180]"></span> <span className="truncate">Skill</span></div>
+                  <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#06b6d4] block shadow-[0_0_8px_#06b6d480]"></span> <span className="truncate">Skill</span></div>
                   <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#fbbf24] block shadow-[0_0_8px_#fbbf2480]"></span> <span className="truncate">AST Symbol</span></div>
                   <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#fb7185] block shadow-[0_0_8px_#fb718580]"></span> <span className="truncate">Cluster</span></div>
                 </div>

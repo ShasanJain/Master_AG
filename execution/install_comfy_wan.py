@@ -12,7 +12,8 @@ PYTHON_EXE = os.path.join(VENV_DIR, "Scripts", "python.exe") if os.name == 'nt' 
 
 def run_cmd(cmd, cwd=None):
     print(f"\n>>> Running: {cmd}")
-    subprocess.run(cmd, shell=True, check=True, cwd=cwd)
+    import shlex
+    subprocess.run(shlex.split(cmd, posix=False), check=True, cwd=cwd)
 
 def setup_comfyui():
     if not os.path.exists(COMFY_DIR):

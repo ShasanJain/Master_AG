@@ -123,10 +123,18 @@ export default function IncubatorPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: draft.title, desc: draft.desc })
       });
-      const result: CouncilResult = await res.json();
+      const result: CouncilResult & { error?: string } = await res.json();
+      
+      if (result.error) {
+        console.error('Council API returned error:', result.error);
+        alert(`Council Analysis Failed: ${result.error}`);
+        return;
+      }
+      
       setCouncilResults(prev => ({ ...prev, [draft.id]: result }));
     } catch (e) {
       console.error('Council failed:', e);
+      alert(`Council Analysis Error: ${e}`);
     } finally {
       setIsCounciling(prev => ({ ...prev, [draft.id]: false }));
     }
@@ -391,6 +399,14 @@ const ADVISOR_META: Record<string, { label: string; icon: string; color: string 
 function CouncilPanel({ result, onApply }: { result: CouncilResult; onApply: () => void }) {
   const [activeAdvisor, setActiveAdvisor] = useState<string | null>(null);
   const { advisors, enrichment, ollamaAvailable } = result;
+
+  if (!advisors || !enrichment) {
+    return (
+      <div className="mt-4 border-t border-[var(--border)] pt-4 text-center">
+        <p className="text-[10px] text-rose-500 font-mono">Council Analysis Corrupted or Failed.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-4 border-t border-[var(--border)] pt-4 space-y-4" onClick={e => e.stopPropagation()}>

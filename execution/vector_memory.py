@@ -58,6 +58,34 @@ async def forget_memory(memory_id: str):
     mem = get_memory()
     await mem.delete(memory_id)
 
+async def update_meta(memory_id: str, key: str, value: bool):
+    """Patch metadata of an existing memory directly in sqlite."""
+    import sqlite3
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT meta FROM memories WHERE id = ?", (memory_id,))
+        row = cursor.fetchone()
+        if not row:
+            conn.close()
+            return False
+            
+        meta = {}
+        if row[0]:
+            try: meta = json.loads(row[0])
+            except: pass
+            
+        meta[key] = value
+        
+        cursor.execute("UPDATE memories SET meta = ? WHERE id = ?", (json.dumps(meta), memory_id))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        import sys
+        print(f"Update error: {e}", file=sys.stderr)
+        return False
+
 async def list_memories(user_id: str = "jack"):
     """List all memories for a user."""
     mem = get_memory()
@@ -185,6 +213,11 @@ if __name__ == "__main__":
     p_forget = sub.add_parser("forget")
     p_forget.add_argument("memory_id")
     
+    p_update = sub.add_parser("update")
+    p_update.add_argument("memory_id")
+    p_update.add_argument("key")
+    p_update.add_argument("value")
+    
     p_purge = sub.add_parser("purge")
     p_purge.add_argument("--sector", default=None)
     p_purge.add_argument("--all", action="store_true")
@@ -224,6 +257,10 @@ if __name__ == "__main__":
     elif args.command == "forget":
         asyncio.run(forget_memory(args.memory_id))
         print(f"Deleted memory {args.memory_id}")
+    elif args.command == "update":
+        val = args.value.lower() == 'true'
+        success = asyncio.run(update_meta(args.memory_id, args.key, val))
+        print(json.dumps({"success": success}))
     elif args.command == "purge":
         sec = args.sector if not args.all else None
         count = asyncio.run(purge_memories(sector=sec))

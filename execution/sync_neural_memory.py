@@ -78,35 +78,54 @@ async def sync():
     else:
         print("No graphify data found. Run 'graphify update .' to generate AST.")
 
-    # 3. Sync DeepLake Vault (Procedural)
-    if os.path.exists(VAULT_PATH):
-        print("Parsing DeepLake Skill Vault...")
-        try:
-            with SilenceStdout():
-                ds = deeplake.load(VAULT_PATH, read_only=True)
-            num_skills = len(ds)
-            texts = ds.text.data()["value"]
-            metadatas = ds.metadata.data()["value"]
-            
-            for i in range(num_skills):
-                text = texts[i]
-                meta_src = metadatas[i] or {}
-                name = meta_src.get("name", f"Skill_{i}")
-                
-                content_hash = get_hash(text)
-                if content_hash not in existing_hashes:
-                    meta = {
-                        "sector": "procedural",
-                        "content_hash": content_hash,
-                        "skill_name": name,
-                        "tags": ["skill", "procedural"]
-                    }
-                    await mem.add(text, user_id="jack", meta=meta)
-                    existing_hashes.add(content_hash)
-                    new_nodes += 1
-                    print(f"  + Added Skill: {name}")
-        except Exception as e:
-            print(f"Failed to read DeepLake Vault: {e}")
+    # 3. Sync Filesystem Skills (Procedural)
+    import re
+    from collections import Counter
+    
+    home_dir = os.environ.get("USERPROFILE") or os.environ.get("HOME") or ""
+    scan_dirs = [
+        os.path.join(home_dir, ".gemini", "skills"),
+        os.path.abspath(os.path.join(BASE_DIR, ".agent", "skills")),
+        os.path.abspath(os.path.join(BASE_DIR, "skills"))
+    ]
+    
+    print("Parsing File System Skill Modules...")
+    for d in scan_dirs:
+        if not os.path.exists(d): continue
+        for root_dir, _, files in os.walk(d):
+            for f in files:
+                if f == "SKILL.md" or f.endswith("_skill.md"):
+                    filepath = os.path.join(root_dir, f)
+                    try:
+                        with open(filepath, "r", encoding="utf-8") as file_obj:
+                            content = file_obj.read()
+                            
+                        # Extract meta manually to avoid heavy yaml imports
+                        meta_extracted = {}
+                        match = re.search(r"^---\n([\s\S]*?)\n---", content)
+                        if match:
+                            for line in match.group(1).split("\n"):
+                                if ":" in line:
+                                    k, v = line.split(":", 1)
+                                    meta_extracted[k.strip()] = v.strip().strip("'").strip('"')
+                                    
+                        name = meta_extracted.get("name") or os.path.basename(os.path.dirname(filepath))
+                        
+                        content_hash = get_hash(content)
+                        if content_hash not in existing_hashes:
+                            meta = {
+                                "sector": "procedural",
+                                "content_hash": content_hash,
+                                "skill_name": name,
+                                "tags": ["skill", "procedural", "fs_injected"]
+                            }
+                            # Safe DB injection via semantic vector_memory.py
+                            await mem.add(content, user_id="jack", meta=meta)
+                            existing_hashes.add(content_hash)
+                            new_nodes += 1
+                            print(f"  + Added Skill: {name}")
+                    except Exception as e:
+                        print(f"Failed to read file {filepath}: {e}")
 
     print(f"Synchronization Complete. {new_nodes} new cognitive traces injected.")
 

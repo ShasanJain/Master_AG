@@ -83,6 +83,7 @@ export default function RootLayout({
             <NavItem label="Incubator" href="/incubator" icon={<IconIncubator className="w-4 h-4" />} colorClass="group-hover:text-rose-400" />
             <NavItem href="/chat" label="Neural Link" icon={<span className="text-sm">📡</span>} colorClass="group-hover:text-cyan-400" />
             <NavItem href="/neural" label="Neural Map" icon={<span className="text-sm">🧠</span>} colorClass="group-hover:text-fuchsia-400" />
+            <NavItem href="/open-design" label="Open Design" icon={<span className="text-sm">🎨</span>} colorClass="group-hover:text-pink-400" />
             <div className="pt-4 mt-4 border-t border-[var(--border)]">
               <NavItem label="Settings" href="/settings" icon={<IconSettings className="w-4 h-4" />} colorClass="group-hover:text-slate-400" />
             </div>

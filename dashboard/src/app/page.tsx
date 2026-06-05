@@ -7,6 +7,8 @@ import { motion, Variants } from "framer-motion";
 import { Terminal } from "lucide-react";
 import { useState, useEffect } from "react";
 import dynamic from 'next/dynamic';
+import { executeSwarmCommand } from "./actions/chat";
+import { useRouter } from "next/navigation";
 
 const NeuralGraph3D = dynamic(() => import('./components/NeuralGraph3D'), { ssr: false });
 
@@ -25,11 +27,34 @@ const item: Variants = {
 
 export default function Dashboard() {
   const [time, setTime] = useState<string>("00:00:00");
+  const [stats, setStats] = useState({ registry: 0, missions: 0, efficiency: 0, uptime: "0", topSkills: [] as string[] });
+  const [isLoading, setIsLoading] = useState(true);
+  const [commandQuery, setCommandQuery] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     setTime(new Date().toLocaleTimeString('en-GB'));
     const interval = setInterval(() => setTime(new Date().toLocaleTimeString('en-GB')), 1000);
-    return () => clearInterval(interval);
+    
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        setStats(data);
+      } catch (e) {
+        console.error("Failed to fetch stats", e);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchStats();
+    // Poll stats every 30 seconds
+    const statsInterval = setInterval(fetchStats, 30000);
+    
+    return () => {
+      clearInterval(interval);
+      clearInterval(statsInterval);
+    };
   }, []);
 
   return (
@@ -67,10 +92,10 @@ export default function Dashboard() {
         {/* Left Column (Stats + Widgets) */}
         <div className="md:col-span-4 flex flex-col gap-6">
           <div className="grid grid-cols-2 gap-4">
-            <StatCard label="Registry" value="151" unit="Skills" trend="+151%" delay={0.1} />
-            <StatCard label="Missions" value="06" unit="Tasks" delay={0.2} />
-            <StatCard label="Token Eff." value="98.4" unit="%" trend="optimal" delay={0.3} />
-            <StatCard label="Uptime" value="142" unit="Hrs" delay={0.4} />
+            <StatCard label="Registry" value={isLoading ? "-" : stats.registry.toString()} unit="Skills" trend="optimal" delay={0.1} />
+            <StatCard label="Missions" value={isLoading ? "-" : stats.missions.toString().padStart(2, '0')} unit="Tasks" delay={0.2} />
+            <StatCard label="Token Eff." value={isLoading ? "-" : stats.efficiency.toString()} unit="%" trend="optimal" delay={0.3} />
+            <StatCard label="Uptime" value={isLoading ? "-" : stats.uptime} unit="Hrs" delay={0.4} />
           </div>
           
           <motion.div variants={item} className="h-48 border border-[var(--border)] bg-[var(--surface)] p-0 rounded-sm overflow-hidden relative group">
@@ -78,10 +103,11 @@ export default function Dashboard() {
           </motion.div>
 
           <motion.div variants={item} className="flex-1 min-h-[160px] border border-[var(--border)] bg-[var(--background)] p-0 flex flex-col relative overflow-hidden group hover:border-[var(--primary)] transition-colors">
-            <div className="absolute top-4 left-4 z-10">
+            <Link href="/telemetry" className="absolute inset-0 z-20 cursor-pointer" aria-label="Go to Telemetry Dashboard" />
+            <div className="absolute top-4 left-4 z-10 pointer-events-none">
               <span className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest flex items-center gap-2 font-mono">
                 <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse shadow-[0_0_8px_var(--primary-glow)]"></span>
-                System Telemetry
+                System Telemetry [Click to Expand]
               </span>
             </div>
             {/* 3D Neural Graph rendering (Dynamic SSR False) */}
@@ -101,14 +127,22 @@ export default function Dashboard() {
           </motion.div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Browser Native Modules */}
+            <SkillCard title="chat" desc="Neural conversation and thought exploration hub." category="NEURAL" status="OPTIMAL" href="/chat" />
+            <SkillCard title="incubator" desc="Experimental core. Staging area for sovereign heuristics." category="CORE" status="ACTIVE" href="/incubator" />
             <SkillCard title="reel-studio" desc="AI-powered timeline sequence editor with live preview, voice generation, and media processing." category="MEDIA" status="OPTIMAL" href="/reel-studio" />
-            <SkillCard title="audio-studio" desc="Professional DSP engine for mixing, equalization, and local audio stem rendering." category="PRODUCTION" status="OPTIMAL" href="/audio-studio" />
-            <SkillCard title="seo-analyzer" desc="Live page auditing, semantic structure mapping, and AI search (GEO) optimization engine." category="MARKETING" status="OPTIMAL" href="/seo-analyzer" />
-            <SkillCard title="design-audit" desc="UX & Accessibility verification using premium design tokens. Ensures visual excellence." category="DESIGN" status="OPTIMAL" />
-            <SkillCard title="systematic-debugging" desc="Scientific method approach to resolving complex state bugs in high-autonomy environments." category="SRE" status="OPTIMAL" />
-            <SkillCard title="writing-skills" desc="High-Density BLUF Communication for executive reports. Industrial core module." category="CORE" status="OPTIMAL" />
-          </div>
 
+            {/* Dynamic Top Skills (Excluding the hardcoded ones above) */}
+            {!isLoading && stats.topSkills.filter(s => !['chat', 'incubator', 'reel-studio'].includes(s)).slice(0, 3).map((skill, idx) => (
+              <SkillCard 
+                key={idx} 
+                title={skill} 
+                desc="Frequently deployed intelligence module from recent missions." 
+                category="CORE" 
+                status="OPTIMAL" 
+              />
+            ))}
+          </div>
           <motion.div variants={item} className="mt-auto bg-[var(--background)] p-4 relative overflow-hidden group hover:border-[var(--primary)] transition-all border-beam">
             <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">
               <span className="text-6xl font-black tracking-tighter text-[var(--foreground)]">CMD</span>
@@ -118,13 +152,29 @@ export default function Dashboard() {
               <div className="flex-1">
                 <input 
                   type="text" 
+                  value={commandQuery}
+                  onChange={(e) => setCommandQuery(e.target.value)}
+                  onKeyDown={async (e) => {
+                    if (e.key === 'Enter' && commandQuery.trim()) {
+                      await executeSwarmCommand(commandQuery);
+                      router.push('/chat');
+                    }
+                  }}
                   placeholder="Orchestrate the swarm... (e.g. /audit --deep)" 
                   className="bg-transparent border-none outline-none w-full text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] font-mono"
                 />
               </div>
-              <div className="flex items-center gap-2 px-2 py-1 rounded bg-[var(--surface)] border border-[var(--border)]">
+              <button 
+                onClick={async () => {
+                  if (commandQuery.trim()) {
+                    await executeSwarmCommand(commandQuery);
+                    router.push('/chat');
+                  }
+                }}
+                className="flex items-center gap-2 px-2 py-1 rounded bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--primary)] transition-all cursor-pointer"
+              >
                 <span className="text-[9px] font-bold text-[var(--primary)]">ENTER</span>
-              </div>
+              </button>
             </div>
           </motion.div>
         </div>

@@ -40,6 +40,8 @@ export default function SkillsClient({ initialSkills }: { initialSkills: Skill[]
   const [sortBy, setSortBy] = useState<'NAME' | 'STATUS'>('NAME');
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [modalState, setModalState] = useState<'IDLE' | 'INITIALIZING' | 'SUCCESS' | 'SOURCE'>('IDLE');
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [browserDeployableOnly, setBrowserDeployableOnly] = useState(false);
   
   // Compact state (tiles minimized) starts as TRUE
   const [globalCompactState, setGlobalCompactState] = useState<Record<string, boolean>>({});
@@ -92,13 +94,26 @@ export default function SkillsClient({ initialSkills }: { initialSkills: Skill[]
     setModalState('SOURCE');
   };
 
+  const handleSync = async () => {
+    setIsSyncing(true);
+    try {
+      await fetch('/api/sync', { method: 'POST' });
+      // UI feedback, then revert
+      setTimeout(() => setIsSyncing(false), 2000);
+    } catch (e) {
+      console.error('Failed to sync:', e);
+      setIsSyncing(false);
+    }
+  };
+
   const groupedSkills = useMemo(() => {
     const filtered = initialSkills
       .filter(skill => {
         const matchesSearch = skill.title.toLowerCase().includes(search.toLowerCase()) || 
                              skill.desc.toLowerCase().includes(search.toLowerCase());
         const matchesCategory = category === 'ALL' || skill.category === category;
-        return matchesSearch && matchesCategory;
+        const matchesDeployable = !browserDeployableOnly || !!skill.href;
+        return matchesSearch && matchesCategory && matchesDeployable;
       })
       .sort((a, b) => {
         if (sortBy === 'NAME') return a.title.localeCompare(b.title);
@@ -116,7 +131,7 @@ export default function SkillsClient({ initialSkills }: { initialSkills: Skill[]
       sortedGroups[k] = groups[k];
     });
     return sortedGroups;
-  }, [initialSkills, search, category, sortBy]);
+  }, [initialSkills, search, category, sortBy, browserDeployableOnly]);
 
   const availableCategories = useMemo(() => {
     const cats = new Set(initialSkills.map(s => s.category));
@@ -130,26 +145,35 @@ export default function SkillsClient({ initialSkills }: { initialSkills: Skill[]
       
       <div className="max-w-6xl mx-auto space-y-8 relative z-10 p-6">
         
-        <section className="mb-4">
-          <div className="flex items-center gap-4 mb-3">
-            <h2 className="text-5xl font-bold tracking-tighter text-[var(--foreground)]">Skill Armory</h2>
-            <StatusBadge status="PLATINUM-DENSITY" />
+        <section className="mb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-4 mb-3">
+              <h2 className="text-5xl font-bold tracking-tighter text-[var(--foreground)]">Skill Armory</h2>
+              <StatusBadge status="PLATINUM-DENSITY" />
+            </div>
+            <p className="text-[var(--muted)] max-w-xl text-sm leading-relaxed mb-6">
+              The complete cognitive arsenal of the Antigravity engine. Monitoring {initialSkills.length} active modules across the system architecture.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {Object.entries(groupedSkills).map(([cat, skills]) => {
+                const colors = getCategoryColor(cat);
+                return (
+                  <div key={cat} className="px-3 py-1.5 bg-[var(--surface)]/50 backdrop-blur-md border border-[var(--border)] rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-sm">
+                    <span className={`${colors.text}`}>{cat}</span>
+                    <span className="text-[var(--muted)]">|</span>
+                    <span className="text-[var(--foreground)]">{skills.length}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-          <p className="text-[var(--muted)] max-w-xl text-sm leading-relaxed mb-6">
-            The complete cognitive arsenal of the Antigravity engine. Monitoring {initialSkills.length} active modules across the system architecture.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            {Object.entries(groupedSkills).map(([cat, skills]) => {
-              const colors = getCategoryColor(cat);
-              return (
-                <div key={cat} className="px-3 py-1.5 bg-[var(--surface)]/50 backdrop-blur-md border border-[var(--border)] rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-sm">
-                  <span className={`${colors.text}`}>{cat}</span>
-                  <span className="text-[var(--muted)]">|</span>
-                  <span className="text-[var(--foreground)]">{skills.length}</span>
-                </div>
-              );
-            })}
-          </div>
+          <button 
+            onClick={handleSync}
+            disabled={isSyncing}
+            className={`px-8 py-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all border shrink-0 ${isSyncing ? 'shiny-button active cursor-wait opacity-80' : 'bg-[var(--surface)] border-[var(--border)] hover:border-[var(--primary)] text-[var(--foreground)] shadow-lg'}`}
+          >
+            {isSyncing ? 'Syncing Vault...' : 'Sync Vault'}
+          </button>
         </section>
 
         {/* Floating Filter Ribbon (Container Margins + Iconography) */}
@@ -171,19 +195,31 @@ export default function SkillsClient({ initialSkills }: { initialSkills: Skill[]
                 />
               </div>
               
-              {/* Sort Dropdown */}
-              <div className="flex items-center gap-2 bg-[var(--background)] border border-[var(--border)] rounded-2xl px-4 py-3">
-                <svg className="w-4 h-4 text-[var(--faint)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-                <select 
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-transparent text-xs font-bold uppercase tracking-widest text-[var(--foreground)] outline-none cursor-pointer"
-                >
-                  <option value="NAME">Sort: A-Z</option>
-                  <option value="STATUS">Sort: Status</option>
-                </select>
+              {/* Filters */}
+              <div className="flex flex-col md:flex-row gap-4">
+                <label className="flex items-center gap-2 bg-[var(--background)] border border-[var(--border)] rounded-2xl px-4 py-3 cursor-pointer hover:border-[var(--primary)] transition-colors">
+                  <input 
+                    type="checkbox" 
+                    className="accent-[var(--primary)] w-4 h-4 cursor-pointer" 
+                    checked={browserDeployableOnly} 
+                    onChange={e => setBrowserDeployableOnly(e.target.checked)} 
+                  />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--foreground)] whitespace-nowrap">Browser Deployable</span>
+                </label>
+                
+                <div className="flex items-center gap-2 bg-[var(--background)] border border-[var(--border)] rounded-2xl px-4 py-3">
+                  <svg className="w-4 h-4 text-[var(--faint)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                  </svg>
+                  <select 
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-[var(--foreground)] outline-none cursor-pointer"
+                  >
+                    <option value="NAME">Sort: A-Z</option>
+                    <option value="STATUS">Sort: Status</option>
+                  </select>
+                </div>
               </div>
             </div>
             

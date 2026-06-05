@@ -43,6 +43,7 @@ export default function NeuralMapPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [graphBg, setGraphBg] = useState('#000000');
   const [isGraphLight, setIsGraphLight] = useState(false);
+  const [skillUsageMap, setSkillUsageMap] = useState<Record<string, number>>({});
 
   const toggleGraphBg = () => {
     setIsGraphLight(prev => {
@@ -115,10 +116,27 @@ export default function NeuralMapPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch('/api/neural');
-        const data = await res.json();
+        const [graphRes, logsRes] = await Promise.all([
+          fetch('/api/neural'),
+          fetch('/api/logs').catch(() => null)
+        ]);
+        
+        const data = await graphRes.json();
         setGraphData(data);
         setFilteredData(data);
+        
+        if (logsRes && logsRes.ok) {
+          const logsData = await logsRes.json();
+          const usage: Record<string, number> = {};
+          logsData.forEach((log: any) => {
+            if (log.skill) {
+              const skillId = `skill_${log.skill}`;
+              usage[skillId] = (usage[skillId] || 0) + 1;
+            }
+          });
+          setSkillUsageMap(usage);
+        }
+        
         setLoading(false);
       } catch (err) {
         console.error('Error fetching neural graph:', err);
@@ -181,7 +199,11 @@ export default function NeuralMapPage() {
       if (node.sector === 'procedural') return '#34d399'; // Emerald
       return '#c084fc'; // Purple (Semantic)
     }
-    if (node.group === 'industrial') return '#06b6d4'; // Cyan (distinct from Emerald)
+    if (node.group === 'industrial') {
+      // Heatmap glow for highly used skills
+      if (skillUsageMap[node.id]) return '#10b981'; // Emerald/Green for active skills
+      return '#06b6d4'; // Cyan (distinct from Emerald)
+    }
     return '#fbbf24'; // Amber (AST / structural)
   };
 
@@ -365,7 +387,14 @@ export default function NeuralMapPage() {
               return `<div style="${baseStyle} border-color: #60a5fa; color: white;"><strong style="color: #60a5fa; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;">Memory</strong><br/>${node.label}</div>`;
             }}
             nodeColor={getNodeColor}
-            nodeVal={(node: any) => node.group === 'community' ? (node.member_count || 3) * 2 : (node.salience || 1.0) * 4}
+            nodeVal={(node: any) => {
+              if (node.group === 'community') return (node.member_count || 3) * 2;
+              let val = (node.salience || 1.0) * 4;
+              if (node.group === 'industrial' && skillUsageMap[node.id]) {
+                val += skillUsageMap[node.id] * 8; // Heatmap size boost
+              }
+              return val;
+            }}
             nodeResolution={24}
             linkLabel={getLinkLabel as any}
             linkWidth={(link: any) => link.value * 1.5}

@@ -110,15 +110,22 @@ export async function POST(req: Request) {
     const advisorNames = Object.keys(ADVISOR_PROMPTS);
     const advisorOutputs: Record<string, string> = {};
 
-    // Run advisors sequentially (order matters for peer review)
+    // Run advisors in parallel for much faster responses
     let ollamaAvailable = true;
-    for (const advisor of advisorNames) {
+    
+    const advisorPromises = advisorNames.map(async (advisor) => {
       try {
-        advisorOutputs[advisor] = await askAdvisor(activeModel, advisor, title, desc);
+        const output = await askAdvisor(activeModel, advisor, title, desc);
+        return { advisor, output };
       } catch {
         ollamaAvailable = false;
-        advisorOutputs[advisor] = `[Ollama offline — heuristic fallback for ${advisor}]*`;
+        return { advisor, output: `[Ollama offline — heuristic fallback for ${advisor}]*` };
       }
+    });
+
+    const results = await Promise.all(advisorPromises);
+    for (const { advisor, output } of results) {
+      advisorOutputs[advisor] = output;
     }
 
     let enrichment: any = null;

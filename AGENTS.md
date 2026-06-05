@@ -65,7 +65,13 @@ Your workspace is now command-driven. When the user inputs a slash command (e.g.
 **3. Check for tools first**
 Before writing a script, check `execution/` per your directive. Only create new scripts if none exist.
 
-**4. Layered Implementation Protocol (MANDATORY)**
+**4. Semantic Toolkit Retrieval (MANDATORY)**
+Before taking action on any complex task, feature build, or bug fix, you MUST query your vector memory to load the optimal set of skills for the task.
+- Run `python execution/find_skills.py "<your specific task description>"`
+- The vector engine will return a broad payload of highly relevant modules across UI, logic, frameworks, etc.
+- Review the output and explicitly invoke the returned skills via the `skills/` directory check before proceeding.
+
+**5. Layered Implementation Protocol (MANDATORY)**
 For any complex feature build, you MUST adhere to the [Layered Implementation Protocol](file:///C:/Users/swaya/.gemini/skills/meta/agent/behavioral-modes/sub-skills/layered-implementation.md). Build features in three distinct passes: (1) Logic & Backend Engine, (2) User Interface & Layout Skeleton, and (3) Aesthetic Polish & Micro-interactions.
 
 **2. Self-anneal when things break**

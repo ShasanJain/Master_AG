@@ -4,11 +4,13 @@ import Link from "next/link";
 import { StatusBadge } from "./components/StatusBadge";
 import { TokenWidget } from "./components/TokenWidget";
 import { motion, Variants } from "framer-motion";
-import { Terminal } from "lucide-react";
+import { Terminal, LayoutGrid, Activity } from "lucide-react";
 import { useState, useEffect } from "react";
 import dynamic from 'next/dynamic';
 import { executeSwarmCommand } from "./actions/chat";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "./components/ThemeToggle";
+import { DataMatrix } from "./components/DataMatrix";
 
 const NeuralGraph3D = dynamic(() => import('./components/NeuralGraph3D'), { ssr: false });
 
@@ -30,6 +32,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState({ registry: 0, missions: 0, efficiency: 0, uptime: "0", topSkills: [] as string[] });
   const [isLoading, setIsLoading] = useState(true);
   const [commandQuery, setCommandQuery] = useState("");
+  const [activeScenario, setActiveScenario] = useState<'command' | 'data'>('command');
   const router = useRouter();
 
   useEffect(() => {
@@ -48,7 +51,6 @@ export default function Dashboard() {
       }
     }
     fetchStats();
-    // Poll stats every 30 seconds
     const statsInterval = setInterval(fetchStats, 30000);
     
     return () => {
@@ -63,122 +65,161 @@ export default function Dashboard() {
       <div className="atmospheric-orb orb-emerald"></div>
       <div className="atmospheric-orb orb-sapphire"></div>
       
-      <div className="w-full h-full max-w-7xl mx-auto flex flex-col space-y-6 relative z-10">
-        {/* Header */}
-      <motion.section 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex justify-between items-end border-b border-[var(--border)] pb-4"
-      >
-        <div>
-          <h2 className="text-4xl font-bold tracking-tight mb-2 text-[var(--foreground)] font-mono">Command Center</h2>
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest font-mono">Engine Status:</span>
-            <StatusBadge status="OPTIMAL" />
+      <div className="w-full h-full max-w-7xl mx-auto flex flex-col space-y-6 relative z-10 p-4 sm:p-6 lg:p-8">
+        
+        {/* Universal Top Bar */}
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex justify-between items-center bg-[var(--surface)] border border-[var(--border)] p-2 px-4 rounded-sm shadow-sm"
+        >
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setActiveScenario('command')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-sm text-[10px] uppercase font-bold tracking-widest font-mono transition-all ${activeScenario === 'command' ? 'bg-[var(--primary)] text-[var(--background)] shadow-[0_0_10px_var(--primary-glow)]' : 'text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--background)]'}`}
+            >
+              <LayoutGrid size={14} />
+              Command Center
+            </button>
+            <button 
+              onClick={() => setActiveScenario('data')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-sm text-[10px] uppercase font-bold tracking-widest font-mono transition-all ${activeScenario === 'data' ? 'bg-[var(--primary)] text-[var(--background)] shadow-[0_0_10px_var(--primary-glow)]' : 'text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--background)]'}`}
+            >
+              <Activity size={14} />
+              Data Matrix
+            </button>
           </div>
-        </div>
-        <div className="text-right">
-          <p className="text-[10px] font-bold text-[var(--faint)] uppercase tracking-widest mb-1 font-mono">Local Time</p>
-          <p className="text-xl font-mono text-[var(--primary)] font-bold">{time}</p>
-        </div>
-      </motion.section>
 
-      <motion.div 
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="grid grid-cols-1 md:grid-cols-12 gap-6 flex-1"
-      >
-        {/* Left Column (Stats + Widgets) */}
-        <div className="md:col-span-4 flex flex-col gap-6">
-          <div className="grid grid-cols-2 gap-4">
-            <StatCard label="Registry" value={isLoading ? "-" : stats.registry.toString()} unit="Skills" trend="optimal" delay={0.1} />
-            <StatCard label="Missions" value={isLoading ? "-" : stats.missions.toString().padStart(2, '0')} unit="Tasks" delay={0.2} />
-            <StatCard label="Token Eff." value={isLoading ? "-" : stats.efficiency.toString()} unit="%" trend="optimal" delay={0.3} />
-            <StatCard label="Uptime" value={isLoading ? "-" : stats.uptime} unit="Hrs" delay={0.4} />
+          <div className="flex items-center gap-4">
+             <div className="text-right hidden sm:block">
+              <p className="text-[10px] font-bold text-[var(--faint)] uppercase tracking-widest mb-0.5 font-mono">Local Time</p>
+              <p className="text-sm font-mono text-[var(--primary)] font-bold">{time}</p>
+            </div>
+            <ThemeToggle />
           </div>
-          
-          <motion.div variants={item} className="h-48 border border-[var(--border)] bg-[var(--surface)] p-0 rounded-sm overflow-hidden relative group">
-            <TokenWidget />
-          </motion.div>
+        </motion.div>
 
-          <motion.div variants={item} className="flex-1 min-h-[160px] border border-[var(--border)] bg-[var(--background)] p-0 flex flex-col relative overflow-hidden group hover:border-[var(--primary)] transition-colors">
-            <Link href="/telemetry" className="absolute inset-0 z-20 cursor-pointer" aria-label="Go to Telemetry Dashboard" />
-            <div className="absolute top-4 left-4 z-10 pointer-events-none">
-              <span className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest flex items-center gap-2 font-mono">
-                <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse shadow-[0_0_8px_var(--primary-glow)]"></span>
-                System Telemetry [Click to Expand]
-              </span>
-            </div>
-            {/* 3D Neural Graph rendering (Dynamic SSR False) */}
-            <NeuralGraph3D />
-          </motion.div>
-        </div>
-
-        {/* Right Column (Armory + Terminal) */}
-        <div className="md:col-span-8 flex flex-col gap-6">
-          <motion.div variants={item} className="flex items-center justify-between border-b border-[var(--border)] pb-2">
-            <div className="flex items-center gap-4">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--foreground)] font-mono">Deployable Intelligence</h3>
-            </div>
-            <Link href="/skills">
-              <button className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest hover:underline font-mono">VIEW ARMORY [↗]</button>
-            </Link>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Browser Native Modules */}
-            <SkillCard title="chat" desc="Neural conversation and thought exploration hub." category="NEURAL" status="OPTIMAL" href="/chat" />
-            <SkillCard title="incubator" desc="Experimental core. Staging area for sovereign heuristics." category="CORE" status="ACTIVE" href="/incubator" />
-            <SkillCard title="reel-studio" desc="AI-powered timeline sequence editor with live preview, voice generation, and media processing." category="MEDIA" status="OPTIMAL" href="/reel-studio" />
-
-            {/* Dynamic Top Skills (Excluding the hardcoded ones above) */}
-            {!isLoading && stats.topSkills.filter(s => !['chat', 'incubator', 'reel-studio'].includes(s)).slice(0, 3).map((skill, idx) => (
-              <SkillCard 
-                key={idx} 
-                title={skill} 
-                desc="Frequently deployed intelligence module from recent missions." 
-                category="CORE" 
-                status="OPTIMAL" 
-              />
-            ))}
-          </div>
-          <motion.div variants={item} className="mt-auto bg-[var(--background)] p-4 relative overflow-hidden group hover:border-[var(--primary)] transition-all border-beam">
-            <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">
-              <span className="text-6xl font-black tracking-tighter text-[var(--foreground)]">CMD</span>
-            </div>
-            <div className="flex items-center gap-4 relative z-10">
-              <Terminal className="w-5 h-5 text-[var(--primary)]" />
-              <div className="flex-1">
-                <input 
-                  type="text" 
-                  value={commandQuery}
-                  onChange={(e) => setCommandQuery(e.target.value)}
-                  onKeyDown={async (e) => {
-                    if (e.key === 'Enter' && commandQuery.trim()) {
-                      await executeSwarmCommand(commandQuery);
-                      router.push('/chat');
-                    }
-                  }}
-                  placeholder="Orchestrate the swarm... (e.g. /audit --deep)" 
-                  className="bg-transparent border-none outline-none w-full text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] font-mono"
-                />
+        {activeScenario === 'command' ? (
+          /* Command Center (Open Design Focus) */
+          <>
+            <motion.section 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-between items-end border-b border-[var(--border)] pb-4 mt-2"
+            >
+              <div>
+                <h2 className="text-4xl font-bold tracking-tight mb-2 text-[var(--foreground)] font-mono">Command Center</h2>
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest font-mono">Engine Status:</span>
+                  <StatusBadge status="OPTIMAL" />
+                </div>
               </div>
-              <button 
-                onClick={async () => {
-                  if (commandQuery.trim()) {
-                    await executeSwarmCommand(commandQuery);
-                    router.push('/chat');
-                  }
-                }}
-                className="flex items-center gap-2 px-2 py-1 rounded bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--primary)] transition-all cursor-pointer"
-              >
-                <span className="text-[9px] font-bold text-[var(--primary)]">ENTER</span>
-              </button>
-            </div>
+            </motion.section>
+
+            <motion.div 
+              variants={container}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-1 md:grid-cols-12 gap-6 flex-1"
+            >
+              {/* Left Column */}
+              <div className="md:col-span-4 flex flex-col gap-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <StatCard label="Registry" value={isLoading ? "-" : stats.registry.toString()} unit="Skills" trend="optimal" delay={0.1} />
+                  <StatCard label="Missions" value={isLoading ? "-" : stats.missions.toString().padStart(2, '0')} unit="Tasks" delay={0.2} />
+                  <StatCard label="Token Eff." value={isLoading ? "-" : stats.efficiency.toString()} unit="%" trend="optimal" delay={0.3} />
+                  <StatCard label="Uptime" value={isLoading ? "-" : stats.uptime} unit="Hrs" delay={0.4} />
+                </div>
+                
+                <motion.div variants={item} className="h-48 border border-[var(--border)] bg-[var(--surface)] p-0 rounded-sm overflow-hidden relative group">
+                  <TokenWidget />
+                </motion.div>
+
+                <motion.div variants={item} className="flex-1 min-h-[160px] border border-[var(--border)] bg-[var(--background)] p-0 flex flex-col relative overflow-hidden group hover:border-[var(--primary)] transition-colors">
+                  <Link href="/telemetry" className="absolute inset-0 z-20 cursor-pointer" aria-label="Go to Telemetry Dashboard" />
+                  <div className="absolute top-4 left-4 z-10 pointer-events-none">
+                    <span className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest flex items-center gap-2 font-mono">
+                      <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse shadow-[0_0_8px_var(--primary-glow)]"></span>
+                      System Telemetry [Click to Expand]
+                    </span>
+                  </div>
+                  <NeuralGraph3D />
+                </motion.div>
+              </div>
+
+              {/* Right Column */}
+              <div className="md:col-span-8 flex flex-col gap-6">
+                <motion.div variants={item} className="flex items-center justify-between border-b border-[var(--border)] pb-2">
+                  <div className="flex items-center gap-4">
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--foreground)] font-mono">Deployable Intelligence</h3>
+                  </div>
+                  <Link href="/skills">
+                    <button className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest hover:underline font-mono">VIEW ARMORY [↗]</button>
+                  </Link>
+                </motion.div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <SkillCard title="chat" desc="Neural conversation and thought exploration hub." category="NEURAL" status="OPTIMAL" href="/chat" />
+                  <SkillCard title="incubator" desc="Experimental core. Staging area for sovereign heuristics." category="CORE" status="ACTIVE" href="/incubator" />
+                  <SkillCard title="reel-studio" desc="AI-powered timeline sequence editor with live preview, voice generation." category="MEDIA" status="OPTIMAL" href="/reel-studio" />
+
+                  {!isLoading && stats.topSkills.filter(s => !['chat', 'incubator', 'reel-studio'].includes(s)).slice(0, 3).map((skill, idx) => (
+                    <SkillCard 
+                      key={idx} 
+                      title={skill} 
+                      desc="Frequently deployed intelligence module from recent missions." 
+                      category="CORE" 
+                      status="OPTIMAL" 
+                    />
+                  ))}
+                </div>
+                <motion.div variants={item} className="mt-auto bg-[var(--background)] p-4 relative overflow-hidden group hover:border-[var(--primary)] transition-all border-beam">
+                  <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">
+                    <span className="text-6xl font-black tracking-tighter text-[var(--foreground)]">CMD</span>
+                  </div>
+                  <div className="flex items-center gap-4 relative z-10">
+                    <Terminal className="w-5 h-5 text-[var(--primary)]" />
+                    <div className="flex-1">
+                      <input 
+                        type="text" 
+                        value={commandQuery}
+                        onChange={(e) => setCommandQuery(e.target.value)}
+                        onKeyDown={async (e) => {
+                          if (e.key === 'Enter' && commandQuery.trim()) {
+                            await executeSwarmCommand(commandQuery);
+                            router.push('/chat');
+                          }
+                        }}
+                        placeholder="Orchestrate the swarm... (e.g. /audit --deep)" 
+                        className="bg-transparent border-none outline-none w-full text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] font-mono"
+                      />
+                    </div>
+                    <button 
+                      onClick={async () => {
+                        if (commandQuery.trim()) {
+                          await executeSwarmCommand(commandQuery);
+                          router.push('/chat');
+                        }
+                      }}
+                      className="flex items-center gap-2 px-2 py-1 rounded bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--primary)] transition-all cursor-pointer"
+                    >
+                      <span className="text-[9px] font-bold text-[var(--primary)]">ENTER</span>
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </>
+        ) : (
+          /* Data Matrix (UI-UX-Pro-Max Focus) */
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex-1"
+          >
+            <DataMatrix />
           </motion.div>
-        </div>
-      </motion.div>
+        )}
       </div>
     </>
   );

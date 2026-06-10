@@ -5,7 +5,7 @@ import { sendLocalMessage, getChatHistory, getEngineStatus, deleteMemory, toggle
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import { Menu, X, Pin, Archive, Trash2, MessageSquare } from 'lucide-react';
+import { Menu, X, Pin, Archive, Trash2, MessageSquare, Radio, Bot, Send } from 'lucide-react';
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<{ role: 'user' | 'assistant', content: string }[]>([]);
@@ -251,7 +251,7 @@ export default function ChatPage() {
               <Menu size={20} />
             </button>
             <div className="w-10 h-10 rounded-xl bg-[var(--background)] border border-[var(--primary)] flex items-center justify-center text-xl shadow-[0_0_20px_var(--primary-glow)]">
-              📡
+              <Radio size={20} className="text-[var(--primary)]" />
             </div>
             <div>
               <h2 className="text-3xl font-bold tracking-tighter text-[var(--foreground)]">Neural Link</h2>
@@ -294,8 +294,8 @@ export default function ChatPage() {
         >
           {messages.length === 0 && (
             <div className="h-full flex flex-col items-center justify-center text-center space-y-6 opacity-40">
-              <div className="w-20 h-20 rounded-full border border-dashed border-[var(--border)] flex items-center justify-center text-3xl grayscale">
-                🤖
+              <div className="w-20 h-20 rounded-full border border-dashed border-[var(--border)] flex items-center justify-center text-3xl">
+                <Bot size={40} className="text-[var(--muted)]" />
               </div>
               <div className="max-w-xs space-y-2">
                 <p className="text-sm font-bold text-[var(--foreground)] uppercase tracking-widest">Neural Link Synchronized</p>
@@ -382,7 +382,7 @@ export default function ChatPage() {
             disabled={!input.trim() || isTyping}
             className="w-12 h-12 shrink-0 rounded-xl flex items-center justify-center disabled:opacity-50 disabled:grayscale shadow-[0_0_15px_var(--primary-glow)] shiny-button"
           >
-            <span className="transform rotate-90 text-xl">➤</span>
+            <Send size={20} className="transition-colors" />
           </button>
         </form>
       </div>

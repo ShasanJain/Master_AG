@@ -5,6 +5,7 @@ import "./globals.css";
 import { IconDashboard, IconSkills, IconLogs, IconIncubator, IconSettings } from "./components/Icons";
 import { StatusBadge } from "./components/StatusBadge";
 import { FloatingJack } from "./components/FloatingJack";
+import { Radio, Brain } from "lucide-react";
 
 const firaCode = Fira_Code({
   subsets: ["latin"],
@@ -38,10 +39,10 @@ export default function RootLayout({
                   const theme = localStorage.getItem('jack-theme');
                   if (theme === 'light') {
                     document.documentElement.classList.add('light-mode');
-                    document.documentElement.classList.remove('dark');
+                    document.documentElement.classList.remove('dark', 'light-mode-clinical');
                   } else {
                     document.documentElement.classList.add('dark');
-                    document.documentElement.classList.remove('light-mode');
+                    document.documentElement.classList.remove('light-mode', 'light-mode-clinical');
                   }
                 } catch (e) {}
               })();
@@ -81,11 +82,10 @@ export default function RootLayout({
             <NavItem label="Mission Logs" href="/logs" icon={<IconLogs className="w-4 h-4" />} colorClass="group-hover:text-blue-400" />
             <NavItem label="Cognitive Memory" href="/memory" icon={<IconDashboard className="w-4 h-4" />} colorClass="group-hover:text-purple-400" />
             <NavItem label="Incubator" href="/incubator" icon={<IconIncubator className="w-4 h-4" />} colorClass="group-hover:text-rose-400" />
-            <NavItem href="/chat" label="Neural Link" icon={<span className="text-sm">📡</span>} colorClass="group-hover:text-cyan-400" />
-            <NavItem href="/neural" label="Neural Map" icon={<span className="text-sm">🧠</span>} colorClass="group-hover:text-fuchsia-400" />
-            <NavItem href="/open-design" label="Open Design" icon={<span className="text-sm">🎨</span>} colorClass="group-hover:text-pink-400" />
+            <NavItem href="/chat" label="Neural Link" icon={<Radio className="w-4 h-4" />} colorClass="group-hover:text-cyan-400" />
+            <NavItem href="/neural" label="Neural Map" icon={<Brain className="w-4 h-4" />} colorClass="group-hover:text-fuchsia-400" />
             <div className="pt-4 mt-4 border-t border-[var(--border)]">
-              <NavItem label="Settings" href="/settings" icon={<IconSettings className="w-4 h-4" />} colorClass="group-hover:text-slate-400" />
+              <NavItem label="Settings" href="/settings" icon={<IconSettings className="w-4 h-4" />} colorClass="group-hover:text-[var(--foreground)]" />
             </div>
           </nav>
           

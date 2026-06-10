@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { Moon, Sun, Maximize2, Minimize2 } from 'lucide-react';
 
 // Import ForceGraph3D dynamically to prevent SSR issues
 const ForceGraph3D = dynamic(
@@ -231,14 +232,14 @@ export default function NeuralMapPage() {
                     className="p-2 rounded bg-[var(--surface)] border border-[var(--border)] hover:bg-[var(--border)] text-[10px] text-[var(--foreground)]/70 hover:text-[var(--foreground)] transition-all flex items-center justify-center font-bold"
                     title={isGraphLight ? "Switch to Dark Canvas" : "Switch to Light Canvas"}
                   >
-                    {isGraphLight ? '🌙' : '☀️'}
+                    {isGraphLight ? <Moon size={14} /> : <Sun size={14} />}
                   </button>
                   <button
                     onClick={toggleFullscreen}
                     className="p-2 rounded bg-[var(--surface)] border border-[var(--border)] hover:bg-[var(--border)] text-[10px] text-[var(--foreground)]/70 hover:text-[var(--foreground)] transition-all flex items-center justify-center font-bold"
                     title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
                   >
-                    {isFullscreen ? '⛶' : '⬜'}
+                    {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
                   </button>
                 </div>
               </div>
@@ -443,6 +444,9 @@ export default function NeuralMapPage() {
                 )}
               </div>
               <div className="flex items-center gap-2">
+                <button onClick={() => setIsGraphLight(!isGraphLight)} className="p-1.5 hover:bg-[var(--primary)]/10 text-[var(--faint)] hover:text-[var(--primary)] rounded transition-colors" title="Toggle Graph Theme">
+                    {isGraphLight ? <Moon size={14} /> : <Sun size={14} />}
+                </button>
                 {/* Minimize Button */}
                 <button
                   onClick={() => setIsInspectorMinimized(!isInspectorMinimized)}

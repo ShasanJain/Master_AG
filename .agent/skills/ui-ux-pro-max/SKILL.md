@@ -256,6 +256,21 @@ These are frequently overlooked issues that make UI look unprofessional:
 | **Content padding** | Account for fixed navbar height | Let content hide behind fixed elements |
 | **Consistent max-width** | Use same `max-w-6xl` or `max-w-7xl` | Mix different container widths |
 
+## Anti-AI Slop Aesthetic Guidelines
+When generating UI from scratch, you must actively avoid "AI default" aesthetics. Commit to a BOLD conceptual direction:
+
+### 1. Typography & Layout
+- **Avoid:** Generic fonts (Inter, Roboto, Arial) and perfectly symmetrical cookie-cutter cards.
+- **Do:** Pair distinctive display fonts with refined body fonts. Use unexpected layouts, asymmetry, overlap, diagonal flow, and grid-breaking elements. Maximize negative space or use controlled maximalist density.
+
+### 2. Color & Atmosphere
+- **Avoid:** Predictable "AI" color schemes (e.g., purple gradients on white backgrounds).
+- **Do:** Commit to an extreme: brutally minimal, maximalist chaos, retro-futuristic, editorial, art deco, industrial. Create depth with gradient meshes, noise textures, geometric patterns, layered transparencies, and dramatic shadows.
+
+### 3. Motion & Micro-interactions
+- **Avoid:** Scattered, pointless hover animations.
+- **Do:** One well-orchestrated page load with staggered reveals (`animation-delay`) creates more delight. Use scroll-triggering and hover states that genuinely surprise.
+
 ---
 
 ## Pre-Delivery Checklist

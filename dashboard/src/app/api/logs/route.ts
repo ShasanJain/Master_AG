@@ -1,43 +1,53 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
+import { exec } from 'child_process';
 import path from 'path';
 
-const LOGS_FILE = path.join(process.cwd(), 'data', 'mission_logs.json');
-
 export async function GET() {
-  try {
-    if (!fs.existsSync(LOGS_FILE)) {
-      return NextResponse.json([]);
-    }
-    const data = fs.readFileSync(LOGS_FILE, 'utf8');
-    const logs = JSON.parse(data);
-    return NextResponse.json(logs.reverse()); // Show newest first
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to read logs' }, { status: 500 });
-  }
+  return new Promise<Response>((resolve) => {
+    const scriptPath = path.resolve(process.cwd(), '../execution/log_manager.py');
+    exec(`python "${scriptPath}" --mode read`, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
+      if (error) {
+        console.error("Log Manager Read Error:", error);
+        resolve(NextResponse.json({ error: 'Failed to read logs via Python' }, { status: 500 }));
+        return;
+      }
+      try {
+        const logs = JSON.parse(stdout);
+        resolve(NextResponse.json(logs));
+      } catch (parseErr) {
+        resolve(NextResponse.json({ error: 'Failed to parse python logs' }, { status: 500 }));
+      }
+    });
+  });
 }
 
 export async function POST(request: Request) {
   try {
     const newLog = await request.json();
-    let logs = [];
-    
-    if (fs.existsSync(LOGS_FILE)) {
-      const data = fs.readFileSync(LOGS_FILE, 'utf8');
-      logs = JSON.parse(data);
-    }
-    
-    const logEntry = {
-      id: `0x${Math.random().toString(16).slice(2, 6).toUpperCase()}`,
-      timestamp: new Date().toISOString(),
-      ...newLog
-    };
-    
-    logs.push(logEntry);
-    fs.writeFileSync(LOGS_FILE, JSON.stringify(logs, null, 2));
-    
-    return NextResponse.json(logEntry);
+    return new Promise<Response>((resolve) => {
+      const scriptPath = path.resolve(process.cwd(), '../execution/log_manager.py');
+      // Escape the payload carefully
+      const safePayload = JSON.stringify(newLog).replace(/"/g, '\\"');
+      
+      exec(`python "${scriptPath}" --mode write --payload "${safePayload}"`, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
+        if (error) {
+          console.error("Log Manager Write Error:", error);
+          resolve(NextResponse.json({ error: 'Failed to write log via Python' }, { status: 500 }));
+          return;
+        }
+        try {
+          const logEntry = JSON.parse(stdout);
+          if (logEntry.error) {
+            resolve(NextResponse.json({ error: logEntry.error }, { status: 500 }));
+          } else {
+            resolve(NextResponse.json(logEntry));
+          }
+        } catch (parseErr) {
+          resolve(NextResponse.json({ error: 'Failed to parse write response' }, { status: 500 }));
+        }
+      });
+    });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to write log' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
   }
 }

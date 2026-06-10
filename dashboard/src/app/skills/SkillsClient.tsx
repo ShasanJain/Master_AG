@@ -213,7 +213,7 @@ export default function SkillsClient({ initialSkills }: { initialSkills: Skill[]
                   </svg>
                   <select 
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as any)}
+                    onChange={(e) => setSortBy(e.target.value as 'NAME' | 'STATUS')}
                     className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-[var(--foreground)] outline-none cursor-pointer"
                   >
                     <option value="NAME">Sort: A-Z</option>
@@ -388,11 +388,12 @@ export default function SkillsClient({ initialSkills }: { initialSkills: Skill[]
   );
 }
 
-function RegistryCard({ title, status, desc, category, colors, globalCompact, onClick }: Skill & { colors: any, globalCompact: boolean, onClick: () => void }) {
+function RegistryCard({ title, status, desc, category, colors, globalCompact, onClick }: Skill & { colors: Record<string, string>, globalCompact: boolean, onClick: () => void }) {
   const [isCompact, setIsCompact] = useState(globalCompact);
 
   // Sync when category level toggle changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsCompact(globalCompact);
   }, [globalCompact]);
 

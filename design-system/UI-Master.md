@@ -79,7 +79,22 @@ python3 .agent/skills/ui-ux-pro-max/scripts/search.py "<keyword>" --stack <stack
 | `shadcn` | shadcn/ui components, theming, forms, patterns |
 | `jetpack-compose` | Composables, Modifiers, State Hoisting, Recomposition |
 
-#### 3. Example Workflow
+#### 3. Dual-Mode Theming Architecture
+To ensure premium aesthetics in both Dark and Light modes, the system strictly uses Semantic CSS Variables.
+
+**Semantic Variable Rules:**
+- Avoid hardcoded Tailwind color scales (e.g., `bg-slate-900`, `text-gray-400`).
+- Use `bg-[var(--surface)]` for panels, cards, and modal backgrounds.
+- Use `text-[var(--foreground)]` for primary text and `text-[var(--muted)]` for secondary text.
+- Use `bg-[var(--faint)]` for subtle hover states and pill backgrounds instead of `bg-white/5` or `bg-black/5`.
+- Graphs and 3D visualizers default to Dark Mode (`--graph-bg`) with an independent invert toggle, to preserve the "control room" aesthetic.
+
+**Theme Modes:**
+- **Default Dark (`:root`)**: Industrial deep blues (`#020617`).
+- **Warm Light (`.light-mode`)**: Soft Ivory (`#F5F5F0`) and Deep Walnut (`#2A1D15`) optimized for readability without harsh glare.
+- **Clinical Light (`.light-mode-clinical`)**: Pure White (`#FFFFFF`) background with high-contrast borders, used when data legibility outweighs emotional aesthetics.
+
+#### 4. Example Workflow
 
 **User request:** "Làm landing page cho dịch vụ chăm sóc da chuyên nghiệp"
 

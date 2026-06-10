@@ -50,7 +50,7 @@ export function DataMatrix() {
           <h2 className="text-xs uppercase tracking-widest font-bold mb-4 border-b border-[var(--border)] pb-2 text-[var(--foreground)] font-mono">Volume Trend</h2>
           <div className="flex-1 flex items-end gap-1 group cursor-pointer relative">
             {Array.from({ length: 24 }).map((_, i) => {
-              const h = Math.random() * 80 + 20;
+              const h = ((i * 17) % 80) + 20;
               return (
                 <div key={i} className="flex-1 flex flex-col justify-end opacity-60 group-hover:opacity-30 hover:!opacity-100 transition-opacity relative">
                   {/* Tooltip Simulation */}

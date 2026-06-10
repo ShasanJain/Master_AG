@@ -55,7 +55,7 @@ export default async function MemoryPage() {
         </div>
 
         {/* Memory Legend */}
-        <div className="glass-card p-4 flex gap-6 border-dashed">
+        <div className="glass-card p-4 md:px-6 flex flex-wrap gap-x-6 gap-y-4 border-dashed shrink-0 w-full md:w-auto overflow-hidden">
           <LegendItem 
             label="Episodic" 
             desc="Short-term / Events" 
@@ -100,7 +100,7 @@ export default async function MemoryPage() {
 
 function LegendItem({ label, desc, color }: { label: string; desc: string; color: string }) {
   return (
-    <div className="flex items-start gap-3">
+    <div className="flex items-start gap-3 shrink-0">
       <div className={`w-1 h-8 rounded-full ${color}`}></div>
       <div>
         <p className="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">{label}</p>

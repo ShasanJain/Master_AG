@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Trash2, AlertTriangle, Microscope, Rocket, Eye, Zap, Scale } from 'lucide-react';
+import React from 'react';
 
 interface DraftMission {
   id: string;
@@ -63,7 +65,8 @@ export default function IncubatorPage() {
       { id: '5', title: "UI Telemetry Overlay", progress: 10, desc: "Heatmap visualization overlaid directly on the running application DOM to track hover and click density without third-party scripts.", tags: ["REACT", "DOM", "ANALYTICS"], difficulty: "MEDIUM", status: 'DRAFT' as const, version: "1.0.0" },
       { id: '6', title: "Self-Healing Test Synthesizer", progress: 5, desc: "Automatically writes and runs unit tests for undocumented code, mutating the test suite until coverage hits 90%.", tags: ["JEST", "AST", "LLVM"], difficulty: "EXTREME", status: 'DRAFT' as const, version: "1.0.0" },
       { id: '7', title: "Semantic Workspace Search", progress: 15, desc: "A vector-based local search engine that indexes the entire workspace for meaning and architectural patterns rather than regex.", tags: ["CHROMA", "VECTORDB", "EMBEDDINGS"], difficulty: "HIGH", status: 'DRAFT' as const, version: "1.0.0" },
-      { id: '8', title: "Temporal Diff Visualizer", progress: 30, desc: "A 3D graph interface that replays Git history over time to spot architectural rot before it happens.", tags: ["THREEJS", "GIT", "D3"], difficulty: "HIGH", status: 'DRAFT' as const, version: "1.0.0" }
+      { id: '8', title: "Temporal Diff Visualizer", progress: 30, desc: "A 3D graph interface that replays Git history over time to spot architectural rot before it happens.", tags: ["THREEJS", "GIT", "D3"], difficulty: "HIGH", status: 'DRAFT' as const, version: "1.0.0" },
+      { id: '9', title: "Autonomous Journalist Command Center", progress: 0, desc: "A standalone Next.js dashboard orchestrating local LLMs, video generation, and Ghost CMS headless publishing.", tags: ["NEXTJS", "REACT", "OLLAMA", "GHOST"], difficulty: "HIGH", status: 'DRAFT' as const, version: "1.0.0" }
     ];
 
     if (savedDrafts) {
@@ -237,8 +240,8 @@ export default function IncubatorPage() {
             <div className="h-px flex-1 bg-[var(--primary)]/20" />
             <p className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-[0.5em] shrink-0">Active Operations</p>
             <div className="h-px flex-1 bg-[var(--primary)]/20" />
-            <button onClick={() => setIsDeletedModalOpen(true)} className="text-[10px] font-bold text-rose-400/80 hover:text-rose-400 tracking-widest uppercase shrink-0 transition-colors">
-              🗑️ Trash ({deletedDrafts.length})
+            <button onClick={() => setIsDeletedModalOpen(true)} className="flex items-center gap-1.5 text-[10px] font-bold text-rose-400/80 hover:text-rose-400 tracking-widest uppercase shrink-0 transition-colors">
+              <Trash2 size={12} /> Trash ({deletedDrafts.length})
             </button>
           </div>
 
@@ -274,8 +277,8 @@ export default function IncubatorPage() {
             <div className="h-px flex-1 bg-[var(--surface)]" />
             <p className="text-[10px] font-bold text-[var(--foreground)]/30 uppercase tracking-[0.5em] shrink-0">Draft Mission Registry</p>
             <div className="h-px flex-1 bg-[var(--surface)]" />
-            <button onClick={() => setIsDeletedModalOpen(true)} className="text-[10px] font-bold text-rose-400/80 hover:text-rose-400 tracking-widest uppercase shrink-0 transition-colors">
-              🗑️ Trash ({deletedDrafts.length})
+            <button onClick={() => setIsDeletedModalOpen(true)} className="flex items-center gap-1.5 text-[10px] font-bold text-rose-400/80 hover:text-rose-400 tracking-widest uppercase shrink-0 transition-colors">
+              <Trash2 size={12} /> Trash ({deletedDrafts.length})
             </button>
           </div>
 
@@ -360,8 +363,8 @@ function DeletedModal({ drafts, onRestore, onPermanentDelete, onClose }: any) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-8 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-full max-w-4xl max-h-[80vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in zoom-in-95" onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center p-6 border-b border-[var(--border)] bg-[var(--background)]">
-          <h2 className="text-xl font-black uppercase tracking-tighter text-rose-400 flex items-center gap-2">🗑️ Trash Bin</h2>
-          <button onClick={onClose} className="text-2xl text-[var(--faint)] hover:text-white">&times;</button>
+          <h2 className="text-xl font-black uppercase tracking-tighter text-rose-400 flex items-center gap-2"><Trash2 size={24} /> Trash Bin</h2>
+          <button onClick={onClose} className="text-2xl text-[var(--faint)] hover:text-[var(--foreground)]">&times;</button>
         </div>
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {drafts.length === 0 ? (
@@ -388,12 +391,12 @@ function DeletedModal({ drafts, onRestore, onPermanentDelete, onClose }: any) {
 
 // ─── Council Panel ──────────────────────────────────────────────────────────
 
-const ADVISOR_META: Record<string, { label: string; icon: string; color: string }> = {
-  contrarian:     { label: 'Contrarian',         icon: '⚠', color: 'text-rose-400' },
-  firstPrinciples:{ label: 'First Principles',   icon: '🔬', color: 'text-blue-400' },
-  expansionist:   { label: 'Expansionist',       icon: '🚀', color: 'text-emerald-400' },
-  outsider:       { label: 'Outsider',           icon: '👁', color: 'text-purple-400' },
-  builder:       { label: 'Builder',           icon: '⚡', color: 'text-amber-400' },
+const ADVISOR_META: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
+  contrarian:     { label: 'Contrarian',         icon: <AlertTriangle size={14} />, color: 'text-rose-400' },
+  firstPrinciples:{ label: 'First Principles',   icon: <Microscope size={14} />, color: 'text-blue-400' },
+  expansionist:   { label: 'Expansionist',       icon: <Rocket size={14} />, color: 'text-emerald-400' },
+  outsider:       { label: 'Outsider',           icon: <Eye size={14} />, color: 'text-purple-400' },
+  builder:       { label: 'Builder',           icon: <Zap size={14} />, color: 'text-amber-400' },
 };
 
 function CouncilPanel({ result, onApply }: { result: CouncilResult; onApply: () => void }) {
@@ -413,7 +416,7 @@ function CouncilPanel({ result, onApply }: { result: CouncilResult; onApply: () 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-amber-400 text-sm">⚖</span>
+          <Scale className="text-amber-400 w-4 h-4" />
           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-400">Council Analysis</span>
         </div>
         {!ollamaAvailable && (
@@ -498,9 +501,9 @@ function CouncilPanel({ result, onApply }: { result: CouncilResult; onApply: () 
       {/* Apply Button */}
       <button
         onClick={(e) => { e.stopPropagation(); onApply(); }}
-        className="w-full py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[10px] font-black text-amber-500 uppercase tracking-widest hover:bg-amber-500 hover:text-[var(--background)] transition-all"
+        className="w-full py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[10px] font-black text-amber-500 uppercase tracking-widest hover:bg-amber-500 hover:text-[var(--background)] transition-all flex items-center justify-center gap-2"
       >
-        ⚡ Apply Enrichment to Draft
+        <Zap size={14} /> Apply Enrichment to Draft
       </button>
     </div>
   );
@@ -553,7 +556,7 @@ function DraftCard({
         )}
 
         <div className="flex justify-between items-center mt-2">
-          <button onClick={onDelete} className="text-lg font-bold text-[var(--faint)] hover:text-rose-400 transition-colors" title="Move to Trash">🗑️</button>
+          <button onClick={onDelete} className="text-lg font-bold text-[var(--faint)] hover:text-rose-400 transition-colors" title="Move to Trash"><Trash2 size={16} /></button>
           <div className="flex gap-2 items-center">
             {!isActive && onCouncil && (
               <button
@@ -567,7 +570,7 @@ function DraftCard({
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping inline-block"></span>
                     Council...
                   </span>
-                ) : '⚖ Council'}
+                ) : <span className="flex items-center gap-1"><Scale size={12} /> Council</span>}
               </button>
             )}
             {!isActive && onActivate && (
@@ -826,7 +829,7 @@ function WarRoomModal({ draft, onClose, onUpdateDraft, onCouncil, isCounciling, 
                 className="text-[10px] font-bold text-[var(--faint)] uppercase tracking-widest hover:text-[var(--primary)] transition-colors border border-transparent hover:border-[var(--primary)]/30 px-3 py-1.5 rounded">
               Expand to Full Page ↗
             </button>
-            <button onClick={onClose} className="text-xl text-[var(--faint)] hover:text-white transition-colors">&times;</button>
+            <button onClick={onClose} className="text-xl text-[var(--faint)] hover:text-[var(--foreground)] transition-colors">&times;</button>
           </div>
         </div>
 

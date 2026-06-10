@@ -131,7 +131,7 @@ export default function Dashboard() {
                   <StatCard label="Uptime" value={isLoading ? "-" : stats.uptime} unit="Hrs" delay={0.4} />
                 </div>
                 
-                <motion.div variants={item} className="h-48 border border-[var(--border)] bg-[var(--surface)] p-0 rounded-sm overflow-hidden relative group">
+                <motion.div variants={item} className="h-48 relative group">
                   <TokenWidget />
                 </motion.div>
 
@@ -162,6 +162,7 @@ export default function Dashboard() {
                   <SkillCard title="chat" desc="Neural conversation and thought exploration hub." category="NEURAL" status="OPTIMAL" href="/chat" />
                   <SkillCard title="incubator" desc="Experimental core. Staging area for sovereign heuristics." category="CORE" status="ACTIVE" href="/incubator" />
                   <SkillCard title="reel-studio" desc="AI-powered timeline sequence editor with live preview, voice generation." category="MEDIA" status="OPTIMAL" href="/reel-studio" />
+                  <SkillCard title="journalist" desc="Autonomous LLM orchestrator linked to Ghost CMS." category="CONTENT" status="OPTIMAL" href="/journalist" />
 
                   {!isLoading && stats.topSkills.filter(s => !['chat', 'incubator', 'reel-studio'].includes(s)).slice(0, 3).map((skill, idx) => (
                     <SkillCard 

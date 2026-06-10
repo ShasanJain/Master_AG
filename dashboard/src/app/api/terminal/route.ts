@@ -1,34 +1,24 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
+import { exec } from 'child_process';
 import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  try {
-    const logsPath = path.resolve(process.cwd(), 'data', 'mission_logs.json');
-    const logsData = JSON.parse(fs.readFileSync(logsPath, 'utf-8'));
-    
-    // Simulate raw terminal trace from JSON data
-    let terminalOutput = "Jack-Prime OS v2.0.4 [Terminal Emulation]\n==============================================\n";
-    
-    logsData.slice(0, 15).forEach((log: any) => {
-      terminalOutput += `[${log.timestamp}] [${log.agent}] EXEC ${log.skill} -> ${log.status}\n`;
-      if (log.details) {
-        try {
-          const det = JSON.parse(log.details);
-          for (const [k, v] of Object.entries(det)) {
-            terminalOutput += `  ├─ ${k}: ${v}\n`;
-          }
-        } catch {
-          terminalOutput += `  ├─ ${log.details}\n`;
-        }
+  return new Promise<Response>((resolve) => {
+    const scriptPath = path.resolve(process.cwd(), '../execution/log_manager.py');
+    exec(`python "${scriptPath}" --mode terminal`, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
+      if (error) {
+        console.error("Terminal Manager Error:", error);
+        resolve(NextResponse.json({ output: `Error executing Python terminal manager: ${error.message}` }));
+        return;
+      }
+      try {
+        const result = JSON.parse(stdout);
+        resolve(NextResponse.json(result));
+      } catch (parseErr) {
+        resolve(NextResponse.json({ output: `Error parsing terminal output: ${parseErr}\n\nRaw: ${stdout}` }));
       }
     });
-    terminalOutput += "\n[Awaiting next instruction...]\n";
-    
-    return NextResponse.json({ output: terminalOutput });
-  } catch (err: any) {
-    return NextResponse.json({ output: `Error connecting to terminal socket: ${err.message}` });
-  }
+  });
 }

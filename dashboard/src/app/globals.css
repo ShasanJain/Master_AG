@@ -21,6 +21,7 @@
   --status-blue-bg: rgba(56, 189, 248, 0.1);
   --status-rose: #F43F5E;
   --status-rose-bg: rgba(244, 63, 94, 0.1);
+  --graph-bg: #020617;
 }
 
 :root.light-mode {
@@ -43,6 +44,30 @@
   --status-blue-bg: rgba(37, 99, 235, 0.08);
   --status-rose: #e11d48;
   --status-rose-bg: rgba(225, 29, 72, 0.08);
+  --graph-bg: #F5F5F0;
+}
+
+:root.light-mode-clinical {
+  --background: #FFFFFF;
+  --foreground: #000000;
+  --primary: #000000;
+  --primary-glow: rgba(0, 0, 0, 0.05);
+  --accent: #333333;
+  --surface: rgba(255, 255, 255, 0.95);
+  --border: rgba(0, 0, 0, 0.1);
+  --grid-line: rgba(0, 0, 0, 0.03);
+  --glass: blur(10px);
+  --sidebar-bg: #F8F9FA;
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --faint: rgba(0, 0, 0, 0.2);
+  --muted: rgba(0, 0, 0, 0.6);
+  --status-emerald: #059669;
+  --status-emerald-bg: rgba(5, 150, 105, 0.08);
+  --status-blue: #2563eb;
+  --status-blue-bg: rgba(37, 99, 235, 0.08);
+  --status-rose: #e11d48;
+  --status-rose-bg: rgba(225, 29, 72, 0.08);
+  --graph-bg: #FFFFFF;
 }
 
 @theme {
@@ -79,13 +104,13 @@ body::before {
   border: 1px solid var(--border);
   border-radius: 16px;
   box-shadow: var(--card-shadow);
+  overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
   border-color: var(--primary);
   background: var(--surface);
-  transform: translateY(-2px);
   box-shadow: 0 10px 40px -10px var(--primary-glow);
 }
 

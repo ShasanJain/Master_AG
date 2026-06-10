@@ -58,7 +58,8 @@ export async function fetchSkills(): Promise<Skill[]> {
     { title: "reel-studio", status: "OPTIMAL", desc: "AI-powered timeline sequence editor with live preview.", category: "MEDIA", href: "/reel-studio", metrics: { size: "Engine", modifiedAt: "Native", type: "Core Hub" } },
     { title: "audio-studio", status: "OPTIMAL", desc: "Professional DSP engine for mixing, equalization.", category: "PRODUCTION", href: "/audio-studio", metrics: { size: "Engine", modifiedAt: "Native", type: "Core Hub" } },
     { title: "seo-analyzer", status: "OPTIMAL", desc: "Live page auditing, semantic structure mapping.", category: "MARKETING", href: "/seo-analyzer", metrics: { size: "Crawler", modifiedAt: "Native", type: "Core Hub" } },
-    { title: "incubator", status: "ACTIVE", desc: "Experimental core. Staging area for sovereign heuristics.", category: "CORE", href: "/incubator", metrics: { size: "Sandbox", modifiedAt: "Live", type: "Core Hub" } }
+    { title: "incubator", status: "ACTIVE", desc: "Experimental core. Staging area for sovereign heuristics.", category: "CORE", href: "/incubator", metrics: { size: "Sandbox", modifiedAt: "Live", type: "Core Hub" } },
+    { title: "journalist", status: "OPTIMAL", desc: "Autonomous LLM orchestrator linked to Ghost CMS.", category: "CONTENT", href: "/journalist", metrics: { size: "Engine", modifiedAt: "Native", type: "Core Hub" } }
   ];
   
   skills.push(...coreTools);

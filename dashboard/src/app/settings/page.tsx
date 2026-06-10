@@ -13,34 +13,40 @@ export default function SettingsPage() {
   const [advisorModel, setAdvisorModel] = useState('llama3.2');
   const [synthesisModel, setSynthesisModel] = useState('gemma4');
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('jack-theme') as 'dark' | 'light';
-    const floating = localStorage.getItem('jack-floating-enabled') === 'true';
-    if (savedTheme) {
-      setTheme(savedTheme);
-      applyTheme(new Event('init') as any, savedTheme);
-    }
-    setIsFloatingEnabled(floating);
-
-    // Fetch engine config
-    getConfig(['LOCAL_INFERENCE', 'OLLAMA_MODEL_ADVISOR', 'OLLAMA_MODEL_SYNTHESIS']).then(config => {
-      setIsLocalInference(config['LOCAL_INFERENCE'] === 'true');
-      if (config['OLLAMA_MODEL_ADVISOR']) setAdvisorModel(config['OLLAMA_MODEL_ADVISOR']);
-      if (config['OLLAMA_MODEL_SYNTHESIS']) setSynthesisModel(config['OLLAMA_MODEL_SYNTHESIS']);
-    });
-  }, []);
-
   const applyTheme = (e: React.MouseEvent | Event, newTheme: 'dark' | 'light') => {
     setTheme(newTheme);
+    document.documentElement.classList.remove('light-mode', 'light-mode-clinical', 'dark');
     if (newTheme === 'light') {
       document.documentElement.classList.add('light-mode');
-      document.documentElement.classList.remove('dark');
     } else {
-      document.documentElement.classList.remove('light-mode');
       document.documentElement.classList.add('dark');
     }
     localStorage.setItem('jack-theme', newTheme);
   };
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('jack-theme') as 'dark' | 'light';
+    const floating = localStorage.getItem('jack-floating-enabled') === 'true';
+    if (savedTheme) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTheme(savedTheme);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      applyTheme(new Event('init') as any, savedTheme);
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsFloatingEnabled(floating);
+
+    // Fetch engine config
+    getConfig(['LOCAL_INFERENCE', 'OLLAMA_MODEL_ADVISOR', 'OLLAMA_MODEL_SYNTHESIS']).then(config => {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsLocalInference(config['LOCAL_INFERENCE'] === 'true');
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (config['OLLAMA_MODEL_ADVISOR']) setAdvisorModel(config['OLLAMA_MODEL_ADVISOR']);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (config['OLLAMA_MODEL_SYNTHESIS']) setSynthesisModel(config['OLLAMA_MODEL_SYNTHESIS']);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleFloating = () => {
     const newState = !isFloatingEnabled;
@@ -72,7 +78,7 @@ export default function SettingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              <div 
                onClick={(e) => applyTheme(e, 'dark')}
-               className={`glass-card p-6 cursor-pointer border-2 transition-all ${theme === 'dark' ? 'border-[var(--primary)] !bg-[var(--surface)]' : 'border-transparent opacity-40 hover:opacity-100'} hover:border-[var(--primary)]`}
+               className={`glass-card p-6 cursor-pointer border transition-all ${theme === 'dark' ? 'border-[var(--primary)] !bg-[var(--surface)]' : 'border-transparent opacity-40 hover:opacity-100'} hover:border-[var(--primary)]`}
              >
                 <div className="flex justify-between items-start mb-4">
                    <div className="w-12 h-12 rounded !bg-[var(--background)] border border-[var(--border)]" />
@@ -84,14 +90,14 @@ export default function SettingsPage() {
 
              <div 
                onClick={(e) => applyTheme(e, 'light')}
-               className={`glass-card p-6 cursor-pointer border-2 transition-all ${theme === 'light' ? 'border-[#5D4037] !bg-[#EBEAE4]' : 'border-transparent opacity-40 hover:opacity-100'} !bg-[#F5F5F0]`}
+               className={`glass-card p-6 cursor-pointer border transition-all ${theme === 'light' ? 'border-[#5D4037] !bg-[#EBEAE4]' : 'border-transparent opacity-40 hover:opacity-100'} !bg-[#F5F5F0]`}
              >
                 <div className="flex justify-between items-start mb-4">
                    <div className="w-12 h-12 rounded !bg-[#F5F5F0] border border-[#3D2B1F]/20" />
                    {theme === 'light' && <StatusBadge status="ACTIVE" label="Selected" />}
                 </div>
                 <h4 className="font-bold text-[#2A1D15] uppercase tracking-widest text-xs">Ivory & Walnut Wood</h4>
-                <p className="text-[10px] text-[#2A1D15]/40 mt-1">Premium organic aesthetic for deep focus.</p>
+                <p className="text-xs text-[var(--faint)] mt-1">Soft warm palette for reading.</p>
              </div>
           </div>
         </div>

@@ -26,7 +26,12 @@ export default function LogsPage() {
     try {
       const res = await fetch('/api/logs');
       const data = await res.json();
-      setLogs(data);
+      if (Array.isArray(data)) {
+        setLogs(data);
+      } else {
+        console.error('API returned non-array:', data);
+        setLogs([]);
+      }
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to fetch logs:', error);
@@ -75,9 +80,9 @@ export default function LogsPage() {
   const filteredLogs = useMemo(() => {
     return logs
       .filter(log => 
-        log.mission.toLowerCase().includes(search.toLowerCase()) || 
-        log.agent.toLowerCase().includes(search.toLowerCase()) ||
-        log.skill.toLowerCase().includes(search.toLowerCase())
+        (log.mission || '').toLowerCase().includes(search.toLowerCase()) || 
+        (log.agent || '').toLowerCase().includes(search.toLowerCase()) ||
+        (log.skill || '').toLowerCase().includes(search.toLowerCase())
       )
       .sort((a, b) => {
         if (sortBy === 'DATE') return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
@@ -246,7 +251,7 @@ function UsageBar({ label, percentage, count }: { label: string; percentage: num
 }
 
 
-function LogEntry({ timestamp, mission, status, agent, id, skill, details }: MissionLog) {
+function LogEntry({ timestamp, mission = 'UNKNOWN_MISSION', status, agent = 'UNKNOWN_AGENT', id, skill = 'UNKNOWN_SKILL', details }: MissionLog) {
   const [isOpen, setIsOpen] = useState(false);
   const dateObj = new Date(timestamp);
   const time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });

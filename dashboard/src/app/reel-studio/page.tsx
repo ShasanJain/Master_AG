@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
+import { Play, Pause, Square, Wand2, Upload, FileAudio, Video, Search, Type, Image as ImageIcon, Download, Settings, Trash2, Edit3, Flame, PenTool } from 'lucide-react';
 
 interface Segment {
   text: string;
@@ -321,7 +322,7 @@ export default function Studio() {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-[var(--foreground)] font-mono text-sm">Loading Environment...</div>;
+    return <div className="min-h-screen bg-[var(--background)] flex items-center justify-center text-[var(--foreground)] font-mono text-sm">Loading Environment...</div>;
   }
 
   return (
@@ -409,7 +410,7 @@ export default function Studio() {
                   onClick={() => { setScriptInputType(type); setSelectedViralTopic(null); setTrendingTopics([]); }}
                   className={`px-6 py-2 text-xs font-bold uppercase tracking-widest rounded transition-colors ${scriptInputType === type ? 'shiny-button active' : 'bg-[var(--background)] text-[var(--muted)] border border-[var(--border)] hover:border-[var(--primary)]'}`}
                 >
-                  {type === 'auto' ? '🔥 Viral' : type === 'topic' ? '🔍 Topic' : '✍️ Script'}
+                  {type === 'auto' ? <span className="flex items-center gap-1"><Flame size={12}/> Viral</span> : type === 'topic' ? <span className="flex items-center gap-1"><Search size={12}/> Topic</span> : <span className="flex items-center gap-1"><PenTool size={12}/> Script</span>}
                 </button>
               ))}
             </div>

@@ -45,6 +45,13 @@ def get_recent_usage(days: int = 7):
     return [dict(r) for r in rows]
 
 if __name__ == "__main__":
+    import argparse
+    import json
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--json", action="store_true", help="Output JSON for API consumption")
+    args = parser.parse_args()
+    
     init_db()
     
     # Inject some mock data if empty
@@ -58,12 +65,10 @@ if __name__ == "__main__":
         import random
         now = time.time()
         models = ["claude-3-5", "gemini-1.5-pro", "gemini-1.5-flash", "nomic-embed-text"]
-        print("Injecting mock token data...")
         for i in range(150):
             m = random.choice(models)
             pt = random.randint(100, 5000)
             ct = random.randint(10, 1000) if "embed" not in m else 0
-            # Scatter over the last 3 days
             ts = now - random.uniform(0, 3 * 24 * 3600)
             
             c = sqlite3.connect(DB_PATH)
@@ -74,6 +79,17 @@ if __name__ == "__main__":
             )
             c.commit()
             c.close()
-        print("Done injecting.")
+
+    if args.json:
+        # Generate format expected by the frontend
+        rows = get_recent_usage(days=7)
+        # Format into { today: [], total: [], history: [] }
+        # We'll just build a basic structure
+        result = {
+            "today": [],
+            "total": [],
+            "history": rows
+        }
+        print(json.dumps(result))
     else:
-        print(f"DB ready. Found {count} records.")
+        print(f"DB ready. Found {count} records. Use --json to export.")

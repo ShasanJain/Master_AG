@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { Activity, BarChart3, Database, GitMerge, Layout, Settings, Terminal, Zap } from 'lucide-react';
 
 export default function OpenDesignLiveDashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
   const [dataFilter, setDataFilter] = useState('7d');
 
   // Staggered animation variants
@@ -32,7 +31,7 @@ export default function OpenDesignLiveDashboard() {
       >
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <span className="od-text-micro px-2 py-1 bg-white/5 rounded border border-white/10 text-[var(--primary)] flex items-center gap-2">
+            <span className="od-text-micro px-2 py-1 bg-[var(--faint)] rounded border border-[var(--border)] text-[var(--primary)] flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
               LIVE ARTIFACT
             </span>
@@ -56,7 +55,7 @@ export default function OpenDesignLiveDashboard() {
               className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase od-transition ${
                 dataFilter === filter 
                   ? 'bg-[var(--primary)] text-black' 
-                  : 'text-[var(--muted)] hover:text-white hover:bg-white/5'
+                  : 'text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--faint)]'
               }`}
             >
               {filter}
@@ -97,7 +96,7 @@ export default function OpenDesignLiveDashboard() {
                 <h3 className="text-lg font-bold tracking-tight">Inference Volume</h3>
                 <span className="od-text-micro">Token generation throughput over time</span>
               </div>
-              <button className="p-2 hover:bg-white/5 rounded-lg od-transition text-[var(--muted)] hover:text-white">
+              <button className="p-2 hover:bg-[var(--faint)] rounded-lg od-transition text-[var(--muted)] hover:text-[var(--foreground)]">
                 <Settings className="w-4 h-4" />
               </button>
             </div>
@@ -145,7 +144,7 @@ export default function OpenDesignLiveDashboard() {
               <TweakControl label="Sandboxing" value="Strict Iframe Isolation" />
               
               <div className="pt-6 mt-6 border-t border-white/5">
-                <button className="w-full py-3 bg-white/5 hover:bg-[var(--primary)] text-white hover:text-black rounded-lg text-xs font-bold uppercase tracking-widest od-transition">
+                <button className="w-full py-3 bg-[var(--faint)] hover:bg-[var(--primary)] text-[var(--foreground)] hover:text-black rounded-lg text-xs font-bold uppercase tracking-widest od-transition">
                   Force Sync Registry
                 </button>
               </div>
@@ -159,7 +158,7 @@ export default function OpenDesignLiveDashboard() {
 
 // Subcomponents
 
-function KpiCard({ title, value, change, icon, trend }: { title: string, value: string, change: string, icon: any, trend: 'up'|'down'|'neutral' }) {
+function KpiCard({ title, value, change, icon, trend }: { title: string, value: string, change: string, icon: React.ReactNode, trend: 'up'|'down'|'neutral' }) {
   const trendColor = trend === 'up' ? 'text-[var(--primary)]' : trend === 'down' ? 'text-rose-400' : 'text-[var(--muted)]';
   
   return (
@@ -172,7 +171,7 @@ function KpiCard({ title, value, change, icon, trend }: { title: string, value: 
     >
       <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/5 rounded-full blur-2xl group-hover:bg-[var(--primary-glow)] transition-colors duration-500 pointer-events-none" />
       <div className="flex items-start justify-between mb-4">
-        <div className="p-2 bg-white/5 rounded-lg border border-white/5 text-[var(--muted)] group-hover:text-white od-transition">
+        <div className="p-2 bg-[var(--faint)] rounded-lg border border-[var(--border)] text-[var(--muted)] group-hover:text-[var(--foreground)] od-transition">
           {icon}
         </div>
         <span className={`text-[10px] font-bold font-mono px-2 py-1 rounded bg-white/5 border border-white/5 ${trendColor}`}>
@@ -194,7 +193,7 @@ function DeploymentRow({ name, status, time }: { name: string, status: string, t
       <div className="flex items-center gap-4">
         <div className={`w-2 h-2 rounded-full ${isSuccess ? 'bg-[var(--primary)] shadow-[0_0_8px_var(--primary-glow)]' : 'bg-amber-400'}`} />
         <div>
-          <p className="text-sm font-bold tracking-tight text-[var(--foreground)] group-hover:text-white od-transition">{name}</p>
+          <p className="text-sm font-bold tracking-tight text-[var(--foreground)] group-hover:text-[var(--foreground)] od-transition">{name}</p>
           <p className="text-[10px] text-[var(--muted)] font-mono mt-0.5">{time}</p>
         </div>
       </div>
@@ -202,7 +201,7 @@ function DeploymentRow({ name, status, time }: { name: string, status: string, t
         <span className={`text-[10px] uppercase tracking-widest font-bold ${isSuccess ? 'text-[var(--primary)]' : 'text-amber-400'}`}>
           {status}
         </span>
-        <GitMerge className="w-4 h-4 text-[var(--muted)] group-hover:text-white od-transition" />
+        <GitMerge className="w-4 h-4 text-[var(--muted)] group-hover:text-[var(--foreground)] od-transition" />
       </div>
     </div>
   );
@@ -214,7 +213,7 @@ function TweakControl({ label, value }: { label: string, value: string }) {
       <div className="flex justify-between items-end mb-2">
         <span className="od-text-micro">{label}</span>
       </div>
-      <div className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-sm font-mono text-[var(--foreground)] shadow-inner">
+      <div className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg p-3 text-sm font-mono text-[var(--foreground)] shadow-inner">
         {value}
       </div>
     </div>

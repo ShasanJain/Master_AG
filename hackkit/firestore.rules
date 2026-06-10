@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Users ───────────────────────────────────────────────────
+    // Users can only read/write their own profile
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ─── Sessions (e.g. appointments, conversations, bookings) ───
+    // Any authenticated participant in the session can read/write it
+    // HACKATHON DAY: Change field names to match your data model
+    match /sessions/{sessionId} {
+      allow read: if request.auth != null &&
+        (resource.data.participantA == request.auth.uid ||
+         resource.data.participantB == request.auth.uid ||
+         resource.data.createdBy == request.auth.uid);
+
+      allow create: if request.auth != null &&
+        request.resource.data.createdBy == request.auth.uid;
+
+      allow update: if request.auth != null &&
+        (resource.data.participantA == request.auth.uid ||
+         resource.data.participantB == request.auth.uid);
+
+      allow delete: if request.auth != null &&
+        resource.data.createdBy == request.auth.uid;
+    }
+
+    // ─── Messages ─────────────────────────────────────────────────
+    // Only session participants can read/write messages
+    match /messages/{messageId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null &&
+        request.resource.data.senderId == request.auth.uid &&
+        request.resource.data.text is string &&
+        request.resource.data.text.size() <= 1000; // Input length validation
+      allow update, delete: if false; // Messages are immutable
+    }
+
+    // ─── Uploads / Attachments ───────────────────────────────────
+    match /uploads/{uploadId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null &&
+        request.resource.data.uploadedBy == request.auth.uid;
+      allow update, delete: if request.auth != null &&
+        resource.data.uploadedBy == request.auth.uid;
+    }
+
+    // ─── Catch-all: deny everything else ─────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

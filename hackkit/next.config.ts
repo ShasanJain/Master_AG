@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // For Firebase Hosting static export — uncomment on deploy day:
-  // output: 'export',
+  // Use standalone output for Docker / Cloud Run deployments
+  output: 'standalone',
   // trailingSlash: true,
   images: {
     // Required when output: 'export'

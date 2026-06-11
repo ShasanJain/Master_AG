@@ -6,7 +6,7 @@ import { generateInsight } from "@/lib/gemini";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { input, systemPrompt } = body;
+    const { input, systemPrompt, image, audio } = body;
 
     if (!input || typeof input !== "string") {
       return NextResponse.json(
@@ -23,9 +23,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Sanitize: strip HTML tags from user input
-    const sanitized = input.replace(/<[^>]*>/g, "").slice(0, 2000);
+    const sanitized = input.replace(/<[^>]*>/g, "").slice(0, 3000);
 
-    const result = await generateInsight(sanitized, systemPrompt);
+    const result = await generateInsight(sanitized, systemPrompt, image, audio);
 
     return NextResponse.json({ result });
   } catch (err) {

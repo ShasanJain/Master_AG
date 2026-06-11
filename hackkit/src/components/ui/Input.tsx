@@ -3,14 +3,14 @@
 import { InputHTMLAttributes, forwardRef } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+  label?: string;
   error?: string;
   hint?: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, hint, id, className = "", ...props }, ref) => {
-    const inputId = id || label.toLowerCase().replace(/\s+/g, "-");
+    const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, "-") : `input-${Math.random().toString(36).slice(2, 7)}`);
     const errorId = `${inputId}-error`;
     const hintId = `${inputId}-hint`;
 

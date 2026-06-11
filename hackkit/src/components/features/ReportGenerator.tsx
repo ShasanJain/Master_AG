@@ -33,7 +33,7 @@ export function ReportGenerator() {
 
   return (
     <Card as="article" elevated>
-      <CardHeader title="AI Report Generator" subtitle="Powered by Groq" />
+      <CardHeader title="AI Report Generator" subtitle="Powered by Gemini 1.5 Flash" />
         <p className="text-muted text-sm" style={{ marginBottom: "var(--space-4)" }}>
           Draft a weekly progress report for parents using AI.
         </p>
@@ -55,7 +55,7 @@ export function ReportGenerator() {
           </Button>
           
           {report && (
-            <div className="fade-in" style={{ marginTop: "var(--space-4)", padding: "var(--space-3)", background: "var(--color-surface)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
+            <div className="fade-in" style={{ marginTop: "var(--space-4)", padding: "var(--space-3)", background: "var(--color-surface)", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)" }}>
               <p className="text-sm">{report}</p>
               <Button variant="outline" size="sm" style={{ marginTop: "var(--space-2)" }}>Send to Parent</Button>
             </div>

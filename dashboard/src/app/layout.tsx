@@ -82,6 +82,7 @@ export default function RootLayout({
             <NavItem label="Mission Logs" href="/logs" icon={<IconLogs className="w-4 h-4" />} colorClass="group-hover:text-blue-400" />
             <NavItem label="Cognitive Memory" href="/memory" icon={<IconDashboard className="w-4 h-4" />} colorClass="group-hover:text-purple-400" />
             <NavItem label="Incubator" href="/incubator" icon={<IconIncubator className="w-4 h-4" />} colorClass="group-hover:text-rose-400" />
+            <NavItem label="App Sandbox" href="/incubator/sandbox" icon={<Radio className="w-4 h-4" />} colorClass="group-hover:text-amber-400" />
             <NavItem href="/chat" label="Neural Link" icon={<Radio className="w-4 h-4" />} colorClass="group-hover:text-cyan-400" />
             <NavItem href="/neural" label="Neural Map" icon={<Brain className="w-4 h-4" />} colorClass="group-hover:text-fuchsia-400" />
             <div className="pt-4 mt-4 border-t border-[var(--border)]">

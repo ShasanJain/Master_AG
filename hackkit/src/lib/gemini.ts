@@ -1,68 +1,49 @@
 // lib/gemini.ts
-// Swapped to Groq (Llama-3) for immediate testing. 
-// Function signatures are identical, so the rest of the app doesn't know we swapped.
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-/**
- * Generate AI insight from user input using Groq
- */
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+
 export async function generateInsight(
   userInput: string,
-  systemPrompt: string
+  systemPrompt: string,
+  base64Image?: string,
+  base64Audio?: string
 ): Promise<string> {
-  if (!userInput.trim()) return "";
-
-  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: "llama3-8b-8192", // Fast and free
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userInput }
-      ],
-      temperature: 0.4,
-      max_tokens: 512
-    })
-  });
-
-  if (!response.ok) {
-    console.error("Groq API Error:", await response.text());
-    return "Error generating response.";
-  }
-
-  const data = await response.json();
-  return data.choices[0].message.content;
-}
-
-/**
- * Summarize a block of text
- */
-export async function summarize(text: string, context: string = ""): Promise<string> {
-  return generateInsight(
-    text,
-    `Summarize the following concisely in 2-4 sentences.${context ? ` Context: ${context}` : ""}`
-  );
-}
-
-/**
- * Generate structured suggestions from freeform input
- */
-export async function generateSuggestions(
-  input: string,
-  domain: string
-): Promise<string[]> {
-  const raw = await generateInsight(
-    input,
-    `You are a helpful ${domain} assistant. Return exactly 3 short, actionable suggestions as a JSON array of strings. No other text.`
-  );
+  if (!userInput.trim() && !base64Image && !base64Audio) return "";
 
   try {
-    const cleaned = raw.replace(/```json|```/g, "").trim();
-    return JSON.parse(cleaned);
-  } catch {
-    return [raw];
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const prompt = `System Instructions: ${systemPrompt}\n\nUser Input: ${userInput}`;
+    const content: any[] = [prompt];
+
+    if (base64Image) {
+      const mimeType = base64Image.split(";")[0].split(":")[1];
+      const data = base64Image.split(",")[1];
+      content.push({
+        inlineData: {
+          data,
+          mimeType
+        }
+      });
+    }
+
+    if (base64Audio) {
+      const mimeType = base64Audio.split(";")[0].split(":")[1];
+      const data = base64Audio.split(",")[1];
+      content.push({
+        inlineData: {
+          data,
+          mimeType
+        }
+      });
+    }
+
+    const result = await model.generateContent(content);
+    const response = await result.response;
+    return response.text();
+  } catch (err) {
+    console.error("Gemini API Error:", err);
+    return "Error generating response.";
   }
 }

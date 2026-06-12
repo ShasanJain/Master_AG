@@ -1,128 +1,68 @@
 ---
-name: ui-ux-pro-max
-description: UI/UX design intelligence. 50 styles, 21 palettes, 50 font pairings, 20 charts, 9 stacks.
+name: ui-master
+description: Unified UI/UX design intelligence. Integrates ui-ux-pro-max, ui-guidelines, and ui-master rules.
 ---
-# ui-ux-pro-max
 
-Comprehensive design guide for web and mobile applications. Contains 67 styles, 96 color palettes, 57 font pairings, 99 UX guidelines, and 25 chart types across 13 technology stacks. Searchable database with priority-based recommendations.
+# UI-Master: The Unified Hybrid Design System & Workflow
 
-## Prerequisites
-
-Check if Python is installed:
-
-```bash
-python3 --version || python --version
-```
-
-If Python is not installed, install it based on user's OS:
-
-**macOS:**
-```bash
-brew install python3
-```
-
-**Ubuntu/Debian:**
-```bash
-sudo apt update && sudo apt install python3
-```
-
-**Windows:**
-```powershell
-winget install Python.Python.3.12
-```
+This document is the absolute Source of Truth for the Master_AG design architecture. It merges the **Open Design Paradigm** (premium, emotional aesthetics) with the **UI-UX-Pro-Max Engine** (extreme utility, Python-based design retrieval, and strict accessibility) and **UI-Guidelines** (structural margins and sandboxing constraints).
 
 ---
 
-## How to Use This Skill
+## PART 1: The UI/UX Workflow & Engine
 
-When user requests UI/UX work (design, build, create, implement, review, fix, improve), follow this workflow:
+This system uses a Python-based retrieval engine containing 67 styles, 96 color palettes, 57 font pairings, 99 UX guidelines, and 25 chart types across 13 technology stacks.
 
-### Step 1: Analyze User Requirements
+### 1. Prerequisites
+Ensure Python is installed to use the design retrieval engine.
+*   **macOS**: `brew install python3`
+*   **Ubuntu/Debian**: `sudo apt update && sudo apt install python3`
+*   **Windows**: `winget install Python.Python.3.12`
 
+---
+
+### 2. Implementation Workflow
+
+When tasked with creating, reviewing, or fixing UI/UX, follow these steps:
+
+#### Step 1: Analyze Requirements
 Extract key information from user request:
 - **Product type**: SaaS, e-commerce, portfolio, dashboard, landing page, etc.
 - **Style keywords**: minimal, playful, professional, elegant, dark mode, etc.
 - **Industry**: healthcare, fintech, gaming, education, etc.
 - **Stack**: React, Vue, Next.js, or default to `html-tailwind`
 
-### Step 2: Generate Design System (REQUIRED)
-
-**Always start with `--design-system`** to get comprehensive recommendations with reasoning:
-
+#### Step 2: Generate & Persist Design System (REQUIRED)
+Always start with the `--design-system` command to fetch the comprehensive logic:
 ```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<product_type> <industry> <keywords>" --design-system [-p "Project Name"]
+python3 .agent/skills/ui-ux-pro-max/scripts/search.py "<product_type> <industry> <keywords>" --design-system --persist -p "Project Name"
 ```
+*   Searches 5 domains in parallel (product, style, color, landing, typography).
+*   Applies reasoning rules from `ui-reasoning.csv` to select best matches.
+*   Returns complete design system: pattern, style, colors, typography, effects, and anti-patterns.
+*   **Output Formats**: Append `-f markdown` for documentation files, or omit it for ASCII boxes (best for terminal reading).
 
-This command:
-1. Searches 5 domains in parallel (product, style, color, landing, typography)
-2. Applies reasoning rules from `ui-reasoning.csv` to select best matches
-3. Returns complete design system: pattern, style, colors, typography, effects
-4. Includes anti-patterns to avoid
-
-**Example:**
-```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "beauty spa wellness service" --design-system -p "Serenity Spa"
-```
-
-### Step 2b: Persist Design System (Master + Overrides Pattern)
-
-To save the design system for hierarchical retrieval across sessions, add `--persist`:
-
-```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<query>" --design-system --persist -p "Project Name"
-```
-
-This creates:
-- `design-system/MASTER.md` — Global Source of Truth with all design rules
-- `design-system/pages/` — Folder for page-specific overrides
+**Hierarchical Retrieval (Master + Overrides Pattern)**:
+To save the design system for hierarchical retrieval across sessions, add `--persist`. This creates:
+- `design-system/MASTER.md` — Global Source of Truth with all design rules.
+- `design-system/pages/` — Folder for page-specific overrides.
 
 **With page-specific override:**
 ```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<query>" --design-system --persist -p "Project Name" --page "dashboard"
+python3 .agent/skills/ui-ux-pro-max/scripts/search.py "<query>" --design-system --persist -p "Project Name" --page "dashboard"
 ```
+This creates `design-system/pages/dashboard.md` (page-specific deviations from Master).
+1. When building a specific page (e.g., "Checkout"), first check `design-system/pages/checkout.md`.
+2. If the page file exists, its rules **override** the Master file.
+3. If not, use `design-system/MASTER.md` exclusively.
 
-This also creates:
-- `design-system/pages/dashboard.md` — Page-specific deviations from Master
-
-**How hierarchical retrieval works:**
-1. When building a specific page (e.g., "Checkout"), first check `design-system/pages/checkout.md`
-2. If the page file exists, its rules **override** the Master file
-3. If not, use `design-system/MASTER.md` exclusively
-
-### Step 3: Supplement with Detailed Searches (as needed)
-
-After getting the design system, use domain searches to get additional details:
-
+#### Step 3: Supplement with Detailed Searches
+Run domain-specific searches when you need granular inspiration:
 ```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --domain <domain> [-n <max_results>]
+python3 .agent/skills/ui-ux-pro-max/scripts/search.py "<keyword>" --domain <domain> [-n <max_results>]
 ```
 
-**When to use detailed searches:**
-
-| Need | Domain | Example |
-|------|--------|---------|
-| More style options | `style` | `--domain style "glassmorphism dark"` |
-| Chart recommendations | `chart` | `--domain chart "real-time dashboard"` |
-| UX best practices | `ux` | `--domain ux "animation accessibility"` |
-| Alternative fonts | `typography` | `--domain typography "elegant luxury"` |
-| Landing structure | `landing` | `--domain landing "hero social-proof"` |
-
-### Step 4: Stack Guidelines (Default: html-tailwind)
-
-Get implementation-specific best practices. If user doesn't specify a stack, **default to `html-tailwind`**.
-
-```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --stack html-tailwind
-```
-
-Available stacks: `html-tailwind`, `react`, `nextjs`, `vue`, `svelte`, `swiftui`, `react-native`, `flutter`, `shadcn`, `jetpack-compose`
-
----
-
-## Search Reference
-
-### Available Domains
-
+**Available Domains Reference:**
 | Domain | Use For | Example Keywords |
 |--------|---------|------------------|
 | `product` | Product type recommendations | SaaS, e-commerce, portfolio, healthcare, beauty, service |
@@ -136,8 +76,13 @@ Available stacks: `html-tailwind`, `react`, `nextjs`, `vue`, `svelte`, `swiftui`
 | `web` | Web interface guidelines | aria, focus, keyboard, semantic, virtualize |
 | `prompt` | AI prompts, CSS keywords | (style name) |
 
-### Available Stacks
+#### Step 4: Stack Guidelines
+Get stack-specific implementation rules (Default: `html-tailwind`):
+```bash
+python3 .agent/skills/ui-ux-pro-max/scripts/search.py "<keyword>" --stack <stack_name>
+```
 
+**Available Stacks Reference:**
 | Stack | Focus |
 |-------|-------|
 | `html-tailwind` | Tailwind utilities, responsive, a11y (DEFAULT) |
@@ -153,157 +98,140 @@ Available stacks: `html-tailwind`, `react`, `nextjs`, `vue`, `svelte`, `swiftui`
 
 ---
 
-## Example Workflow
+## PART 2: Visual Constraints & Design Rules
 
-**User request:** "Làm landing page cho dịch vụ chăm sóc da chuyên nghiệp"
+### 1. Dual-Mode Theming Architecture
+To ensure premium aesthetics in both Dark and Light modes, the system strictly uses Semantic CSS Variables.
 
-### Step 1: Analyze Requirements
-- Product type: Beauty/Spa service
-- Style keywords: elegant, professional, soft
-- Industry: Beauty/Wellness
-- Stack: html-tailwind (default)
+#### 🌑 Dark Mode (Open Design Influence)
+*Goal: Establish a premium depth hierarchy and "wow" factor.*
+- **Base Surface**: `bg-white/5` or semantic `var(--surface)` over a deep `bg-[#0f172a]` (slate-900) background.
+- **Blur Engine**: `backdrop-blur-xl` is mandatory on floating panels.
+- **Borders**: 1px translucent borders (`border-white/10` or `var(--border)`) to define edges without harsh lines.
+- **Shadows**: Deep, soft shadows (`shadow-2xl shadow-black/50`) to lift elements.
+- **Text**: High contrast `text-slate-50`. Muted text should be `text-slate-400`.
 
-### Step 2: Generate Design System (REQUIRED)
+#### ☀️ Light Mode (UI-UX-Pro-Max Influence)
+*Goal: Deliver maximum readability and strict WCAG AA accessibility.*
+- **Base Surface**: Solid or semi-solid colors (`bg-white/80` minimum opacity, or `bg-slate-50`).
+- **Borders**: Highly visible structural borders (`border-gray-200` or `border-slate-200`). **Do not use `border-white/10` in light mode.**
+- **Shadows**: Crisp, subtle shadows (`shadow-sm hover:shadow-md`).
+- **Text**: `text-slate-900` (#0F172A) for body/headings. Muted text must be `#475569` (slate-600) minimum.
 
-```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "beauty spa wellness service elegant" --design-system -p "Serenity Spa"
-```
+**Semantic Variable Rules:**
+- Avoid hardcoded Tailwind color scales (e.g., `bg-slate-900`, `text-gray-400`).
+- Use `bg-[var(--surface)]` for panels, cards, and modal backgrounds.
+- Use `text-[var(--foreground)]` for primary text and `text-[var(--muted)]` for secondary text.
+- Use `bg-[var(--faint)]` for subtle hover states and pill backgrounds instead of `bg-white/5` or `bg-black/5`.
+- Graphs and 3D visualizers default to Dark Mode (`--graph-bg`) with an independent invert toggle, to preserve the "control room" aesthetic.
 
-**Output:** Complete design system with pattern, style, colors, typography, effects, and anti-patterns.
-
-### Step 3: Supplement with Detailed Searches (as needed)
-
-```bash
-# Get UX guidelines for animation and accessibility
-python3 skills/ui-ux-pro-max/scripts/search.py "animation accessibility" --domain ux
-
-# Get alternative typography options if needed
-python3 skills/ui-ux-pro-max/scripts/search.py "elegant luxury serif" --domain typography
-```
-
-### Step 4: Stack Guidelines
-
-```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "layout responsive form" --stack html-tailwind
-```
-
-**Then:** Synthesize design system + detailed searches and implement the design.
+**Theme Modes:**
+- **Default Dark (`:root`)**: Industrial deep blues (`#020617`).
+- **Warm Light (`.light-mode`)**: Soft Ivory (`#F5F5F0`) and Deep Walnut (`#2A1D15`) optimized for readability without harsh glare.
+- **Clinical Light (`.light-mode-clinical`)**: Pure White (`#FFFFFF`) background with high-contrast borders, used when data legibility outweighs emotional aesthetics.
 
 ---
 
-## Output Formats
-
-The `--design-system` flag supports two output formats:
-
-```bash
-# ASCII box (default) - best for terminal display
-python3 skills/ui-ux-pro-max/scripts/search.py "fintech crypto" --design-system
-
-# Markdown - best for documentation
-python3 skills/ui-ux-pro-max/scripts/search.py "fintech crypto" --design-system -f markdown
-```
+### 2. Glassmorphism Design
+All primary surfaces must use layered glassmorphism to establish a premium depth hierarchy.
+- **Base Surface**: `bg-white/5` (Dark mode) or `bg-black/5` (Light mode).
+- **Blur Engine**: `backdrop-blur-xl` is mandatory on floating panels.
+- **Borders**: 1px translucent borders (`border-white/10`) to define edges without harsh lines.
+- **Shadows**: Deep, soft shadows (`shadow-2xl shadow-black/50`) to lift elements.
 
 ---
 
-## Tips for Better Results
-
-1. **Be specific with keywords** - "healthcare SaaS dashboard" > "app"
-2. **Search multiple times** - Different keywords reveal different insights
-3. **Combine domains** - Style + Typography + Color = Complete design system
-4. **Always check UX** - Search "animation", "z-index", "accessibility" for common issues
-5. **Use stack flag** - Get implementation-specific best practices
-6. **Iterate** - If first search doesn't match, try different keywords
+### 3. Typography & Grids
+- **Primary Headings & UI Labels**: Use **Outfit** or **Inter** with tight tracking (`tracking-tight`).
+- **Data Densities & Numbers**: Use **Fira Code** or **Fira Sans** strictly for numerical data, IDs, and financial metrics.
+- **Meta-Labeling**: Secondary text, tags, and small labels MUST be `uppercase text-[10px] tracking-widest text-[var(--muted)] font-mono`.
+- **Layout Grids**: Dashboards must use strict CSS grids (`grid-cols-1 md:grid-cols-2 xl:grid-cols-4`).
+- **Container Consistency**: Maintain a consistent `max-w-6xl` or `max-w-7xl` container. Do not mix widths.
 
 ---
 
-## Common Rules for Professional UI
+### 4. Interaction & Micro-Animations (The "Alive" Feel)
+- **Hover States**: Apply `hover:scale-[1.02] active:scale-[0.98]` on buttons and cards. Hover states must use color/opacity transitions and must NEVER cause the layout to shift or jump.
+- **Transitions**: Apply `transition-all duration-200 ease-out` universally. Instant state changes or >500ms animations are forbidden.
+- **Entrance**: Use `framer-motion` for staggered fade-up entrances (`initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}`).
+- **Cursor**: All clickable/hoverable elements MUST have `cursor-pointer`.
 
-These are frequently overlooked issues that make UI look unprofessional:
+---
 
-### Icons & Visual Elements
+### 5. Spacing & Visual Elements
+- **Container Margins**: Every time you create a bar, sidebar, dashboard matrix, or container, you MUST leave sufficient margin/padding around it. Elements must not touch the edges or look cramped.
+- **Floating Navbars**: Add `top-4 left-4 right-4` spacing. Do not stick navbars to `top-0 left-0 right-0`.
+- **Content Padding**: Always account for fixed navbar height so content doesn't hide behind it.
+- **Iconography over Text**: Prioritize icons instead of text labels for common actions (e.g., toggles, edits, deletes).
+- **No Emojis**: NEVER use emojis (🎨 🚀 ⚙️) as UI icons. Always use SVG icons (Heroicons, Lucide, Simple Icons).
+- **Consistent Icons**: Use a fixed viewBox (e.g., 24x24) with `w-6 h-6`.
 
-| Rule | Do | Don't |
-|------|----|----- |
-| **No emoji icons** | Use SVG icons (Heroicons, Lucide, Simple Icons) | Use emojis like 🎨 🚀 ⚙️ as UI icons |
-| **Iconography over Text** | Prioritize icons instead of text labels for common actions | Clutter UI with text buttons for recognizable actions |
-| **Stable hover states** | Use color/opacity transitions on hover | Use scale transforms that shift layout |
-| **Correct brand logos** | Research official SVG from Simple Icons | Guess or use incorrect logo paths |
-| **Consistent icon sizing** | Use fixed viewBox (24x24) with w-6 h-6 | Mix different icon sizes randomly |
+---
 
-### Interaction & Cursor
+### 6. Conflict Resolution Scenarios
+When layout logic conflicts, apply the appropriate Scenario:
+- **Scenario A (Command Center / Exec Dashboard)**: Low Density. Maximize container margins. Prioritize massive KPI numbers. Hide data tables behind drill-downs. Heavy use of framer-motion staggered entrances.
+- **Scenario B (Data Matrix / Admin Panel)**: High Density. Minimize padding (`p-2` or `p-4`). Use massive data tables as the primary view. Limit motion to practical interactions to prevent visual fatigue.
 
-| Rule | Do | Don't |
-|------|----|----- |
-| **Cursor pointer** | Add `cursor-pointer` to all clickable/hoverable cards | Leave default cursor on interactive elements |
-| **Hover feedback** | Provide visual feedback (color, shadow, border) | No indication element is interactive |
-| **Smooth transitions** | Use `transition-colors duration-200` | Instant state changes or too slow (>500ms) |
+---
 
-### Light/Dark Mode Contrast
+### 7. Artifact Sandboxing & Live Dashboard Constraints
+- **Isolation**: Do not bleed global styles into the artifact unless intended. Use explicit semantic variables (`var(--surface)`, `var(--primary)`).
+- **Live Dashboards MUST include**:
+  1. A **KPI Wall**: Top row numeric summaries with trend indicators.
+  2. A **Main Visualization**: Central graph or massive data table.
+  3. A **Tweaks Panel**: A side or floating control panel to mutate state without reloading.
 
-| Rule | Do | Don't |
-|------|----|----- |
-| **Glass card light mode** | Use `bg-white/80` or higher opacity | Use `bg-white/10` (too transparent) |
-| **Text contrast light** | Use `#0F172A` (slate-900) for text | Use `#94A3B8` (slate-400) for body text |
-| **Muted text light** | Use `#475569` (slate-600) minimum | Use gray-400 or lighter |
-| **Border visibility** | Use `border-gray-200` in light mode | Use `border-white/10` (invisible) |
+---
 
-### Layout & Spacing
-
-| Rule | Do | Don't |
-|------|----|----- |
-| **Floating navbar** | Add `top-4 left-4 right-4` spacing | Stick navbar to `top-0 left-0 right-0` |
-| **Container Margins** | Enforce clean margins/padding around ALL containers and bars | Let containers touch screen edges or look cramped |
-| **Content padding** | Account for fixed navbar height | Let content hide behind fixed elements |
-| **Consistent max-width** | Use same `max-w-6xl` or `max-w-7xl` | Mix different container widths |
-
-## Anti-AI Slop Aesthetic Guidelines
+### 8. Anti-AI Slop Aesthetic Guidelines
 When generating UI from scratch, you must actively avoid "AI default" aesthetics. Commit to a BOLD conceptual direction:
 
-### 1. Typography & Layout
+#### A. Typography & Layout
 - **Avoid:** Generic fonts (Inter, Roboto, Arial) and perfectly symmetrical cookie-cutter cards.
 - **Do:** Pair distinctive display fonts with refined body fonts. Use unexpected layouts, asymmetry, overlap, diagonal flow, and grid-breaking elements. Maximize negative space or use controlled maximalist density.
 
-### 2. Color & Atmosphere
+#### B. Color & Atmosphere
 - **Avoid:** Predictable "AI" color schemes (e.g., purple gradients on white backgrounds).
 - **Do:** Commit to an extreme: brutally minimal, maximalist chaos, retro-futuristic, editorial, art deco, industrial. Create depth with gradient meshes, noise textures, geometric patterns, layered transparencies, and dramatic shadows.
 
-### 3. Motion & Micro-interactions
+#### C. Motion & Micro-interactions
 - **Avoid:** Scattered, pointless hover animations.
 - **Do:** One well-orchestrated page load with staggered reveals (`animation-delay`) creates more delight. Use scroll-triggering and hover states that genuinely surprise.
 
 ---
 
-## Pre-Delivery Checklist
+## PART 3: Pre-Delivery Strict Checklist
 
-Before delivering UI code, verify these items:
+Before delivering ANY UI code, you MUST verify these items:
 
 ### Visual Quality
-- [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons from consistent icon set (Heroicons/Lucide)
-- [ ] Brand logos are correct (verified from Simple Icons)
-- [ ] Hover states don't cause layout shift
-- [ ] Use theme colors directly (bg-primary) not var() wrapper
+- [ ] No emojis used as icons (use SVG instead).
+- [ ] All icons from a consistent icon set (Heroicons/Lucide).
+- [ ] Brand logos are correct (verified from Simple Icons).
+- [ ] Hover states don't cause layout shift.
+- [ ] Used theme colors directly (e.g., `bg-primary`) rather than hardcoded hex values where applicable.
 
 ### Interaction
-- [ ] All clickable elements have `cursor-pointer`
-- [ ] Hover states provide clear visual feedback
-- [ ] Transitions are smooth (150-300ms)
-- [ ] Focus states visible for keyboard navigation
+- [ ] All clickable elements have `cursor-pointer`.
+- [ ] Hover states provide clear visual feedback (color, shadow, border).
+- [ ] Transitions are smooth (150-300ms).
+- [ ] Focus states are highly visible for keyboard navigation.
 
 ### Light/Dark Mode
-- [ ] Light mode text has sufficient contrast (4.5:1 minimum)
-- [ ] Glass/transparent elements visible in light mode
-- [ ] Borders visible in both modes
-- [ ] Test both modes before delivery
+- [ ] Light mode text has sufficient contrast (4.5:1 minimum).
+- [ ] Glass/transparent elements are clearly visible in light mode (`bg-white/80` min).
+- [ ] Borders are visible in both modes (`border-gray-200` for light, `border-white/10` for dark).
+- [ ] Tested both modes before delivery.
 
 ### Layout
-- [ ] Floating elements have proper spacing from edges
-- [ ] No content hidden behind fixed navbars
-- [ ] Responsive at 375px, 768px, 1024px, 1440px
-- [ ] No horizontal scroll on mobile
+- [ ] Floating elements have proper spacing from edges.
+- [ ] No content is hidden behind fixed navbars.
+- [ ] Responsive at 375px, 768px, 1024px, 1440px.
+- [ ] No horizontal scroll on mobile.
 
 ### Accessibility
-- [ ] All images have alt text
-- [ ] Form inputs have labels
-- [ ] Color is not the only indicator
-- [ ] `prefers-reduced-motion` respected
+- [ ] All images have alt text.
+- [ ] Form inputs have accessible labels.
+- [ ] Color is not the only indicator of system status.
+- [ ] `prefers-reduced-motion` is respected where applicable.

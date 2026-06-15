@@ -474,12 +474,8 @@
                     // Custom Fiery Emissive Material
                     birdModel.traverse(child => {
                         if (child.isMesh) {
-                            child.material = new THREE.MeshStandardMaterial({
-                                color: 0xff3b00,
-                                emissive: 0xff5500,
-                                emissiveIntensity: 3.5,
-                                roughness: 0.1,
-                                metalness: 0.2,
+                            child.material = new THREE.MeshBasicMaterial({
+                                color: 0xff5500,
                                 side: THREE.DoubleSide
                             });
                         }

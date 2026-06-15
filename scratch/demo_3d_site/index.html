@@ -149,9 +149,13 @@
                 <span class="font-bold tracking-tight text-lg">MASTER_AG</span>
             </div>
             <div class="flex items-center space-x-6 text-[10px] font-mono uppercase tracking-widest text-slate-400">
-                <span class="text-indigo-400 font-semibold flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span> DEEP SPACE PARTICLES ACTIVE
+                <span class="text-indigo-400 font-semibold flex items-center gap-2 mr-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span> PHOENIX ACTIVE
                 </span>
+                <button id="audio-toggle" class="px-3 py-1.5 rounded-lg border border-white/5 bg-white/5 text-slate-300 hover:text-white flex items-center gap-2 cursor-pointer transition-all hover:bg-white/10 hover-target">
+                    <span id="audio-dot" class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                    <span id="audio-label">SOUND MUTED</span>
+                </button>
             </div>
         </nav>
     </header>
@@ -286,18 +290,24 @@
         const loader = document.getElementById('loader');
         
         let scene, camera, renderer;
-        let model1, model2; 
+        let model1, model2, birdModel; 
         let particles; // Particle system
         let directionalLight, fillLight;
         let modelsLoaded = 0;
         const activeAssets = [];
         let gui;
+        
+        // Skeletal Animation & Spline Path globals
+        let clock = new THREE.Clock();
+        let mixer;
+        let camPath;
+        let gridMat;
 
         function init() {
             scene = new THREE.Scene();
             
             camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
-            camera.position.set(0, 0, 4);
+            camera.position.set(0, 0, 4.5);
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -306,6 +316,14 @@
             renderer.toneMappingExposure = 1.35;
             renderer.outputEncoding = THREE.sRGBEncoding;
             container.appendChild(renderer.domElement);
+
+            // Setup camera path
+            camPath = new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0, 0, 4.5),
+                new THREE.Vector3(1.5, 0.8, 3.2),
+                new THREE.Vector3(-1.8, -0.4, 2.5),
+                new THREE.Vector3(0, 0, 1.8)
+            ]);
 
             // Lighting
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -350,9 +368,52 @@
             particles = new THREE.Points(geometry, material);
             scene.add(particles);
 
+            // 2. Custom GLSL grid shader plane
+            const gridGeo = new THREE.PlaneGeometry(30, 30, 60, 60);
+            gridMat = new THREE.ShaderMaterial({
+                uniforms: {
+                    uTime: { value: 0 },
+                    uColor: { value: new THREE.Color(0x3b82f6) }
+                },
+                vertexShader: `
+                    uniform float uTime;
+                    varying vec2 vUv;
+                    varying float vElevation;
+                    void main() {
+                        vUv = uv;
+                        vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+                        float elevation = sin(modelPosition.x * 0.5 + uTime * 1.5) * 
+                                          cos(modelPosition.y * 0.5 + uTime * 1.5) * 0.35;
+                        modelPosition.y += elevation;
+                        vElevation = elevation;
+                        gl_Position = projectionMatrix * viewMatrix * modelPosition;
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 uColor;
+                    varying vec2 vUv;
+                    varying float vElevation;
+                    void main() {
+                        float gridX = step(0.98, fract(vUv.x * 30.0));
+                        float gridY = step(0.98, fract(vUv.y * 30.0));
+                        float grid = max(gridX, gridY);
+                        if (grid < 0.1) discard;
+                        vec3 finalColor = mix(uColor, vec3(0.8, 0.3, 0.9), vElevation + 0.5);
+                        gl_FragColor = vec4(finalColor, 0.25);
+                    }
+                `,
+                transparent: true,
+                wireframe: true
+            });
+            const gridMesh = new THREE.Mesh(gridGeo, gridMat);
+            gridMesh.rotation.x = -Math.PI * 0.5;
+            gridMesh.position.y = -1.8;
+            gridMesh.position.z = -2;
+            scene.add(gridMesh);
+
             const gltfLoader = new THREE.GLTFLoader();
 
-            // Load Model 1: Foregound (Avocado)
+            // Load Model 1: Foreground (Avocado)
             gltfLoader.load(
                 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb',
                 function (gltf) {
@@ -376,6 +437,42 @@
                     model2.rotation.set(0.1, -0.8, 0);
                     model2.scale.set(0.7, 0.7, 0.7); 
 
+                    checkAssetsLoad();
+                }
+            );
+
+            // Load Model 3: Guided Phoenix (Stork GLB customized as a fiery glowing Phoenix)
+            gltfLoader.load(
+                'https://threejs.org/examples/models/gltf/Stork.glb',
+                function (gltf) {
+                    birdModel = gltf.scene;
+                    birdModel.name = 'bird';
+                    
+                    // Custom Fiery Emissive Material
+                    birdModel.traverse(child => {
+                        if (child.isMesh) {
+                            child.material = new THREE.MeshStandardMaterial({
+                                color: 0xff3b00,
+                                emissive: 0xff5500,
+                                emissiveIntensity: 3.5,
+                                roughness: 0.1,
+                                metalness: 0.2,
+                                side: THREE.DoubleSide
+                            });
+                        }
+                    });
+
+                    scene.add(birdModel);
+                    birdModel.position.set(-0.8, 0.4, 0.5); 
+                    birdModel.scale.set(0.012, 0.012, 0.012); 
+                    birdModel.rotation.set(0, Math.PI * 0.6, 0);
+ 
+                    mixer = new THREE.AnimationMixer(birdModel);
+                    const clip = gltf.animations[0];
+                    const action = mixer.clipAction(clip);
+                    action.setDuration(0.7); // Wings flap faster!
+                    action.play();
+ 
                     checkAssetsLoad();
                 }
             );
@@ -405,6 +502,15 @@
                     });
                 }
 
+                if (birdModel) {
+                    gsap.to(birdModel.rotation, {
+                        y: Math.PI * 0.6 + (normX * 0.1),
+                        x: normY * 0.1,
+                        duration: 0.8,
+                        ease: 'power1.out'
+                    });
+                }
+                
                 if (particles) {
                     gsap.to(particles.rotation, {
                         y: normX * 0.08,
@@ -414,11 +520,89 @@
                     });
                 }
             });
+
+            // Web Audio / HTML5 Audio Setup
+            const bgAudio = new Audio('https://actions.google.com/sounds/v1/ambiences/ambient_hum_air_conditioner.ogg');
+            bgAudio.loop = true;
+            bgAudio.volume = 0.35;
+            let isMuted = true;
+
+            const audioBtn = document.getElementById('audio-toggle');
+            const audioDot = document.getElementById('audio-dot');
+            const audioLabel = document.getElementById('audio-label');
+
+            function toggleAudio() {
+                if (isMuted) {
+                    bgAudio.play().catch(err => console.log('Audio pending interaction:', err));
+                    audioDot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500';
+                    audioLabel.textContent = 'SOUND ACTIVE';
+                    isMuted = false;
+                } else {
+                    bgAudio.pause();
+                    audioDot.className = 'w-1.5 h-1.5 rounded-full bg-red-500';
+                    audioLabel.textContent = 'SOUND MUTED';
+                    isMuted = true;
+                }
+            }
+            if (audioBtn) {
+                audioBtn.addEventListener('click', toggleAudio);
+            }
+
+            // Interactive Recolor Raycaster
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+
+            window.addEventListener('click', (e) => {
+                // If header button is clicked, skip raycast trigger
+                if (e.target.closest('#audio-toggle')) return;
+
+                mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(scene.children, true);
+                
+                const birdClicked = intersects.find(intersect => {
+                    let parent = intersect.object;
+                    while (parent) {
+                        if (parent.name === 'bird') return true;
+                        parent = parent.parent;
+                    }
+                    return false;
+                });
+
+                if (birdClicked && birdModel) {
+                    // Play shiny chime sound
+                    const chime = new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg');
+                    chime.volume = 0.2;
+                    chime.play().catch(() => {});
+
+                    // Shift color and flash emissive intensity
+                    const rnd = new THREE.Color(1.0, 0.3 + Math.random() * 0.4, 0.0);
+                    birdModel.traverse(child => {
+                        if (child.isMesh) {
+                            gsap.to(child.material.color, {
+                                r: rnd.r,
+                                g: rnd.g,
+                                b: rnd.b,
+                                duration: 0.8,
+                                ease: 'power3.out'
+                            });
+                            gsap.to(child.material, {
+                                emissiveIntensity: 6.0,
+                                duration: 0.4,
+                                yoyo: true,
+                                repeat: 1
+                            });
+                        }
+                    });
+                }
+            });
         }
 
         function checkAssetsLoad() {
             modelsLoaded++;
-            if (modelsLoaded === 2) {
+            if (modelsLoaded === 3) {
                 // Register default assets
                 activeAssets.push({
                     id: 'avocado',
@@ -443,6 +627,19 @@
                         { pos: {x: -0.8, y: 0.2, z: -0.5}, rot: {x: 0.2, y: 1.5, z: 0.0}, scale: 0.7 },
                         { pos: {x: 0.8, y: -0.4, z: -1.0}, rot: {x: 0.1, y: -1.0, z: 0.0}, scale: 0.7 },
                         { pos: {x: -0.8, y: -0.4, z: -1.2}, rot: {x: 0.1, y: 0.5, z: 0.0}, scale: 0.7 }
+                    ]
+                });
+
+                activeAssets.push({
+                    id: 'bird',
+                    varName: 'birdModel',
+                    label: 'Phoenix Bird (Guide)',
+                    mesh: birdModel,
+                    scenes: [
+                        { pos: {x: -0.8, y: 0.4, z: 0.5}, rot: {x: 0.0, y: Math.PI * 0.6, z: 0.0}, scale: 0.012 },
+                        { pos: {x: 0.8, y: 0.2, z: 0.3}, rot: {x: 0.2, y: Math.PI * 0.2, z: 0.0}, scale: 0.012 },
+                        { pos: {x: -0.8, y: -0.2, z: 0.6}, rot: {x: -0.1, y: Math.PI * 0.8, z: 0.0}, scale: 0.012 },
+                        { pos: {x: 0.8, y: 0.3, z: 0.4}, rot: {x: 0.0, y: Math.PI * 0.4, z: 0.0}, scale: 0.012 }
                     ]
                 });
 
@@ -680,8 +877,6 @@
             return code;
         }
 
-        let scrollTimeline = null;
-
         function rebuildScrollAnimations() {
             setupScrollAnimations();
         }
@@ -702,6 +897,19 @@
                     invalidateOnRefresh: true
                 }
             });
+
+            // Bind camera to CatmullRomCurve3 spline path based on scroll progress
+            scrollTimeline.to({}, {
+                onUpdate: () => {
+                    if (camPath && scrollTimeline.scrollTrigger) {
+                        const progress = scrollTimeline.scrollTrigger.progress;
+                        const pt = camPath.getPointAt(progress);
+                        camera.position.copy(pt);
+                        camera.lookAt(new THREE.Vector3(0, 0, 0));
+                    }
+                },
+                duration: 3
+            }, 0);
 
             // Set initial state (Scene 1) for all active assets
             activeAssets.forEach(asset => {
@@ -785,14 +993,29 @@
         function animate() {
             requestAnimationFrame(animate);
             
+            const delta = clock.getDelta();
+            
+            // 1. Advance skeletal animations (flapping wings)
+            if (mixer) {
+                mixer.update(delta);
+            }
+
+            // 2. Update custom GLSL shader time uniform
+            if (gridMat) {
+                gridMat.uniforms.uTime.value = clock.getElapsedTime();
+            }
+
             // Only play floating idle animations when NOT in debug mode
             if (!isDebug) {
-                if (model1 && modelsLoaded === 2) {
+                if (model1 && modelsLoaded === 3) {
                     model1.position.y += Math.sin(Date.now() * 0.0015) * 0.0008;
                 }
-                if (model2 && modelsLoaded === 2) {
+                if (model2 && modelsLoaded === 3) {
                     model2.position.y += Math.cos(Date.now() * 0.001) * 0.0005;
                     model2.rotation.y += 0.002;
+                }
+                if (birdModel && modelsLoaded === 3) {
+                    birdModel.position.y += Math.sin(Date.now() * 0.002) * 0.0008;
                 }
                 if (particles) {
                     particles.rotation.y += 0.0008;
@@ -800,7 +1023,7 @@
             }
 
             // Sync Telemetry UI overlay in real-time during debug phase
-            if (isDebug && modelsLoaded === 2) {
+            if (isDebug && modelsLoaded === 3) {
                 const triggers = ScrollTrigger.getAll();
                 if (triggers.length > 0) {
                     const progress = triggers[0].progress;

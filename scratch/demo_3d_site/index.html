@@ -413,7 +413,7 @@
 
             const gltfLoader = new THREE.GLTFLoader();
 
-            // Load Model 1: Foreground (Avocado)
+            // Load Model 1: Foreground (Avocado / Procedural Fallback)
             gltfLoader.load(
                 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb',
                 function (gltf) {
@@ -422,12 +422,23 @@
                     model1.position.set(1.0, 0, 0); 
                     model1.rotation.set(0.2, 0.5, 0);
                     model1.scale.set(12.0, 12.0, 12.0); 
-
+                    checkAssetsLoad();
+                },
+                undefined,
+                function (err) {
+                    console.warn('Avocado loading failed. Using procedural fallback.');
+                    const geo = new THREE.TorusKnotGeometry(0.3, 0.1, 64, 8);
+                    const mat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.2, metalness: 0.8 });
+                    model1 = new THREE.Mesh(geo, mat);
+                    scene.add(model1);
+                    model1.position.set(1.0, 0, 0); 
+                    model1.rotation.set(0.2, 0.5, 0);
+                    model1.scale.set(1.0, 1.0, 1.0); 
                     checkAssetsLoad();
                 }
             );
 
-            // Load Model 2: Background (Duck)
+            // Load Model 2: Background (Duck / Procedural Fallback)
             gltfLoader.load(
                 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF-Binary/Duck.glb',
                 function (gltf) {
@@ -436,12 +447,23 @@
                     model2.position.set(0.8, -0.6, -1.5); 
                     model2.rotation.set(0.1, -0.8, 0);
                     model2.scale.set(0.7, 0.7, 0.7); 
-
+                    checkAssetsLoad();
+                },
+                undefined,
+                function (err) {
+                    console.warn('Duck loading failed. Using procedural fallback.');
+                    const geo = new THREE.SphereGeometry(0.4, 32, 32);
+                    const mat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.1, metalness: 0.1 });
+                    model2 = new THREE.Mesh(geo, mat);
+                    scene.add(model2);
+                    model2.position.set(0.8, -0.6, -1.5); 
+                    model2.rotation.set(0.1, -0.8, 0);
+                    model2.scale.set(1.0, 1.0, 1.0); 
                     checkAssetsLoad();
                 }
             );
 
-            // Load Model 3: Guided Phoenix (Stork GLB customized as a fiery glowing Phoenix)
+            // Load Model 3: Guided Phoenix (Stork GLB customized as a fiery glowing Phoenix / Procedural Fallback)
             gltfLoader.load(
                 'https://threejs.org/examples/models/gltf/Stork.glb',
                 function (gltf) {
@@ -473,6 +495,43 @@
                     action.setDuration(0.7); // Wings flap faster!
                     action.play();
  
+                    checkAssetsLoad();
+                },
+                undefined,
+                function (err) {
+                    console.warn('Phoenix loading failed. Using procedural glowing fallback.');
+                    
+                    birdModel = new THREE.Group();
+                    birdModel.name = 'bird';
+                    
+                    const bodyGeo = new THREE.ConeGeometry(0.15, 0.6, 4);
+                    const bodyMat = new THREE.MeshStandardMaterial({
+                        color: 0xff3b00,
+                        emissive: 0xff5500,
+                        emissiveIntensity: 4.0,
+                        roughness: 0.1
+                    });
+                    const body = new THREE.Mesh(bodyGeo, bodyMat);
+                    body.rotation.x = Math.PI * 0.5;
+                    birdModel.add(body);
+                    
+                    const wingLeftGeo = new THREE.BoxGeometry(0.5, 0.02, 0.2);
+                    const wingLeft = new THREE.Mesh(wingLeftGeo, bodyMat);
+                    wingLeft.position.set(-0.3, 0, 0);
+                    wingLeft.name = 'wingLeft';
+                    birdModel.add(wingLeft);
+                    
+                    const wingRightGeo = new THREE.BoxGeometry(0.5, 0.02, 0.2);
+                    const wingRight = new THREE.Mesh(wingRightGeo, bodyMat);
+                    wingRight.position.set(0.3, 0, 0);
+                    wingRight.name = 'wingRight';
+                    birdModel.add(wingRight);
+                    
+                    scene.add(birdModel);
+                    birdModel.position.set(-0.8, 0.4, 0.5); 
+                    birdModel.scale.set(1.0, 1.0, 1.0); 
+                    birdModel.rotation.set(0, Math.PI * 0.6, 0);
+                    
                     checkAssetsLoad();
                 }
             );
@@ -902,7 +961,10 @@
             scrollTimeline.to({}, {
                 onUpdate: () => {
                     if (camPath && scrollTimeline.scrollTrigger) {
-                        const progress = scrollTimeline.scrollTrigger.progress;
+                        let progress = scrollTimeline.scrollTrigger.progress;
+                        if (isNaN(progress) || progress === undefined || progress === null) {
+                            progress = 0;
+                        }
                         const pt = camPath.getPointAt(progress);
                         camera.position.copy(pt);
                         camera.lookAt(new THREE.Vector3(0, 0, 0));
@@ -995,9 +1057,17 @@
             
             const delta = clock.getDelta();
             
-            // 1. Advance skeletal animations (flapping wings)
+            // 1. Advance skeletal animations (flapping wings) or rotate fallback wings
             if (mixer) {
                 mixer.update(delta);
+            } else if (birdModel) {
+                const wingL = birdModel.getObjectByName('wingLeft');
+                const wingR = birdModel.getObjectByName('wingRight');
+                if (wingL && wingR) {
+                    const angle = Math.sin(Date.now() * 0.012) * 0.5;
+                    wingL.rotation.z = angle;
+                    wingR.rotation.z = -angle;
+                }
             }
 
             // 2. Update custom GLSL shader time uniform

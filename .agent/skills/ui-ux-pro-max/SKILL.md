@@ -168,7 +168,13 @@ All primary surfaces must use layered glassmorphism to establish a premium depth
 
 ---
 
-### 6. Conflict Resolution Scenarios
+### 6. Zero-Overlap 3D Guidelines
+- **Volumetric Parallax Layouts**: Under no circumstances should 3D canvasses or models be covered by typography or floating cards (maximum 15% coverage allowed in extreme responsive viewports).
+- **Split Coordinates Alignment**: Program the 3D cameras and layout sections to dynamically offset. E.g., when content cards are left-aligned, translate the 3D model to the right quadrant (`x: 1.0`); when cards are right-aligned, translate the model left (`x: -1.0`).
+
+---
+
+### 7. Conflict Resolution Scenarios
 When layout logic conflicts, apply the appropriate Scenario:
 - **Scenario A (Command Center / Exec Dashboard)**: Low Density. Maximize container margins. Prioritize massive KPI numbers. Hide data tables behind drill-downs. Heavy use of framer-motion staggered entrances.
 - **Scenario B (Data Matrix / Admin Panel)**: High Density. Minimize padding (`p-2` or `p-4`). Use massive data tables as the primary view. Limit motion to practical interactions to prevent visual fatigue.

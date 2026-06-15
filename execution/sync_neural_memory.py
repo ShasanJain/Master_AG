@@ -130,4 +130,9 @@ async def sync():
     print(f"Synchronization Complete. {new_nodes} new cognitive traces injected.")
 
 if __name__ == "__main__":
-    asyncio.run(sync())
+    try:
+        asyncio.run(sync())
+    except Exception as e:
+        print(f"Warning: Neural Synchronization bypassed due to error: {e}", file=sys.stderr)
+        sys.exit(0)
+

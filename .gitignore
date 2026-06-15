@@ -12,3 +12,7 @@ scratch/claude-mem/
 scratch/graphify/
 scratch/prompts-repo/
 scratch/seo-skill-repo/
+
+# Graphify build/cache artifacts
+graphify-out/
+

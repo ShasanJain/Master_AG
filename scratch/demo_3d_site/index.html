@@ -82,9 +82,28 @@
   #cursor-dot, #cursor-ring {
     position: fixed; border-radius: 50%;
     pointer-events: none; z-index: 9999;
-    transform: translate(-50%,-50%);
+    top: 0; left: 0;
+    transform: translate3d(0,0,0) translate(-50%,-50%);
+    will-change: transform;
   }
   #cursor-dot  { width:6px; height:6px; background:var(--text); transition: transform .15s, background .2s; }
+  #cursor-dot.cross {
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+  #cursor-dot.cross::before, #cursor-dot.cross::after {
+    content: '';
+    position: absolute;
+    background: var(--text);
+  }
+  #cursor-dot.cross::before {
+    top: 50%; left: 0; width: 100%; height: 1.5px; transform: translateY(-50%);
+  }
+  #cursor-dot.cross::after {
+    left: 50%; top: 0; height: 100%; width: 1.5px; transform: translateX(-50%);
+  }
   #cursor-ring { width:40px; height:40px; border:1px solid rgba(26,22,18,.22); transition: width .3s, height .3s, border-color .3s; }
   body.cursor-hover #cursor-dot  { transform:translate(-50%,-50%) scale(4); background:var(--lavender); }
   body.cursor-hover #cursor-ring { width:56px; height:56px; border-color:rgba(206,189,248,.55); }
@@ -101,11 +120,20 @@
   /* WebGL canvas */
   #canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 
-  /* Background cursor spotlight — follows mouse, sits above blobs */
+  /* Background cursor spotlight — follows mouse, sits above blobs (optimized to use translate3d) */
   #bg-spotlight {
-    position: fixed; inset: 0; z-index: 2; pointer-events: none;
-    background: radial-gradient(circle 420px at -200% -200%, rgba(0,0,0,0) 0%, transparent 70%);
-    transition: background 0.05s linear;
+    position: fixed;
+    width: 1000px;
+    height: 1000px;
+    border-radius: 50%;
+    margin-left: -500px;
+    margin-top: -500px;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(circle 500px at 50% 50%, rgba(206,189,248,.18) 0%, rgba(192,212,245,.08) 40%, rgba(234,189,246,.04) 65%, transparent 80%);
+    will-change: transform;
   }
 
   /* Sand particle canvas — sits above everything, pointer-events none */
@@ -308,28 +336,43 @@
     box-shadow: 0 8px 60px rgba(206,189,248,.28), inset 0 1px 0 rgba(255,255,255,.9);
   }
 
-  /* .card-glow injected by JS — NOT a pseudo-element, avoids backdrop-filter z-index conflict */
-  .card-glow {
-    position: absolute; inset: 0; border-radius: inherit;
-    pointer-events: none; z-index: 0; opacity: 0;
+  /* Glass card ::before spot */
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    background: radial-gradient(circle 280px at var(--cx, 50%) var(--cy, 50%), rgba(147,120,230,.35) 0%, rgba(100,149,237,.18) 50%, transparent 75%);
     transition: opacity .3s ease;
-    /* Default state — overridden by JS mousemove with cursor position */
-    background: radial-gradient(circle 280px at 50% 50%, rgba(147,120,230,.35) 0%, rgba(100,149,237,.18) 50%, transparent 75%);
   }
-  .glass-card:hover .card-glow { opacity: 1; }
+  .glass-card:hover::before {
+    opacity: 1;
+  }
 
-  /* Gradient border ring — also a child div injected by JS */
-  .card-border {
-    position: absolute; inset: -1px; border-radius: inherit;
-    pointer-events: none; z-index: 0; opacity: 0;
+  /* Glass card ::after border */
+  .glass-card::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
     background: linear-gradient(135deg, rgba(206,189,248,.6) 0%, rgba(255,255,255,.05) 50%, rgba(192,212,245,.6) 100%);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude;
-    padding: 1px; transition: opacity .4s ease;
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    padding: 1px;
+    transition: opacity .4s ease;
   }
-  .glass-card:hover .card-border { opacity: 1; }
+  .glass-card:hover::after {
+    opacity: 1;
+  }
 
-  /* All real children sit above the injected layers */
+  /* All real children sit above the pseudo-layers */
   .glass-card > *:not(.card-glow):not(.card-border) { position: relative; z-index: 1; }
 
   .card-eye   { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--faint); margin-bottom:20px; }
@@ -376,13 +419,14 @@
   ═══════════════════════════════════════════════════════════════ */
   #debug-toggle {
     position: fixed; bottom: 36px; left: 48px; z-index: 200;
-    width: 48px; height: 48px; border-radius: 50%; border: none;
+    width: 44px; height: 44px; border-radius: 50%; border: none;
     background: rgba(255,255,255,.28); backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px); font-size: 20px; cursor: none;
+    -webkit-backdrop-filter: blur(14px); font-size: 18px; cursor: none;
     display: flex; align-items: center; justify-content: center;
-    transition: transform .2s ease, background .2s ease, opacity .5s ease .4s;
+    transition: left 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.2s ease, background 0.2s ease, opacity 0.5s ease .4s;
     opacity: 0; pointer-events: none;
   }
+  #debug-toggle.active-btn { left: 16px; }
   #debug-toggle.on { opacity: 1; pointer-events: all; }
   #debug-toggle:hover { transform: scale(1.08) rotate(30deg); background: rgba(255,255,255,.4); }
   #debug-toggle:active { transform: scale(.95) rotate(10deg); }
@@ -393,19 +437,39 @@
     -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
   }
   #debug-panel {
-    position: fixed; bottom: 100px; left: 48px; z-index: 199;
-    width: 290px; padding: 24px; display: none; flex-direction: column; gap: 16px;
+    position: fixed; bottom: 36px; left: 76px; z-index: 199;
+    width: 270px; padding: 16px; display: none; flex-direction: column; gap: 10px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.08); border-radius: 16px;
     background: rgba(255,255,255,.68); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255,255,255,.4);
-    transform: translateY(10px); opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateX(-10px); opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    max-height: 85vh; overflow-y: auto; scrollbar-width: thin;
   }
-  #debug-panel.active { display: flex; transform: translateY(0); opacity: 1; }
-  .debug-row { display: flex; flex-direction: column; gap: 5px; }
+  #debug-panel.active { display: flex; transform: translateX(0); opacity: 1; }
+  .debug-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+  .debug-control-group { display: flex; align-items: center; gap: 6px; }
+  .debug-num-control {
+    display: flex; align-items: center; background: rgba(0,0,0,0.06); 
+    border: 1px solid var(--border); border-radius: 6px; overflow: hidden; height: 22px;
+  }
+  body.dark .debug-num-control { background: rgba(255,255,255,0.08); }
+  .btn-dec, .btn-inc {
+    background: transparent; border: none; width: 22px; height: 100%;
+    font-size: 13px; font-weight: bold; color: var(--text); cursor: none;
+    display: flex; align-items: center; justify-content: center; user-select: none;
+    transition: background 0.2s;
+  }
+  .btn-dec:hover, .btn-inc:hover { background: rgba(0,0,0,0.08); }
+  body.dark .btn-dec:hover, body.dark .btn-inc:hover { background: rgba(255,255,255,0.08); }
+  .num-input {
+    width: 42px; height: 100%; border: none; background: transparent;
+    text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--text); outline: none; cursor: none;
+  }
   .debug-row label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text); opacity: 0.8; text-transform: uppercase; letter-spacing: 0.05em; }
   .debug-row input[type="range"] {
-    width: 100%; -webkit-appearance: none; background: rgba(0,0,0,0.08); height: 4px; border-radius: 2px; outline: none; transition: background 0.2s;
+    flex: 1; -webkit-appearance: none; background: rgba(0,0,0,0.08); height: 4px; border-radius: 2px; outline: none; transition: background 0.2s;
   }
   .debug-row input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--text); cursor: none; transition: transform 0.1s;
@@ -421,6 +485,8 @@
 <body>
 
   <!-- Cursor -->
+  <canvas id="trail-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9998;"></canvas>
+  <canvas id="trail-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9998;"></canvas>
   <div id="cursor-dot"></div>
   <div id="cursor-ring"></div>
 
@@ -451,46 +517,382 @@
 
   <!-- Creative Control Debugger -->
   <button id="debug-toggle" aria-label="Toggle creative control panel">⚙️</button>
-  <div id="debug-panel" class="glass-card" style="width: 310px;">
+  <div id="debug-panel">
     <h3 style="font-family:'Playfair Display',serif; font-size:18px; margin-bottom:2px; font-style:italic; color:var(--text);">Creative Control</h3>
-    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; margin-bottom:8px; color:var(--text); opacity:0.85;">
-      Scroll Progress: <span id="dbg-scroll-val">0.0%</span>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; margin-bottom:8px; color:var(--text); opacity:0.85; display: flex; justify-content: space-between;">
+      <span>Scroll: <span id="dbg-scroll-val">0.0%</span></span>
     </div>
-    <div class="debug-row">
-      <label>Position X (<span id="lbl-pos-x">0.55</span>)</label>
-      <input type="range" id="dbg-pos-x" min="-2.0" max="2.0" step="0.02" value="0.55">
+
+    <!-- Asset List View (default) -->
+    <div id="panel-assets-view">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text); opacity:0.6;">Scene Assets</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text); opacity:0.4;" id="asset-count">3 objects</span>
+      </div>
+      <div id="asset-list" style="display:flex; flex-direction:column; gap:6px;"></div>
     </div>
-    <div class="debug-row">
-      <label>Position Y (<span id="lbl-pos-y">0.00</span>)</label>
-      <input type="range" id="dbg-pos-y" min="-1.5" max="1.5" step="0.02" value="0.0">
+
+    <!-- Editor View (drill-down per asset) -->
+    <div id="panel-editor-view" style="display:none;">
+      <!-- Back nav -->
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+        <button id="btn-back-assets" style="background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 8px; cursor:pointer;">&#8592; Assets</button>
+        <span id="editing-asset-label" style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:bold; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;"></span>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div id="editor-tabs" style="display: flex; gap: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px;">
+        <button id="tab-transform" style="background: transparent; border: none; font-family: 'JetBrains Mono', monospace; font-size: 11px; cursor: none; color: var(--text); border-bottom: 2px solid var(--text); font-weight: bold; padding-bottom: 2px;">Transform</button>
+        <button id="tab-material" style="background: transparent; border: none; font-family: 'JetBrains Mono', monospace; font-size: 11px; cursor: none; color: var(--text); opacity: 0.5; padding-bottom: 2px;">Material</button>
+        <button id="tab-visualizer" style="background: transparent; border: none; font-family: 'JetBrains Mono', monospace; font-size: 11px; cursor: none; color: var(--text); opacity: 0.5; padding-bottom: 2px;">Visualizer</button>
+      </div>
+
+    <!-- Shared Scrub Timeline -->
+    <div class="debug-row" style="background: rgba(0,0,0,0.03); padding: 8px; border-radius: 8px; margin-bottom: 12px; border: 1px solid var(--border);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <label style="margin-bottom: 0;">Timeline Scrub (<span id="lbl-scrub">0%</span>)</label>
+        <div style="display: flex; align-items: center; gap: 2px;">
+          <input type="number" id="dbg-scrub-num" min="0" max="100" value="0" style="width: 44px; font-family: 'JetBrains Mono', monospace; font-size: 10px; background: rgba(0,0,0,0.06); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 1px 3px; text-align: right; outline: none; cursor: none;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text);">%</span>
+        </div>
+      </div>
+      <input type="range" id="dbg-scrub" min="0" max="1" step="0.01" value="0">
     </div>
-    <div class="debug-row">
-      <label>Position Z (<span id="lbl-pos-z">0.50</span>)</label>
-      <input type="range" id="dbg-pos-z" min="0.0" max="2.0" step="0.02" value="0.5">
+
+    <!-- Primary Section: Transform Settings -->
+    <div id="section-transform">
+
+      <!-- GROUP: Position -->
+      <div onclick="(function(){var b=document.getElementById('grp-position');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;">
+        <span class="grp-arrow">&#9660;</span>Position
+      </div>
+      <div id="grp-position">
+        <div class="debug-row">
+          <label>X</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-pos-x" min="-2.0" max="2.0" step="0.02" value="0.55">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-pos-x" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-pos-x" class="num-input" value="0.55">
+              <button class="btn-inc" data-id="dbg-pos-x" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="debug-row">
+          <label>Y</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-pos-y" min="-1.5" max="1.5" step="0.02" value="0.0">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-pos-y" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-pos-y" class="num-input" value="0.00">
+              <button class="btn-inc" data-id="dbg-pos-y" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="debug-row">
+          <label>Z</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-pos-z" min="0.0" max="2.0" step="0.02" value="0.5">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-pos-z" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-pos-z" class="num-input" value="0.50">
+              <button class="btn-inc" data-id="dbg-pos-z" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GROUP: Rotation -->
+      <div onclick="(function(){var b=document.getElementById('grp-rotation');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;">
+        <span class="grp-arrow">&#9660;</span>Rotation
+      </div>
+      <div id="grp-rotation">
+        <div class="debug-row">
+          <label>X</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-rot-x-val" min="-3.14" max="3.14" step="0.02" value="0.0">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-rot-x-val" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-rot-x-val" class="num-input" value="0.00">
+              <button class="btn-inc" data-id="dbg-rot-x-val" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="debug-row">
+          <label>Y</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-rot-y-val" min="-3.14" max="3.14" step="0.02" value="0.0">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-rot-y-val" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-rot-y-val" class="num-input" value="0.00">
+              <button class="btn-inc" data-id="dbg-rot-y-val" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="debug-row">
+          <label>Z</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-rot-z-val" min="-3.14" max="3.14" step="0.02" value="0.0">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-rot-z-val" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-rot-z-val" class="num-input" value="0.00">
+              <button class="btn-inc" data-id="dbg-rot-z-val" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GROUP: Scale -->
+      <div onclick="(function(){var b=document.getElementById('grp-scale');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;">
+        <span class="grp-arrow">&#9660;</span>Scale
+      </div>
+      <div id="grp-scale">
+        <div class="debug-row">
+          <label>Scale</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-scale" min="0.2" max="2.0" step="0.02" value="1.0">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-scale" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-scale" class="num-input" value="1.00">
+              <button class="btn-inc" data-id="dbg-scale" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GROUP: Idle Spin -->
+      <div onclick="(function(){var b=document.getElementById('grp-spin');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;">
+        <span class="grp-arrow">&#9660;</span>Idle Spin
+      </div>
+      <div id="grp-spin">
+        <div class="debug-row">
+          <label>Spin Y</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-spin-y" min="0.0" max="0.02" step="0.0002" value="0.003">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-spin-y" data-step="-0.0002">−</button>
+              <input type="text" id="val-dbg-spin-y" class="num-input" value="0.003">
+              <button class="btn-inc" data-id="dbg-spin-y" data-step="0.0002">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="debug-row">
+          <label>Spin X</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-spin-x" min="0.0" max="0.01" step="0.0001" value="0.0008">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-spin-x" data-step="-0.0001">−</button>
+              <input type="text" id="val-dbg-spin-x" class="num-input" value="0.0008">
+              <button class="btn-inc" data-id="dbg-spin-x" data-step="0.0001">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spotlight Radius (global, not per-keyframe) -->
+      <div onclick="(function(){var b=document.getElementById('grp-ui');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;">
+        <span class="grp-arrow">&#9660;</span>UI / Lighting
+      </div>
+      <div id="grp-ui">
+        <div class="debug-row">
+          <label>Spotlight R</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-spotlight-rad" min="200" max="800" step="10" value="520">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-spotlight-rad" data-step="-10">−</button>
+              <input type="text" id="val-dbg-spotlight-rad" class="num-input" value="520">
+              <button class="btn-inc" data-id="dbg-spotlight-rad" data-step="10">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <div class="debug-row">
-      <label>Rotation X (<span id="lbl-rot-x">0.00</span>)</label>
-      <input type="range" id="dbg-rot-x-val" min="-3.14" max="3.14" step="0.02" value="0.0">
+
+    <!-- Secondary Section: Material Settings -->
+    <div id="section-material" style="display: none;">
+      <div class="debug-row">
+        <label>Opacity</label>
+        <div class="debug-control-group">
+          <input type="range" id="dbg-opacity" min="0.0" max="1.0" step="0.02" value="0.92">
+          <div class="debug-num-control">
+            <button class="btn-dec" data-id="dbg-opacity" data-step="-0.02">−</button>
+            <input type="text" id="val-dbg-opacity" class="num-input" value="0.92">
+            <button class="btn-inc" data-id="dbg-opacity" data-step="0.02">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="debug-row">
+        <label>Metalness</label>
+        <div class="debug-control-group">
+          <input type="range" id="dbg-metalness" min="0.0" max="1.0" step="0.02" value="0.12">
+          <div class="debug-num-control">
+            <button class="btn-dec" data-id="dbg-metalness" data-step="-0.02">−</button>
+            <input type="text" id="val-dbg-metalness" class="num-input" value="0.12">
+            <button class="btn-inc" data-id="dbg-metalness" data-step="0.02">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="debug-row">
+        <label>Roughness</label>
+        <div class="debug-control-group">
+          <input type="range" id="dbg-roughness" min="0.0" max="1.0" step="0.02" value="0.06">
+          <div class="debug-num-control">
+            <button class="btn-dec" data-id="dbg-roughness" data-step="-0.02">−</button>
+            <input type="text" id="val-dbg-roughness" class="num-input" value="0.06">
+            <button class="btn-inc" data-id="dbg-roughness" data-step="0.02">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="debug-row">
+        <label>Emissive Intensity</label>
+        <div class="debug-control-group">
+          <input type="range" id="dbg-emissive" min="0.0" max="5.0" step="0.05" value="1.80">
+          <div class="debug-num-control">
+            <button class="btn-dec" data-id="dbg-emissive" data-step="-0.05">−</button>
+            <input type="text" id="val-dbg-emissive" class="num-input" value="1.80">
+            <button class="btn-inc" data-id="dbg-emissive" data-step="0.05">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="debug-row">
+        <label>Emissive Color</label>
+        <div class="debug-control-group" style="align-items:center; gap:8px;">
+          <input type="color" id="dbg-emissive-color" value="#8eb4f8" style="width:40px; height:28px; border:1px solid var(--border); border-radius:4px; cursor:pointer; background:none; padding:1px;">
+          <input type="text" id="val-dbg-emissive-color" class="num-input" value="#8eb4f8" style="width:62px;">
+        </div>
+      </div>
+      <div class="debug-row">
+        <label>Wire Opacity</label>
+        <div class="debug-control-group">
+          <input type="range" id="dbg-wire-opacity" min="0.0" max="1.0" step="0.02" value="0.22">
+          <div class="debug-num-control">
+            <button class="btn-dec" data-id="dbg-wire-opacity" data-step="-0.02">−</button>
+            <input type="text" id="val-dbg-wire-opacity" class="num-input" value="0.22">
+            <button class="btn-inc" data-id="dbg-wire-opacity" data-step="0.02">+</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="debug-row">
-      <label>Rotation Y (<span id="lbl-rot-y-val">0.00</span>)</label>
-      <input type="range" id="dbg-rot-y-val" min="-3.14" max="3.14" step="0.02" value="0.0">
+    <!-- Tertiary Section: Visualizer Settings -->
+    <div id="section-visualizer" style="display: none;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text); line-height: 1.4; display: flex; flex-direction: column; gap: 8px;">
+        <label style="display:flex; align-items:center; gap:6px; cursor:none;">
+          <input type="checkbox" id="dbg-toggle-vis" style="cursor:none;"> Enable Spline Visualizer
+        </label>
+        <div style="border-top:1px solid var(--border); margin:4px 0;"></div>
+        <div id="vis-selected-kf-label" style="font-weight:bold; margin-bottom: 2px;">Selected Anchor: None</div>
+        <div style="font-size:10px; opacity:0.6; padding-left:4px; margin-bottom:2px;">
+          Click a sphere or row below. 🟦 cyan = current scroll position.
+        </div>
+        <!-- Keyframe List -->
+        <div id="kf-list-wrap" style="display:none; flex-direction:column; gap:2px; max-height:160px; overflow-y:auto; border:1px solid var(--border); border-radius:6px; padding:4px; background:rgba(0,0,0,0.06);">
+          <!-- rows injected by JS -->
+        </div>
+      </div>
     </div>
-    <div class="debug-row">
-      <label>Scale (<span id="lbl-scale">1.00</span>)</label>
-      <input type="range" id="dbg-scale" min="0.2" max="2.0" step="0.02" value="1.0">
-    </div>
-    <div class="debug-row">
-      <label>Spotlight Radius (<span id="lbl-spot-rad">520</span>)</label>
-      <input type="range" id="dbg-spotlight-rad" min="200" max="800" step="10" value="520">
-    </div>
+
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
       <button class="btn-pill" id="dbg-add-kf" style="font-size:11px; padding:6px; cursor:none; justify-content:center;">Record Frame</button>
       <button class="btn-pill" id="dbg-clear-kf" style="font-size:11px; padding:6px; cursor:none; justify-content:center; background:rgba(220,53,69,0.18); color:#d9534f;">Clear All</button>
     </div>
-    <button class="btn-pill" id="dbg-export-kf" style="font-size:11px; padding:8px; width:100%; cursor:none; justify-content:center; background:rgba(26,22,18,0.06); color:var(--text);">Export Configuration</button>
-    <button class="btn-pill" id="dbg-save-kf" style="font-size:11px; padding:8px; width:100%; cursor:none; justify-content:center; margin-top:8px; background:rgba(40,167,69,0.15); color:#28a745;">Save to File</button>
-    <textarea id="dbg-output" style="width:100%; height:60px; font-family:'JetBrains Mono',monospace; font-size:9px; background:rgba(0,0,0,0.05); color:var(--text); border:1px solid var(--border); border-radius:6px; padding:4px; display:none; resize:none; outline:none;" readonly></textarea>
+    <button class="btn-pill" id="dbg-play-transition" style="font-size:11px; padding:8px; width:100%; cursor:none; justify-content:center; margin-top:8px; background:rgba(0,123,255,0.15); color:#007bff;">Preview Spline Motion</button>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:8px;">
+      <button class="btn-pill" id="dbg-export-kf" style="font-size:11px; padding:8px; cursor:none; justify-content:center; background:rgba(26,22,18,0.06); color:var(--text);">📋 Copy</button>
+      <button class="btn-pill" id="dbg-download-kf" style="font-size:11px; padding:8px; cursor:none; justify-content:center; background:rgba(40,167,69,0.15); color:#28a745;">⬇ Export</button>
+      <button class="btn-pill" id="dbg-import-kf" style="font-size:11px; padding:8px; cursor:none; justify-content:center; background:rgba(138,43,226,0.15); color:#b06fff;">⬆ Import</button>
+    </div>
+    <input type="file" id="dbg-import-file" accept=".json,application/json" style="display:none;">
+    <button class="btn-pill" id="dbg-save-kf" style="font-size:11px; padding:8px; width:100%; cursor:none; justify-content:center; margin-top:6px; background:rgba(0,123,255,0.12); color:#5ba3ff;">💾 Patch index.html</button>
+    <!-- Output panel: collapsible -->
+    <div id="dbg-output-wrap" style="display:none; margin-top:6px; border:1px solid var(--border); border-radius:6px; overflow:hidden;">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:4px 8px; background:rgba(0,0,0,0.08); font-size:10px; font-family:'JetBrains Mono',monospace; cursor:pointer;" id="dbg-output-header">
+        <span>Exported JSON</span>
+        <button id="dbg-output-collapse" style="background:none; border:none; color:var(--text); font-size:12px; cursor:pointer; padding:0 2px; line-height:1;">▲</button>
+      </div>
+      <textarea id="dbg-output" style="width:100%; height:120px; font-family:'JetBrains Mono',monospace; font-size:9px; background:rgba(0,0,0,0.05); color:var(--text); border:none; border-top:1px solid var(--border); padding:6px; resize:vertical; outline:none; box-sizing:border-box; display:block; overflow:auto;" readonly></textarea>
+    </div>
+    <!-- Background Editor Section -->
+    <div id="section-background" style="display:none;">
+      <div onclick="(function(){var b=document.getElementById('bg-grp-colour');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;"><span class="grp-arrow">&#9660;</span>Colour</div>
+      <div id="bg-grp-colour">
+        <div class="debug-row"><label>Grid Color A</label><div class="debug-control-group" style="align-items:center;gap:8px;"><input type="color" id="bg-color-a" value="#6ab5ff" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-bg-color-a" class="num-input" value="#6ab5ff" style="width:62px;"></div></div>
+        <div class="debug-row"><label>Grid Color B</label><div class="debug-control-group" style="align-items:center;gap:8px;"><input type="color" id="bg-color-b" value="#99d9ff" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-bg-color-b" class="num-input" value="#99d9ff" style="width:62px;"></div></div>
+        <div class="debug-row"><label>Page Background</label><div class="debug-control-group" style="align-items:center;gap:8px;"><input type="color" id="bg-page-color" value="#0d0d0f" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-bg-page-color" class="num-input" value="#0d0d0f" style="width:62px;"></div></div>
+      </div>
+      <div onclick="(function(){var b=document.getElementById('bg-grp-grid');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;"><span class="grp-arrow">&#9660;</span>Grid</div>
+      <div id="bg-grp-grid">
+        <div class="debug-row"><label>Scale</label><div class="debug-control-group"><input type="range" id="bg-density" min="4" max="80" step="1" value="32"><div class="debug-num-control"><button class="btn-dec" data-id="bg-density" data-step="-1">&#8722;</button><input type="text" id="val-bg-density" class="num-input" value="32"><button class="btn-inc" data-id="bg-density" data-step="1">+</button></div></div></div>
+        <div class="debug-row"><label>Sharpness</label><div class="debug-control-group"><input type="range" id="bg-sharpness" min="0.80" max="0.995" step="0.005" value="0.97"><div class="debug-num-control"><button class="btn-dec" data-id="bg-sharpness" data-step="-0.005">&#8722;</button><input type="text" id="val-bg-sharpness" class="num-input" value="0.97"><button class="btn-inc" data-id="bg-sharpness" data-step="0.005">+</button></div></div></div>
+        <div class="debug-row"><label>Opacity</label><div class="debug-control-group"><input type="range" id="bg-opacity" min="0" max="1" step="0.01" value="0.18"><div class="debug-num-control"><button class="btn-dec" data-id="bg-opacity" data-step="-0.01">&#8722;</button><input type="text" id="val-bg-opacity" class="num-input" value="0.18"><button class="btn-inc" data-id="bg-opacity" data-step="0.01">+</button></div></div></div>
+        <div class="debug-row"><label>Blur (px)</label><div class="debug-control-group"><input type="range" id="bg-blur" min="0" max="20" step="0.5" value="0"><div class="debug-num-control"><button class="btn-dec" data-id="bg-blur" data-step="-0.5">&#8722;</button><input type="text" id="val-bg-blur" class="num-input" value="0"><button class="btn-inc" data-id="bg-blur" data-step="0.5">+</button></div></div></div>
+      </div>
+      <div onclick="(function(){var b=document.getElementById('bg-grp-wave');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;"><span class="grp-arrow">&#9660;</span>Wave</div>
+      <div id="bg-grp-wave">
+        <div class="debug-row"><label>Amplitude</label><div class="debug-control-group"><input type="range" id="bg-wave-amp" min="0" max="1.5" step="0.01" value="0.28"><div class="debug-num-control"><button class="btn-dec" data-id="bg-wave-amp" data-step="-0.01">&#8722;</button><input type="text" id="val-bg-wave-amp" class="num-input" value="0.28"><button class="btn-inc" data-id="bg-wave-amp" data-step="0.01">+</button></div></div></div>
+        <div class="debug-row"><label>Speed</label><div class="debug-control-group"><input type="range" id="bg-wave-speed" min="0" max="3" step="0.05" value="1"><div class="debug-num-control"><button class="btn-dec" data-id="bg-wave-speed" data-step="-0.05">&#8722;</button><input type="text" id="val-bg-wave-speed" class="num-input" value="1.00"><button class="btn-inc" data-id="bg-wave-speed" data-step="0.05">+</button></div></div></div>
+      </div>
+      <div onclick="(function(){var b=document.getElementById('bg-grp-pos');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;"><span class="grp-arrow">&#9660;</span>Position</div>
+      <div id="bg-grp-pos">
+        <div class="debug-row"><label>Y Offset</label><div class="debug-control-group"><input type="range" id="bg-pos-y" min="-8" max="2" step="0.1" value="-2.2"><div class="debug-num-control"><button class="btn-dec" data-id="bg-pos-y" data-step="-0.1">&#8722;</button><input type="text" id="val-bg-pos-y" class="num-input" value="-2.2"><button class="btn-inc" data-id="bg-pos-y" data-step="0.1">+</button></div></div></div>
+        <div class="debug-row"><label>Rot X</label><div class="debug-control-group"><input type="range" id="bg-rot-x" min="-3.14" max="0" step="0.02" value="-1.5708"><div class="debug-num-control"><button class="btn-dec" data-id="bg-rot-x" data-step="-0.02">&#8722;</button><input type="text" id="val-bg-rot-x" class="num-input" value="-1.57"><button class="btn-inc" data-id="bg-rot-x" data-step="0.02">+</button></div></div></div>
+        <div class="debug-row"><label>Rot Y</label><div class="debug-control-group"><input type="range" id="bg-rot-y" min="-3.14" max="3.14" step="0.02" value="0"><div class="debug-num-control"><button class="btn-dec" data-id="bg-rot-y" data-step="-0.02">&#8722;</button><input type="text" id="val-bg-rot-y" class="num-input" value="0.00"><button class="btn-inc" data-id="bg-rot-y" data-step="0.02">+</button></div></div></div>
+      </div>
+    </div>
+
+    <!-- Cursor Editor Section -->
+    <div id="section-cursor" style="display:none;">
+      <div onclick="(function(){var b=document.getElementById('cur-grp-style');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;"><span class="grp-arrow">&#9660;</span>Cursor Style</div>
+      <div id="cur-grp-style">
+        <div class="debug-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
+          <label style="margin-bottom:2px;">Style Toggles</label>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text);">
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="cur-toggle-dot" checked style="cursor:pointer;"> Dot</label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="cur-toggle-ring" checked style="cursor:pointer;"> Ring</label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="cur-toggle-cross" style="cursor:pointer;"> Crosshair</label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="cur-toggle-noomo" style="cursor:pointer;"> Noomo Physics</label>
+          </div>
+        </div>
+        <div class="debug-row"><label>Dot Size</label><div class="debug-control-group"><input type="range" id="cur-dot-size" min="2" max="24" step="1" value="6"><div class="debug-num-control"><button class="btn-dec" data-id="cur-dot-size" data-step="-1">&#8722;</button><input type="text" id="val-cur-dot-size" class="num-input" value="6"><button class="btn-inc" data-id="cur-dot-size" data-step="1">+</button></div></div></div>
+        <div class="debug-row"><label>Ring Size</label><div class="debug-control-group"><input type="range" id="cur-ring-size" min="16" max="80" step="2" value="40"><div class="debug-num-control"><button class="btn-dec" data-id="cur-ring-size" data-step="-2">&#8722;</button><input type="text" id="val-cur-ring-size" class="num-input" value="40"><button class="btn-inc" data-id="cur-ring-size" data-step="2">+</button></div></div></div>
+        <div class="debug-row"><label>Dot Color</label><div class="debug-control-group" style="align-items:center;gap:8px;"><input type="color" id="cur-dot-color" value="#1a1612" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-cur-dot-color" class="num-input" value="#1a1612" style="width:62px;"></div></div>
+      </div>
+      <div onclick="(function(){var b=document.getElementById('cur-grp-trail');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;"><span class="grp-arrow">&#9660;</span>Particle Trail</div>
+      <div id="cur-grp-trail">
+        <div class="debug-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
+          <label style="margin-bottom:2px;">Trail Type</label>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <button class="trail-type-btn btn-pill" data-type="none"    style="font-size:10px;padding:3px 8px;">None</button>
+            <button class="trail-type-btn btn-pill" data-type="water"   style="font-size:10px;padding:3px 8px;background:rgba(0,191,255,0.15);color:#00bfff;">&#128167; Watery</button>
+            <button class="trail-type-btn btn-pill" data-type="glitter" style="font-size:10px;padding:3px 8px;background:rgba(255,215,0,0.15);color:#ffd700;">&#10022; Glitter</button>
+            <button class="trail-type-btn btn-pill" data-type="sand"    style="font-size:10px;padding:3px 8px;background:rgba(210,180,140,0.15);color:#d2b48c;">&#11044; Sand</button>
+            <button class="trail-type-btn btn-pill" data-type="sparks"  style="font-size:10px;padding:3px 8px;background:rgba(255,100,0,0.15);color:#ff6400;">&#10033; Sparks</button>
+            <button class="trail-type-btn btn-pill" data-type="snow"    style="font-size:10px;padding:3px 8px;background:rgba(200,230,255,0.15);color:#c8e6ff;">&#10052; Snow</button>
+            <button class="trail-type-btn btn-pill" data-type="smoke"   style="font-size:10px;padding:3px 8px;background:rgba(150,150,150,0.15);color:#aaa;">&#9729; Smoke</button>
+          </div>
+        </div>
+        <div class="debug-row"><label>Density</label><div class="debug-control-group"><input type="range" id="cur-trail-density" min="1" max="25" step="1" value="5"><div class="debug-num-control"><button class="btn-dec" data-id="cur-trail-density" data-step="-1">&#8722;</button><input type="text" id="val-cur-trail-density" class="num-input" value="5"><button class="btn-inc" data-id="cur-trail-density" data-step="1">+</button></div></div></div>
+        <div class="debug-row"><label>Size</label><div class="debug-control-group"><input type="range" id="cur-trail-size" min="1" max="24" step="0.5" value="3"><div class="debug-num-control"><button class="btn-dec" data-id="cur-trail-size" data-step="-0.5">&#8722;</button><input type="text" id="val-cur-trail-size" class="num-input" value="3"><button class="btn-inc" data-id="cur-trail-size" data-step="0.5">+</button></div></div></div>
+        <div class="debug-row"><label>Speed</label><div class="debug-control-group"><input type="range" id="cur-trail-speed" min="0.5" max="6" step="0.1" value="1.5"><div class="debug-num-control"><button class="btn-dec" data-id="cur-trail-speed" data-step="-0.1">&#8722;</button><input type="text" id="val-cur-trail-speed" class="num-input" value="1.5"><button class="btn-inc" data-id="cur-trail-speed" data-step="0.1">+</button></div></div></div>
+        <div class="debug-row"><label>Lifetime</label><div class="debug-control-group"><input type="range" id="cur-trail-life" min="10" max="150" step="5" value="45"><div class="debug-num-control"><button class="btn-dec" data-id="cur-trail-life" data-step="-5">&#8722;</button><input type="text" id="val-cur-trail-life" class="num-input" value="45"><button class="btn-inc" data-id="cur-trail-life" data-step="5">+</button></div></div></div>
+        <div class="debug-row"><label>Gravity</label><div class="debug-control-group"><input type="range" id="cur-trail-gravity" min="-0.15" max="0.15" step="0.005" value="0.04"><div class="debug-num-control"><button class="btn-dec" data-id="cur-trail-gravity" data-step="-0.005">&#8722;</button><input type="text" id="val-cur-trail-gravity" class="num-input" value="0.04"><button class="btn-inc" data-id="cur-trail-gravity" data-step="0.005">+</button></div></div></div>
+        <div class="debug-row"><label>Color Mode</label>
+          <select id="cur-trail-color-mode" style="background:var(--glass);color:var(--text);border:1px solid var(--border);border-radius:4px;font-size:10px;font-family:'JetBrains Mono',monospace;padding:2px 4px;outline:none;">
+            <option value="default">Default Type</option>
+            <option value="solid">Solid Override</option>
+            <option value="gradient">Gradient Sweep</option>
+          </select>
+        </div>
+        <div id="cur-trail-solid-group" style="display:none;">
+          <div class="debug-row"><label>Solid Color</label><div class="debug-control-group" style="align-items:center;gap:6px;"><input type="color" id="cur-trail-color" value="#ffd700" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-cur-trail-color" class="num-input" value="#ffd700" style="width:62px;"></div></div>
+        </div>
+        <div id="cur-trail-grad-group" style="display:none;">
+          <div class="debug-row"><label>Grad Color A</label><div class="debug-control-group" style="align-items:center;gap:8px;"><input type="color" id="cur-trail-color-a" value="#ffd700" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-cur-trail-color-a" class="num-input" value="#ffd700" style="width:62px;"></div></div>
+          <div class="debug-row"><label>Grad Color B</label><div class="debug-control-group" style="align-items:center;gap:8px;"><input type="color" id="cur-trail-color-b" value="#00bfff" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-cur-trail-color-b" class="num-input" value="#00bfff" style="width:62px;"></div></div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /panel-editor-view -->
   </div>
 
   <!-- Header -->
@@ -595,52 +997,144 @@
   let isEditing = false;
   let editingTimeout = null;
 
+  // Render loop target interpolation variables for smooth WebGL transitions
+  let targetPos = new THREE.Vector3(0.8, 0, 0.5);
+  let targetRot = new THREE.Euler(0, 0, 0);
+  let targetScale = 0.82;
+  let parallaxRot = { x: 0, y: 0 };
+
   // Master keyframes: array of objects sorted by scroll progress [0, 1]
   let keyframes = [
   {
     "scroll": 0,
-    "x": 0.55,
+    "x": 0.94,
     "y": 0,
-    "z": 0.5,
+    "z": 0.24,
+    "rx": 0.64,
+    "ry": -0.58,
+    "scale": 1.42,
+    "opacity": 0.52,
+    "metalness": 0.74,
+    "roughness": 0.5,
+    "emissiveIntensity": 0.85
+  },
+  {
+    "scroll": 0.132,
+    "x": 0,
+    "y": 0.06,
+    "z": 0.44,
     "rx": 0,
+    "ry": 0,
+    "scale": 0.78
+  },
+  {
+    "scroll": 0.25,
+    "x": -0.82,
+    "y": 0.02,
+    "z": 0.72,
+    "rx": 0.82,
+    "ry": 0,
+    "scale": 1.18,
+    "opacity": 0.92,
+    "metalness": 0.48,
+    "roughness": 0.06,
+    "emissiveIntensity": 1.8
+  },
+  {
+    "scroll": 0.358,
+    "x": -0.02,
+    "y": 0.14,
+    "z": 0.1,
+    "rx": -0.8,
+    "ry": 0,
+    "scale": 0.84,
+    "opacity": 0.92,
+    "metalness": 0.12,
+    "roughness": 0.06,
+    "emissiveIntensity": 1.8
+  },
+  {
+    "scroll": 0.405,
+    "x": 0.22,
+    "y": 0.14,
+    "z": 0.06,
+    "rx": -0.88,
+    "ry": 0,
+    "scale": 0.84
+  },
+  {
+    "scroll": 0.5,
+    "x": 0.66,
+    "y": 0.04,
+    "z": 0.26,
+    "rx": -0.34,
+    "ry": 0,
+    "scale": 1.1,
+    "opacity": 1,
+    "metalness": 1,
+    "roughness": 0,
+    "emissiveIntensity": 5
+  },
+  {
+    "scroll": 0.635,
+    "x": 0,
+    "y": 0.02,
+    "z": 0.4,
+    "rx": 0.06,
+    "ry": 0,
+    "scale": 0.82,
+    "opacity": 0.92,
+    "metalness": 0.12,
+    "roughness": 0.06,
+    "emissiveIntensity": 1.8
+  },
+  {
+    "scroll": 0.75,
+    "x": -0.66,
+    "y": 0.1,
+    "z": 0.4,
+    "rx": 0.08,
     "ry": 0,
     "scale": 0.82
   },
   {
-    "scroll": 0.28,
-    "x": 0.88,
+    "scroll": 0.817,
+    "x": -0.02,
     "y": 0.1,
     "z": 0.4,
     "rx": 0,
     "ry": 0,
-    "scale": 0.82
+    "scale": 0.82,
+    "opacity": 0.92,
+    "metalness": 0.12,
+    "roughness": 0.06,
+    "emissiveIntensity": 1.8
   },
   {
-    "scroll": 0.55,
-    "x": -0.88,
-    "y": 0,
-    "z": 0.4,
-    "rx": 0,
-    "ry": 0,
-    "scale": 0.82
-  },
-  {
-    "scroll": 0.82,
-    "x": 0.78,
-    "y": 0.1,
-    "z": 0.4,
-    "rx": 0,
-    "ry": 0,
-    "scale": 0.82
+    "scroll": 0.851,
+    "x": -0.04,
+    "y": 0.08,
+    "z": 0.48,
+    "rx": -1.06,
+    "ry": -0.7,
+    "scale": 0.5,
+    "opacity": 0.92,
+    "metalness": 0.12,
+    "roughness": 0.06,
+    "emissiveIntensity": 1.8
   },
   {
     "scroll": 1,
     "x": 0,
     "y": -0.2,
-    "z": 0.6,
-    "rx": 0,
-    "ry": 0,
-    "scale": 0.82
+    "z": 2,
+    "rx": 1.94,
+    "ry": 3.14,
+    "scale": 2,
+    "opacity": 0.14,
+    "metalness": 1,
+    "roughness": 0,
+    "emissiveIntensity": 5
   }
 ];
 
@@ -666,11 +1160,26 @@
 
   function interpolateHermite(progress, keys, field) {
     const n = keys.length;
-    if (n === 0) return 0;
-    if (n === 1) return keys[0][field];
+    
+    // Default values if a property is missing on older keyframes
+    const getVal = (kf) => {
+      if (kf[field] !== undefined) return kf[field];
+      if (field === 'opacity') return 0.92;
+      if (field === 'metalness') return 0.12;
+      if (field === 'roughness') return 0.06;
+      if (field === 'emissiveIntensity') return 1.80;
+      if (field === 'rz') return 0.0;
+      if (field === 'spinY') return 0.003;
+      if (field === 'spinX') return 0.0008;
+      if (field === 'wireOpacity') return 0.22;
+      return 0.0;
+    };
 
-    if (progress <= keys[0].scroll) return keys[0][field];
-    if (progress >= keys[n - 1].scroll) return keys[n - 1][field];
+    if (n === 0) return 0;
+    if (n === 1) return getVal(keys[0]);
+
+    if (progress <= keys[0].scroll) return getVal(keys[0]);
+    if (progress >= keys[n - 1].scroll) return getVal(keys[n - 1]);
 
     let i = 0;
     for (let j = 0; j < n - 1; j++) {
@@ -683,35 +1192,47 @@
     const k0 = keys[i];
     const k1 = keys[i + 1];
     const h = k1.scroll - k0.scroll;
-    if (h === 0) return k0[field];
+    if (h === 0) return getVal(k0);
 
+    const val0 = getVal(k0);
+    const val1 = getVal(k1);
     const s = (progress - k0.scroll) / h;
 
-    let m0, m1;
+    let m0 = 0, m1 = 0;
+    const delta = (val1 - val0) / h;
+
     if (n === 2) {
-      m0 = (k1[field] - k0[field]) / h;
-      m1 = m0;
+      m0 = delta;
+      m1 = delta;
     } else {
       if (i === 0) {
-        m0 = (k1[field] - k0[field]) / h;
+        m0 = delta;
       } else {
         const kPrev = keys[i - 1];
-        const hL = k0.scroll - kPrev.scroll;
-        const hR = h;
-        const dL = (k0[field] - kPrev[field]) / hL;
-        const dR = (k1[field] - k0[field]) / hR;
-        m0 = (hR * dL + hL * dR) / (hL + hR);
+        const deltaL = (val0 - getVal(kPrev)) / (k0.scroll - kPrev.scroll);
+        m0 = (Math.sign(deltaL) !== Math.sign(delta)) ? 0 : (deltaL + delta) / 2;
       }
 
       if (i + 1 === n - 1) {
-        m1 = (k1[field] - k0[field]) / h;
+        m1 = delta;
       } else {
         const kNext = keys[i + 2];
-        const hL = h;
-        const hR = kNext.scroll - k1.scroll;
-        const dL = (k1[field] - k0[field]) / hL;
-        const dR = (kNext[field] - k1[field]) / hR;
-        m1 = (hR * dL + hL * dR) / (hL + hR);
+        const deltaR = (getVal(kNext) - val1) / (kNext.scroll - k1.scroll);
+        m1 = (Math.sign(delta) !== Math.sign(deltaR)) ? 0 : (delta + deltaR) / 2;
+      }
+    }
+
+    // Monotone cubic Hermite spline slope limiter (Fritsch-Carlson algorithm) to prevent overshoot
+    if (delta === 0) {
+      m0 = 0;
+      m1 = 0;
+    } else {
+      const alpha = m0 / delta;
+      const beta = m1 / delta;
+      if (alpha * alpha + beta * beta > 9) {
+        const tau = 3 / Math.sqrt(alpha * alpha + beta * beta);
+        m0 = tau * alpha * delta;
+        m1 = tau * beta * delta;
       }
     }
 
@@ -723,12 +1244,15 @@
     const h01 = -2 * s3 + 3 * s2;
     const h11 = s3 - s2;
 
-    return h00 * k0[field] + h10 * h * m0 + h01 * k1[field] + h11 * h * m1;
+    return h00 * val0 + h10 * h * m0 + h01 * val1 + h11 * h * m1;
   }
 
   function applyTimeline(progress) {
     currentScroll = progress;
     document.getElementById('dbg-scroll-val').textContent = (progress * 100).toFixed(1) + '%';
+    document.getElementById('dbg-scrub').value = progress;
+    document.getElementById('lbl-scrub').textContent = (progress * 100).toFixed(0) + '%';
+    document.getElementById('dbg-scrub-num').value = Math.round(progress * 100);
     
     // Do not interpolate while user is actively tweaking sliders
     if (isEditing) return;
@@ -739,6 +1263,36 @@
     const rx = interpolateHermite(progress, keyframes, 'rx');
     const ry = interpolateHermite(progress, keyframes, 'ry');
     const scale = interpolateHermite(progress, keyframes, 'scale') * debugScale;
+    
+    const opacity = interpolateHermite(progress, keyframes, 'opacity');
+    const metalness = interpolateHermite(progress, keyframes, 'metalness');
+    const roughness = interpolateHermite(progress, keyframes, 'roughness');
+    const emissive = interpolateHermite(progress, keyframes, 'emissiveIntensity');
+    const rz       = interpolateHermite(progress, keyframes, 'rz');
+    const spinY    = interpolateHermite(progress, keyframes, 'spinY');
+    const spinX    = interpolateHermite(progress, keyframes, 'spinX');
+    const wireOpacity = interpolateHermite(progress, keyframes, 'wireOpacity');
+
+    // Interpolate emissive color between nearest keyframes
+    let emissiveColorHex = '#8eb4f8';
+    if (keyframes.length >= 1) {
+      let iLow = 0, iHigh = keyframes.length - 1;
+      for (let j = 0; j < keyframes.length - 1; j++) {
+        if (progress >= keyframes[j].scroll && progress <= keyframes[j+1].scroll) {
+          iLow = j; iHigh = j + 1; break;
+        }
+      }
+      const cA = new THREE.Color(keyframes[iLow].emissiveColor  || '#8eb4f8');
+      const cB = new THREE.Color(keyframes[iHigh].emissiveColor || '#8eb4f8');
+      const h = keyframes[iHigh].scroll - keyframes[iLow].scroll;
+      const t = h > 0 ? Math.max(0, Math.min(1, (progress - keyframes[iLow].scroll) / h)) : 0;
+      cA.lerp(cB, t);
+      emissiveColorHex = '#' + cA.getHexString();
+    }
+
+    // Apply new globals
+    rotSpeedY = spinY;
+    rotSpeedX = spinX;
 
     // Keep resize target synced
     window.currentTarget.x = x;
@@ -751,25 +1305,63 @@
     document.getElementById('dbg-pos-z').value = z;
     document.getElementById('dbg-rot-x-val').value = rx;
     document.getElementById('dbg-rot-y-val').value = ry;
+    document.getElementById('dbg-rot-z-val').value = rz;
     document.getElementById('dbg-scale').value = scale / debugScale;
+    document.getElementById('dbg-spin-y').value = spinY;
+    document.getElementById('dbg-spin-x').value = spinX;
+    
+    document.getElementById('dbg-opacity').value = opacity;
+    document.getElementById('dbg-metalness').value = metalness;
+    document.getElementById('dbg-roughness').value = roughness;
+    document.getElementById('dbg-emissive').value = emissive;
+    document.getElementById('dbg-emissive-color').value = emissiveColorHex;
+    document.getElementById('val-dbg-emissive-color').value = emissiveColorHex;
+    document.getElementById('dbg-wire-opacity').value = wireOpacity;
 
-    updateSliderLabels(x, y, z, rx, ry, scale / debugScale);
+    updateSliderLabels(x, y, z, rx, ry, rz, scale / debugScale, spinY, spinX, opacity, metalness, roughness, emissive, emissiveColorHex, wireOpacity);
 
     if (crystalGroup) {
       const rxX = getResponsiveX(x);
-      gsap.to(crystalGroup.position, { x: rxX, y, z, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
-      gsap.to(crystalGroup.rotation, { x: rx, y: ry, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
-      gsap.to(crystalGroup.scale, { x: scale, y: scale, z: scale, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+      targetPos.set(rxX, y, z);
+      targetRot.set(rx, ry, rz);
+      targetScale = scale;
+      
+      const _emColor = new THREE.Color(emissiveColorHex);
+      crystalGroup.traverse(child => {
+        if (child.isMesh && child.material) {
+          if (child.material.wireframe) {
+            child.material.opacity = wireOpacity;
+            child.material.emissiveIntensity = emissive * 0.4;
+          } else {
+            child.material.opacity = opacity;
+            child.material.emissiveIntensity = emissive;
+            child.material.emissive.copy(_emColor);
+          }
+          child.material.metalness = metalness;
+          child.material.roughness = roughness;
+        }
+      });
     }
   }
 
-  function updateSliderLabels(x, y, z, rx, ry, scale) {
-    document.getElementById('lbl-pos-x').textContent = parseFloat(x).toFixed(2);
-    document.getElementById('lbl-pos-y').textContent = parseFloat(y).toFixed(2);
-    document.getElementById('lbl-pos-z').textContent = parseFloat(z).toFixed(2);
-    document.getElementById('lbl-rot-x').textContent = parseFloat(rx).toFixed(2);
-    document.getElementById('lbl-rot-y-val').textContent = parseFloat(ry).toFixed(2);
-    document.getElementById('lbl-scale').textContent = parseFloat(scale).toFixed(2);
+  function updateSliderLabels(x, y, z, rx, ry, rz = 0, scale = 1, spinY = 0.003, spinX = 0.0008, opacity = 0.92, metalness = 0.12, roughness = 0.06, emissive = 1.80, emissiveColor = '#8eb4f8', wireOpacity = 0.22) {
+    document.getElementById('val-dbg-pos-x').value = parseFloat(x).toFixed(2);
+    document.getElementById('val-dbg-pos-y').value = parseFloat(y).toFixed(2);
+    document.getElementById('val-dbg-pos-z').value = parseFloat(z).toFixed(2);
+    document.getElementById('val-dbg-rot-x-val').value = parseFloat(rx).toFixed(2);
+    document.getElementById('val-dbg-rot-y-val').value = parseFloat(ry).toFixed(2);
+    document.getElementById('val-dbg-rot-z-val').value = parseFloat(rz).toFixed(2);
+    document.getElementById('val-dbg-scale').value = parseFloat(scale).toFixed(2);
+    document.getElementById('val-dbg-spin-y').value = parseFloat(spinY).toFixed(4);
+    document.getElementById('val-dbg-spin-x').value = parseFloat(spinX).toFixed(4);
+    
+    document.getElementById('val-dbg-opacity').value = parseFloat(opacity).toFixed(2);
+    document.getElementById('val-dbg-metalness').value = parseFloat(metalness).toFixed(2);
+    document.getElementById('val-dbg-roughness').value = parseFloat(roughness).toFixed(2);
+    document.getElementById('val-dbg-emissive').value = parseFloat(emissive).toFixed(2);
+    document.getElementById('val-dbg-wire-opacity').value = parseFloat(wireOpacity).toFixed(2);
+    const ecEl = document.getElementById('val-dbg-emissive-color');
+    if (ecEl) ecEl.value = emissiveColor;
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -777,20 +1369,72 @@
   // ═══════════════════════════════════════════════════════════════
   const cursorDot  = document.getElementById('cursor-dot');
   const cursorRing = document.getElementById('cursor-ring');
-  let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+  let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+  let dotX = mouseX, dotY = mouseY;
+  let ringX = mouseX, ringY = mouseY;
+  let cursorStyle = 'dot-ring';
 
   window.addEventListener('mousemove', e => {
     mouseX = e.clientX; mouseY = e.clientY;
-    cursorDot.style.left = mouseX + 'px';
-    cursorDot.style.top  = mouseY + 'px';
   });
 
-  (function animateRing() {
-    ringX += (mouseX - ringX) * 0.11;
-    ringY += (mouseY - ringY) * 0.11;
-    cursorRing.style.left = ringX + 'px';
-    cursorRing.style.top  = ringY + 'px';
-    requestAnimationFrame(animateRing);
+  let curShowDot = true;
+  let curShowRing = true;
+  let curShowCross = false;
+  let curShowNoomo = false;
+
+  (function updateCursor() {
+    // 1. Elastic/Noomo physics interpolation
+    if (curShowNoomo) {
+      const dx = mouseX - dotX;
+      const dy = mouseY - dotY;
+      dotX += dx * 0.14;
+      dotY += dy * 0.14;
+
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const stretch = 1 + Math.min(dist / 80, 1.3);
+      const squeeze = 1 - Math.min(dist / 160, 0.4);
+      const angle = Math.atan2(dy, dx);
+      const hoverScale = document.body.classList.contains('cursor-hover') ? 2.5 : 1.0;
+
+      cursorDot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%) rotate(${angle}rad) scale(${stretch * hoverScale}, ${squeeze * hoverScale})`;
+    } else {
+      dotX = mouseX;
+      dotY = mouseY;
+      const hoverScale = document.body.classList.contains('cursor-hover') ? 1.5 : 1.0;
+      cursorDot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%) scale(${hoverScale})`;
+    }
+
+    // 2. Ring following logic
+    ringX += (dotX - ringX) * 0.11;
+    ringY += (dotY - ringY) * 0.11;
+    const ringScale = document.body.classList.contains('cursor-hover') ? 1.4 : 1.0;
+    
+    // Stretch ring if Noomo is enabled on dot (gives incredibly organic look!)
+    if (curShowNoomo) {
+      const dx = dotX - ringX;
+      const dy = dotY - ringY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const rStretch = 1 + Math.min(dist / 70, 0.8);
+      const rSqueeze = 1 - Math.min(dist / 140, 0.3);
+      const rAngle = Math.atan2(dy, dx);
+      cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%) rotate(${rAngle}rad) scale(${rStretch * ringScale}, ${rSqueeze * ringScale})`;
+    } else {
+      cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%) scale(${ringScale})`;
+    }
+
+    // Update displays
+    cursorDot.style.display = curShowDot ? 'block' : 'none';
+    cursorRing.style.display = curShowRing ? 'block' : 'none';
+
+    if (curShowCross) {
+      cursorDot.classList.add('cross');
+      cursorDot.style.display = 'block'; // cross overrides hidden dot
+    } else {
+      cursorDot.classList.remove('cross');
+    }
+
+    requestAnimationFrame(updateCursor);
   })();
 
   // Hover state for interactive elements
@@ -827,25 +1471,21 @@
   }, 400);
 
   // ═══════════════════════════════════════════════════════════════
-  // BACKGROUND SPOTLIGHT — large lavender radial glow follows cursor
+  // BACKGROUND SPOTLIGHT — large lavender radial glow follows cursor (optimized using translate3d)
   // ═══════════════════════════════════════════════════════════════
   (function bgSpotlightInit() {
     const el = document.getElementById('bg-spotlight');
-    let lx = -9999, ly = -9999;   // start off-screen
-    let tx = lx, ty = ly;          // lerp targets
+    let lx = -9999, ly = -9999;
+    let tx = lx, ty = ly;
 
     window.addEventListener('mousemove', e => {
       tx = e.clientX; ty = e.clientY;
     });
 
-    // Smooth follow via lerp + RAF instead of CSS transition
-    // (CSS transition on background is GPU expensive; this is lighter)
-    let lastBg = '';
     (function bgLoop() {
-      lx += (tx - lx) * 0.07;
-      ly += (ty - ly) * 0.07;
-      const bg = `radial-gradient(circle ${spotlightRad}px at ${lx|0}px ${ly|0}px, rgba(206,189,248,.20) 0%, rgba(192,212,245,.10) 40%, rgba(234,189,246,.06) 65%, transparent 80%)`;
-      if (bg !== lastBg) { el.style.background = bg; lastBg = bg; }
+      lx += (tx - lx) * 0.075;
+      ly += (ty - ly) * 0.075;
+      el.style.transform = `translate3d(${lx}px, ${ly}px, 0)`;
       requestAnimationFrame(bgLoop);
     })();
   })();
@@ -903,14 +1543,18 @@
       vel.x = dx; vel.y = dy;
       prevX = e.clientX; prevY = e.clientY;
 
-      // Spawn count scales with movement speed (capped at 12)
       const speed = Math.sqrt(dx * dx + dy * dy);
-      spawnBudget += Math.min(3 + speed * 0.18, 12);
+      if (speed < 2) return; // ignore static/minor moves
+
+      // Drastically lower spawning rate (cap at 3 instead of 12)
+      spawnBudget += Math.min(1 + speed * 0.05, 3);
       const toSpawn = Math.floor(spawnBudget);
       spawnBudget -= toSpawn;
 
       for (let i = 0; i < toSpawn; i++) {
-        pool.push(newGrain(e.clientX, e.clientY));
+        if (pool.length < 120) { // Strict upper bound on live particles
+          pool.push(newGrain(e.clientX, e.clientY));
+        }
       }
     });
 
@@ -975,20 +1619,9 @@
   });
 
   // ═══════════════════════════════════════════════════════════════
-  // GLASS CARD — inject glow+border divs, spotlight + magnetic tilt
-  // Uses child divs NOT pseudo-elements — avoids backdrop-filter z conflict
+  // GLASS CARD — spotlight + magnetic tilt
   // ═══════════════════════════════════════════════════════════════
   document.querySelectorAll('.glass-card').forEach(card => {
-    // Inject spotlight glow layer
-    const glow = document.createElement('div');
-    glow.className = 'card-glow';
-    card.insertBefore(glow, card.firstChild);
-
-    // Inject gradient border ring
-    const border = document.createElement('div');
-    border.className = 'card-border';
-    card.insertBefore(border, card.firstChild);
-
     card.addEventListener('mousemove', e => {
       const rect = card.getBoundingClientRect();
       const cx = e.clientX - rect.left;
@@ -996,8 +1629,9 @@
       const nx = (cx / rect.width  - 0.5) * 2;
       const ny = (cy / rect.height - 0.5) * 2;
 
-      // Spotlight follows cursor — vivid lavender/purple, high contrast on white glass
-      glow.style.background = `radial-gradient(circle 280px at ${cx}px ${cy}px, rgba(147,120,230,.50) 0%, rgba(100,149,237,.22) 45%, transparent 72%)`;
+      // CSS custom props spotlight
+      card.style.setProperty('--cx', cx + 'px');
+      card.style.setProperty('--cy', cy + 'px');
 
       // Magnetic 3D tilt
       gsap.to(card, {
@@ -1029,9 +1663,17 @@
   // WEBGL SETUP
   // ═══════════════════════════════════════════════════════════════
   let scene, camera, renderer, clock;
-  let crystalGroup, crystalLight;
+  let crystalGroup, crystalLight, innerCrystal;
   let particles, gridMat;
   let camPath;
+
+  // Visualizer / Editor State
+  let visualizerActive = false;
+  let pathGroup = null;
+  let selectedAnchorIdx = -1;
+  let anchorSpheres = [];
+  let raycaster = new THREE.Raycaster();
+  let mouse = new THREE.Vector2();
 
   function initWebGL() {
     clock    = new THREE.Clock();
@@ -1080,8 +1722,8 @@
         const responsiveX = getResponsiveX(window.currentTarget.x);
         const aspect = W / H;
         const scale = (aspect < 1.25 ? Math.max(0.40, 0.82 * (aspect / 1.25)) : 0.82) * debugScale;
-        gsap.to(crystalGroup.position, { x: responsiveX, y: window.currentTarget.y, z: window.currentTarget.z, duration: 0.5, overwrite: 'auto' });
-        gsap.to(crystalGroup.scale, { x: scale, y: scale, z: scale, duration: 0.5, overwrite: 'auto' });
+        targetPos.set(responsiveX, window.currentTarget.y, window.currentTarget.z);
+        targetScale = scale;
       }
     });
 
@@ -1089,7 +1731,7 @@
     window.addEventListener('mousemove', e => {
       const nx = (e.clientX / innerWidth)  * 2 - 1;
       const ny = (e.clientY / innerHeight) * 2 - 1;  // intentionally not negated (natural lean)
-      if (crystalGroup) gsap.to(crystalGroup.rotation, { y: crystalGroup.rotation.y + nx * 0.08, x: crystalGroup.rotation.x - ny * 0.05, duration: 1.4, ease: 'power1.out' });
+      gsap.to(parallaxRot, { x: -ny * 0.05, y: nx * 0.08, duration: 1.4, ease: 'power1.out', overwrite: 'auto' });
       if (particles)    gsap.to(particles.rotation,    { x: -ny * 0.04, y: particles.rotation.y + nx * 0.025, duration: 2.0, ease: 'power1.out' });
     });
 
@@ -1110,6 +1752,9 @@
   // ═══════════════════════════════════════════════════════════════
   function buildCrystal() {
     crystalGroup = new THREE.Group();
+    innerCrystal = new THREE.Group();
+    innerCrystal.name = 'innerCrystal';
+    crystalGroup.add(innerCrystal);
 
     const mode = MODES[modeIdx];
 
@@ -1134,13 +1779,13 @@
     const coreGeo  = new THREE.IcosahedronGeometry(0.55, 0);
     const coreMesh = new THREE.Mesh(coreGeo, matSolid);
     coreMesh.name  = 'core';
-    crystalGroup.add(coreMesh);
+    innerCrystal.add(coreMesh);
 
     // Wireframe shell
     const wireShell = new THREE.Mesh(coreGeo, matWire);
     wireShell.scale.setScalar(1.025);
     wireShell.name = 'wire';
-    crystalGroup.add(wireShell);
+    innerCrystal.add(wireShell);
 
     // 6 satellite shards at varying positions + sizes
     const shards = [
@@ -1160,12 +1805,12 @@
       mesh.position.set(...pos);
       mesh.rotation.set(i * 1.1, i * 0.9, i * 0.7);
       mesh.name = 'shard' + i;
-      crystalGroup.add(mesh);
+      innerCrystal.add(mesh);
     });
 
     // Glow light at centre
     crystalLight = new THREE.PointLight(mode.lColor, 2.5, 4.5);
-    crystalGroup.add(crystalLight);
+    innerCrystal.add(crystalLight);
 
     crystalGroup.position.set(0.8, 0, 0.5);  // right of centre, stays on screen
     crystalGroup.scale.setScalar(0.82);
@@ -1277,6 +1922,7 @@
 
     particles = new THREE.Points(geo, mat);
     scene.add(particles);
+    window._particleMesh = particles; // expose for sceneRegistry
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -1286,30 +1932,36 @@
     const geo = new THREE.PlaneGeometry(30, 30, 55, 55);
     gridMat = new THREE.ShaderMaterial({
       uniforms: {
-        uTime:   { value: 0 },
-        uColorA: { value: new THREE.Color(0.40, 0.70, 1.00) },
-        uColorB: { value: new THREE.Color(0.60, 0.85, 1.00) },
+        uTime:       { value: 0 },
+        uColorA:     { value: new THREE.Color(0.40, 0.70, 1.00) },
+        uColorB:     { value: new THREE.Color(0.60, 0.85, 1.00) },
+        uDensity:    { value: 32.0 },
+        uWaveAmp:    { value: 0.28 },
+        uWaveSpeed:  { value: 1.0 },
+        uGridAlpha:  { value: 0.18 },
+        uSharpness:  { value: 0.97 },
       },
       vertexShader: `
-        uniform float uTime;
+        uniform float uTime, uWaveAmp, uWaveSpeed;
         varying vec2 vUv; varying float vEl;
         void main() {
           vUv = uv;
           vec4 mp = modelMatrix * vec4(position, 1.0);
-          float el = sin(mp.x * 0.6 + uTime) * cos(mp.y * 0.6 + uTime * 0.7) * 0.28;
+          float el = sin(mp.x * 0.6 + uTime * uWaveSpeed) * cos(mp.y * 0.6 + uTime * uWaveSpeed * 0.7) * uWaveAmp;
           mp.y += el; vEl = el;
           gl_Position = projectionMatrix * viewMatrix * mp;
         }`,
       fragmentShader: `
         uniform vec3 uColorA, uColorB;
+        uniform float uDensity, uGridAlpha, uSharpness;
         varying vec2 vUv; varying float vEl;
         void main() {
-          float gx   = step(0.97, fract(vUv.x * 32.0));
-          float gy   = step(0.97, fract(vUv.y * 32.0));
+          float gx   = step(uSharpness, fract(vUv.x * uDensity));
+          float gy   = step(uSharpness, fract(vUv.y * uDensity));
           float grid = max(gx, gy);
           if (grid < 0.1) discard;
           vec3 col = mix(uColorA, uColorB, vEl + 0.5);
-          gl_FragColor = vec4(col, 0.18 * grid);
+          gl_FragColor = vec4(col, uGridAlpha * grid);
         }`,
       transparent: true,
     });
@@ -1318,6 +1970,135 @@
     mesh.rotation.x = -Math.PI * 0.5;
     mesh.position.set(0, -2.2, -2);
     scene.add(mesh);
+    window._gridMesh = mesh; // expose for sceneRegistry
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // SPLINE PATH VISUALIZER & INTERACTIVE EDITOR
+  // ═══════════════════════════════════════════════════════════════
+  function updatePathVisualizer() {
+    if (pathGroup) {
+      scene.remove(pathGroup);
+      pathGroup.traverse(child => {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+          if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+          else child.material.dispose();
+        }
+      });
+      pathGroup = null;
+    }
+
+    anchorSpheres = [];
+
+    if (!visualizerActive) {
+      document.getElementById('vis-selected-kf-label').textContent = 'Selected Anchor: None';
+      return;
+    }
+
+    pathGroup = new THREE.Group();
+    scene.add(pathGroup);
+
+    // 1. Draw Camera Path (dashed line)
+    if (camPath) {
+      const camPoints = camPath.getPoints(100);
+      const camGeo = new THREE.BufferGeometry().setFromPoints(camPoints);
+      const camMat = new THREE.LineDashedMaterial({
+        color: 0xcebdf8,
+        dashSize: 0.12,
+        gapSize: 0.06,
+      });
+      const camLine = new THREE.Line(camGeo, camMat);
+      camLine.computeLineDistances();
+      pathGroup.add(camLine);
+    }
+
+    // 2. Draw Crystal Interpolated Path (dashed line)
+    if (keyframes && keyframes.length > 1) {
+      const cryPoints = [];
+      const steps = 100;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const x = interpolateHermite(t, keyframes, 'x');
+        const y = interpolateHermite(t, keyframes, 'y');
+        const z = interpolateHermite(t, keyframes, 'z');
+        cryPoints.push(new THREE.Vector3(getResponsiveX(x), y, z));
+      }
+      const cryGeo = new THREE.BufferGeometry().setFromPoints(cryPoints);
+      const cryMat = new THREE.LineDashedMaterial({
+        color: 0xffe566,
+        dashSize: 0.08,
+        gapSize: 0.04,
+      });
+      const cryLine = new THREE.Line(cryGeo, cryMat);
+      cryLine.computeLineDistances();
+      pathGroup.add(cryLine);
+    }
+
+    // 3. Draw Keyframe Anchors (Spheres)
+    keyframes.forEach((kf, idx) => {
+      const isSelected = idx === selectedAnchorIdx;
+      const geo = new THREE.SphereGeometry(isSelected ? 0.075 : 0.045, 16, 16);
+      const mat = new THREE.MeshBasicMaterial({
+        color: isSelected ? 0xff4400 : 0xffcc00,
+        transparent: true,
+        opacity: isSelected ? 0.95 : 0.65,
+        depthTest: false,
+        depthWrite: false
+      });
+      const sphere = new THREE.Mesh(geo, mat);
+      sphere.position.set(getResponsiveX(kf.x), kf.y, kf.z);
+      sphere.userData = { index: idx };
+      
+      pathGroup.add(sphere);
+      anchorSpheres.push(sphere);
+    });
+
+    // Find nearest keyframe to current scroll for active-sphere highlighting
+    let nearestIdx = 0, nearestDist = Infinity;
+    keyframes.forEach(function(kf, i) {
+      var d = Math.abs(kf.scroll - currentScroll);
+      if (d < nearestDist) { nearestDist = d; nearestIdx = i; }
+    });
+
+    // Colour each sphere: red=selected, cyan=active scroll, gold=idle
+    anchorSpheres.forEach(function(sphere, idx) {
+      var isSel    = idx === selectedAnchorIdx;
+      var isActive = idx === nearestIdx && !isSel;
+      sphere.material.color.setHex(isSel ? 0xff3300 : isActive ? 0x00ffe0 : 0xffe566);
+      sphere.material.opacity = isSel ? 1.0 : isActive ? 0.9 : 0.6;
+      sphere.scale.setScalar(isSel ? 1.8 : isActive ? 1.4 : 1.0);
+    });
+
+    var lbl = document.getElementById('vis-selected-kf-label');
+    if (selectedAnchorIdx !== -1 && keyframes[selectedAnchorIdx]) {
+      lbl.textContent = 'Editing #' + selectedAnchorIdx + ' | Active: #' + nearestIdx + ' (' + (keyframes[nearestIdx].scroll * 100).toFixed(0) + '%)';
+    } else {
+      lbl.textContent = 'Active Keyframe: #' + nearestIdx + ' (' + (keyframes[nearestIdx].scroll * 100).toFixed(0) + '%)';
+    }
+  }
+
+  // Lightweight per-scroll highlight refresh (no geo rebuild).
+  function updateAnchorHighlights() {
+    if (!anchorSpheres.length) return;
+    var nearestIdx = 0, nearestDist = Infinity;
+    keyframes.forEach(function(kf, i) {
+      var d = Math.abs(kf.scroll - currentScroll);
+      if (d < nearestDist) { nearestDist = d; nearestIdx = i; }
+    });
+    anchorSpheres.forEach(function(sphere, idx) {
+      var isSel    = idx === selectedAnchorIdx;
+      var isActive = idx === nearestIdx && !isSel;
+      sphere.material.color.setHex(isSel ? 0xff3300 : isActive ? 0x00ffe0 : 0xffe566);
+      sphere.material.opacity = isSel ? 1.0 : isActive ? 0.9 : 0.6;
+      sphere.scale.setScalar(isSel ? 1.8 : isActive ? 1.4 : 1.0);
+    });
+    var lbl = document.getElementById('vis-selected-kf-label');
+    if (selectedAnchorIdx !== -1 && keyframes[selectedAnchorIdx]) {
+      lbl.textContent = 'Editing #' + selectedAnchorIdx + ' | Active: #' + nearestIdx + ' (' + (keyframes[nearestIdx].scroll * 100).toFixed(0) + '%)';
+    } else {
+      lbl.textContent = 'Active Keyframe: #' + nearestIdx + ' (' + (keyframes[nearestIdx].scroll * 100).toFixed(0) + '%)';
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -1334,21 +2115,264 @@
       scrub: 1.5,
       onUpdate(self) {
         document.getElementById('progress-bar').style.width = (self.progress * 100) + '%';
-        const pt = camPath.getPointAt(Math.min(self.progress, 0.999));
-        camera.position.copy(pt);
-        camera.lookAt(0, 0, 0);
+        // Freeze camera movement when visualizer is active (static reference frame)
+        if (!visualizerActive) {
+          const pt = camPath.getPointAt(Math.min(self.progress, 0.999));
+          camera.position.copy(pt);
+          camera.lookAt(0, 0, 0);
+        }
         
         // Scrub the crystal frame keyframe timeline
         applyTimeline(self.progress);
+
+        // Refresh sphere highlights to track scroll position
+        if (visualizerActive) updateAnchorHighlights();
       },
     });
 
     // Creative Control Panel Listeners
     document.getElementById('debug-toggle').addEventListener('click', () => {
       document.getElementById('debug-panel').classList.toggle('active');
+      document.getElementById('debug-toggle').classList.toggle('active-btn');
     });
 
-    const inputs = ['dbg-pos-x', 'dbg-pos-y', 'dbg-pos-z', 'dbg-rot-x-val', 'dbg-rot-y-val', 'dbg-scale', 'dbg-spotlight-rad'];
+
+    // \u2500\u2500 Scene Registry & Asset Panel \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+    const sceneRegistry = [
+      {
+        id: 'crystal', category: '3D Objects', label: 'Crystal', sublabel: 'Polygon \u00b7 Animated',
+        icon: '\ud83d\udc8e', iconBg: 'rgba(142,180,248,0.15)', iconColor: '#8eb4f8',
+        tabs: ['Transform', 'Material', 'Visualizer'],
+        getObj: () => crystalGroup,
+      },
+      {
+        id: 'particles', category: '3D Objects', label: 'Particles', sublabel: 'Point Cloud',
+        icon: '\u2726', iconBg: 'rgba(255,255,180,0.12)', iconColor: '#ffe566',
+        tabs: [],
+        getObj: () => window._particleMesh || null,
+      },
+      {
+        id: 'grid', category: 'Background & Grid', label: 'Background Grid', sublabel: 'GLSL Shader',
+        icon: '\u2b21', iconBg: 'rgba(100,200,255,0.10)', iconColor: '#64c8ff',
+        tabs: [],
+        getObj: () => window._gridMesh || null,
+      },
+      {
+        id: 'cursor', category: 'Cursor Experience', label: 'Cursor & Trails', sublabel: 'Glitter \u00b7 Sand \u00b7 Sparks',
+        icon: '\u2728', iconBg: 'rgba(255,160,255,0.15)', iconColor: '#ff8eff',
+        tabs: [],
+        getObj: () => null,
+      }
+    ];
+
+    let currentAssetId = 'crystal';
+
+    function renderAssetList() {
+      const list  = document.getElementById('asset-list');
+      const count = document.getElementById('asset-count');
+      if (!list) return;
+      count.textContent = sceneRegistry.length + ' object' + (sceneRegistry.length !== 1 ? 's' : '');
+      list.innerHTML = '';
+
+      // Group assets by category
+      const categories = {};
+      sceneRegistry.forEach(function(asset) {
+        const cat = asset.category || 'Other';
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(asset);
+      });
+
+      Object.keys(categories).forEach(function(catName) {
+        // Add Category Header
+        var catHeader = document.createElement('div');
+        catHeader.style.cssText = 'font-family:\'JetBrains Mono\',monospace;font-size:9px;font-weight:bold;color:var(--text);opacity:0.45;letter-spacing:1px;margin:12px 0 6px;text-transform:uppercase;';
+        catHeader.textContent = catName;
+        list.appendChild(catHeader);
+
+        // Add Category Group wrapper
+        var catGroup = document.createElement('div');
+        catGroup.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
+
+        categories[catName].forEach(function(asset) {
+          var obj = asset.getObj();
+          var isVisible = obj ? obj.visible : true;
+
+          var card = document.createElement('div');
+          card.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,0.03);cursor:pointer;transition:background 0.15s;';
+          card.onmouseenter = function() { card.style.background = 'rgba(255,255,255,0.07)'; };
+          card.onmouseleave = function() { card.style.background = 'rgba(255,255,255,0.03)'; };
+
+          var icon = document.createElement('div');
+          icon.style.cssText = 'width:32px;height:32px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;background:' + asset.iconBg + ';';
+          icon.textContent = asset.icon;
+
+          var textDiv = document.createElement('div');
+          textDiv.style.cssText = 'flex:1;min-width:0;';
+          textDiv.innerHTML = '<div style="font-family:\'JetBrains Mono\',monospace;font-size:11px;font-weight:bold;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + asset.label + '</div>'
+            + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:9px;color:' + asset.iconColor + ';opacity:0.85;margin-top:1px;">' + asset.sublabel + '</div>';
+
+          card.appendChild(icon);
+          card.appendChild(textDiv);
+
+          // Add visibility toggle only if getObj returns an object
+          if (obj) {
+            var vis = document.createElement('button');
+            vis.title = isVisible ? 'Hide' : 'Show';
+            vis.style.cssText = 'background:none;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;padding:2px 5px;cursor:pointer;flex-shrink:0;opacity:' + (isVisible ? '1' : '0.3') + ';';
+            vis.textContent = '\ud83d\udc41';
+            vis.addEventListener('click', function(e) {
+              e.stopPropagation();
+              var o = asset.getObj();
+              if (o) { o.visible = !o.visible; renderAssetList(); }
+            });
+            card.appendChild(vis);
+          }
+
+          var chevron = document.createElement('span');
+          chevron.style.cssText = 'font-size:16px;color:var(--text);opacity:0.35;flex-shrink:0;';
+          chevron.textContent = '\u203a';
+          card.appendChild(chevron);
+
+          (function(aid) {
+            card.addEventListener('click', function() { openAssetEditor(aid); });
+          })(asset.id);
+          catGroup.appendChild(card);
+        });
+
+        list.appendChild(catGroup);
+      });
+    }
+
+    function openAssetEditor(assetId) {
+      currentAssetId = assetId;
+      var asset = sceneRegistry.filter(function(a) { return a.id === assetId; })[0];
+      document.getElementById('panel-assets-view').style.display = 'none';
+      document.getElementById('panel-editor-view').style.display = 'block';
+      document.getElementById('editing-asset-label').textContent = asset ? (asset.icon + '  ' + asset.label) : assetId;
+
+      // Hide all editor sections
+      var sections = ['section-transform', 'section-material', 'section-visualizer', 'section-background', 'section-cursor'];
+      sections.forEach(function(sId) {
+        var el = document.getElementById(sId);
+        if (el) el.style.display = 'none';
+      });
+
+      var tabsHeader = document.getElementById('editor-tabs');
+
+      if (assetId === 'crystal') {
+        tabsHeader.style.display = 'flex';
+        var tT = document.getElementById('tab-transform');
+        var tM = document.getElementById('tab-material');
+        var tV = document.getElementById('tab-visualizer');
+        tT.style.display = '';
+        tM.style.display = '';
+        tV.style.display = '';
+        tT.click();
+      } else {
+        tabsHeader.style.display = 'none';
+        if (assetId === 'grid') {
+          var secBg = document.getElementById('section-background');
+          if (secBg) secBg.style.display = 'block';
+        } else if (assetId === 'cursor') {
+          var secCur = document.getElementById('section-cursor');
+          if (secCur) secCur.style.display = 'block';
+        }
+      }
+    }
+
+    function goBackToAssets() {
+      document.getElementById('panel-editor-view').style.display = 'none';
+      document.getElementById('panel-assets-view').style.display = 'block';
+      renderAssetList();
+    }
+
+    document.getElementById('btn-back-assets').addEventListener('click', goBackToAssets);
+
+    // Start on the asset list
+    goBackToAssets();
+
+    // Tab Switching Logic
+    const tabTransform = document.getElementById('tab-transform');
+    const tabMaterial = document.getElementById('tab-material');
+    const tabVisualizer = document.getElementById('tab-visualizer');
+    const secTransform = document.getElementById('section-transform');
+    const secMaterial = document.getElementById('section-material');
+    const secVisualizer = document.getElementById('section-visualizer');
+
+    tabTransform.addEventListener('click', () => {
+      tabTransform.style.borderBottom = '2px solid var(--text)';
+      tabTransform.style.fontWeight = 'bold';
+      tabTransform.style.opacity = '1';
+      tabMaterial.style.borderBottom = 'none';
+      tabMaterial.style.fontWeight = 'normal';
+      tabMaterial.style.opacity = '0.5';
+      tabVisualizer.style.borderBottom = 'none';
+      tabVisualizer.style.fontWeight = 'normal';
+      tabVisualizer.style.opacity = '0.5';
+      secTransform.style.display = 'block';
+      secMaterial.style.display = 'none';
+      secVisualizer.style.display = 'none';
+    });
+
+    tabMaterial.addEventListener('click', () => {
+      tabMaterial.style.borderBottom = '2px solid var(--text)';
+      tabMaterial.style.fontWeight = 'bold';
+      tabMaterial.style.opacity = '1';
+      tabTransform.style.borderBottom = 'none';
+      tabTransform.style.fontWeight = 'normal';
+      tabTransform.style.opacity = '0.5';
+      tabVisualizer.style.borderBottom = 'none';
+      tabVisualizer.style.fontWeight = 'normal';
+      tabVisualizer.style.opacity = '0.5';
+      secMaterial.style.display = 'block';
+      secTransform.style.display = 'none';
+      secVisualizer.style.display = 'none';
+    });
+
+    tabVisualizer.addEventListener('click', () => {
+      tabVisualizer.style.borderBottom = '2px solid var(--text)';
+      tabVisualizer.style.fontWeight = 'bold';
+      tabVisualizer.style.opacity = '1';
+      tabTransform.style.borderBottom = 'none';
+      tabTransform.style.fontWeight = 'normal';
+      tabTransform.style.opacity = '0.5';
+      tabMaterial.style.borderBottom = 'none';
+      tabMaterial.style.fontWeight = 'normal';
+      tabMaterial.style.opacity = '0.5';
+      secVisualizer.style.display = 'block';
+      secTransform.style.display = 'none';
+      secMaterial.style.display = 'none';
+    });
+
+    // Timeline Scrub Control (Slider)
+    document.getElementById('dbg-scrub').addEventListener('input', e => {
+      isEditing = true;
+      clearTimeout(editingTimeout);
+      editingTimeout = setTimeout(() => { isEditing = false; }, 2000);
+
+      const progress = parseFloat(e.target.value);
+      const maxScroll = document.body.scrollHeight - window.innerHeight;
+      window.scrollTo(0, progress * maxScroll);
+      applyTimeline(progress);
+    });
+
+    // Timeline Scrub Control (Numeric Input)
+    document.getElementById('dbg-scrub-num').addEventListener('input', e => {
+      isEditing = true;
+      clearTimeout(editingTimeout);
+      editingTimeout = setTimeout(() => { isEditing = false; }, 2000);
+
+      let pct = parseFloat(e.target.value);
+      if (isNaN(pct)) pct = 0;
+      pct = Math.max(0, Math.min(100, pct));
+      const progress = pct / 100;
+      
+      const maxScroll = document.body.scrollHeight - window.innerHeight;
+      window.scrollTo(0, progress * maxScroll);
+      applyTimeline(progress);
+    });
+
+    const inputs = ['dbg-pos-x', 'dbg-pos-y', 'dbg-pos-z', 'dbg-rot-x-val', 'dbg-rot-y-val', 'dbg-rot-z-val', 'dbg-scale', 'dbg-spin-y', 'dbg-spin-x', 'dbg-spotlight-rad', 'dbg-opacity', 'dbg-metalness', 'dbg-roughness', 'dbg-emissive', 'dbg-wire-opacity'];
     inputs.forEach(id => {
       document.getElementById(id).addEventListener('input', () => {
         isEditing = true;
@@ -1360,35 +2384,745 @@
         const z = parseFloat(document.getElementById('dbg-pos-z').value);
         const rx = parseFloat(document.getElementById('dbg-rot-x-val').value);
         const ry = parseFloat(document.getElementById('dbg-rot-y-val').value);
+        const rz = parseFloat(document.getElementById('dbg-rot-z-val').value);
         const scale = parseFloat(document.getElementById('dbg-scale').value);
+        const spinY = parseFloat(document.getElementById('dbg-spin-y').value);
+        const spinX = parseFloat(document.getElementById('dbg-spin-x').value);
         spotlightRad = parseInt(document.getElementById('dbg-spotlight-rad').value);
+        
+        const opacity = parseFloat(document.getElementById('dbg-opacity').value);
+        const metalness = parseFloat(document.getElementById('dbg-metalness').value);
+        const roughness = parseFloat(document.getElementById('dbg-roughness').value);
+        const emissive = parseFloat(document.getElementById('dbg-emissive').value);
+        const wireOpacity = parseFloat(document.getElementById('dbg-wire-opacity').value);
+        const emissiveColor = document.getElementById('dbg-emissive-color').value;
 
-        updateSliderLabels(x, y, z, rx, ry, scale);
-        document.getElementById('lbl-spot-rad').textContent = spotlightRad;
+        updateSliderLabels(x, y, z, rx, ry, rz, scale, spinY, spinX, opacity, metalness, roughness, emissive, emissiveColor, wireOpacity);
+        document.getElementById('val-dbg-spotlight-rad').value = spotlightRad;
+
+        if (selectedAnchorIdx !== -1 && keyframes[selectedAnchorIdx]) {
+          const kf = keyframes[selectedAnchorIdx];
+          kf.x = x; kf.y = y; kf.z = z;
+          kf.rx = rx; kf.ry = ry; kf.rz = rz;
+          kf.scale = scale;
+          kf.spinY = spinY; kf.spinX = spinX;
+          kf.opacity = opacity;
+          kf.metalness = metalness;
+          kf.roughness = roughness;
+          kf.emissiveIntensity = emissive;
+          kf.emissiveColor = emissiveColor;
+          kf.wireOpacity = wireOpacity;
+          updatePathVisualizer();
+        }
 
         if (crystalGroup) {
-          crystalGroup.position.set(getResponsiveX(x), y, z);
-          crystalGroup.rotation.set(rx, ry, crystalGroup.rotation.z);
-          const finalScale = scale * debugScale;
-          crystalGroup.scale.setScalar(finalScale);
+          targetPos.set(getResponsiveX(x), y, z);
+          targetRot.set(rx, ry, rz);
+          targetScale = scale * debugScale;
+          rotSpeedY = spinY;
+          rotSpeedX = spinX;
+          const _ec = new THREE.Color(emissiveColor);
+          crystalGroup.traverse(child => {
+            if (child.isMesh && child.material) {
+              if (child.material.wireframe) {
+                child.material.opacity = wireOpacity;
+                child.material.emissiveIntensity = emissive * 0.4;
+              } else {
+                child.material.opacity = opacity;
+                child.material.emissiveIntensity = emissive;
+                child.material.emissive.copy(_ec);
+              }
+              child.material.metalness = metalness;
+              child.material.roughness = roughness;
+            }
+          });
         }
+      });
+
+      // Text input box change listener
+      const txt = document.getElementById('val-' + id);
+      if (txt) {
+        txt.addEventListener('change', e => {
+          isEditing = true;
+          clearTimeout(editingTimeout);
+          editingTimeout = setTimeout(() => { isEditing = false; }, 2000);
+
+          const slider = document.getElementById(id);
+          let val = parseFloat(e.target.value);
+          if (isNaN(val)) val = parseFloat(slider.value);
+          const min = parseFloat(slider.min);
+          const max = parseFloat(slider.max);
+          val = Math.max(min, Math.min(max, val));
+
+          slider.value = val;
+          slider.dispatchEvent(new Event('input'));
+        });
+      }
+    });
+
+    // Emissive color picker — live apply + bidirectional sync with text box
+    document.getElementById('dbg-emissive-color').addEventListener('input', function(e) {
+      var emissiveColor = e.target.value;
+      document.getElementById('val-dbg-emissive-color').value = emissiveColor;
+      if (crystalGroup) {
+        var _ec = new THREE.Color(emissiveColor);
+        crystalGroup.traverse(function(child) {
+          if (child.isMesh && child.material && !child.material.wireframe) {
+            child.material.emissive.copy(_ec);
+          }
+        });
+      }
+      if (selectedAnchorIdx !== -1 && keyframes[selectedAnchorIdx]) {
+        keyframes[selectedAnchorIdx].emissiveColor = emissiveColor;
+      }
+      isEditing = true;
+      clearTimeout(editingTimeout);
+      editingTimeout = setTimeout(function() { isEditing = false; }, 2000);
+    });
+    document.getElementById('val-dbg-emissive-color').addEventListener('change', function(e) {
+      var val = e.target.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('dbg-emissive-color').value = val;
+        document.getElementById('dbg-emissive-color').dispatchEvent(new Event('input'));
+      }
+    });
+
+    // Increment / Decrement Buttons Listener
+    document.querySelectorAll('.btn-dec, .btn-inc').forEach(btn => {
+      btn.addEventListener('click', e => {
+        isEditing = true;
+        clearTimeout(editingTimeout);
+        editingTimeout = setTimeout(() => { isEditing = false; }, 2000);
+
+        const targetId = btn.getAttribute('data-id');
+        const step = parseFloat(btn.getAttribute('data-step'));
+        const slider = document.getElementById(targetId);
+        
+        let val = parseFloat(slider.value) + step;
+        const min = parseFloat(slider.min);
+        const max = parseFloat(slider.max);
+        val = Math.max(min, Math.min(max, val));
+        
+        slider.value = val;
+        slider.dispatchEvent(new Event('input'));
       });
     });
 
+
+    // ═══════════════════════════════════════════════════════════════
+    // BACKGROUND & GRID CONTROLLER
+    // ═══════════════════════════════════════════════════════════════
+    function syncBgVal(id, val) {
+      const el = document.getElementById('val-' + id);
+      if (el) el.value = typeof val === 'number' ? val.toFixed(id.indexOf('sharp') !== -1 ? 3 : 2) : val;
+    }
+
+    // Grid Color A
+    document.getElementById('bg-color-a').addEventListener('input', e => {
+      const val = e.target.value;
+      syncBgVal('bg-color-a', val);
+      if (gridMat) gridMat.uniforms.uColorA.value.set(val);
+    });
+    document.getElementById('val-bg-color-a').addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('bg-color-a').value = val;
+        if (gridMat) gridMat.uniforms.uColorA.value.set(val);
+      }
+    });
+
+    // Grid Color B
+    document.getElementById('bg-color-b').addEventListener('input', e => {
+      const val = e.target.value;
+      syncBgVal('bg-color-b', val);
+      if (gridMat) gridMat.uniforms.uColorB.value.set(val);
+    });
+    document.getElementById('val-bg-color-b').addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('bg-color-b').value = val;
+        if (gridMat) gridMat.uniforms.uColorB.value.set(val);
+      }
+    });
+
+    // Page Background
+    document.getElementById('bg-page-color').addEventListener('input', e => {
+      const val = e.target.value;
+      syncBgVal('bg-page-color', val);
+      document.body.style.setProperty('--bg', val);
+    });
+    document.getElementById('val-bg-page-color').addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('bg-page-color').value = val;
+        document.body.style.setProperty('--bg', val);
+      }
+    });
+
+    // Scale (Density)
+    document.getElementById('bg-density').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-density', val);
+      if (gridMat) gridMat.uniforms.uDensity.value = val;
+    });
+
+    // Sharpness
+    document.getElementById('bg-sharpness').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-sharpness', val);
+      if (gridMat) gridMat.uniforms.uSharpness.value = val;
+    });
+
+    // Opacity
+    document.getElementById('bg-opacity').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-opacity', val);
+      if (gridMat) gridMat.uniforms.uGridAlpha.value = val;
+    });
+
+    // Blur (px)
+    document.getElementById('bg-blur').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-blur', val);
+      const canvasEl = document.getElementById('canvas');
+      if (canvasEl) canvasEl.style.filter = val > 0 ? 'blur(' + val + 'px)' : 'none';
+    });
+
+    // Amplitude
+    document.getElementById('bg-wave-amp').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-wave-amp', val);
+      if (gridMat) gridMat.uniforms.uWaveAmp.value = val;
+    });
+
+    // Speed
+    document.getElementById('bg-wave-speed').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-wave-speed', val);
+      if (gridMat) gridMat.uniforms.uWaveSpeed.value = val;
+    });
+
+    // Position Y
+    document.getElementById('bg-pos-y').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-pos-y', val);
+      if (window._gridMesh) window._gridMesh.position.y = val;
+    });
+
+    // Rot X
+    document.getElementById('bg-rot-x').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-rot-x', val);
+      if (window._gridMesh) window._gridMesh.rotation.x = val;
+    });
+
+    // Rot Y
+    document.getElementById('bg-rot-y').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-rot-y', val);
+      if (window._gridMesh) window._gridMesh.rotation.y = val;
+    });
+
+
+    // ═══════════════════════════════════════════════════════════════
+    // CURSOR & TRAILS CONTROLLER
+    // ═══════════════════════════════════════════════════════════════
+    function syncCurVal(id, val) {
+      const el = document.getElementById('val-' + id);
+      if (el) el.value = typeof val === 'number' ? val.toFixed(2) : val;
+    }
+
+    // Modular Toggles
+    document.getElementById('cur-toggle-dot').addEventListener('change', e => {
+      curShowDot = e.target.checked;
+    });
+    document.getElementById('cur-toggle-ring').addEventListener('change', e => {
+      curShowRing = e.target.checked;
+    });
+    document.getElementById('cur-toggle-cross').addEventListener('change', e => {
+      curShowCross = e.target.checked;
+    });
+    document.getElementById('cur-toggle-noomo').addEventListener('change', e => {
+      curShowNoomo = e.target.checked;
+      const cDot = document.getElementById('cursor-dot');
+      if (curShowNoomo) {
+        cDot.style.backgroundColor = '#ffffff';
+        cDot.style.mixBlendMode = 'difference';
+      } else {
+        cDot.style.mixBlendMode = 'normal';
+        cDot.style.backgroundColor = document.getElementById('cur-dot-color').value;
+      }
+    });
+
+    // Trail Color Mode toggle UI panels
+    const colorModeSelect = document.getElementById('cur-trail-color-mode');
+    const solidGrp = document.getElementById('cur-trail-solid-group');
+    const gradGrp = document.getElementById('cur-trail-grad-group');
+    
+    function updateColorModeUI() {
+      const mode = colorModeSelect.value;
+      solidGrp.style.display = mode === 'solid' ? 'block' : 'none';
+      gradGrp.style.display = mode === 'gradient' ? 'block' : 'none';
+      
+      if (mode === 'gradient') {
+        trailColorOverride = false;
+      } else if (mode === 'solid') {
+        trailColorOverride = true;
+        trailColor = document.getElementById('cur-trail-color').value;
+      } else {
+        trailColorOverride = false;
+      }
+    }
+    colorModeSelect.addEventListener('change', updateColorModeUI);
+    updateColorModeUI();
+
+    // Gradient A Picker
+    document.getElementById('cur-trail-color-a').addEventListener('input', e => {
+      syncCurVal('cur-trail-color-a', e.target.value);
+    });
+    document.getElementById('val-cur-trail-color-a').addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('cur-trail-color-a').value = val;
+      }
+    });
+
+    // Gradient B Picker
+    document.getElementById('cur-trail-color-b').addEventListener('input', e => {
+      syncCurVal('cur-trail-color-b', e.target.value);
+    });
+    document.getElementById('val-cur-trail-color-b').addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('cur-trail-color-b').value = val;
+      }
+    });
+
+    // Dot Size
+    document.getElementById('cur-dot-size').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncCurVal('cur-dot-size', val);
+      const cDot = document.getElementById('cursor-dot');
+      if (cDot) {
+        cDot.style.width = val + 'px';
+        cDot.style.height = val + 'px';
+      }
+    });
+
+    // Ring Size
+    document.getElementById('cur-ring-size').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncCurVal('cur-ring-size', val);
+      const cRing = document.getElementById('cursor-ring');
+      if (cRing) {
+        cRing.style.width = val + 'px';
+        cRing.style.height = val + 'px';
+      }
+    });
+
+    // Dot/Cursor Color
+    document.getElementById('cur-dot-color').addEventListener('input', e => {
+      const val = e.target.value;
+      syncCurVal('cur-dot-color', val);
+      document.body.style.setProperty('--cursor-color', val);
+      const cDot = document.getElementById('cursor-dot');
+      if (cDot) cDot.style.backgroundColor = val;
+    });
+    document.getElementById('val-cur-dot-color').addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('cur-dot-color').value = val;
+        document.body.style.setProperty('--cursor-color', val);
+        const cDot = document.getElementById('cursor-dot');
+        if (cDot) cDot.style.backgroundColor = val;
+      }
+    });
+
+    // Particle Trail Logic
+    const trailCanvas = document.getElementById('trail-canvas');
+    const trailCtx = trailCanvas.getContext('2d');
+    let particlesList = [];
+    let trailType = 'none';
+    let trailDensity = 5;
+    let trailSize = 3;
+    let trailSpeed = 1.5;
+    let trailLife = 45;
+    let trailGravity = 0.04;
+    let trailColorOverride = false;
+    let trailColor = '#ffd700';
+
+    function resizeTrailCanvas() {
+      if (trailCanvas) {
+        trailCanvas.width = window.innerWidth;
+        trailCanvas.height = window.innerHeight;
+      }
+    }
+    window.addEventListener('resize', resizeTrailCanvas);
+    resizeTrailCanvas();
+
+    class TrailParticle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * trailSpeed;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+
+        if (trailType === 'snow') {
+          this.vx = (Math.random() - 0.5) * 0.5 * trailSpeed;
+          this.vy = (0.3 + Math.random() * 0.5) * trailSpeed * 0.5;
+        } else if (trailType === 'smoke') {
+          this.vx = (Math.random() - 0.5) * 0.3 * trailSpeed;
+          this.vy = -(0.3 + Math.random() * 0.5) * trailSpeed * 0.5;
+        } else if (trailType === 'water') {
+          this.vx = (Math.random() - 0.5) * 0.7 * trailSpeed;
+          this.vy = (Math.random() - 0.5) * 0.7 * trailSpeed;
+        }
+
+        this.life = trailLife;
+        this.maxLife = trailLife;
+        this.size = (0.4 + Math.random() * 0.6) * (trailType === 'water' ? trailSize * 1.8 : trailSize);
+        
+        // Dynamic Color calculation
+        const cMode = document.getElementById('cur-trail-color-mode').value;
+        if (cMode === 'gradient') {
+          const colA = document.getElementById('cur-trail-color-a').value;
+          const colB = document.getElementById('cur-trail-color-b').value;
+          this.color = lerpColor(colA, colB, 0); // initial
+        } else if (trailColorOverride) {
+          this.color = trailColor;
+        } else {
+          if (trailType === 'glitter') {
+            this.color = 'hsl(' + (40 + Math.random() * 15) + ', 100%, ' + (60 + Math.random() * 20) + '%)';
+          } else if (trailType === 'sand') {
+            this.color = '#d2b48c';
+          } else if (trailType === 'sparks') {
+            this.color = 'rgb(255, ' + Math.floor(100 + Math.random() * 100) + ', 0)';
+          } else if (trailType === 'snow') {
+            this.color = 'rgba(220, 240, 255, ' + (0.4 + Math.random() * 0.4) + ')';
+          } else if (trailType === 'smoke') {
+            this.color = 'rgba(150, 150, 150, ' + (0.1 + Math.random() * 0.1) + ')';
+          } else if (trailType === 'water') {
+            this.color = 'rgba(0, 191, 255, 0.4)';
+          }
+        }
+
+        this.rot = Math.random() * Math.PI * 2;
+        this.rotSpeed = (Math.random() - 0.5) * 0.1;
+        this.wobbleSpeed = 0.05 + Math.random() * 0.05;
+        this.wobble = Math.random() * 100;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy + trailGravity;
+        
+        if (trailType === 'snow') {
+          this.wobble += this.wobbleSpeed;
+          this.x += Math.sin(this.wobble) * 0.3;
+        }
+
+        this.life--;
+        this.rot += this.rotSpeed;
+      }
+
+      draw() {
+        const alpha = this.life / this.maxLife;
+        trailCtx.save();
+        trailCtx.globalAlpha = alpha;
+        
+        // Gradient color interpolation over lifetime
+        const cMode = document.getElementById('cur-trail-color-mode').value;
+        if (cMode === 'gradient') {
+          const colA = document.getElementById('cur-trail-color-a').value;
+          const colB = document.getElementById('cur-trail-color-b').value;
+          this.color = lerpColor(colA, colB, 1 - alpha);
+        }
+
+        if (trailType === 'sparks') {
+          trailCtx.strokeStyle = this.color;
+        } else {
+          trailCtx.fillStyle = this.color;
+        }
+        
+        trailCtx.translate(this.x, this.y);
+        trailCtx.rotate(this.rot);
+
+        if (trailType === 'glitter') {
+          trailCtx.beginPath();
+          for (let i = 0; i < 4; i++) {
+            trailCtx.lineTo(0, -this.size * 1.5);
+            trailCtx.rotate(Math.PI / 4);
+            trailCtx.lineTo(0, -this.size * 0.4);
+            trailCtx.rotate(Math.PI / 4);
+          }
+          trailCtx.closePath();
+          trailCtx.fill();
+        } else if (trailType === 'sparks') {
+          trailCtx.beginPath();
+          trailCtx.lineWidth = this.size * 0.5;
+          trailCtx.moveTo(0, -this.size * 2);
+          trailCtx.lineTo(0, this.size * 2);
+          trailCtx.stroke();
+        } else if (trailType === 'smoke') {
+          const scaleSize = this.size * (1 + (1 - alpha) * 2);
+          trailCtx.beginPath();
+          trailCtx.arc(0, 0, scaleSize, 0, Math.PI * 2);
+          trailCtx.fill();
+        } else if (trailType === 'water') {
+          // Draw watery drop using a soft radial gradient
+          const grad = trailCtx.createRadialGradient(0, 0, 0, 0, 0, this.size);
+          grad.addColorStop(0, this.color);
+          grad.addColorStop(0.3, this.color);
+          grad.addColorStop(1, 'rgba(255,255,255,0)');
+          trailCtx.fillStyle = grad;
+          trailCtx.beginPath();
+          trailCtx.arc(0, 0, this.size, 0, Math.PI * 2);
+          trailCtx.fill();
+        } else {
+          trailCtx.beginPath();
+          trailCtx.arc(0, 0, this.size, 0, Math.PI * 2);
+          trailCtx.fill();
+        }
+
+        trailCtx.restore();
+      }
+    }
+
+    window.addEventListener('mousemove', e => {
+      if (trailType === 'none') return;
+      for (let i = 0; i < trailDensity; i++) {
+        particlesList.push(new TrailParticle(e.clientX, e.clientY));
+      }
+    });
+
+function lerpColor(a, b, amount) {
+    const ah = parseInt(a.replace(/#/g, ''), 16),
+          bh = parseInt(b.replace(/#/g, ''), 16),
+          ar = ah >> 16, ag = ah >> 8 & 0xff, ab = ah & 0xff,
+          br = bh >> 16, bg = bh >> 8 & 0xff, bb = bh & 0xff,
+          rr = ar + amount * (br - ar),
+          rg = ag + amount * (bg - ag),
+          rb = ab + amount * (bb - ab);
+    return 'rgb(' + Math.round(rr) + ',' + Math.round(rg) + ',' + Math.round(rb) + ')';
+  }
+    function tickParticles() {
+      if (trailCtx) {
+        trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+        
+        // Fluid watery liquid metaball canvas filter recipe
+        if (trailType === 'water') {
+          trailCtx.filter = 'blur(6px) contrast(1.8)';
+        } else {
+          trailCtx.filter = 'none';
+        }
+        
+        if (trailType !== 'none' || particlesList.length > 0) {
+          for (let i = particlesList.length - 1; i >= 0; i--) {
+            const p = particlesList[i];
+            p.update();
+            if (p.life <= 0) {
+              particlesList.splice(i, 1);
+            } else {
+              p.draw();
+            }
+          }
+        }
+      }
+      requestAnimationFrame(tickParticles);
+    }
+    tickParticles();
+
+    // Trail Type Buttons
+    document.querySelectorAll('.trail-type-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.trail-type-btn').forEach(b => {
+          b.style.background = '';
+          b.style.color = '';
+        });
+        const type = btn.getAttribute('data-type');
+        trailType = type;
+        
+        let bg = 'rgba(255,255,255,0.1)';
+        let fg = 'var(--text)';
+        if (type === 'glitter') { bg = 'rgba(255,215,0,0.15)'; fg = '#ffd700'; }
+        else if (type === 'sand') { bg = 'rgba(210,180,140,0.15)'; fg = '#d2b48c'; }
+        else if (type === 'sparks') { bg = 'rgba(255,100,0,0.15)'; fg = '#ff6400'; }
+        else if (type === 'snow') { bg = 'rgba(200,230,255,0.15)'; fg = '#c8e6ff'; }
+        else if (type === 'smoke') { bg = 'rgba(150,150,150,0.15)'; fg = '#aaa'; }
+        else if (type === 'water') { bg = 'rgba(0,191,255,0.15)'; fg = '#00bfff'; }
+
+        btn.style.background = bg;
+        btn.style.color = fg;
+      });
+    });
+
+    // Density
+    document.getElementById('cur-trail-density').addEventListener('input', e => {
+      trailDensity = parseInt(e.target.value);
+      syncCurVal('cur-trail-density', trailDensity);
+    });
+
+    // Size
+    document.getElementById('cur-trail-size').addEventListener('input', e => {
+      trailSize = parseFloat(e.target.value);
+      syncCurVal('cur-trail-size', trailSize);
+    });
+
+    // Speed
+    document.getElementById('cur-trail-speed').addEventListener('input', e => {
+      trailSpeed = parseFloat(e.target.value);
+      syncCurVal('cur-trail-speed', trailSpeed);
+    });
+
+    // Lifetime
+    document.getElementById('cur-trail-life').addEventListener('input', e => {
+      trailLife = parseFloat(e.target.value);
+      syncCurVal('cur-trail-life', trailLife);
+    });
+
+    // Gravity
+    document.getElementById('cur-trail-gravity').addEventListener('input', e => {
+      trailGravity = parseFloat(e.target.value);
+      syncCurVal('cur-trail-gravity', trailGravity);
+    });
+
+    // Color Override checkbox
+    document.getElementById('cur-trail-color-en').addEventListener('change', e => {
+      trailColorOverride = e.target.checked;
+    });
+
+    // Color picker
+    document.getElementById('cur-trail-color').addEventListener('input', e => {
+      trailColor = e.target.value;
+      syncCurVal('cur-trail-color', trailColor);
+    });
+    document.getElementById('val-cur-trail-color').addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('cur-trail-color').value = val;
+        trailColor = val;
+      }
+    });
+
     // Record Keyframe
+    // ── Keyframe List Renderer ────────────────────────────────────────────────
+    function renderKfList() {
+      const wrap = document.getElementById('kf-list-wrap');
+      if (!visualizerActive) { wrap.style.display = 'none'; return; }
+      wrap.style.display = 'flex';
+      wrap.innerHTML = '';
+
+      if (!keyframes.length) {
+        wrap.innerHTML = '<div style="font-size:10px;opacity:0.5;padding:4px;">No keyframes recorded.</div>';
+        return;
+      }
+
+      // Find nearest to current scroll
+      let nearIdx = 0, nearDist = Infinity;
+      keyframes.forEach((kf, i) => {
+        const d = Math.abs(kf.scroll - currentScroll);
+        if (d < nearDist) { nearDist = d; nearIdx = i; }
+      });
+
+      keyframes.forEach((kf, idx) => {
+        const isSel    = idx === selectedAnchorIdx;
+        const isActive = idx === nearIdx && !isSel;
+        const row = document.createElement('div');
+        row.style.cssText = [
+          'display:flex', 'align-items:center', 'justify-content:space-between',
+          'padding:3px 5px', 'border-radius:4px', 'cursor:pointer',
+          'font-size:10px', 'gap:4px',
+          isSel    ? 'background:rgba(255,51,0,0.18); color:#ff6644; font-weight:bold;' :
+          isActive ? 'background:rgba(0,255,224,0.14); color:#00e0c0;' :
+                     'background:transparent; color:var(--text); opacity:0.85;'
+        ].join(';');
+
+        const label = document.createElement('span');
+        label.style.cssText = 'flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;';
+        label.textContent = '#' + idx + '  @' + (kf.scroll * 100).toFixed(1) + '%'
+          + '  pos(' + kf.x.toFixed(2) + ', ' + kf.y.toFixed(2) + ', ' + kf.z.toFixed(2) + ')';
+
+        const btnSel = document.createElement('button');
+        btnSel.textContent = isSel ? '✓' : 'Sel';
+        btnSel.style.cssText = 'font-size:9px; padding:1px 5px; border-radius:3px; border:1px solid currentColor; background:none; color:inherit; cursor:pointer; flex-shrink:0;';
+        btnSel.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectedAnchorIdx = idx;
+          const kfSel = keyframes[idx];
+          document.getElementById('dbg-pos-x').value = kfSel.x;
+          document.getElementById('dbg-pos-y').value = kfSel.y;
+          document.getElementById('dbg-pos-z').value = kfSel.z;
+          document.getElementById('dbg-rot-x-val').value = kfSel.rx || 0;
+          document.getElementById('dbg-rot-y-val').value = kfSel.ry || 0;
+          document.getElementById('dbg-rot-z-val').value = kfSel.rz || 0;
+          document.getElementById('dbg-scale').value = kfSel.scale || 1;
+          document.getElementById('dbg-spin-y').value = kfSel.spinY !== undefined ? kfSel.spinY : 0.003;
+          document.getElementById('dbg-spin-x').value = kfSel.spinX !== undefined ? kfSel.spinX : 0.0008;
+          document.getElementById('dbg-opacity').value = kfSel.opacity || 0.92;
+          document.getElementById('dbg-metalness').value = kfSel.metalness || 0.12;
+          document.getElementById('dbg-roughness').value = kfSel.roughness || 0.06;
+          document.getElementById('dbg-emissive').value = kfSel.emissiveIntensity || 1.8;
+          document.getElementById('dbg-emissive-color').value = kfSel.emissiveColor || '#8eb4f8';
+          document.getElementById('val-dbg-emissive-color').value = kfSel.emissiveColor || '#8eb4f8';
+          document.getElementById('dbg-wire-opacity').value = kfSel.wireOpacity !== undefined ? kfSel.wireOpacity : 0.22;
+          const maxScroll = document.body.scrollHeight - window.innerHeight;
+          window.scrollTo(0, kfSel.scroll * maxScroll);
+          applyTimeline(kfSel.scroll);
+          updatePathVisualizer();
+          renderKfList();
+        });
+
+        const btnDel = document.createElement('button');
+        btnDel.textContent = '✕';
+        btnDel.style.cssText = 'font-size:9px; padding:1px 5px; border-radius:3px; border:1px solid rgba(220,53,69,0.5); background:rgba(220,53,69,0.1); color:#d9534f; cursor:pointer; flex-shrink:0;';
+        btnDel.addEventListener('click', (e) => {
+          e.stopPropagation();
+          keyframes.splice(idx, 1);
+          if (selectedAnchorIdx === idx) selectedAnchorIdx = -1;
+          else if (selectedAnchorIdx > idx) selectedAnchorIdx--;
+          updatePathVisualizer();
+          renderKfList();
+        });
+
+        row.appendChild(label);
+        row.appendChild(btnSel);
+        row.appendChild(btnDel);
+        // Click row = select (same as Sel button)
+        row.addEventListener('click', () => btnSel.click());
+        wrap.appendChild(row);
+      });
+    }
+
     document.getElementById('dbg-add-kf').addEventListener('click', () => {
       const x = parseFloat(document.getElementById('dbg-pos-x').value);
       const y = parseFloat(document.getElementById('dbg-pos-y').value);
       const z = parseFloat(document.getElementById('dbg-pos-z').value);
       const rx = parseFloat(document.getElementById('dbg-rot-x-val').value);
       const ry = parseFloat(document.getElementById('dbg-rot-y-val').value);
+      const rz = parseFloat(document.getElementById('dbg-rot-z-val').value);
       const scale = parseFloat(document.getElementById('dbg-scale').value);
+      const spinY = parseFloat(document.getElementById('dbg-spin-y').value);
+      const spinX = parseFloat(document.getElementById('dbg-spin-x').value);
+      const opacity = parseFloat(document.getElementById('dbg-opacity').value);
+      const metalness = parseFloat(document.getElementById('dbg-metalness').value);
+      const roughness = parseFloat(document.getElementById('dbg-roughness').value);
+      const emissiveIntensity = parseFloat(document.getElementById('dbg-emissive').value);
+      const emissiveColor = document.getElementById('dbg-emissive-color').value;
+      const wireOpacity = parseFloat(document.getElementById('dbg-wire-opacity').value);
 
       const progress = currentScroll;
       const threshold = 0.012;
       let existingIdx = keyframes.findIndex(kf => Math.abs(kf.scroll - progress) < threshold);
       
-      const newKf = { scroll: parseFloat(progress.toFixed(3)), x, y, z, rx, ry, scale };
+      const newKf = { 
+        scroll: parseFloat(progress.toFixed(3)), 
+        x, y, z, rx, ry, rz, scale, spinY, spinX,
+        opacity, metalness, roughness, emissiveIntensity,
+        emissiveColor, wireOpacity
+      };
       
       if (existingIdx !== -1) {
         keyframes[existingIdx] = newKf;
@@ -1405,13 +3139,14 @@
       if (document.getElementById('dbg-output').style.display === 'block') {
         document.getElementById('dbg-output').value = JSON.stringify(keyframes, null, 2);
       }
+      if (visualizerActive) { updatePathVisualizer(); renderKfList(); }
     });
 
     // Clear All Keyframes
     document.getElementById('dbg-clear-kf').addEventListener('click', () => {
       keyframes = [
-        { scroll: 0.0, x: 0.55, y: 0.0,  z: 0.5, rx: 0.0, ry: 0.0, scale: 0.82 },
-        { scroll: 1.0, x: 0.0,  y: -0.2, z: 0.6, rx: 0.0, ry: 0.0, scale: 0.82 }
+        { scroll: 0.0, x: 0.55, y: 0.0, z: 0.5, rx: 0.0, ry: 0.0, rz: 0.0, scale: 0.82, spinY: 0.003, spinX: 0.0008, opacity: 0.92, metalness: 0.12, roughness: 0.06, emissiveIntensity: 1.80, emissiveColor: '#8eb4f8', wireOpacity: 0.22 },
+        { scroll: 1.0, x: 0.0, y: -0.2, z: 0.6, rx: 0.0, ry: 0.0, rz: 0.0, scale: 0.82, spinY: 0.003, spinX: 0.0008, opacity: 0.92, metalness: 0.12, roughness: 0.06, emissiveIntensity: 1.80, emissiveColor: '#8eb4f8', wireOpacity: 0.22 }
       ];
       const btn = document.getElementById('dbg-clear-kf');
       btn.textContent = 'Cleared!';
@@ -1421,26 +3156,131 @@
         document.getElementById('dbg-output').value = JSON.stringify(keyframes, null, 2);
       }
       applyTimeline(currentScroll);
+      if (visualizerActive) { updatePathVisualizer(); renderKfList(); }
     });
 
-    // Export Configuration
-    document.getElementById('dbg-export-kf').addEventListener('click', () => {
+    // ── Export: Copy JSON to clipboard ──────────────────────────────────────
+    function showOutputPanel(json) {
+      const wrap = document.getElementById('dbg-output-wrap');
       const area = document.getElementById('dbg-output');
-      area.style.display = 'block';
-      area.value = JSON.stringify(keyframes, null, 2);
-      area.select();
-      
-      navigator.clipboard.writeText(area.value).then(() => {
+      wrap.style.display = 'block';
+      area.value = json;
+      // Auto-scroll debug panel to show output
+      const panel = document.getElementById('debug-panel');
+      if (panel) setTimeout(() => { panel.scrollTop = panel.scrollHeight; }, 50);
+    }
+
+    document.getElementById('dbg-export-kf').addEventListener('click', () => {
+      const json = JSON.stringify(keyframes, null, 2);
+      showOutputPanel(json);
+      navigator.clipboard.writeText(json).then(() => {
         const btn = document.getElementById('dbg-export-kf');
-        btn.textContent = 'Copied to Clipboard!';
-        setTimeout(() => { btn.textContent = 'Export Configuration'; }, 1500);
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => { btn.textContent = '📋 Copy JSON'; }, 1800);
       }).catch(() => {});
     });
 
-    // Save to File
+    // ── Export: Download as .json file ───────────────────────────────────────
+    document.getElementById('dbg-download-kf').addEventListener('click', () => {
+      const json = JSON.stringify(keyframes, null, 2);
+      showOutputPanel(json);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = 'keyframes.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      const btn = document.getElementById('dbg-download-kf');
+      btn.textContent = '✓ Downloaded!';
+      setTimeout(() => { btn.textContent = '⬇ Export'; }, 1800);
+    });
+
+    // ── Import .json ───────────────────────────────────────────────────
+    document.getElementById('dbg-import-kf').addEventListener('click', () => {
+      document.getElementById('dbg-import-file').click();
+    });
+
+    document.getElementById('dbg-import-file').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          if (!Array.isArray(parsed)) throw new Error('Not an array');
+          // Validate each entry has at minimum a scroll field
+          parsed.forEach((kf, i) => {
+            if (typeof kf.scroll !== 'number') throw new Error('Entry ' + i + ' missing scroll');
+          });
+          // Sort by scroll position
+          parsed.sort((a, b) => a.scroll - b.scroll);
+          keyframes = parsed;
+          selectedAnchorIdx = -1;
+          applyTimeline(currentScroll);
+          if (visualizerActive) { updatePathVisualizer(); renderKfList(); }
+          const btn = document.getElementById('dbg-import-kf');
+          btn.textContent = '✓ Imported ' + keyframes.length + ' kf';
+          setTimeout(() => { btn.textContent = '⬆ Import'; }, 2000);
+          // Show the loaded data in the output panel
+          showOutputPanel(JSON.stringify(keyframes, null, 2));
+        } catch (err) {
+          const btn = document.getElementById('dbg-import-kf');
+          btn.textContent = '✗ Bad JSON';
+          setTimeout(() => { btn.textContent = '⬆ Import'; }, 2000);
+          console.error('Import failed:', err);
+        }
+        // Reset file input so same file can be re-imported
+        e.target.value = '';
+      };
+      reader.readAsText(file);
+    });
+
+    // ── Output panel collapse/expand ─────────────────────────────────────────
+    document.getElementById('dbg-output-header').addEventListener('click', () => {
+      const area  = document.getElementById('dbg-output');
+      const arrow = document.getElementById('dbg-output-collapse');
+      const collapsed = area.style.display === 'none';
+      area.style.display   = collapsed ? 'block' : 'none';
+      arrow.textContent    = collapsed ? '▲' : '▼';
+    });
+
+    // Play Transition preview
+    let isPlaying = false;
+    document.getElementById('dbg-play-transition').addEventListener('click', () => {
+      if (isPlaying) return;
+      isPlaying = true;
+      const btn = document.getElementById('dbg-play-transition');
+      btn.textContent = 'Playing...';
+      
+      const obj = { progress: 0 };
+      gsap.to(obj, {
+        progress: 1,
+        duration: 4.5,
+        ease: 'power1.inOut',
+        onUpdate() {
+          const maxScroll = document.body.scrollHeight - window.innerHeight;
+          window.scrollTo(0, obj.progress * maxScroll);
+          
+          if (camPath && camera) {
+            const pt = camPath.getPointAt(Math.min(obj.progress, 0.999));
+            camera.position.copy(pt);
+            camera.lookAt(0, 0, 0);
+          }
+          
+          applyTimeline(obj.progress);
+        },
+        onComplete() {
+          btn.textContent = 'Preview Spline Motion';
+          isPlaying = false;
+        }
+      });
+    });
+
+    // Patch index.html with current keyframes
     document.getElementById('dbg-save-kf').addEventListener('click', () => {
       const btn = document.getElementById('dbg-save-kf');
-      btn.textContent = 'Saving...';
+      btn.textContent = 'Patching...';
       fetch('/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1448,16 +3288,16 @@
       })
       .then(res => {
         if (res.ok) {
-          btn.textContent = 'Saved to File!';
-          setTimeout(() => { btn.textContent = 'Save to File'; }, 1500);
+          btn.textContent = '✓ Patched!';
+          setTimeout(() => { btn.textContent = '💾 Patch index.html'; }, 1800);
         } else {
-          btn.textContent = 'Save Failed';
-          setTimeout(() => { btn.textContent = 'Save to File'; }, 1500);
+          btn.textContent = '✗ Failed';
+          setTimeout(() => { btn.textContent = '💾 Patch index.html'; }, 1800);
         }
       })
       .catch(() => {
-        btn.textContent = 'Error';
-        setTimeout(() => { btn.textContent = 'Save to File'; }, 1500);
+        btn.textContent = '✗ Error';
+        setTimeout(() => { btn.textContent = '💾 Patch index.html'; }, 1800);
       });
     });
 
@@ -1489,6 +3329,68 @@
       },
     });
 
+    // Visualizer Toggle Listener
+    document.getElementById('dbg-toggle-vis').addEventListener('change', e => {
+      visualizerActive = e.target.checked;
+      const canvasEl = document.getElementById('canvas');
+      if (visualizerActive) {
+        // Lock camera to a static overhead editor position
+        camera.position.set(0, 0.5, 4.0);
+        camera.lookAt(0, 0, 0);
+        // Enable clicks through the canvas layer
+        canvasEl.style.pointerEvents = 'all';
+      } else {
+        selectedAnchorIdx = -1;
+        // Restore camera to scroll-driven position
+        const pt = camPath.getPointAt(Math.min(currentScroll, 0.999));
+        camera.position.copy(pt);
+        camera.lookAt(0, 0, 0);
+        // Disable clicks again so page scrolls normally
+        canvasEl.style.pointerEvents = 'none';
+      }
+      updatePathVisualizer();
+      renderKfList();
+    });
+
+    // Raycast click selector — attach to #canvas div (domElement sits inside it)
+    document.getElementById('canvas').addEventListener('click', e => {
+      if (!visualizerActive) return;
+      e.stopPropagation();
+
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(anchorSpheres, false);
+
+      if (intersects.length > 0) {
+        const idx = intersects[0].object.userData.index;
+        selectedAnchorIdx = idx;
+        
+        const kf = keyframes[idx];
+        // Load keyframe values into all sliders
+        document.getElementById('dbg-pos-x').value = kf.x;
+        document.getElementById('dbg-pos-y').value = kf.y;
+        document.getElementById('dbg-pos-z').value = kf.z;
+        document.getElementById('dbg-rot-x-val').value = kf.rx !== undefined ? kf.rx : 0.0;
+        document.getElementById('dbg-rot-y-val').value = kf.ry !== undefined ? kf.ry : 0.0;
+        document.getElementById('dbg-scale').value = kf.scale !== undefined ? kf.scale : 1.0;
+        document.getElementById('dbg-opacity').value = kf.opacity !== undefined ? kf.opacity : 0.92;
+        document.getElementById('dbg-metalness').value = kf.metalness !== undefined ? kf.metalness : 0.12;
+        document.getElementById('dbg-roughness').value = kf.roughness !== undefined ? kf.roughness : 0.06;
+        document.getElementById('dbg-emissive').value = kf.emissiveIntensity !== undefined ? kf.emissiveIntensity : 1.80;
+
+        // Scrub scroll to match this keyframe
+        const maxScroll = document.body.scrollHeight - window.innerHeight;
+        window.scrollTo(0, kf.scroll * maxScroll);
+        applyTimeline(kf.scroll);
+
+        updatePathVisualizer();
+        renderKfList();
+      }
+    });
+
     ScrollTrigger.refresh();
   }
 
@@ -1503,19 +3405,33 @@
     if (particles?.material?.uniforms?.uTime) particles.material.uniforms.uTime.value = t;
     if (gridMat?.uniforms?.uTime)             gridMat.uniforms.uTime.value = t;
 
-    // Crystal: slow self-rotation + float + shard micro-orbit
+    // Interpolate crystalGroup toward target states (lerp on every frame for perfect smoothness)
     if (crystalGroup) {
-      crystalGroup.rotation.y += rotSpeedY;
-      crystalGroup.rotation.x += rotSpeedX;
-      crystalGroup.position.y += Math.sin(t * 1.6) * 0.0011;
+      crystalGroup.position.x += (targetPos.x - crystalGroup.position.x) * 0.085;
+      crystalGroup.position.y += (targetPos.y - crystalGroup.position.y) * 0.085;
+      crystalGroup.position.z += (targetPos.z - crystalGroup.position.z) * 0.085;
+
+      crystalGroup.rotation.x += (targetRot.x + parallaxRot.x - crystalGroup.rotation.x) * 0.085;
+      crystalGroup.rotation.y += (targetRot.y + parallaxRot.y - crystalGroup.rotation.y) * 0.085;
+
+      const currentScale = crystalGroup.scale.x;
+      const nextScale = currentScale + (targetScale - currentScale) * 0.085;
+      crystalGroup.scale.setScalar(nextScale);
+    }
+
+    // Crystal local idle animation (self-spin + gentle float + shard micro-orbit)
+    if (innerCrystal) {
+      innerCrystal.rotation.y += rotSpeedY;
+      innerCrystal.rotation.x += rotSpeedX;
+      innerCrystal.position.y = Math.sin(t * 1.6) * 0.05;
 
       // Shard micro-oscillation
       for (let i = 0; i < 6; i++) {
-        const shard = crystalGroup.getObjectByName('shard' + i);
+        const shard = innerCrystal.getObjectByName('shard' + i);
         if (shard) {
           shard.rotation.x += 0.004 + i * 0.001;
           shard.rotation.z += 0.003 - i * 0.0005;
-          shard.position.y += Math.sin(t * 1.4 + i * 1.1) * 0.0012;
+          shard.position.y = Math.sin(t * 1.4 + i * 1.1) * 0.03;
         }
       }
 

@@ -5,75 +5,47 @@
       "source": "tony363/superclaude",
       "sourceType": "github",
       "skillPath": ".claude/skills/agent-performance-engineer/SKILL.md",
-      "computedHash": "adb20e22bef96763d1591485a801effcac80f5e39513f44760e9c308ba5a6e8a"
-    },
-    "antv-s2-expert": {
-      "source": "antvis/chart-visualization-skills",
-      "sourceType": "github",
-      "computedHash": "987abfafbc863d38d5e21a95a229ca75caf7b578d4cd62b6e4f840aacf2d9810"
-    },
-    "antv-skills-maintainer": {
-      "source": "antvis/chart-visualization-skills",
-      "sourceType": "github",
-      "computedHash": "00c9c6f069287759f6789fd30eff614b229f5a863a455a9927d967d76d91afea"
-    },
-    "chart-visualization": {
-      "source": "antvis/chart-visualization-skills",
-      "sourceType": "github",
-      "computedHash": "47d1fccddac7da03f31524321f4fdb10ff6d7372de034c8ebace28094198feac"
-    },
-    "icon-retrieval": {
-      "source": "antvis/chart-visualization-skills",
-      "sourceType": "github",
-      "computedHash": "70008825aa0caf5c5b69f5d23ba01ecfbde608e96e82bcbba6f438be0a46d432"
-    },
-    "infographic-creator": {
-      "source": "antvis/chart-visualization-skills",
-      "sourceType": "github",
-      "computedHash": "7ba6710d1e2eab14018d676a32ad569afca03d52396d75cb772b97de72e88efc"
-    },
-    "motion-framer": {
-      "source": "freshtechbro/claudedesignskills",
-      "sourceType": "github",
-      "skillPath": ".claude/skills/motion-framer/SKILL.md",
-      "computedHash": "b18cf4fbfd179942f73d770f3f1d4597ea512fbdf67b2aa03f01cfd726558b6e"
+      "computedHash": "8ad1b601073b871dd3caa8eb18c7f06e6b8fab92259a4908e9c7201aec3474c6",
+      "approved_at": "2026-06-20T12:47:12"
     },
     "mysql": {
       "source": "planetscale/database-skills",
       "sourceType": "github",
-      "computedHash": "a74d7d018c4a9cfe4fd6e37f8758ef03272cde3f3dc2444c4f299636f4b3d275"
-    },
-    "narrative-text-visualization": {
-      "source": "antvis/chart-visualization-skills",
-      "sourceType": "github",
-      "computedHash": "1aaec6dd2ec2cf6557876ad74577a6e3ae76bd809f6f08c892f2cd6416eb0fb4"
-    },
-    "neki": {
-      "source": "planetscale/database-skills",
-      "sourceType": "github",
-      "computedHash": "90f086fa9fb4e19e909713378e427f3beac6163c6baa41b1aebfdc21ec0fcf99"
+      "computedHash": "c2d19ca229d770cc423cbb276789bee3ccc48e66780fdf71fcceefde5ad9574c",
+      "approved_at": "2026-06-20T12:47:26"
     },
     "oracle-dba": {
       "source": "acedergren/agentic-tools",
       "sourceType": "github",
       "skillPath": "skills/oracle-dba/SKILL.md",
-      "computedHash": "39eb71bfead8d9fd4fab83f749951ede930d3aa6597397e7879bca4e063adfa2"
+      "computedHash": "3d0ba963047d395f4f90cce373cb1533f14ddecf0077c4dda137cab5abc6e3aa",
+      "approved_at": "2026-06-20T12:47:31"
     },
     "performing-security-code-review": {
       "source": "aaaaqwq/claude-code-skills",
       "sourceType": "github",
       "skillPath": "skills/performing-security-code-review/SKILL.md",
-      "computedHash": "51cd534cbf68715ecbf3c774c37dad6376581795e6f1306b0e51121140c4bbfa"
+      "computedHash": "25dc420c2ee1461b6963a1b6fff2103919e49a5112fef41b9c95cd37ba975baa",
+      "approved_at": "2026-06-20T12:47:33"
     },
     "postgres": {
       "source": "planetscale/database-skills",
       "sourceType": "github",
-      "computedHash": "f0632544d951152bf28c4f5cbb02593af296a3abe75f8949d003718c61a9a90b"
+      "computedHash": "67d6aaf6b088002aa657418d4675448aa4e129cc1560f8fe0ed9b359eb1a0a3a",
+      "approved_at": "2026-06-20T12:52:59"
+    },
+    "task-scheduler": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": "task-scheduler/SKILL.md",
+      "computedHash": "20e2c1a94089d86bf7ee917eb0fc5641f1923639c5cb2507aae30523cc85d64d",
+      "approved_at": "2026-06-20T13:04:00"
     },
     "vitess": {
       "source": "planetscale/database-skills",
       "sourceType": "github",
-      "computedHash": "160a706dcc059d68bb0705c55df087bb9c8eaecd6a0575fa10555df478a51281"
+      "computedHash": "93ef93dddaa461f5a14444e4946c6e4fb2f6475e83d83aa56c2c75171f07812c",
+      "approved_at": "2026-06-20T12:47:36"
     }
   }
 }

@@ -486,7 +486,6 @@
 
   <!-- Cursor -->
   <canvas id="trail-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9998;"></canvas>
-  <canvas id="trail-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9998;"></canvas>
   <div id="cursor-dot"></div>
   <div id="cursor-ring"></div>
 
@@ -1328,17 +1327,18 @@
       
       const _emColor = new THREE.Color(emissiveColorHex);
       crystalGroup.traverse(child => {
-        if (child.isMesh && child.material) {
-          if (child.material.wireframe) {
-            child.material.opacity = wireOpacity;
-            child.material.emissiveIntensity = emissive * 0.4;
-          } else {
-            child.material.opacity = opacity;
-            child.material.emissiveIntensity = emissive;
-            child.material.emissive.copy(_emColor);
-          }
-          child.material.metalness = metalness;
-          child.material.roughness = roughness;
+        if (!child.isMesh || !child.material) return;
+        // Skip halo rings — they use MeshBasicMaterial (no emissive/metalness/roughness)
+        if (child.name === 'halo' || child.name === 'halo2') return;
+        if (child.material.wireframe) {
+          child.material.opacity = wireOpacity !== undefined ? wireOpacity : 0.22;
+          if (child.material.emissiveIntensity !== undefined) child.material.emissiveIntensity = emissive * 0.4;
+        } else {
+          child.material.opacity = opacity !== undefined ? opacity : 0.92;
+          if (child.material.emissiveIntensity !== undefined) child.material.emissiveIntensity = emissive;
+          if (child.material.emissive) child.material.emissive.copy(_emColor);
+          if (child.material.metalness !== undefined) child.material.metalness = metalness;
+          if (child.material.roughness !== undefined) child.material.roughness = roughness;
         }
       });
     }
@@ -1812,6 +1812,34 @@
     crystalLight = new THREE.PointLight(mode.lColor, 2.5, 4.5);
     innerCrystal.add(crystalLight);
 
+    // Halo ring — translucent orbiting ring around the crystal cluster
+    const haloGeo = new THREE.RingGeometry(0.85, 1.08, 64);
+    const haloMat = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(mode.emissive),
+      transparent: true, opacity: 0.18,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+    const haloMesh = new THREE.Mesh(haloGeo, haloMat);
+    haloMesh.name = 'halo';
+    haloMesh.rotation.x = Math.PI / 2.6; // tilted like a planetary ring
+    haloMesh.rotation.z = 0.3;
+    innerCrystal.add(haloMesh);
+
+    // Second outer ring for depth
+    const haloGeo2 = new THREE.RingGeometry(1.12, 1.22, 64);
+    const haloMat2 = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(mode.body),
+      transparent: true, opacity: 0.09,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+    const haloMesh2 = new THREE.Mesh(haloGeo2, haloMat2);
+    haloMesh2.name = 'halo2';
+    haloMesh2.rotation.x = Math.PI / 2.6;
+    haloMesh2.rotation.z = 0.3;
+    innerCrystal.add(haloMesh2);
+
     crystalGroup.position.set(0.8, 0, 0.5);  // right of centre, stays on screen
     crystalGroup.scale.setScalar(0.82);
     scene.add(crystalGroup);
@@ -1830,6 +1858,16 @@
 
     crystalGroup.traverse(child => {
       if (!child.isMesh) return;
+      if (child.name === 'halo') {
+        // Halo inner ring — emissive color
+        gsap.to(child.material.color, { r: emCol.r, g: emCol.g, b: emCol.b, duration: 0.9 });
+        return;
+      }
+      if (child.name === 'halo2') {
+        // Halo outer ring — body color
+        gsap.to(child.material.color, { r: bodyCol.r, g: bodyCol.g, b: bodyCol.b, duration: 0.9 });
+        return;
+      }
       gsap.to(child.material.color,    { r: bodyCol.r, g: bodyCol.g, b: bodyCol.b, duration: 0.9 });
       gsap.to(child.material.emissive, { r: emCol.r,   g: emCol.g,   b: emCol.b,   duration: 0.9 });
       const targetEI = child.material.wireframe ? mode.ei * 0.4 : mode.ei;
@@ -2423,17 +2461,18 @@
           rotSpeedX = spinX;
           const _ec = new THREE.Color(emissiveColor);
           crystalGroup.traverse(child => {
-            if (child.isMesh && child.material) {
-              if (child.material.wireframe) {
-                child.material.opacity = wireOpacity;
-                child.material.emissiveIntensity = emissive * 0.4;
-              } else {
-                child.material.opacity = opacity;
-                child.material.emissiveIntensity = emissive;
-                child.material.emissive.copy(_ec);
-              }
-              child.material.metalness = metalness;
-              child.material.roughness = roughness;
+            if (!child.isMesh || !child.material) return;
+            // Skip halo rings — MeshBasicMaterial has no emissive/metalness/roughness
+            if (child.name === 'halo' || child.name === 'halo2') return;
+            if (child.material.wireframe) {
+              child.material.opacity = wireOpacity !== undefined ? wireOpacity : 0.22;
+              if (child.material.emissiveIntensity !== undefined) child.material.emissiveIntensity = emissive * 0.4;
+            } else {
+              child.material.opacity = opacity !== undefined ? opacity : 0.92;
+              if (child.material.emissiveIntensity !== undefined) child.material.emissiveIntensity = emissive;
+              if (child.material.emissive) child.material.emissive.copy(_ec);
+              if (child.material.metalness !== undefined) child.material.metalness = metalness;
+              if (child.material.roughness !== undefined) child.material.roughness = roughness;
             }
           });
         }
@@ -2467,7 +2506,9 @@
       if (crystalGroup) {
         var _ec = new THREE.Color(emissiveColor);
         crystalGroup.traverse(function(child) {
-          if (child.isMesh && child.material && !child.material.wireframe) {
+          if (!child.isMesh || !child.material) return;
+          if (child.name === 'halo' || child.name === 'halo2') return;
+          if (!child.material.wireframe && child.material.emissive) {
             child.material.emissive.copy(_ec);
           }
         });
@@ -3437,6 +3478,17 @@ function lerpColor(a, b, amount) {
 
       // Glow breathe
       if (crystalLight) crystalLight.intensity = 2.2 + Math.sin(t * 2.8) * 0.8;
+
+      // Halo ring pulse — opacity breathes independently
+      const halo = innerCrystal.getObjectByName('halo');
+      if (halo) {
+        halo.material.opacity = 0.14 + Math.sin(t * 1.2) * 0.06;
+        halo.rotation.z += 0.002; // slow counter-spin
+      }
+      const halo2 = innerCrystal.getObjectByName('halo2');
+      if (halo2) {
+        halo2.material.opacity = 0.06 + Math.sin(t * 0.9 + 1.0) * 0.04;
+      }
     }
 
     // Particle slow drift

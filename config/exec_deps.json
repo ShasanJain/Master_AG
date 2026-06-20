@@ -1,0 +1,22 @@
+{
+  "_schema_version": 1,
+  "_note": "Direct Python module dependencies only. Not external packages.",
+  "sync_neural_memory.py": ["vector_memory.py", "deep_lake_vault.py"],
+  "memory_consolidation.py": [],
+  "long_term_memory.py": [],
+  "vector_memory.py": [],
+  "find_skills.py": ["vector_memory.py"],
+  "skill_audit.py": [],
+  "validate_config.py": [],
+  "db_health.py": [],
+  "db_vacuum.py": [],
+  "skills_lock_verify.py": [],
+  "check_provenance.py": [],
+  "check_directives.py": [],
+  "lazy_enrich_memory.py": ["vector_memory.py"],
+  "scheduler_engine.py": [],
+  "agent_director.py": ["vector_memory.py", "skill_audit.py"],
+  "ingest_skills.py": ["vector_memory.py"],
+  "semantic_audit.py": ["vector_memory.py"],
+  "atomic_patch.py": []
+}

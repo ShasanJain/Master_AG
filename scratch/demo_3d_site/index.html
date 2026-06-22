@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="_editor.css">
 
   <style>
   /* ═══════════════════════════════════════════════════════════════
@@ -517,9 +518,20 @@
   <!-- Creative Control Debugger -->
   <button id="debug-toggle" aria-label="Toggle creative control panel">⚙️</button>
   <div id="debug-panel">
-    <h3 style="font-family:'Playfair Display',serif; font-size:18px; margin-bottom:2px; font-style:italic; color:var(--text);">Creative Control</h3>
+    <div id="debug-panel-drag" title="Drag to move settings panel"></div>
+    <div id="debug-panel-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+      <h3 style="font-family:'Playfair Display',serif; font-size:18px; font-style:italic; color:var(--text); margin:0;">Creative Control</h3>
+      <button id="debug-min-btn" class="debug-min-btn" title="Minimize settings panel">−</button>
+    </div>
     <div style="font-family:'JetBrains Mono',monospace; font-size:11px; margin-bottom:8px; color:var(--text); opacity:0.85; display: flex; justify-content: space-between;">
       <span>Scroll: <span id="dbg-scroll-val">0.0%</span></span>
+    </div>
+
+    <!-- Page Editor Mode toggle -->
+    <div style="margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+      <button id="editor-mode-btn">✏️ Editor Mode: OFF</button>
+      <div id="editor-status-bar"></div>
+      <button id="editor-save-btn">💾 Save Changes</button>
     </div>
 
     <!-- Asset List View (default) -->
@@ -896,11 +908,11 @@
 
   <!-- Header -->
   <header>
-    <a href="#" class="logo">Master_AG</a>
+    <a href="#" class="logo" data-editable>Master_AG</a>
     <nav>
-      <a href="#s2" class="nav-link">Work</a>
-      <a href="#s3" class="nav-link">Method</a>
-      <a href="#footer" class="nav-link">Contact</a>
+      <a href="#s2" class="nav-link" data-editable>Work</a>
+      <a href="#s3" class="nav-link" data-editable>Method</a>
+      <a href="#footer" class="nav-link" data-editable>Contact</a>
       <button class="btn-pill" id="audio-btn" style="cursor:none;">
         <span id="audio-icon">♪</span>
         <span id="audio-lbl">Sound</span>
@@ -913,22 +925,22 @@
 
     <!-- Hero -->
     <section class="hero">
-      <span class="hero-eye">Scene 01 — Crystalline Depth</span>
-      <h1 class="hero-h1">story<br>telling</h1>
-      <p class="hero-sub">Scroll-driven WebGL storytelling. A living crystal formation, a cosmic particle field, and a rippling wave grid — three Z-layers creating cinematic spatial volume.</p>
-      <div class="hero-scroll">Scroll to explore</div>
+      <span class="hero-eye" data-editable>Scene 01 — Crystalline Depth</span>
+      <h1 class="hero-h1" data-editable>story<br>telling</h1>
+      <p class="hero-sub" data-editable>Scroll-driven WebGL storytelling. A living crystal formation, a cosmic particle field, and a rippling wave grid — three Z-layers creating cinematic spatial volume.</p>
+      <div class="hero-scroll" data-editable>Scroll to explore</div>
     </section>
 
     <!-- Section 2 -->
     <section class="section" id="s2">
       <div class="glass-card">
-        <div class="card-eye reveal">Scene 02 — The Shift</div>
-        <h2 class="card-title reveal d1">Coordinate<br><em>Warp</em></h2>
-        <p class="card-body reveal d2">The camera glides along a CatmullRom spline as you scroll. The crystal formation rotates through space — geometry becoming narrative.</p>
+        <div class="card-eye reveal" data-editable>Scene 02 — The Shift</div>
+        <h2 class="card-title reveal d1" data-editable>Coordinate<br><em>Warp</em></h2>
+        <p class="card-body reveal d2" data-editable>The camera glides along a CatmullRom spline as you scroll. The crystal formation rotates through space — geometry becoming narrative.</p>
         <div class="card-rule"></div>
         <div class="card-stats reveal d3">
-          <div><div class="stat-label">Particle Field</div><div class="stat-val">3,200 Stars</div></div>
-          <div><div class="stat-label">Camera Path</div><div class="stat-val a">CatmullRom</div></div>
+          <div><div class="stat-label" data-editable>Particle Field</div><div class="stat-val" data-editable>3,200 Stars</div></div>
+          <div><div class="stat-label" data-editable>Camera Path</div><div class="stat-val a" data-editable>CatmullRom</div></div>
         </div>
       </div>
     </section>
@@ -936,13 +948,13 @@
     <!-- Section 3 -->
     <section class="section" id="s3">
       <div class="glass-card">
-        <div class="card-eye reveal">Scene 03 — Separation</div>
-        <h2 class="card-title reveal d1">Dimensional<br><em>Layers</em></h2>
-        <p class="card-body reveal d2">Crystal shards at three independent Z-depths create realistic parallax. The wave grid recedes to infinity. Cosmic dust fills everything between.</p>
+        <div class="card-eye reveal" data-editable>Scene 03 — Separation</div>
+        <h2 class="card-title reveal d1" data-editable>Dimensional<br><em>Layers</em></h2>
+        <p class="card-body reveal d2" data-editable>Crystal shards at three independent Z-depths create realistic parallax. The wave grid recedes to infinity. Cosmic dust fills everything between.</p>
         <div class="card-rule"></div>
         <div class="card-stats reveal d3">
-          <div><div class="stat-label">Crystal Shards</div><div class="stat-val">7 Facets</div></div>
-          <div><div class="stat-label">Depth Range</div><div class="stat-val a">Z −5 to +5</div></div>
+          <div><div class="stat-label" data-editable>Crystal Shards</div><div class="stat-val" data-editable>7 Facets</div></div>
+          <div><div class="stat-label" data-editable>Depth Range</div><div class="stat-val a" data-editable>Z −5 to +5</div></div>
         </div>
       </div>
     </section>
@@ -950,11 +962,11 @@
     <!-- Section 4 -->
     <section class="section" id="s4">
       <div class="glass-card">
-        <div class="card-eye reveal">Scene 04 — Finale</div>
-        <h2 class="card-title reveal d1">Begin Your<br><em>Narrative</em></h2>
-        <p class="card-body reveal d2">Create cinematic experiences that captivate and convert. Scroll-driven storytelling and immersive WebGL — at your fingertips.</p>
+        <div class="card-eye reveal" data-editable>Scene 04 — Finale</div>
+        <h2 class="card-title reveal d1" data-editable>Begin Your<br><em>Narrative</em></h2>
+        <p class="card-body reveal d2" data-editable>Create cinematic experiences that captivate and convert. Scroll-driven storytelling and immersive WebGL — at your fingertips.</p>
         <div class="card-rule"></div>
-        <a href="#footer" class="btn-pill reveal d3" style="display:inline-flex;">Deploy Cinematic Stack →</a>
+        <a href="#footer" class="btn-pill reveal d3" style="display:inline-flex;" data-editable>Deploy Cinematic Stack →</a>
       </div>
     </section>
 
@@ -962,12 +974,12 @@
 
   <!-- Footer -->
   <footer id="footer">
-    <p class="footer-pre reveal">Let us help you tell your story the way it was meant to be told.</p>
+    <p class="footer-pre reveal" data-editable>Let us help you tell your story the way it was meant to be told.</p>
     <div class="footer-logo">
       <div class="footer-logo-blur">Master_AG</div>
       <div class="footer-logo-solid">Master_AG</div>
     </div>
-    <a href="mailto:hello@master-ag.dev" class="footer-email reveal">hello@master-ag.dev</a>
+    <a href="mailto:hello@master-ag.dev" class="footer-email reveal" data-editable>hello@master-ag.dev</a>
     <div class="footer-social">
       <a href="#">GitHub</a>
       <a href="#">LinkedIn</a>
@@ -3544,5 +3556,44 @@ function lerpColor(a, b, amount) {
   // ═══════════════════════════════════════════════════════════════
   initWebGL();
   </script>
+  <!-- Overlay Selection Box with Resize Handles -->
+  <div id="editor-select-box" style="display: none;">
+    <div class="ed-resize-handle tl" data-handle="tl"></div>
+    <div class="ed-resize-handle tr" data-handle="tr"></div>
+    <div class="ed-resize-handle bl" data-handle="bl"></div>
+    <div class="ed-resize-handle br" data-handle="br"></div>
+    <div class="ed-resize-handle t" data-handle="t"></div>
+    <div class="ed-resize-handle b" data-handle="b"></div>
+    <div class="ed-resize-handle l" data-handle="l"></div>
+    <div class="ed-resize-handle r" data-handle="r"></div>
+  </div>
+
+  <!-- Floating Editor Toolbar -->
+  <div id="editor-toolbar">
+    <div class="ed-toolbar-title">
+      <span>Text Editor</span>
+      <button id="ed-reset" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">Reset</button>
+    </div>
+    <div class="ed-toolbar-divider"></div>
+    <div class="ed-toolbar-row">
+      <span class="ed-toolbar-label">Font</span>
+      <select id="ed-font" style="flex: 1; min-width: 120px;"></select>
+    </div>
+    <div class="ed-toolbar-row">
+      <span class="ed-toolbar-label">Size</span>
+      <input type="range" id="ed-font-size" min="8" max="120" step="1" value="16" style="flex: 1;">
+    </div>
+    <div class="ed-toolbar-row">
+      <span class="ed-toolbar-label">Color</span>
+      <input type="color" id="ed-color" value="#000000" style="width: 40px; height: 24px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; background: none; padding: 1px;">
+      <button id="ed-bold" class="ed-btn">B</button>
+      <button id="ed-italic" class="ed-btn" style="font-style: italic;">I</button>
+      <button class="ed-btn" data-align="left">Left</button>
+      <button class="ed-btn" data-align="center">Center</button>
+      <button class="ed-btn" data-align="right">Right</button>
+    </div>
+  </div>
+
+  <script src="_editor.js"></script>
 </body>
 </html>

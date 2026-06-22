@@ -10,10 +10,12 @@
   let editorMode   = false;
   let selectedEl   = null;
   let isDragging   = false;
+  let isResizing   = false;
   let dragOffX     = 0, dragOffY = 0;
   let unsavedChanges = false;
 
   const LS_KEY = 'master_ag_page_edits';
+  const PANEL_POS_KEY = 'master_ag_panel_position';
 
   // Available fonts
   const FONTS = [
@@ -28,19 +30,95 @@
   // ─── DOM refs (populated in init) ──────────────────────────────
   let toolbar, fontSelect, fontSizeInput, colorPicker, boldBtn,
       italicBtn, alignBtns, resetBtn, editorModeBtn, statusBar,
-      editorSaveBtn;
+      editorSaveBtn, selectBox, debugPanel, dragHandle, minBtn;
 
   // ─── Init ──────────────────────────────────────────────────────
   function init() {
     buildToolbarDOM();
-    loadEdits();           // Apply any saved edits from localStorage
-    bindPanelButton();     // Wire up the ✏️ Editor Mode toggle in settings
-    bindEditorSaveBtn();   // Wire up the 💾 Save button
+    initDebugPanelControls(); // Make debug panel draggable & minimizable
+    loadEdits();             // Apply any saved edits from localStorage
+    bindPanelButton();       // Wire up the ✏️ Editor Mode toggle in settings
+    bindEditorSaveBtn();     // Wire up the 💾 Save button
+    initResizeHandles();     // Set up resizing handlers
+  }
+
+  // ─── Debug Panel Controls (Drag & Minimize) ────────────────────
+  function initDebugPanelControls() {
+    debugPanel = document.getElementById('debug-panel');
+    dragHandle = document.getElementById('debug-panel-drag');
+    minBtn     = document.getElementById('debug-min-btn');
+
+    if (!debugPanel) return;
+
+    // Load saved position
+    const savedPos = localStorage.getItem(PANEL_POS_KEY);
+    if (savedPos) {
+      try {
+        const { left, top, bottom, minimized } = JSON.parse(savedPos);
+        if (left !== undefined) debugPanel.style.left = left;
+        if (top !== undefined) {
+          debugPanel.style.top = top;
+          debugPanel.style.bottom = 'auto';
+        } else if (bottom !== undefined) {
+          debugPanel.style.bottom = bottom;
+        }
+        if (minimized) {
+          debugPanel.classList.add('minimized');
+          if (minBtn) minBtn.textContent = '＋';
+        }
+      } catch (e) {}
+    }
+
+    // Drag Logic
+    if (dragHandle) {
+      dragHandle.addEventListener('mousedown', e => {
+        e.preventDefault();
+        const rect = debugPanel.getBoundingClientRect();
+        const offX = e.clientX - rect.left;
+        const offY = e.clientY - rect.top;
+
+        function onMove(ev) {
+          debugPanel.style.left = (ev.clientX - offX) + 'px';
+          debugPanel.style.top = (ev.clientY - offY) + 'px';
+          debugPanel.style.bottom = 'auto';
+        }
+
+        function onUp() {
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+          savePanelState();
+        }
+
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+    }
+
+    // Minimize Logic
+    if (minBtn) {
+      minBtn.addEventListener('click', () => {
+        const isMin = debugPanel.classList.toggle('minimized');
+        minBtn.textContent = isMin ? '＋' : '－';
+        savePanelState();
+      });
+    }
+  }
+
+  function savePanelState() {
+    if (!debugPanel) return;
+    const state = {
+      left: debugPanel.style.left,
+      top: debugPanel.style.top,
+      bottom: debugPanel.style.bottom,
+      minimized: debugPanel.classList.contains('minimized')
+    };
+    localStorage.setItem(PANEL_POS_KEY, JSON.stringify(state));
   }
 
   // ─── Toolbar DOM builder ───────────────────────────────────────
   function buildToolbarDOM() {
     toolbar = document.getElementById('editor-toolbar');
+    selectBox = document.getElementById('editor-select-box');
     if (!toolbar) return; // Panel HTML not injected yet
 
     fontSelect    = document.getElementById('ed-font');
@@ -79,7 +157,9 @@
 
     // Close toolbar on outside click
     document.addEventListener('mousedown', e => {
+      if (isDragging || isResizing) return;
       if (toolbar && toolbar.contains(e.target)) return;
+      if (selectBox && selectBox.contains(e.target)) return;
       if (selectedEl && selectedEl.contains(e.target)) return;
       if (e.target.hasAttribute('data-editable')) return;
       deselect();
@@ -95,6 +175,10 @@
         deselect();
       }
     });
+
+    // Sync select box position on scroll/resize
+    window.addEventListener('scroll', updateSelectBoxPos, { passive: true });
+    window.addEventListener('resize', updateSelectBoxPos, { passive: true });
   }
 
   // ─── Panel button wiring ───────────────────────────────────────
@@ -123,7 +207,7 @@
     }
     if (statusBar) {
       statusBar.textContent = editorMode
-        ? 'Click any text to select • Double-click to edit'
+        ? 'Click any text to select • Drag to move • Pull handles to resize'
         : '';
     }
     if (editorSaveBtn) {
@@ -141,14 +225,14 @@
   // ─── Attach listeners to all [data-editable] elements ─────────
   function attachEditableListeners() {
     document.querySelectorAll('[data-editable]').forEach(el => {
-      // Avoid double-binding
       if (el._editorBound) return;
       el._editorBound = true;
 
       // Single click → select
       el.addEventListener('mousedown', e => {
         if (!editorMode) return;
-        if (el.isContentEditable) return; // Don't interrupt inline editing
+        if (el.isContentEditable) return;
+        if (e.target.closest('#editor-toolbar') || e.target.closest('#editor-select-box')) return;
         e.stopPropagation();
         select(el);
         startDrag(e, el);
@@ -161,30 +245,30 @@
         el.contentEditable = 'true';
         el.style.cursor = 'text';
         el.focus();
-        // place cursor at click position
+        
         const range = document.caretRangeFromPoint(e.clientX, e.clientY);
         if (range) {
           const sel = window.getSelection();
           sel.removeAllRanges();
           sel.addRange(range);
         }
-        // Commit on blur
+
         el.addEventListener('blur', () => {
           el.contentEditable = 'false';
           el.style.cursor = '';
           markUnsaved();
           autoSave();
+          updateSelectBoxPos();
         }, { once: true });
       });
 
-      // Prevent link navigation in editor mode
       if (el.tagName === 'A') {
         el.addEventListener('click', e => { if (editorMode) e.preventDefault(); });
       }
     });
   }
 
-  // ─── Select an element ─────────────────────────────────────────
+  // ─── Select / Deselect ─────────────────────────────────────────
   function select(el) {
     if (selectedEl === el) return;
     if (selectedEl) selectedEl.classList.remove('el-selected');
@@ -192,16 +276,16 @@
     selectedEl = el;
     el.classList.add('el-selected');
 
-    // Set label badge
     const tag = el.tagName.toLowerCase();
     const cls = el.className.replace(/el-selected|el-dragging/g, '').trim().split(' ')[0];
     el.setAttribute('data-ed-label', cls || tag);
 
     syncToolbarToElement(el);
     showToolbar(el);
+    updateSelectBoxPos();
 
     if (statusBar) {
-      statusBar.textContent = `Selected: ${el.getAttribute('data-ed-label')} • Dbl-click to edit text`;
+      statusBar.textContent = `Selected: ${el.getAttribute('data-ed-label')} • Drag to move • Double-click to edit text`;
     }
   }
 
@@ -210,10 +294,117 @@
       selectedEl.classList.remove('el-selected', 'el-dragging');
       selectedEl = null;
     }
+    if (selectBox) selectBox.style.display = 'none';
     hideToolbar();
     if (statusBar) {
-      statusBar.textContent = editorMode ? 'Click any text to select • Double-click to edit' : '';
+      statusBar.textContent = editorMode ? 'Click any text to select • Drag to move • Pull handles to resize' : '';
     }
+  }
+
+  // ─── Selection Box Position Sync ───────────────────────────────
+  function updateSelectBoxPos() {
+    if (!selectedEl || !selectBox || !editorMode) return;
+    const rect = selectedEl.getBoundingClientRect();
+    selectBox.style.left   = rect.left + 'px';
+    selectBox.style.top    = rect.top + 'px';
+    selectBox.style.width  = rect.width + 'px';
+    selectBox.style.height = rect.height + 'px';
+    selectBox.style.display = 'block';
+  }
+
+  // ─── Resize Handles Logic ──────────────────────────────────────
+  function initResizeHandles() {
+    selectBox = selectBox || document.getElementById('editor-select-box');
+    if (!selectBox) return;
+
+    selectBox.querySelectorAll('.ed-resize-handle').forEach(handle => {
+      handle.addEventListener('mousedown', e => {
+        if (!selectedEl) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        isResizing = true;
+        const type = handle.dataset.handle;
+        const rect = selectedEl.getBoundingClientRect();
+        
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const startW = rect.width;
+        const startH = rect.height;
+        const startLeft = rect.left;
+        const startTop = rect.top;
+
+        // Determine starting font size
+        const cs = window.getComputedStyle(selectedEl);
+        const startFS = parseFloat(cs.fontSize) || 16;
+
+        function onMove(ev) {
+          let dx = ev.clientX - startX;
+          let dy = ev.clientY - startY;
+
+          let newWidth  = startW;
+          let newHeight = startH;
+          let newLeft   = startLeft;
+          let newTop    = startTop;
+
+          // Horizontal resize
+          if (type.includes('r')) {
+            newWidth = Math.max(20, startW + dx);
+          } else if (type.includes('l')) {
+            const possibleW = startW - dx;
+            if (possibleW > 20) {
+              newWidth = possibleW;
+              newLeft = startLeft + dx;
+            }
+          }
+
+          // Vertical resize
+          if (type.includes('b')) {
+            newHeight = Math.max(20, startH + dy);
+          } else if (type.includes('t')) {
+            const possibleH = startH - dy;
+            if (possibleH > 20) {
+              newHeight = possibleH;
+              newTop = startTop + dy;
+            }
+          }
+
+          // Proportional Font Resizing for text elements
+          if (type.length === 2) { // Corner handles: tl, tr, bl, br
+            const scale = newWidth / startW;
+            const newFS = Math.max(8, startFS * scale);
+            selectedEl.style.fontSize = newFS + 'px';
+            if (fontSizeInput) fontSizeInput.value = Math.round(newFS);
+          }
+
+          // Apply dimensions
+          selectedEl.style.position = 'fixed';
+          selectedEl.style.zIndex   = '8999';
+          selectedEl.style.margin   = '0';
+          selectedEl.setAttribute('data-ed-dragged', 'true');
+
+          selectedEl.style.width  = newWidth + 'px';
+          selectedEl.style.height = newHeight + 'px';
+          selectedEl.style.left   = newLeft + 'px';
+          selectedEl.style.top    = newTop + 'px';
+
+          updateSelectBoxPos();
+        }
+
+        function onUp() {
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+          isResizing = false;
+          showToolbar(selectedEl);
+          markUnsaved();
+          autoSave();
+        }
+
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+        hideToolbar();
+      });
+    });
   }
 
   // ─── Toolbar sync ──────────────────────────────────────────────
@@ -253,6 +444,7 @@
     selectedEl.style[prop] = value;
     markUnsaved();
     autoSave();
+    updateSelectBoxPos();
   }
 
   function toggleProp(prop, onVal, offVal, btn) {
@@ -263,34 +455,33 @@
     btn.classList.toggle('active', !isOn);
     markUnsaved();
     autoSave();
+    updateSelectBoxPos();
   }
 
   // ─── Reset element to original styles ─────────────────────────
   function resetElement() {
     if (!selectedEl) return;
     const id = selectedEl.dataset.editableId;
-    // Remove all inline styles applied by editor
-    const editorProps = ['fontFamily','fontSize','color','fontWeight','fontStyle','textAlign','left','top','width'];
+    const editorProps = ['fontFamily','fontSize','color','fontWeight','fontStyle','textAlign','left','top','width','height'];
     editorProps.forEach(p => selectedEl.style.removeProperty(
       p.replace(/([A-Z])/g, '-$1').toLowerCase()
     ));
     selectedEl.removeAttribute('data-ed-dragged');
     selectedEl.contentEditable = 'false';
 
-    // Remove from saved state
     if (id) {
       const saves = loadSavedEdits();
       delete saves[id];
       localStorage.setItem(LS_KEY, JSON.stringify(saves));
     }
     syncToolbarToElement(selectedEl);
+    updateSelectBoxPos();
     markUnsaved();
   }
 
   // ─── Drag ──────────────────────────────────────────────────────
   function startDrag(e, el) {
     if (!editorMode) return;
-    // Don't start drag if in inline text edit mode
     if (el.isContentEditable) return;
 
     const rect = el.getBoundingClientRect();
@@ -301,7 +492,6 @@
 
     function onMove(ev) {
       if (!moved) {
-        // Only initiate drag if moved > 4px (avoid accidental drags on click)
         const dx = ev.clientX - e.clientX;
         const dy = ev.clientY - e.clientY;
         if (Math.sqrt(dx*dx + dy*dy) < 4) return;
@@ -316,6 +506,7 @@
       }
       el.style.left = (ev.clientX - dragOffX) + 'px';
       el.style.top  = (ev.clientY - dragOffY) + 'px';
+      updateSelectBoxPos();
     }
 
     function onUp() {
@@ -336,7 +527,6 @@
 
   // ─── Persistence ──────────────────────────────────────────────
   function getEditableId(el) {
-    // Assign a stable ID for persistence
     if (!el.dataset.editableId) {
       const tag = el.tagName.toLowerCase();
       const cls = el.className.replace(/el-selected|el-dragging/g, '').trim().replace(/\s+/g, '_');
@@ -356,8 +546,7 @@
     document.querySelectorAll('[data-editable]').forEach(el => {
       const id = getEditableId(el);
       const data = {};
-      // Capture inline styles set by editor
-      const editorProps = ['fontFamily','fontSize','color','fontWeight','fontStyle','textAlign','left','top'];
+      const editorProps = ['fontFamily','fontSize','color','fontWeight','fontStyle','textAlign','left','top','width','height'];
       editorProps.forEach(p => { if (el.style[p]) data[p] = el.style[p]; });
       if (el.getAttribute('data-ed-dragged')) data._dragged = true;
       if (el.innerHTML !== el._originalHTML) data._html = el.innerHTML;
@@ -376,7 +565,6 @@
   }
 
   function loadEdits() {
-    // Store originals before applying
     document.querySelectorAll('[data-editable]').forEach(el => {
       el._originalHTML = el.innerHTML;
     });
@@ -393,7 +581,6 @@
         if (k === '_dragged') { el.setAttribute('data-ed-dragged', 'true'); return; }
         el.style[k] = v;
       });
-      // Restore fixed position for dragged elements
       if (data._dragged) {
         el.style.position = 'fixed';
         el.style.zIndex   = '8999';
@@ -423,7 +610,6 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
-    // Call after a tick so panel HTML is already rendered
     setTimeout(init, 100);
   }
 })();

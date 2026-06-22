@@ -203,3 +203,84 @@ body.dark #editor-mode-btn.editor-on { color: #7bc8ff; }
   position: fixed !important;
   z-index: 8999 !important;
 }
+
+/* Overlay Selection Box and Handles */
+#editor-select-box {
+  position: fixed;
+  border: 1.5px solid #63b3ff;
+  box-shadow: 0 0 10px rgba(99,179,255,0.4);
+  pointer-events: none;
+  z-index: 99992;
+  box-sizing: border-box;
+}
+
+.ed-resize-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #63b3ff;
+  border: 1px solid #ffffff;
+  border-radius: 50%;
+  pointer-events: auto;
+  box-sizing: border-box;
+}
+
+/* Position handles */
+.ed-resize-handle.tl { top: -4px; left: -4px; cursor: nwse-resize; }
+.ed-resize-handle.tr { top: -4px; right: -4px; cursor: nesw-resize; }
+.ed-resize-handle.bl { bottom: -4px; left: -4px; cursor: nesw-resize; }
+.ed-resize-handle.br { bottom: -4px; right: -4px; cursor: nwse-resize; }
+
+.ed-resize-handle.t { top: -4px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.ed-resize-handle.b { bottom: -4px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.ed-resize-handle.l { top: 50%; left: -4px; transform: translateY(-50%); cursor: ew-resize; }
+.ed-resize-handle.r { top: 50%; right: -4px; transform: translateY(-50%); cursor: ew-resize; }
+
+/* Drag handle on settings panel */
+#debug-panel-drag {
+  width: 100%;
+  height: 14px;
+  background: rgba(0,0,0,0.05);
+  border-radius: 4px;
+  margin-bottom: 6px;
+  cursor: move;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body.dark #debug-panel-drag {
+  background: rgba(255,255,255,0.06);
+}
+#debug-panel-drag::after {
+  content: "•••";
+  font-size: 10px;
+  letter-spacing: 2px;
+  opacity: 0.4;
+  color: var(--text);
+}
+
+/* Minimize button */
+.debug-min-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  opacity: 0.6;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  padding: 0 4px;
+  user-select: none;
+}
+.debug-min-btn:hover {
+  opacity: 1;
+}
+
+/* Minimized state for debug panel */
+#debug-panel.minimized {
+  height: auto !important;
+  min-height: unset !important;
+  padding-bottom: 8px !important;
+}
+#debug-panel.minimized > *:not(#debug-panel-header):not(#debug-panel-drag) {
+  display: none !important;
+}

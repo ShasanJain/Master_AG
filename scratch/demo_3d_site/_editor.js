@@ -1,7 +1,8 @@
 /**
  * PAGE EDITOR ENGINE — Wix-like visual editor
  * Handles: element selection, drag, resize, text editing,
- * sidebar asset properties panel, dynamic creation, duplicate, delete.
+ * sidebar asset properties panel, dynamic creation, duplicate, delete,
+ * parent-child container hierarchy grouping.
  */
 (function initPageEditor() {
   'use strict';
@@ -19,7 +20,7 @@
   const PANEL_POS_KEY = 'master_ag_panel_position';
   const CREATED_KEY = 'master_ag_created_elements';
 
-  // List of dynamically created elements (saved and loaded separately)
+  // List of dynamically created elements
   let createdElements = [];
 
   // Undo & Redo Stacks
@@ -49,7 +50,7 @@
   function init() {
     buildSidebarDOM();
     initDebugPanelControls();
-    loadEdits();             // Restores created elements and properties
+    loadEdits();             // Restores created elements, parents, and properties
     bindPanelButton();
     bindEditorSaveBtn();
     initResizeHandles();
@@ -133,19 +134,16 @@
       if (document.activeElement && document.activeElement.contentEditable === 'true') return;
       if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
 
-      // Copy: Ctrl+C
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
         if (selectedEl) {
           e.preventDefault();
           copySelectedAsset();
         }
       }
-      // Paste: Ctrl+V
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') {
         e.preventDefault();
         pasteCopiedAsset();
       }
-      // Delete: Backspace or Delete
       if (e.key === 'Delete' || e.key === 'Backspace') {
         if (selectedEl) {
           e.preventDefault();
@@ -158,12 +156,9 @@
   // ─── Sidebar DOM builder & Wiring ──────────────────────────────
   function buildSidebarDOM() {
     selectBox = document.getElementById('editor-select-box');
-
-    // Sidebar panels
     sidebarAssetEditor   = document.getElementById('sidebar-asset-editor');
     sidebarElementCreator = document.getElementById('sidebar-element-creator');
 
-    // Text inputs
     fontSelect        = document.getElementById('sb-font');
     fontSizeInput     = document.getElementById('sb-font-size');
     fontSizeValInput  = document.getElementById('val-sb-font-size');
@@ -172,17 +167,13 @@
     italicBtn         = document.getElementById('sb-italic');
     alignBtns         = document.querySelectorAll('[data-sb-align]');
     resetBtn          = document.getElementById('sb-reset');
-
-    // Undo / Redo
     undoBtn           = document.getElementById('sb-undo');
     redoBtn           = document.getElementById('sb-redo');
 
-    // Actions
     btnCopy           = document.getElementById('btn-copy-asset');
     btnPaste          = document.getElementById('btn-paste-asset');
     btnDelete         = document.getElementById('btn-delete-asset');
 
-    // Element adders
     btnAddText        = document.getElementById('add-text-btn');
     btnAddCard        = document.getElementById('add-card-btn');
     btnAddButton      = document.getElementById('add-button-btn');
@@ -193,7 +184,6 @@
 
     if (!fontSelect) return;
 
-    // Populate font list
     FONTS.forEach(f => {
       const opt = document.createElement('option');
       opt.value = f.value;
@@ -201,7 +191,6 @@
       fontSelect.appendChild(opt);
     });
 
-    // Formatting event listeners
     fontSelect.addEventListener('change', () => applyProp('fontFamily', fontSelect.value));
     fontSizeInput.addEventListener('input', () => {
       fontSizeValInput.value = fontSizeInput.value;
@@ -228,7 +217,6 @@
 
     resetBtn.addEventListener('click', resetElement);
 
-    // Undo / Redo
     if (undoBtn) {
       undoBtn.addEventListener('click', () => {
         if (undoStack.length > 1) {
@@ -251,17 +239,14 @@
       });
     }
 
-    // Action handlers
     if (btnCopy)   btnCopy.addEventListener('click', copySelectedAsset);
     if (btnPaste)  btnPaste.addEventListener('click', pasteCopiedAsset);
     if (btnDelete) btnDelete.addEventListener('click', deleteSelectedAsset);
 
-    // Creator handlers
     if (btnAddText)   btnAddText.addEventListener('click', () => createNewElement('p'));
     if (btnAddCard)   btnAddCard.addEventListener('click', () => createNewElement('card'));
     if (btnAddButton) btnAddButton.addEventListener('click', () => createNewElement('btn'));
 
-    // Deselect click listener
     document.addEventListener('mousedown', e => {
       if (isDragging || isResizing) return;
       if (debugPanel && debugPanel.contains(e.target)) return;
@@ -273,19 +258,6 @@
 
     window.addEventListener('scroll', updateSelectBoxPos, { passive: true });
     window.addEventListener('resize', updateSelectBoxPos, { passive: true });
-  }
-
-  // ─── Panel button wiring ───────────────────────────────────────
-  function bindPanelButton() {
-    editorModeBtn = editorModeBtn || document.getElementById('editor-mode-btn');
-    if (!editorModeBtn) return;
-    editorModeBtn.addEventListener('click', toggleEditorMode);
-  }
-
-  function bindEditorSaveBtn() {
-    editorSaveBtn = editorSaveBtn || document.getElementById('editor-save-btn');
-    if (!editorSaveBtn) return;
-    editorSaveBtn.addEventListener('click', saveEdits);
   }
 
   // ─── Toggle editor mode ────────────────────────────────────────
@@ -324,7 +296,6 @@
       if (el._editorBound) return;
       el._editorBound = true;
 
-      // Mouse drag select
       el.addEventListener('mousedown', e => {
         if (!editorMode) return;
         if (el.isContentEditable) return;
@@ -334,7 +305,6 @@
         startDrag(e, el);
       });
 
-      // Inline text edit
       el.addEventListener('dblclick', e => {
         if (!editorMode) return;
         e.stopPropagation();
@@ -408,6 +378,55 @@
     selectBox.style.display = 'block';
   }
 
+  // ─── Parent Container Search ───────────────────────────────────
+  function findParentContainer(el, centerX, centerY) {
+    const containers = Array.from(document.querySelectorAll('.glass-card, section, header'));
+    let bestContainer = null;
+    let bestArea = Infinity;
+
+    containers.forEach(container => {
+      if (container === el || el.contains(container)) return;
+      const rect = container.getBoundingClientRect();
+      if (centerX >= rect.left && centerX <= rect.right && centerY >= rect.top && centerY <= rect.bottom) {
+        const area = rect.width * rect.height;
+        if (area < bestArea) {
+          bestArea = area;
+          bestContainer = container;
+        }
+      }
+    });
+    return bestContainer;
+  }
+
+  // ─── Reparenting handler ───
+  function handleDropReparenting(el) {
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const parent = findParentContainer(el, cx, cy);
+
+    if (parent) {
+      const parentId = getEditableId(parent);
+      el.setAttribute('data-ed-parent', parentId);
+      
+      // Move to parent inside DOM
+      parent.appendChild(el);
+      
+      const parentRect = parent.getBoundingClientRect();
+      el.style.position = 'absolute';
+      el.style.left = (rect.left - parentRect.left) + 'px';
+      el.style.top  = (rect.top - parentRect.top) + 'px';
+    } else {
+      // Return to body
+      el.removeAttribute('data-ed-parent');
+      document.body.appendChild(el);
+      el.style.position = 'fixed';
+      el.style.left = rect.left + 'px';
+      el.style.top  = rect.top + 'px';
+    }
+    updateSelectBoxPos();
+  }
+
   // ─── Resize Handles Logic ──────────────────────────────────────
   function initResizeHandles() {
     selectBox = selectBox || document.getElementById('editor-select-box');
@@ -432,6 +451,16 @@
 
         const cs = window.getComputedStyle(selectedEl);
         const startFS = parseFloat(cs.fontSize) || 16;
+
+        // Temporarily append to body during resize calculation
+        const parent = selectedEl.parentElement;
+        const isNested = selectedEl.hasAttribute('data-ed-parent');
+        if (isNested) {
+          document.body.appendChild(selectedEl);
+          selectedEl.style.position = 'fixed';
+          selectedEl.style.left = rect.left + 'px';
+          selectedEl.style.top  = rect.top + 'px';
+        }
 
         function onMove(ev) {
           let dx = ev.clientX - startX;
@@ -487,6 +516,7 @@
           document.removeEventListener('mousemove', onMove);
           document.removeEventListener('mouseup', onUp);
           isResizing = false;
+          handleDropReparenting(selectedEl);
           markUnsaved();
           autoSave();
         }
@@ -555,12 +585,18 @@
   function resetElement() {
     if (!selectedEl) return;
     const id = selectedEl.dataset.editableId;
+    
+    // Reparent back to body
+    selectedEl.removeAttribute('data-ed-parent');
+    document.body.appendChild(selectedEl);
+
     const editorProps = ['fontFamily','fontSize','color','fontWeight','fontStyle','textAlign','left','top','width','height','display'];
     editorProps.forEach(p => selectedEl.style.removeProperty(
       p.replace(/([A-Z])/g, '-$1').toLowerCase()
     ));
     selectedEl.removeAttribute('data-ed-dragged');
     selectedEl.contentEditable = 'false';
+    selectedEl.style.position = '';
 
     if (id) {
       const saves = loadSavedEdits();
@@ -583,6 +619,15 @@
     dragOffY = e.clientY - rect.top;
 
     let moved = false;
+
+    // Temporarily reparent to body while dragging so it moves across elements cleanly
+    const isNested = el.hasAttribute('data-ed-parent');
+    if (isNested) {
+      document.body.appendChild(el);
+      el.style.position = 'fixed';
+      el.style.left = rect.left + 'px';
+      el.style.top  = rect.top + 'px';
+    }
 
     function onMove(ev) {
       if (!moved) {
@@ -608,6 +653,7 @@
       if (moved) {
         isDragging = false;
         el.classList.remove('el-dragging');
+        handleDropReparenting(el); // check for parent drop target
         markUnsaved();
         autoSave();
       }
@@ -627,14 +673,13 @@
       styles: {}
     };
     
-    // Capture computed or applied styles
     const editorProps = ['fontFamily','fontSize','color','fontWeight','fontStyle','textAlign','width','height'];
     editorProps.forEach(p => {
       const val = selectedEl.style[p] || window.getComputedStyle(selectedEl)[p];
       if (val) copiedAsset.styles[p] = val;
     });
 
-    if (statusBar) statusBar.textContent = "📋 Asset copied to clipboard!";
+    if (statusBar) statusBar.textContent = "📋 Asset copied!";
     setTimeout(() => {
       if (selectedEl && statusBar) statusBar.textContent = `Selected: ${selectedEl.getAttribute('data-ed-label')} • Drag to move`;
     }, 1500);
@@ -643,7 +688,6 @@
   function pasteCopiedAsset() {
     if (!copiedAsset) return;
 
-    // Check type and create matching element structure
     let newEl;
     if (copiedAsset.className.includes('glass-card')) {
       newEl = document.createElement('div');
@@ -661,20 +705,16 @@
     newEl.style.zIndex   = '8999';
     newEl.style.margin   = '0';
 
-    // Apply copied styles
     Object.entries(copiedAsset.styles).forEach(([k, v]) => {
       newEl.style[k] = v;
     });
 
-    // Place slightly offset from top-left center
     newEl.style.left = (window.innerWidth / 2 - 100 + Math.random() * 40) + 'px';
     newEl.style.top  = (window.innerHeight / 2 - 100 + Math.random() * 40) + 'px';
 
-    // Unique ID
     const newId = `created_${copiedAsset.tagName}_${Date.now()}`;
     newEl.dataset.editableId = newId;
 
-    // Track in createdElements list
     createdElements.push({
       id: newId,
       tagName: copiedAsset.tagName,
@@ -682,9 +722,11 @@
       innerHTML: copiedAsset.innerHTML
     });
 
-    // Add to body and bind
     document.body.appendChild(newEl);
     attachEditableListeners();
+    
+    // Check parenting right after paste
+    handleDropReparenting(newEl);
     select(newEl);
     
     markUnsaved();
@@ -696,20 +738,17 @@
     const el = selectedEl;
     const id = el.dataset.editableId;
 
-    // Remove from DOM and local list
     deselect();
     el.remove();
 
     createdElements = createdElements.filter(x => x.id !== id);
 
-    // If it was a static element, we hide it by applying display: none in edits state
     if (id && !id.startsWith('created_')) {
       const saves = loadSavedEdits();
       saves[id] = { display: 'none' };
       localStorage.setItem(LS_KEY, JSON.stringify(saves));
     }
 
-    // Save tracking lists
     localStorage.setItem(CREATED_KEY, JSON.stringify(createdElements));
     markUnsaved();
     autoSave();
@@ -754,7 +793,6 @@
     newEl.style.margin   = '0';
     newEl.dataset.editableId = newId;
 
-    // Center layout
     newEl.style.left = (window.innerWidth / 2 - 100) + 'px';
     newEl.style.top  = (window.innerHeight / 2 - 80) + 'px';
 
@@ -768,7 +806,6 @@
     document.body.appendChild(newEl);
     attachEditableListeners();
     
-    // Auto-enable child elements of the card as editable too
     if (type === 'card') {
       newEl.querySelectorAll('.card-eye, .card-title, .card-body').forEach((child, idx) => {
         child.setAttribute('data-editable', 'true');
@@ -777,7 +814,10 @@
       attachEditableListeners();
     }
 
+    // Check parenting (e.g. creating it inside a section)
+    handleDropReparenting(newEl);
     select(newEl);
+    
     localStorage.setItem(CREATED_KEY, JSON.stringify(createdElements));
     markUnsaved();
     autoSave();
@@ -807,6 +847,7 @@
       const editorProps = ['fontFamily','fontSize','color','fontWeight','fontStyle','textAlign','left','top','width','height','display'];
       editorProps.forEach(p => { if (el.style[p]) data[p] = el.style[p]; });
       if (el.getAttribute('data-ed-dragged')) data._dragged = true;
+      if (el.getAttribute('data-ed-parent')) data._parentId = el.getAttribute('data-ed-parent');
       if (el.innerHTML !== el._originalHTML) data._html = el.innerHTML;
       if (Object.keys(data).length) snapshot[id] = data;
     });
@@ -816,7 +857,7 @@
   function applyEditsSnapshot(snapJSON) {
     const saves = JSON.parse(snapJSON || '{}');
     
-    // First remove all dynamically created elements not inside this snapshot
+    // Remove deleted created elements
     document.querySelectorAll('[data-editable]').forEach(el => {
       const id = el.dataset.editableId;
       if (id && id.startsWith('created_') && !saves[id]) {
@@ -824,7 +865,7 @@
       }
     });
 
-    // Recreate any missing created elements inside this snapshot
+    // Recreate
     createdElements.forEach(item => {
       if (saves[item.id] && !document.querySelector(`[data-editable-id="${item.id}"]`)) {
         const newEl = document.createElement(item.tagName);
@@ -837,7 +878,7 @@
     });
     attachEditableListeners();
 
-    // Apply properties
+    // Reset styles
     document.querySelectorAll('[data-editable]').forEach(el => {
       const id = getEditableId(el);
       const data = saves[id];
@@ -845,23 +886,40 @@
       const editorProps = ['fontFamily','fontSize','color','fontWeight','fontStyle','textAlign','left','top','width','height','display'];
       editorProps.forEach(p => el.style.removeProperty(p.replace(/([A-Z])/g, '-$1').toLowerCase()));
       el.removeAttribute('data-ed-dragged');
+      el.removeAttribute('data-ed-parent');
       el.style.position = '';
       el.style.zIndex   = '';
       el.style.margin   = '';
       el.innerHTML = el._originalHTML || el.innerHTML;
+
+      // Always return to body before applying
+      document.body.appendChild(el);
 
       if (!data) return;
 
       Object.entries(data).forEach(([k, v]) => {
         if (k === '_html') { el.innerHTML = v; return; }
         if (k === '_dragged') { el.setAttribute('data-ed-dragged', 'true'); return; }
+        if (k === '_parentId') { el.setAttribute('data-ed-parent', v); return; }
         el.style[k] = v;
       });
 
-      if (data._dragged) {
+      if (data._dragged && !data._parentId) {
         el.style.position = 'fixed';
         el.style.zIndex   = '8999';
         el.style.margin   = '0';
+      }
+    });
+
+    // Run secondary pass to nest elements
+    document.querySelectorAll('[data-editable]').forEach(el => {
+      const parentId = el.getAttribute('data-ed-parent');
+      if (parentId) {
+        const parent = document.querySelector(`[data-editable-id="${parentId}"]`) || document.getElementById(parentId);
+        if (parent) {
+          parent.appendChild(el);
+          el.style.position = 'absolute';
+        }
       }
     });
 
@@ -911,7 +969,7 @@
   }
 
   function loadEdits() {
-    // 1. Restore dynamically created elements from storage first
+    // 1. Restore created DOM elements
     try {
       createdElements = JSON.parse(localStorage.getItem(CREATED_KEY) || '[]');
       createdElements.forEach(item => {
@@ -924,7 +982,6 @@
       });
     } catch(e) {}
 
-    // Store original innerHTML reference
     document.querySelectorAll('[data-editable]').forEach(el => {
       el._originalHTML = el.innerHTML;
     });

@@ -404,12 +404,12 @@
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
     const parent = findParentContainer(el, cx, cy);
+    const id = getEditableId(el);
 
     if (parent) {
       const parentId = getEditableId(parent);
       el.setAttribute('data-ed-parent', parentId);
       
-      // Move to parent inside DOM
       parent.appendChild(el);
       
       const parentRect = parent.getBoundingClientRect();
@@ -417,9 +417,17 @@
       el.style.left = (rect.left - parentRect.left) + 'px';
       el.style.top  = (rect.top - parentRect.top) + 'px';
     } else {
-      // Return to body
       el.removeAttribute('data-ed-parent');
-      document.body.appendChild(el);
+      
+      if (id.startsWith('created_')) {
+        document.body.appendChild(el);
+      } else {
+        // Return static element to original DOM structure position
+        if (el._originalParent && el.parentElement !== el._originalParent) {
+          el._originalParent.insertBefore(el, el._originalNextSibling);
+        }
+      }
+      
       el.style.position = 'fixed';
       el.style.left = rect.left + 'px';
       el.style.top  = rect.top + 'px';
@@ -452,8 +460,7 @@
         const cs = window.getComputedStyle(selectedEl);
         const startFS = parseFloat(cs.fontSize) || 16;
 
-        // Temporarily append to body during resize calculation
-        const parent = selectedEl.parentElement;
+        // Temporarily append to body during resize calculation to avoid container overflow clip
         const isNested = selectedEl.hasAttribute('data-ed-parent');
         if (isNested) {
           document.body.appendChild(selectedEl);
@@ -586,9 +593,15 @@
     if (!selectedEl) return;
     const id = selectedEl.dataset.editableId;
     
-    // Reparent back to body
+    // Reparent back to original place
     selectedEl.removeAttribute('data-ed-parent');
-    document.body.appendChild(selectedEl);
+    if (id.startsWith('created_')) {
+      document.body.appendChild(selectedEl);
+    } else {
+      if (selectedEl._originalParent) {
+        selectedEl._originalParent.insertBefore(selectedEl, selectedEl._originalNextSibling);
+      }
+    }
 
     const editorProps = ['fontFamily','fontSize','color','fontWeight','fontStyle','textAlign','left','top','width','height','display'];
     editorProps.forEach(p => selectedEl.style.removeProperty(
@@ -725,7 +738,6 @@
     document.body.appendChild(newEl);
     attachEditableListeners();
     
-    // Check parenting right after paste
     handleDropReparenting(newEl);
     select(newEl);
     
@@ -814,7 +826,6 @@
       attachEditableListeners();
     }
 
-    // Check parenting (e.g. creating it inside a section)
     handleDropReparenting(newEl);
     select(newEl);
     
@@ -892,8 +903,14 @@
       el.style.margin   = '';
       el.innerHTML = el._originalHTML || el.innerHTML;
 
-      // Always return to body before applying
-      document.body.appendChild(el);
+      // Only append created ones to body, keep static elements in original hierarchy positions
+      if (id.startsWith('created_') && (!data || !data._parentId)) {
+        document.body.appendChild(el);
+      } else if (!id.startsWith('created_') && (!data || !data._parentId)) {
+        if (el._originalParent && el.parentElement !== el._originalParent) {
+          el._originalParent.insertBefore(el, el._originalNextSibling);
+        }
+      }
 
       if (!data) return;
 
@@ -969,7 +986,7 @@
   }
 
   function loadEdits() {
-    // 1. Restore created DOM elements
+    // 1. Restore created elements DOM
     try {
       createdElements = JSON.parse(localStorage.getItem(CREATED_KEY) || '[]');
       createdElements.forEach(item => {
@@ -982,8 +999,11 @@
       });
     } catch(e) {}
 
+    // Store original parent pointers for static DOM elements
     document.querySelectorAll('[data-editable]').forEach(el => {
       el._originalHTML = el.innerHTML;
+      el._originalParent = el.parentElement;
+      el._originalNextSibling = el.nextSibling;
     });
 
     const saves = loadSavedEdits();

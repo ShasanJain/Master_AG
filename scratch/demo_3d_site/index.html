@@ -987,6 +987,25 @@
   'use strict';
   gsap.registerPlugin(ScrollTrigger);
 
+  // === DEBUG ERROR OVERLAY: catches any JS crash and shows it on screen ===
+  (function() {
+    const overlay = document.createElement('div');
+    overlay.id = 'err-overlay';
+    overlay.style.cssText = 'display:none;position:fixed;bottom:0;left:0;right:0;background:#c00;color:#fff;font-family:monospace;font-size:12px;padding:12px 16px;z-index:99999;max-height:200px;overflow:auto;white-space:pre-wrap;';
+    document.body.appendChild(overlay);
+    window.onerror = function(msg, src, line, col, err) {
+      overlay.style.display = 'block';
+      overlay.textContent += '\u274C ' + msg + ' (line ' + line + ':' + col + ')\n' + (err && err.stack ? err.stack + '\n' : '');
+      // Force preloader off so we can see the error
+      const pre = document.getElementById('preloader');
+      if (pre) { pre.style.opacity = '0'; pre.style.pointerEvents = 'none'; }
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      overlay.style.display = 'block';
+      overlay.textContent += '\u274C Promise: ' + e.reason + '\n';
+    });
+  })();
+
   // Creative Debug Panel State
   let rotSpeedY = 0.003;
   let rotSpeedX = 0.0008;
@@ -1706,9 +1725,9 @@
     fill.position.set(-4, -2, -4);
     scene.add(fill);
 
-    buildCrystal();
-    buildParticles();
-    buildGrid();
+    try { buildCrystal(); } catch(e) { console.error('buildCrystal failed:', e); window.onerror(e.message, 'index.html', 0, 0, e); }
+    try { buildParticles(); } catch(e) { console.error('buildParticles failed:', e); window.onerror(e.message, 'index.html', 0, 0, e); }
+    try { buildGrid(); } catch(e) { console.error('buildGrid failed:', e); window.onerror(e.message, 'index.html', 0, 0, e); }
 
     // Resize handler
     window.addEventListener('resize', () => {
@@ -2696,6 +2715,17 @@
     });
 
     // Trail Color Mode toggle UI panels
+    // Declare all trail state variables HERE — before updateColorModeUI uses them
+    let trailType = 'none';
+    let trailDensity = 5;
+    let trailSize = 3;
+    let trailSpeed = 1.5;
+    let trailLife = 45;
+    let trailGravity = 0.04;
+    let trailColorOverride = false;
+    let trailColor = '#ffd700';
+    let particlesList = [];
+
     const colorModeSelect = document.getElementById('cur-trail-color-mode');
     const solidGrp = document.getElementById('cur-trail-solid-group');
     const gradGrp = document.getElementById('cur-trail-grad-group');
@@ -2779,18 +2809,9 @@
       }
     });
 
-    // Particle Trail Logic
+    // (trail vars declared above — moved to fix TDZ)
     const trailCanvas = document.getElementById('trail-canvas');
     const trailCtx = trailCanvas.getContext('2d');
-    let particlesList = [];
-    let trailType = 'none';
-    let trailDensity = 5;
-    let trailSize = 3;
-    let trailSpeed = 1.5;
-    let trailLife = 45;
-    let trailGravity = 0.04;
-    let trailColorOverride = false;
-    let trailColor = '#ffd700';
 
     function resizeTrailCanvas() {
       if (trailCanvas) {
@@ -3030,20 +3051,21 @@ function lerpColor(a, b, amount) {
       syncCurVal('cur-trail-gravity', trailGravity);
     });
 
-    // Color Override checkbox
-    document.getElementById('cur-trail-color-en').addEventListener('change', e => {
+    // Color Override checkbox (element may not exist in all panel versions)
+    document.getElementById('cur-trail-color-en')?.addEventListener('change', e => {
       trailColorOverride = e.target.checked;
     });
 
     // Color picker
-    document.getElementById('cur-trail-color').addEventListener('input', e => {
+    document.getElementById('cur-trail-color')?.addEventListener('input', e => {
       trailColor = e.target.value;
       syncCurVal('cur-trail-color', trailColor);
     });
-    document.getElementById('val-cur-trail-color').addEventListener('change', e => {
+    document.getElementById('val-cur-trail-color')?.addEventListener('change', e => {
       const val = e.target.value;
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-        document.getElementById('cur-trail-color').value = val;
+        document.getElementById('cur-trail-color')?.value !== undefined &&
+          (document.getElementById('cur-trail-color').value = val);
         trailColor = val;
       }
     });

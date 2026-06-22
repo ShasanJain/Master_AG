@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head><title>3D Site Diagnostics</title>
+<style>
+  body { font-family: monospace; background: #0a0a0a; color: #00ff88; padding: 20px; }
+  .ok { color: #00ff88; }
+  .err { color: #ff4444; }
+  .warn { color: #ffaa00; }
+  pre { background: #111; padding: 10px; border-radius: 4px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h2>🔬 3D Site Diagnostics</h2>
+<pre id="log">Loading...</pre>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<script>
+const log = document.getElementById('log');
+const errors = [];
+window.onerror = (msg, src, line, col, err) => {
+  errors.push({ msg, line, col, stack: err?.stack });
+};
+window.addEventListener('unhandledrejection', e => {
+  errors.push({ msg: 'Promise rejection: ' + e.reason, stack: e.reason?.stack });
+});
+
+function out(msg, cls='ok') {
+  log.innerHTML += `<span class="${cls}">${msg}</span>\n`;
+}
+
+setTimeout(() => {
+  log.innerHTML = '';
+  
+  // 1. Check libraries
+  out('=== LIBRARY CHECK ===');
+  out('THREE: ' + (typeof THREE !== 'undefined' ? '✅ v' + THREE.REVISION : '❌ NOT LOADED'), typeof THREE !== 'undefined' ? 'ok' : 'err');
+  out('gsap: ' + (typeof gsap !== 'undefined' ? '✅' : '❌ NOT LOADED'), typeof gsap !== 'undefined' ? 'ok' : 'err');
+  out('ScrollTrigger: ' + (typeof ScrollTrigger !== 'undefined' ? '✅' : '❌ NOT LOADED'), typeof ScrollTrigger !== 'undefined' ? 'ok' : 'err');
+  out('');
+
+  // 2. WebGL test
+  out('=== WEBGL TEST ===');
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    out('WebGL context: ' + (gl ? '✅ OK' : '❌ FAILED'), gl ? 'ok' : 'err');
+  } catch(e) {
+    out('WebGL error: ' + e.message, 'err');
+  }
+
+  // 3. THREE.js scene test
+  out('');
+  out('=== THREE.JS SCENE TEST ===');
+  try {
+    const scene = new THREE.Scene();
+    out('Scene: ✅');
+    const camera = new THREE.PerspectiveCamera(38, 16/9, 0.1, 100);
+    out('Camera: ✅');
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    out('Renderer: ✅');
+    
+    // Test icosahedron
+    const geo = new THREE.IcosahedronGeometry(0.55, 0);
+    const mat = new THREE.MeshStandardMaterial({ color: 0x88ccff, emissive: 0x0055ff, emissiveIntensity: 1.8 });
+    const mesh = new THREE.Mesh(geo, mat);
+    scene.add(mesh);
+    out('Icosahedron: ✅');
+    
+    // Test RingGeometry (halo)
+    const haloGeo = new THREE.RingGeometry(0.85, 1.08, 64);
+    const haloMat = new THREE.MeshBasicMaterial({ color: 0x0055ff, transparent: true, opacity: 0.18, side: THREE.DoubleSide });
+    const halo = new THREE.Mesh(haloGeo, haloMat);
+    halo.name = 'halo';
+    scene.add(halo);
+    out('Halo Ring: ✅');
+    
+    // Test traverse with halo guard (the bug we fixed)
+    let traverseError = null;
+    scene.traverse(child => {
+      if (!child.isMesh || !child.material) return;
+      if (child.name === 'halo' || child.name === 'halo2') return;
+      if (child.material.emissive) child.material.emissive.set(0xffffff);
+    });
+    out('Traverse guard: ✅ No crash');
+    
+    renderer.render(scene, camera);
+    out('Render: ✅');
+    renderer.dispose();
+    out('');
+    out('✅✅✅ ALL CHECKS PASSED ✅✅✅');
+  } catch(e) {
+    out('THREE ERROR: ' + e.message, 'err');
+    out('Stack: ' + e.stack, 'err');
+  }
+
+  // 4. Report any window errors
+  out('');
+  out('=== WINDOW ERRORS CAUGHT ===');
+  if (errors.length === 0) {
+    out('No uncaught errors ✅');
+  } else {
+    errors.forEach(e => out('❌ ' + e.msg + '\n   Line: ' + e.line + ':' + e.col + '\n   ' + (e.stack || ''), 'err'));
+  }
+
+  out('');
+  out('=== DONE ===');
+}, 2000);
+</script>
+</body>
+</html>

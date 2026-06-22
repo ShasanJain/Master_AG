@@ -1,0 +1,205 @@
+/* ═══════════════════════════════════════════════════════════════
+   PAGE EDITOR — CSS
+   Wix-like visual editor mode styles
+═══════════════════════════════════════════════════════════════ */
+
+/* Editor mode body state */
+body.editor-active { cursor: crosshair !important; }
+body.editor-active * { cursor: crosshair !important; }
+body.editor-active #cursor-dot,
+body.editor-active #cursor-ring { display: none !important; }
+
+/* Editable element hover/select outlines */
+body.editor-active [data-editable] {
+  outline: 1.5px dashed rgba(99,179,255,0.5) !important;
+  transition: outline 0.12s ease, background 0.12s ease;
+  position: relative;
+}
+body.editor-active [data-editable]:hover {
+  outline: 2px solid rgba(99,179,255,0.9) !important;
+  background: rgba(99,179,255,0.05) !important;
+}
+body.editor-active [data-editable].el-selected {
+  outline: 2px solid #63b3ff !important;
+  background: rgba(99,179,255,0.08) !important;
+}
+body.editor-active [data-editable].el-dragging {
+  opacity: 0.82;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  z-index: 9000 !important;
+}
+
+/* Floating editor toolbar */
+#editor-toolbar {
+  position: fixed;
+  z-index: 99990;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(99,179,255,0.3);
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(99,179,255,0.15);
+  min-width: 260px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  pointer-events: all;
+}
+#editor-toolbar.visible { display: flex; }
+body.dark #editor-toolbar {
+  background: rgba(10,12,22,0.92);
+  border-color: rgba(99,179,255,0.2);
+}
+
+.ed-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.ed-toolbar-label {
+  font-size: 9px;
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  min-width: 32px;
+}
+.ed-toolbar-row select,
+.ed-toolbar-row input[type="number"] {
+  background: rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 3px 6px;
+  outline: none;
+  cursor: pointer;
+}
+body.dark .ed-toolbar-row select,
+body.dark .ed-toolbar-row input[type="number"] {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.1);
+}
+.ed-btn {
+  background: rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  user-select: none;
+}
+.ed-btn:hover { background: rgba(99,179,255,0.15); border-color: rgba(99,179,255,0.4); }
+.ed-btn.active { background: rgba(99,179,255,0.25); border-color: #63b3ff; color: #4494e8; font-weight: bold; }
+body.dark .ed-btn { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1); }
+body.dark .ed-btn:hover { background: rgba(99,179,255,0.15); }
+
+.ed-toolbar-divider {
+  height: 1px;
+  background: rgba(0,0,0,0.08);
+  margin: 2px 0;
+}
+body.dark .ed-toolbar-divider { background: rgba(255,255,255,0.08); }
+
+.ed-toolbar-title {
+  font-size: 9px;
+  font-weight: bold;
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  margin-bottom: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Editor mode button in panel */
+#editor-mode-btn {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1.5px dashed rgba(99,179,255,0.4);
+  background: rgba(99,179,255,0.06);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  font-weight: bold;
+  letter-spacing: 0.03em;
+}
+#editor-mode-btn:hover { background: rgba(99,179,255,0.12); border-color: rgba(99,179,255,0.7); }
+#editor-mode-btn.editor-on {
+  background: rgba(99,179,255,0.2);
+  border-color: #63b3ff;
+  color: #4494e8;
+  border-style: solid;
+}
+body.dark #editor-mode-btn.editor-on { color: #7bc8ff; }
+
+#editor-status-bar {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  opacity: 0.55;
+  text-align: center;
+  color: var(--text);
+  padding: 2px 0;
+  min-height: 14px;
+}
+
+#editor-save-btn {
+  width: 100%;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(40,167,69,0.15);
+  color: #28a745;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.2s;
+  font-weight: bold;
+}
+#editor-save-btn:hover { background: rgba(40,167,69,0.25); }
+#editor-save-btn.visible { display: flex; }
+
+/* Drag handle badge that appears on hover */
+[data-editable].el-selected::before {
+  content: attr(data-ed-label);
+  position: absolute;
+  top: -18px;
+  left: 0;
+  background: #63b3ff;
+  color: white;
+  font-size: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 1px 5px;
+  border-radius: 3px 3px 3px 0;
+  white-space: nowrap;
+  z-index: 9001;
+  pointer-events: none;
+  letter-spacing: 0.04em;
+}
+
+/* Restore overridden elements (for elements dragged to fixed position) */
+[data-ed-dragged="true"] {
+  position: fixed !important;
+  z-index: 8999 !important;
+}

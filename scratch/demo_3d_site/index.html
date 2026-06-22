@@ -534,6 +534,66 @@
       <button id="editor-save-btn">💾 Save Changes</button>
     </div>
 
+    <!-- Page Creator & Asset Editor (Sidebar UI) -->
+    <div id="sidebar-asset-editor" style="display: none; flex-direction: column; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+      
+      <!-- Copy / Paste / Delete -->
+      <div style="display: flex; gap: 6px; align-items: center; justify-content: space-between;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; opacity:0.6;">Actions</span>
+        <div style="display: flex; gap: 4px;">
+          <button id="btn-copy-asset" class="ed-btn" style="font-size:10px; padding:3px 6px;">📋 Copy</button>
+          <button id="btn-paste-asset" class="ed-btn" style="font-size:10px; padding:3px 6px;">📋 Paste</button>
+          <button id="btn-delete-asset" class="ed-btn" style="font-size:10px; padding:3px 6px; background: rgba(220,53,69,0.15); color: #dc3545; border-color: rgba(220,53,69,0.2);">🗑️ Del</button>
+        </div>
+      </div>
+
+      <div class="ed-toolbar-divider"></div>
+
+      <!-- Text formatting tools inside the sidebar -->
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="ed-toolbar-title" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">
+          <span>Properties</span>
+          <div style="display: flex; gap: 4px;">
+            <button id="sb-undo" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">↩</button>
+            <button id="sb-redo" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">↪</button>
+            <button id="sb-reset" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">Reset</button>
+          </div>
+        </div>
+
+        <div class="ed-toolbar-row">
+          <span class="ed-toolbar-label">Font</span>
+          <select id="sb-font" style="flex: 1; font-size: 10px; padding: 2px 4px;"></select>
+        </div>
+
+        <div class="ed-toolbar-row">
+          <span class="ed-toolbar-label">Size</span>
+          <input type="range" id="sb-font-size" min="8" max="120" step="1" value="16" style="flex: 1;">
+          <input type="text" id="val-sb-font-size" class="num-input" value="16" style="width: 32px; font-size: 9px; text-align: center; height: 18px; padding: 0;">
+        </div>
+
+        <div class="ed-toolbar-row">
+          <span class="ed-toolbar-label">Color</span>
+          <input type="color" id="sb-color" value="#000000" style="width: 36px; height: 20px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; background: none; padding: 1px;">
+          <button id="sb-bold" class="ed-btn" style="font-size: 10px; padding: 2px 6px;">B</button>
+          <button id="sb-italic" class="ed-btn" style="font-size: 10px; padding: 2px 6px; font-style: italic;">I</button>
+          <button class="ed-btn" data-sb-align="left" style="font-size: 9px; padding: 2px 4px;">L</button>
+          <button class="ed-btn" data-sb-align="center" style="font-size: 9px; padding: 2px 4px;">C</button>
+          <button class="ed-btn" data-sb-align="right" style="font-size: 9px; padding: 2px 4px;">R</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Element Creator Panel -->
+    <div id="sidebar-element-creator" style="display: none; flex-direction: column; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; opacity:0.6;">Add New Element</span>
+      <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+        <button id="add-text-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ Text</button>
+        <button id="add-card-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ Card</button>
+        <button id="add-button-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ Button</button>
+      </div>
+    </div>
+
     <!-- Asset List View (default) -->
     <div id="panel-assets-view">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -3568,35 +3628,7 @@ function lerpColor(a, b, amount) {
     <div class="ed-resize-handle r" data-handle="r"></div>
   </div>
 
-  <!-- Floating Editor Toolbar -->
-  <div id="editor-toolbar">
-    <div class="ed-toolbar-title">
-      <span>Text Editor</span>
-      <div style="display: flex; gap: 4px;">
-        <button id="ed-undo" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">↩ Undo</button>
-        <button id="ed-redo" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">Redo ↪</button>
-        <button id="ed-reset" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">Reset</button>
-      </div>
-    </div>
-    <div class="ed-toolbar-divider"></div>
-    <div class="ed-toolbar-row">
-      <span class="ed-toolbar-label">Font</span>
-      <select id="ed-font" style="flex: 1; min-width: 120px;"></select>
-    </div>
-    <div class="ed-toolbar-row">
-      <span class="ed-toolbar-label">Size</span>
-      <input type="range" id="ed-font-size" min="8" max="120" step="1" value="16" style="flex: 1;">
-    </div>
-    <div class="ed-toolbar-row">
-      <span class="ed-toolbar-label">Color</span>
-      <input type="color" id="ed-color" value="#000000" style="width: 40px; height: 24px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; background: none; padding: 1px;">
-      <button id="ed-bold" class="ed-btn">B</button>
-      <button id="ed-italic" class="ed-btn" style="font-style: italic;">I</button>
-      <button class="ed-btn" data-align="left">Left</button>
-      <button class="ed-btn" data-align="center">Center</button>
-      <button class="ed-btn" data-align="right">Right</button>
-    </div>
-  </div>
+
 
   <script src="_editor.js"></script>
 </body>

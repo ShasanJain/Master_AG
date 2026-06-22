@@ -17,12 +17,17 @@
   const LS_KEY = 'master_ag_page_edits';
   const PANEL_POS_KEY = 'master_ag_panel_position';
 
-  // Available fonts
+  // Undo & Redo Stacks
+  let undoStack = [];
+  let redoStack = [];
+
+  // Available fonts (added Syne and Outfit)
   const FONTS = [
     { label: 'Inter',          value: "'Inter', sans-serif" },
     { label: 'Playfair',       value: "'Playfair Display', serif" },
     { label: 'JetBrains Mono', value: "'JetBrains Mono', monospace" },
     { label: 'Outfit',         value: "'Outfit', sans-serif" },
+    { label: 'Syne',           value: "'Syne', sans-serif" },
     { label: 'Georgia',        value: "Georgia, serif" },
     { label: 'System',         value: "system-ui, sans-serif" },
   ];
@@ -30,7 +35,8 @@
   // ─── DOM refs (populated in init) ──────────────────────────────
   let toolbar, fontSelect, fontSizeInput, colorPicker, boldBtn,
       italicBtn, alignBtns, resetBtn, editorModeBtn, statusBar,
-      editorSaveBtn, selectBox, debugPanel, dragHandle, minBtn;
+      editorSaveBtn, selectBox, debugPanel, dragHandle, minBtn,
+      undoBtn, redoBtn;
 
   // ─── Init ──────────────────────────────────────────────────────
   function init() {
@@ -131,6 +137,8 @@
     editorModeBtn = document.getElementById('editor-mode-btn');
     statusBar     = document.getElementById('editor-status-bar');
     editorSaveBtn = document.getElementById('editor-save-btn');
+    undoBtn       = document.getElementById('ed-undo');
+    redoBtn       = document.getElementById('ed-redo');
 
     // Populate font dropdown
     FONTS.forEach(f => {
@@ -154,6 +162,30 @@
       });
     });
     resetBtn.addEventListener('click', resetElement);
+
+    // Undo & Redo Event listeners
+    if (undoBtn) {
+      undoBtn.addEventListener('click', () => {
+        if (undoStack.length > 1) {
+          const current = undoStack.pop();
+          redoStack.push(current);
+          const previous = undoStack[undoStack.length - 1];
+          applyEditsSnapshot(previous);
+          autoSaveSilent();
+        }
+      });
+    }
+
+    if (redoBtn) {
+      redoBtn.addEventListener('click', () => {
+        if (redoStack.length > 0) {
+          const next = redoStack.pop();
+          undoStack.push(next);
+          applyEditsSnapshot(next);
+          autoSaveSilent();
+        }
+      });
+    }
 
     // Close toolbar on outside click
     document.addEventListener('mousedown', e => {
@@ -407,10 +439,26 @@
     });
   }
 
+  // ─── Font Normalization & Comparison ───────────────────────────
+  function matchFont(family) {
+    if (!family) return FONTS[0].value;
+    const clean = family.replace(/['"\s]/g, '').toLowerCase();
+    for (const f of FONTS) {
+      const cleanVal = f.value.replace(/['"\s]/g, '').toLowerCase();
+      if (clean.includes(cleanVal) || cleanVal.includes(clean)) {
+        return f.value;
+      }
+    }
+    return FONTS[0].value; // default to first
+  }
+
   // ─── Toolbar sync ──────────────────────────────────────────────
   function syncToolbarToElement(el) {
     const cs = window.getComputedStyle(el);
-    if (fontSelect) fontSelect.value = el.style.fontFamily || cs.fontFamily;
+    if (fontSelect) {
+      const currentFont = el.style.fontFamily || cs.fontFamily;
+      fontSelect.value = matchFont(currentFont);
+    }
     if (fontSizeInput) fontSizeInput.value = parseInt(el.style.fontSize || cs.fontSize) || 16;
     if (colorPicker) colorPicker.value = rgbToHex(el.style.color || cs.color);
     if (boldBtn) boldBtn.classList.toggle('active', (el.style.fontWeight || cs.fontWeight) === 'bold' || parseInt(cs.fontWeight) >= 700);
@@ -477,6 +525,7 @@
     syncToolbarToElement(selectedEl);
     updateSelectBoxPos();
     markUnsaved();
+    autoSave();
   }
 
   // ─── Drag ──────────────────────────────────────────────────────
@@ -541,8 +590,8 @@
     catch(e) { return {}; }
   }
 
-  function autoSave() {
-    const saves = loadSavedEdits();
+  function getEditsSnapshot() {
+    const snapshot = {};
     document.querySelectorAll('[data-editable]').forEach(el => {
       const id = getEditableId(el);
       const data = {};
@@ -550,9 +599,73 @@
       editorProps.forEach(p => { if (el.style[p]) data[p] = el.style[p]; });
       if (el.getAttribute('data-ed-dragged')) data._dragged = true;
       if (el.innerHTML !== el._originalHTML) data._html = el.innerHTML;
-      if (Object.keys(data).length) saves[id] = data;
+      if (Object.keys(data).length) snapshot[id] = data;
     });
-    localStorage.setItem(LS_KEY, JSON.stringify(saves));
+    return JSON.stringify(snapshot);
+  }
+
+  function applyEditsSnapshot(snapJSON) {
+    const saves = JSON.parse(snapJSON || '{}');
+    document.querySelectorAll('[data-editable]').forEach(el => {
+      const id = getEditableId(el);
+      const data = saves[id];
+
+      // Reset
+      const editorProps = ['fontFamily','fontSize','color','fontWeight','fontStyle','textAlign','left','top','width','height'];
+      editorProps.forEach(p => el.style.removeProperty(p.replace(/([A-Z])/g, '-$1').toLowerCase()));
+      el.removeAttribute('data-ed-dragged');
+      el.style.position = '';
+      el.style.zIndex   = '';
+      el.style.margin   = '';
+      el.innerHTML = el._originalHTML;
+
+      if (!data) return;
+
+      Object.entries(data).forEach(([k, v]) => {
+        if (k === '_html') { el.innerHTML = v; return; }
+        if (k === '_dragged') { el.setAttribute('data-ed-dragged', 'true'); return; }
+        el.style[k] = v;
+      });
+
+      if (data._dragged) {
+        el.style.position = 'fixed';
+        el.style.zIndex   = '8999';
+        el.style.margin   = '0';
+      }
+    });
+
+    if (selectedEl) {
+      syncToolbarToElement(selectedEl);
+      updateSelectBoxPos();
+    }
+  }
+
+  function initUndoRedo() {
+    undoStack = [getEditsSnapshot()];
+    redoStack = [];
+  }
+
+  function recordChange() {
+    const snap = getEditsSnapshot();
+    if (undoStack.length > 0 && undoStack[undoStack.length - 1] === snap) return;
+    undoStack.push(snap);
+    redoStack = []; // clear redo
+  }
+
+  function autoSave() {
+    const snap = getEditsSnapshot();
+    localStorage.setItem(LS_KEY, snap);
+    recordChange();
+    unsavedChanges = false;
+    if (editorSaveBtn) editorSaveBtn.textContent = '💾 Saved ✓';
+    setTimeout(() => {
+      if (editorSaveBtn) editorSaveBtn.textContent = '💾 Save Changes';
+    }, 1500);
+  }
+
+  function autoSaveSilent() {
+    const snap = getEditsSnapshot();
+    localStorage.setItem(LS_KEY, snap);
     unsavedChanges = false;
     if (editorSaveBtn) editorSaveBtn.textContent = '💾 Saved ✓';
     setTimeout(() => {
@@ -570,23 +683,13 @@
     });
 
     const saves = loadSavedEdits();
-    if (!Object.keys(saves).length) return;
+    if (!Object.keys(saves).length) {
+      initUndoRedo();
+      return;
+    }
 
-    document.querySelectorAll('[data-editable]').forEach(el => {
-      const id = getEditableId(el);
-      const data = saves[id];
-      if (!data) return;
-      Object.entries(data).forEach(([k, v]) => {
-        if (k === '_html') { el.innerHTML = v; return; }
-        if (k === '_dragged') { el.setAttribute('data-ed-dragged', 'true'); return; }
-        el.style[k] = v;
-      });
-      if (data._dragged) {
-        el.style.position = 'fixed';
-        el.style.zIndex   = '8999';
-        el.style.margin   = '0';
-      }
-    });
+    applyEditsSnapshot(JSON.stringify(saves));
+    initUndoRedo();
   }
 
   function markUnsaved() {

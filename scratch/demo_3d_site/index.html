@@ -7,7 +7,7 @@
   <meta name="description" content="An immersive 3D experience — scroll-driven WebGL, spatial depth, and cinematic transitions.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Outfit:wght@400;600&family=Syne:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="_editor.css">
 
   <style>
@@ -3572,7 +3572,11 @@ function lerpColor(a, b, amount) {
   <div id="editor-toolbar">
     <div class="ed-toolbar-title">
       <span>Text Editor</span>
-      <button id="ed-reset" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">Reset</button>
+      <div style="display: flex; gap: 4px;">
+        <button id="ed-undo" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">↩ Undo</button>
+        <button id="ed-redo" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">Redo ↪</button>
+        <button id="ed-reset" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">Reset</button>
+      </div>
     </div>
     <div class="ed-toolbar-divider"></div>
     <div class="ed-toolbar-row">

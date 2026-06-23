@@ -82,7 +82,7 @@
   ═══════════════════════════════════════════════════════════════ */
   #cursor-dot, #cursor-ring {
     position: fixed; border-radius: 50%;
-    pointer-events: none; z-index: 9999;
+    pointer-events: none; z-index: 999999;
     top: 0; left: 0;
     transform: translate3d(0,0,0) translate(-50%,-50%);
     will-change: transform;
@@ -108,6 +108,33 @@
   #cursor-ring { width:40px; height:40px; border:1px solid rgba(26,22,18,.22); transition: width .3s, height .3s, border-color .3s; }
   body.cursor-hover #cursor-dot  { transform:translate(-50%,-50%) scale(4); background:var(--lavender); }
   body.cursor-hover #cursor-ring { width:56px; height:56px; border-color:rgba(206,189,248,.55); }
+
+  /* Editor Mode Contextual Cursors */
+  #cursor-dot.cross-grabbing {
+    width: 14px !important;
+    height: 14px !important;
+    border-radius: 50% !important;
+    background: var(--text) !important;
+    border: 2px solid var(--bg);
+  }
+  #cursor-dot.cross-grabbing::before, #cursor-dot.cross-grabbing::after {
+    display: none !important;
+  }
+  #cursor-dot.cross-text {
+    width: 2px !important;
+    height: 18px !important;
+    border-radius: 0 !important;
+    background: var(--text) !important;
+  }
+  #cursor-dot.cross-text::before, #cursor-dot.cross-text::after {
+    display: none !important;
+  }
+  #cursor-dot.cross-resize-hidden {
+    opacity: 0 !important;
+  }
+  #cursor-ring.cross-resize-hidden {
+    opacity: 0 !important;
+  }
 
   /* ═══════════════════════════════════════════════════════════════
      FIXED LAYERS
@@ -487,6 +514,7 @@
 
   <!-- Cursor -->
   <canvas id="trail-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9998;"></canvas>
+  <canvas id="ripple-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9997;"></canvas>
   <div id="cursor-dot"></div>
   <div id="cursor-ring"></div>
 
@@ -517,6 +545,8 @@
 
   <!-- Creative Control Debugger -->
   <button id="debug-toggle" aria-label="Toggle creative control panel">⚙️</button>
+  <!-- Layer Panel Toggle -->
+  <button id="layer-toggle-btn" aria-label="Toggle layer panel" title="Layers">⬛</button>
   <div id="debug-panel">
     <div id="debug-panel-drag" title="Drag to move settings panel"></div>
     <div id="debug-panel-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
@@ -540,46 +570,31 @@
       <!-- Copy / Paste / Delete -->
       <div style="display: flex; gap: 6px; align-items: center; justify-content: space-between;">
         <span style="font-family:'JetBrains Mono',monospace; font-size:10px; opacity:0.6;">Actions</span>
-        <div style="display: flex; gap: 4px;">
+        <div style="display: flex; gap: 4px; flex-wrap: wrap;">
           <button id="btn-copy-asset" class="ed-btn" style="font-size:10px; padding:3px 6px;">📋 Copy</button>
           <button id="btn-paste-asset" class="ed-btn" style="font-size:10px; padding:3px 6px;">📋 Paste</button>
+          <button id="btn-lock-asset" class="ed-btn" style="font-size:10px; padding:3px 6px; background: rgba(255,170,0,0.12); color: #ffaa00; border-color: rgba(255,170,0,0.25);">🔓 Lock</button>
           <button id="btn-delete-asset" class="ed-btn" style="font-size:10px; padding:3px 6px; background: rgba(220,53,69,0.15); color: #dc3545; border-color: rgba(220,53,69,0.2);">🗑️ Del</button>
         </div>
       </div>
 
       <div class="ed-toolbar-divider"></div>
 
-      <!-- Text formatting tools inside the sidebar -->
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <div class="ed-toolbar-title" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">
-          <span>Properties</span>
-          <div style="display: flex; gap: 4px;">
-            <button id="sb-undo" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">↩</button>
-            <button id="sb-redo" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">↪</button>
-            <button id="sb-reset" class="ed-btn" style="font-size: 9px; padding: 2px 4px;">Reset</button>
-          </div>
-        </div>
 
-        <div class="ed-toolbar-row">
-          <span class="ed-toolbar-label">Font</span>
-          <select id="sb-font" style="flex: 1; font-size: 10px; padding: 2px 4px;"></select>
-        </div>
 
-        <div class="ed-toolbar-row">
-          <span class="ed-toolbar-label">Size</span>
-          <input type="range" id="sb-font-size" min="8" max="120" step="1" value="16" style="flex: 1;">
-          <input type="text" id="val-sb-font-size" class="num-input" value="16" style="width: 32px; font-size: 9px; text-align: center; height: 18px; padding: 0;">
+      <!-- Scroll Animation Section -->
+      <div id="sb-anim-section">
+        <div class="sb-anim-header" id="sb-anim-toggle">
+          <span class="sb-anim-title">✦ Scroll Animation</span>
+          <span id="sb-anim-kf-count" style="font-size:9px; opacity:0.45; font-family:'JetBrains Mono',monospace;">0 frames</span>
         </div>
-
-        <div class="ed-toolbar-row">
-          <span class="ed-toolbar-label">Color</span>
-          <input type="color" id="sb-color" value="#000000" style="width: 36px; height: 20px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; background: none; padding: 1px;">
-          <button id="sb-bold" class="ed-btn" style="font-size: 10px; padding: 2px 6px;">B</button>
-          <button id="sb-italic" class="ed-btn" style="font-size: 10px; padding: 2px 6px; font-style: italic;">I</button>
-          <button class="ed-btn" data-sb-align="left" style="font-size: 9px; padding: 2px 4px;">L</button>
-          <button class="ed-btn" data-sb-align="center" style="font-size: 9px; padding: 2px 4px;">C</button>
-          <button class="ed-btn" data-sb-align="right" style="font-size: 9px; padding: 2px 4px;">R</button>
+        <div id="sb-kf-pills" class="sb-kf-pills"><span class="sb-kf-pill-empty">No keyframes recorded</span></div>
+        <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+          <button id="sb-record-kf" class="ed-btn" style="flex:1; font-size:10px; background:rgba(206,189,248,0.15); color:#8a6ee0; border-color:rgba(206,189,248,0.4);">● Record Frame</button>
+          <button id="sb-preview-anim" class="ed-btn" style="flex:1; font-size:10px;">▶ Preview</button>
         </div>
+        <button id="sb-clear-kf" class="ed-btn" style="width:100%; font-size:10px; color:#dc3545; background:rgba(220,53,69,0.08); border-color:rgba(220,53,69,0.2);">🗑 Clear Keyframes</button>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; opacity:0.4; text-align:center; margin-top:5px; line-height:1.5;">Drag element → scroll to % → Record Frame</div>
       </div>
 
     </div>
@@ -591,6 +606,20 @@
         <button id="add-text-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ Text</button>
         <button id="add-card-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ Card</button>
         <button id="add-button-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ Button</button>
+      </div>
+      <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;">
+        <button id="add-image-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ Image</button>
+        <button id="add-mesh-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ 3D Mesh</button>
+        <button id="add-particles-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ Particles</button>
+      </div>
+    </div>
+
+    <!-- Background Styling Customizer -->
+    <div id="sidebar-background-customizer" style="display: none; flex-direction: column; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; opacity:0.6;">Background & Lights</span>
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label" style="width: 70px;">Spotlight</span>
+        <input type="color" id="sb-bg-spotlight" value="#cebdf8" style="width: 36px; height: 20px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; background: none; padding: 1px;">
       </div>
     </div>
 
@@ -1057,6 +1086,10 @@
 
   <script>
   'use strict';
+  if (location.hash === '#clear' || location.search.includes('clear')) {
+    localStorage.clear();
+    location.href = location.pathname;
+  }
   gsap.registerPlugin(ScrollTrigger);
 
   // === DEBUG ERROR OVERLAY: catches any JS crash and shows it on screen ===
@@ -1769,6 +1802,7 @@
   function initWebGL() {
     clock    = new THREE.Clock();
     scene    = new THREE.Scene();
+    window._webglScene = scene; // Expose scene globally
     camera   = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 100);
     camera.position.set(0, 0, 5);
 
@@ -2798,6 +2832,23 @@
     let trailColor = '#ffd700';
     let particlesList = [];
 
+    // ── Color interpolation utility (used by gradient trail mode) ──
+    function lerpColor(hexA, hexB, t) {
+      function parse(h) {
+        h = h.replace('#','');
+        if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+        return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+      }
+      try {
+        const [r1,g1,b1] = parse(hexA);
+        const [r2,g2,b2] = parse(hexB);
+        const r = Math.round(r1 + (r2-r1)*t);
+        const g = Math.round(g1 + (g2-g1)*t);
+        const b = Math.round(b1 + (b2-b1)*t);
+        return 'rgb('+r+','+g+','+b+')';
+      } catch(e) { return hexA; }
+    }
+
     const colorModeSelect = document.getElementById('cur-trail-color-mode');
     const solidGrp = document.getElementById('cur-trail-solid-group');
     const gradGrp = document.getElementById('cur-trail-grad-group');
@@ -3069,6 +3120,74 @@ function lerpColor(a, b, amount) {
     }
     tickParticles();
 
+    // ════════════════════════════════════════════════════════════
+    // RIPPLE FEEDBACK SYSTEM — spawned by editor on asset events
+    // ════════════════════════════════════════════════════════════
+    const rippleCanvas = document.getElementById('ripple-canvas');
+    const rippleCtx    = rippleCanvas ? rippleCanvas.getContext('2d') : null;
+    let   ripplesList  = [];
+
+    function resizeRippleCanvas() {
+      if (rippleCanvas) {
+        rippleCanvas.width  = window.innerWidth;
+        rippleCanvas.height = window.innerHeight;
+      }
+    }
+    window.addEventListener('resize', resizeRippleCanvas);
+    resizeRippleCanvas();
+
+    class Ripple {
+      constructor(x, y, color, big) {
+        this.x = x; this.y = y;
+        this.color = color || '#cebdf8';
+        this.radius = 0;
+        this.maxRadius = big ? 120 + Math.random() * 40 : 60 + Math.random() * 30;
+        this.life = 1.0;
+        this.decay = 0.022 + Math.random() * 0.012;
+        this.lw = 2.5 + Math.random() * 1.5;
+      }
+      update() {
+        const prog = 1 - this.radius / this.maxRadius;
+        this.radius += 4 + prog * 2;
+        this.life -= this.decay;
+      }
+      draw() {
+        if (!rippleCtx || this.life <= 0) return;
+        rippleCtx.save();
+        rippleCtx.globalAlpha = Math.max(0, this.life) * 0.65;
+        rippleCtx.strokeStyle = this.color;
+        rippleCtx.lineWidth = this.lw * this.life;
+        rippleCtx.shadowBlur = 8;
+        rippleCtx.shadowColor = this.color;
+        rippleCtx.beginPath();
+        rippleCtx.arc(this.x, this.y, Math.max(0, this.radius), 0, Math.PI * 2);
+        rippleCtx.stroke();
+        rippleCtx.restore();
+      }
+    }
+
+    function tickRipples() {
+      if (rippleCtx && ripplesList.length > 0) {
+        rippleCtx.clearRect(0, 0, rippleCanvas.width, rippleCanvas.height);
+        for (let i = ripplesList.length - 1; i >= 0; i--) {
+          const r = ripplesList[i];
+          r.update();
+          if (r.life <= 0) { ripplesList.splice(i, 1); }
+          else { r.draw(); }
+        }
+      }
+      requestAnimationFrame(tickRipples);
+    }
+    tickRipples();
+
+    // Global API — called by _editor.js on asset events
+    window.spawnRipple = function(x, y, color, count, big) {
+      const n = count || 3;
+      for (let i = 0; i < n; i++) {
+        setTimeout(() => { ripplesList.push(new Ripple(x, y, color, big)); }, i * 55);
+      }
+    };
+
     // Trail Type Buttons
     document.querySelectorAll('.trail-type-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -3121,11 +3240,6 @@ function lerpColor(a, b, amount) {
     document.getElementById('cur-trail-gravity').addEventListener('input', e => {
       trailGravity = parseFloat(e.target.value);
       syncCurVal('cur-trail-gravity', trailGravity);
-    });
-
-    // Color Override checkbox (element may not exist in all panel versions)
-    document.getElementById('cur-trail-color-en')?.addEventListener('change', e => {
-      trailColorOverride = e.target.checked;
     });
 
     // Color picker
@@ -3588,6 +3702,40 @@ function lerpColor(a, b, amount) {
     // Particle slow drift
     if (particles) particles.rotation.y += 0.0005;
 
+    // Spin dynamically created 3D primitives
+    scene.traverse(child => {
+      if (child.isMesh && child.name && child.name.startsWith('created_mesh_')) {
+        child.rotation.y += 0.005;
+        child.rotation.x += 0.002;
+      }
+      if (child.isPoints && child.name && child.name.startsWith('created_particles_')) {
+        const speed = parseFloat(child.userData.noiseSpeed ?? 1.0);
+        const behavior = child.userData.behavior || 'drift';
+        if (behavior === 'drift') {
+          child.rotation.y += 0.002 * speed;
+          child.rotation.x += 0.0008 * speed;
+        } else if (behavior === 'orbit') {
+          child.rotation.y += 0.008 * speed;
+        } else if (behavior === 'vortex') {
+          child.rotation.y += 0.015 * speed;
+          const pos = child.geometry.attributes.position;
+          const count = pos.count;
+          for (let i = 0; i < count; i++) {
+            let px = pos.getX(i);
+            let py = pos.getY(i);
+            let pz = pos.getZ(i);
+            const dist = Math.sqrt(px*px + pz*pz) + 0.1;
+            const angle = 0.003 * speed * (1.0 / dist);
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+            pos.setX(i, px * cos - pz * sin);
+            pos.setZ(i, px * sin + pz * cos);
+          }
+          pos.needsUpdate = true;
+        }
+      }
+    });
+
     renderer.render(scene, camera);
   }
 
@@ -3626,10 +3774,96 @@ function lerpColor(a, b, amount) {
     <div class="ed-resize-handle b" data-handle="b"></div>
     <div class="ed-resize-handle l" data-handle="l"></div>
     <div class="ed-resize-handle r" data-handle="r"></div>
+    
+    <!-- Move Handle (glove icon) and Dimension Badge -->
+    <div class="ed-move-handle" title="Drag to move asset">🖐️</div>
+    <div class="ed-dimension-badge" style="display: none;">0 × 0</div>
+  </div>
+
+  <!-- Floating Contextual Asset Properties Pop-up -->
+  <div id="floating-asset-settings" style="display: none;">
+    <div id="floating-asset-settings-drag" class="floating-panel-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; cursor: move; user-select: none;" title="Drag properties panel">
+      <span>✏️ Asset Settings</span>
+      <div style="display: flex; gap: 4px; pointer-events: auto;">
+        <button id="sb-undo" class="ed-btn" style="font-size: 9px; padding: 2px 4px; cursor: pointer;">↩</button>
+        <button id="sb-redo" class="ed-btn" style="font-size: 9px; padding: 2px 4px; cursor: pointer;">↪</button>
+        <button id="sb-reset" class="ed-btn" style="font-size: 9px; padding: 2px 4px; cursor: pointer;">Reset</button>
+      </div>
+    </div>
+    
+    <!-- Text specific properties group -->
+    <div id="sb-text-properties-group" style="display: flex; flex-direction: column; gap: 6px;">
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Font</span>
+        <select id="sb-font" style="flex: 1; font-size: 10px; padding: 2px 4px;"></select>
+      </div>
+
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Size</span>
+        <input type="range" id="sb-font-size" min="8" max="300" step="1" value="16" style="flex: 1;">
+        <input type="text" id="val-sb-font-size" class="num-input" value="16" style="width: 32px; font-size: 9px; text-align: center; height: 18px; padding: 0;">
+      </div>
+
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Height</span>
+        <input type="range" id="sb-line-height" min="0.8" max="3.5" step="0.1" value="1.2" style="flex: 1;">
+        <input type="text" id="val-sb-line-height" class="num-input" value="1.2" style="width: 32px; font-size: 9px; text-align: center; height: 18px; padding: 0;">
+      </div>
+
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Spacing</span>
+        <input type="range" id="sb-letter-spacing" min="-2" max="15" step="0.5" value="0" style="flex: 1;">
+        <input type="text" id="val-sb-letter-spacing" class="num-input" value="0" style="width: 32px; font-size: 9px; text-align: center; height: 18px; padding: 0;">
+      </div>
+
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Color</span>
+        <input type="color" id="sb-color" value="#000000" style="width: 36px; height: 20px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; background: none; padding: 1px;">
+        <button id="sb-bold" class="ed-btn" style="font-size: 10px; padding: 2px 6px;">B</button>
+        <button id="sb-italic" class="ed-btn" style="font-size: 10px; padding: 2px 6px; font-style: italic;">I</button>
+        <button class="ed-btn" data-sb-align="left" style="font-size: 9px; padding: 2px 4px;">L</button>
+        <button class="ed-btn" data-sb-align="center" style="font-size: 9px; padding: 2px 4px;">C</button>
+        <button class="ed-btn" data-sb-align="right" style="font-size: 9px; padding: 2px 4px;">R</button>
+        <button class="ed-btn" data-sb-align="justify" style="font-size: 9px; padding: 2px 4px;">J</button>
+      </div>
+    </div>
+    <div class="ed-toolbar-row" id="sb-image-url-row" style="display: none;">
+      <span class="ed-toolbar-label">Image URL</span>
+      <input type="text" id="sb-image-url" style="flex: 1; font-size: 10px; padding: 2px 4px; border: 1px solid var(--border); border-radius: 4px; background: rgba(0,0,0,0.05); color: var(--text); outline: none;">
+    </div>
+    <!-- Particle Customizer controls -->
+    <div id="sb-particles-row" style="display: none; flex-direction: column; gap: 6px;">
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Density</span>
+        <input type="range" id="sb-part-density" min="50" max="2500" step="50" value="500" style="flex: 1;">
+        <input type="text" id="val-sb-part-density" class="num-input" value="500" style="width: 32px; font-size: 9px; text-align: center; height: 18px; padding: 0;">
+      </div>
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Noise Spd</span>
+        <input type="range" id="sb-part-noise" min="0" max="10" step="0.1" value="1.0" style="flex: 1;">
+        <input type="text" id="val-sb-part-noise" class="num-input" value="1.0" style="width: 32px; font-size: 9px; text-align: center; height: 18px; padding: 0;">
+      </div>
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Behavior</span>
+        <select id="sb-part-behavior" style="flex: 1; font-size: 10px; padding: 2px 4px;">
+          <option value="drift">Floating Drift</option>
+          <option value="orbit">Orbit Sphere</option>
+          <option value="vortex">Cosmic Vortex</option>
+        </select>
+      </div>
+    </div>
   </div>
 
 
 
-  <script src="_editor.js"></script>
+      <script src="_editor.js"></script>
+    <script src="_scroll_anim.js"></script>
+    <script src="_layers.js"></script>
+    <script src="_timeline.js"></script>
 </body>
 </html>
+
+
+
+
+

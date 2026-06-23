@@ -744,3 +744,42 @@ body.scrubbing-active {
   pointer-events: none;
 }
 
+
+/* Style Presets Library Override Classes */
+.preset-glass {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(16px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
+  font-family: 'Outfit', sans-serif !important;
+  color: #ffffff !important;
+}
+.preset-cyber {
+  background: rgba(8, 8, 12, 0.9) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 2px solid #00f3ff !important;
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.35), inset 0 0 10px rgba(0, 243, 255, 0.15) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  color: #00f3ff !important;
+}
+.preset-luxury {
+  background: linear-gradient(135deg, #16161a 0%, #0d0d0f 100%) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid #d4af37 !important;
+  box-shadow: 0 10px 40px rgba(212, 175, 55, 0.12) !important;
+  font-family: 'Playfair Display', serif !important;
+  color: #f3e5ab !important;
+}
+.preset-brutalist {
+  background: #ffe600 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 3px solid #000000 !important;
+  box-shadow: 6px 6px 0px #000000 !important;
+  font-family: 'Syne', sans-serif !important;
+  font-weight: 800 !important;
+  color: #000000 !important;
+}

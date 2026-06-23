@@ -46,7 +46,7 @@
       lineHeightInput, lineHeightValInput, letterSpacingInput, letterSpacingValInput;
 
   let btnCopy, btnPaste, btnDelete, btnLock, btnAddText, btnAddCard, btnAddButton, btnAddParticles;
-  let textPropertiesGroup, floatingPanel, floatingPanelDrag, moveHandle;
+  let textPropertiesGroup, floatingPanel, floatingPanelDrag, moveHandle, presetsGroup;
   let particlesRow, partDensityInput, partDensityValInput, partNoiseInput, partNoiseValInput, partBehaviorSelect;
 
   // ─── Init ──────────────────────────────────────────────────────
@@ -200,6 +200,7 @@
     lineHeightValInput = document.getElementById('val-sb-line-height');
     letterSpacingInput = document.getElementById('sb-letter-spacing');
     letterSpacingValInput = document.getElementById('val-sb-letter-spacing');
+    presetsGroup      = document.getElementById('sb-presets-group');
     partDensityInput  = document.getElementById('sb-part-density');
     partDensityValInput = document.getElementById('val-sb-part-density');
     partNoiseInput    = document.getElementById('sb-part-noise');
@@ -383,6 +384,15 @@
         updateSelectedParticles();
       });
     }
+    
+    const presetBtns = document.querySelectorAll('.preset-btn');
+    presetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (selectedEl) {
+          applyPresetStyle(selectedEl, btn.dataset.preset);
+        }
+      });
+    });
 
     document.addEventListener('mousedown', e => {
       if (isDragging || isResizing) return;
@@ -965,6 +975,14 @@
         }
       }
     }
+    if (presetsGroup) {
+      presetsGroup.style.display = (isImg || isParticles) ? 'none' : 'flex';
+      const activePreset = ['glass', 'cyber', 'luxury', 'brutalist'].find(p => el.classList.contains('preset-' + p));
+      const presetBtns = document.querySelectorAll('.preset-btn');
+      presetBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.preset === activePreset);
+      });
+    }
   }
 
   // ─── Apply a CSS property ──────────────────────────────────────
@@ -996,6 +1014,22 @@
     updateSelectBoxPos();
   }
 
+  function applyPresetStyle(el, preset) {
+    if (!el) return;
+    const presets = ['preset-glass', 'preset-cyber', 'preset-luxury', 'preset-brutalist'];
+    presets.forEach(p => el.classList.remove(p));
+    if (preset && preset !== 'none') {
+      el.classList.add('preset-' + preset);
+    }
+    const conflictStyles = ['fontFamily', 'fontSize', 'color', 'fontWeight', 'fontStyle', 'backgroundColor', 'border', 'boxShadow', 'lineHeight', 'letterSpacing'];
+    conflictStyles.forEach(s => el.style.removeProperty(s.replace(/([A-Z])/g, '-$1').toLowerCase()));
+    
+    syncToolbarToElement(el);
+    updateSelectBoxPos();
+    markUnsaved();
+    autoSave();
+  }
+
   // ─── Reset element to original styles ─────────────────────────
   function resetElement() {
     if (!selectedEl) return;
@@ -1015,6 +1049,8 @@
     editorProps.forEach(p => selectedEl.style.removeProperty(
       p.replace(/([A-Z])/g, '-$1').toLowerCase()
     ));
+    const presets = ['preset-glass', 'preset-cyber', 'preset-luxury', 'preset-brutalist'];
+    presets.forEach(p => selectedEl.classList.remove(p));
     selectedEl.removeAttribute('data-ed-dragged');
     selectedEl.contentEditable = 'false';
     selectedEl.style.position = '';
@@ -1366,6 +1402,8 @@
       if (el.getAttribute('data-ed-parent')) data._parentId = el.getAttribute('data-ed-parent');
       if (el.innerHTML !== el._originalHTML) data._html = el.innerHTML;
       if (el.tagName === 'IMG' && el.src) data._src = el.src;
+      const activePreset = ['glass', 'cyber', 'luxury', 'brutalist'].find(p => el.classList.contains('preset-' + p));
+      if (activePreset) data._preset = activePreset;
       if (id.startsWith('created_particles_') && el._threeMesh && el._threeMesh.userData) {
         const ud = el._threeMesh.userData;
         data._density = ud.density;
@@ -1454,6 +1492,8 @@
         el.removeAttribute('data-ed-dragged');
         el.removeAttribute('data-ed-parent');
         el.innerHTML = el._originalHTML || el.innerHTML;
+        const presets = ['preset-glass', 'preset-cyber', 'preset-luxury', 'preset-brutalist'];
+        presets.forEach(p => el.classList.remove(p));
 
         // Always restore original parent positioning
         if (el._originalParent && el.parentElement !== el._originalParent) {
@@ -1463,6 +1503,8 @@
         // Created elements start fresh and are reset
         const editorProps = ['fontFamily','fontSize','color','fontWeight','fontStyle','textAlign','left','top','width','height','display','lineHeight','letterSpacing'];
         editorProps.forEach(p => el.style.removeProperty(p.replace(/([A-Z])/g, '-$1').toLowerCase()));
+        const presets = ['preset-glass', 'preset-cyber', 'preset-luxury', 'preset-brutalist'];
+        presets.forEach(p => el.classList.remove(p));
         el.removeAttribute('data-ed-dragged');
         el.removeAttribute('data-ed-parent');
         el.style.position = 'fixed';
@@ -1476,6 +1518,12 @@
       if (!data) return;
 
       Object.entries(data).forEach(([k, v]) => {
+        if (k === '_preset') {
+          const presets = ['preset-glass', 'preset-cyber', 'preset-luxury', 'preset-brutalist'];
+          presets.forEach(p => el.classList.remove(p));
+          el.classList.add('preset-' + v);
+          return;
+        }
         if (k === '_html') { el.innerHTML = v; return; }
         if (k === '_dragged') {
           // Only mark as dragged for created elements; static elements always return to flow

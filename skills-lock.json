@@ -15,6 +15,13 @@
       "computedHash": "af6aac6295d12afe1f52bb35ef0ae1d2dda1d3c6e9d245f0a13ecdb1f500f27f",
       "approved_at": "2026-06-24T17:07:49"
     },
+    "html-to-video-orchestrator": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": "html-to-video-orchestrator/html-to-video-orchestrator_skill.md",
+      "computedHash": "7643f938d6df6afb05ddbea485e29dbdabf6bbbdab4df108a425669c0bd7fc4a",
+      "approved_at": "2026-06-24T17:17:11"
+    },
     "mysql": {
       "source": "planetscale/database-skills",
       "sourceType": "github",

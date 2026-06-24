@@ -1858,6 +1858,12 @@
       const ny = (e.clientY / innerHeight) * 2 - 1;  // intentionally not negated (natural lean)
       gsap.to(parallaxRot, { x: -ny * 0.05, y: nx * 0.08, duration: 1.4, ease: 'power1.out', overwrite: 'auto' });
       if (particles)    gsap.to(particles.rotation,    { x: -ny * 0.04, y: particles.rotation.y + nx * 0.025, duration: 2.0, ease: 'power1.out' });
+      
+      // Update interactive 3D particle gravity field uniforms
+      if (particles && particles.material.uniforms) {
+        particles.material.uniforms.uMouse.value.set(nx, -ny);
+        particles.material.uniforms.uMouseStrength.value = 1.0;
+      }
     });
 
     // Scene ready — dismiss preloader and boot scroll
@@ -2015,6 +2021,20 @@
       { x: 1.0, y: 1.0, z: 1.0, duration: 0.65, ease: 'elastic.out(1,0.4)' }
     );
 
+    // Particles color and burst transition
+    if (particles && particles.material.uniforms) {
+      const modeColorA = new THREE.Color(mode.body);
+      const modeColorB = new THREE.Color(mode.emissive);
+      gsap.to(particles.material.uniforms.uColorA.value, { r: modeColorA.r, g: modeColorA.g, b: modeColorA.b, duration: 0.9 });
+      gsap.to(particles.material.uniforms.uColorB.value, { r: modeColorB.r, g: modeColorB.g, b: modeColorB.b, duration: 0.9 });
+      
+      // Blast particles outward in a fluid wave
+      gsap.fromTo(particles.material.uniforms.uBurstProgress,
+        { value: 1.0 },
+        { value: 0.0, duration: 1.5, ease: 'power2.out' }
+      );
+    }
+
     // Button label
     document.querySelector('#mode-btn .mode-icon').textContent  = mode.icon;
     document.querySelector('#mode-btn .mode-label').textContent = mode.label;
@@ -2032,39 +2052,74 @@
     const N   = 3200;
     const geo = new THREE.BufferGeometry();
     const pos = new Float32Array(N * 3);
-    const col = new Float32Array(N * 3);
+    const rat = new Float32Array(N);
     const sz  = new Float32Array(N);
+
+    // Initial default colors matching Crystal Mode (0x88ccff and 0x0055ff)
+    const initColA = new THREE.Color(0x88ccff);
+    const initColB = new THREE.Color(0x0055ff);
 
     for (let i = 0; i < N; i++) {
       const i3 = i * 3;
       pos[i3]   = (Math.random() - 0.5) * 16;
       pos[i3+1] = (Math.random() - 0.5) * 16;
       pos[i3+2] = (Math.random() - 0.5) * 14;
-      // Palette: amber / ice-blue / lavender
-      const t = Math.random();
-      if      (t < 0.33) { col[i3]=0.9; col[i3+1]=0.7; col[i3+2]=0.4; }
-      else if (t < 0.66) { col[i3]=0.6; col[i3+1]=0.7; col[i3+2]=1.0; }
-      else               { col[i3]=0.8; col[i3+1]=0.6; col[i3+2]=0.9; }
+      rat[i] = Math.random();
       sz[i] = Math.random();
     }
 
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    geo.setAttribute('color',    new THREE.BufferAttribute(col, 3));
+    geo.setAttribute('aRatio',   new THREE.BufferAttribute(rat, 1));
     geo.setAttribute('aSize',    new THREE.BufferAttribute(sz,  1));
 
     const mat = new THREE.ShaderMaterial({
       uniforms: {
-        uTime: { value: 0 },
-        uPR:   { value: Math.min(devicePixelRatio, 2) },
+        uTime:          { value: 0 },
+        uPR:            { value: Math.min(devicePixelRatio, 2) },
+        uMouse:         { value: new THREE.Vector2(0, 0) },
+        uMouseStrength: { value: 0.0 },
+        uBurstProgress: { value: 0.0 },
+        uColorA:        { value: initColA },
+        uColorB:        { value: initColB },
       },
       vertexShader: `
-        attribute vec3 color; attribute float aSize;
-        uniform float uTime, uPR;
+        attribute float aSize; attribute float aRatio;
+        uniform float uTime, uPR, uBurstProgress, uMouseStrength;
+        uniform vec2 uMouse;
+        uniform vec3 uColorA, uColorB;
         varying vec3 vColor; varying float vAlpha;
+
+        // Simple fractional wave combination to simulate 3D liquid currents
+        vec3 getFluidDisplacement(vec3 pos, float time) {
+          vec3 d = pos;
+          float t = time * 0.9;
+          d.x += sin(pos.y * 0.4 + t) * cos(pos.z * 0.3 + t * 0.7);
+          d.y += sin(pos.z * 0.5 + t * 1.1) * cos(pos.x * 0.4 - t * 0.8);
+          d.z += sin(pos.x * 0.6 - t * 0.7) * cos(pos.y * 0.5 + t * 1.2);
+          return (d - pos) * 0.45;
+        }
+
         void main() {
-          vColor = color;
-          vec4 mv = modelViewMatrix * vec4(position, 1.0);
-          float b  = sin(uTime * 1.4 + position.x * 0.8 + position.y * 0.5) * 0.5 + 0.5;
+          vColor = mix(uColorA, uColorB, aRatio);
+          
+          // Warp position with liquid currents
+          vec3 displaced = position + getFluidDisplacement(position, uTime);
+          
+          // Outward explosion burst on mode changes
+          vec3 dir = normalize(position);
+          displaced += dir * uBurstProgress * 3.5;
+          
+          // Interactive mouse gravity repulsion/attraction field (push particles slightly)
+          vec4 mv = modelViewMatrix * vec4(displaced, 1.0);
+          vec4 screenPos = projectionMatrix * mv;
+          vec2 screenNDC = screenPos.xy / screenPos.w;
+          float distToMouse = distance(screenNDC, uMouse);
+          if (distToMouse < 0.8 && uMouseStrength > 0.0) {
+            float force = (0.8 - distToMouse) * 1.2 * uMouseStrength;
+            mv.xy -= normalize(screenNDC - uMouse) * force * (1.0 / -mv.z);
+          }
+
+          float b = sin(uTime * 1.4 + position.x * 0.8 + position.y * 0.5) * 0.5 + 0.5;
           gl_PointSize = (2.5 + aSize * 4.0 + b * 1.5) * uPR * (1.0 / -mv.z);
           vAlpha = 0.35 + b * 0.45;
           gl_Position = projectionMatrix * mv;
@@ -2075,8 +2130,14 @@
           vec2 uv = gl_PointCoord - 0.5;
           float d  = length(uv);
           if (d > 0.5) discard;
-          float soft = 1.0 - smoothstep(0.1, 0.5, d);
-          gl_FragColor = vec4(vColor, soft * vAlpha);
+          
+          // Liquid drop glow calculation (hot core)
+          float glow = exp(-d * 5.0);
+          float soft = 1.0 - smoothstep(0.08, 0.5, d);
+          
+          // Blend particle color with a white-hot glowing center
+          vec3 liquidCol = mix(vColor, vec3(1.0, 1.0, 1.0), glow * 0.65);
+          gl_FragColor = vec4(liquidCol, (soft * 0.35 + glow * 0.65) * vAlpha);
         }`,
       transparent: true,
       depthWrite:  false,
@@ -3699,8 +3760,13 @@ function lerpColor(a, b, amount) {
       }
     }
 
-    // Particle slow drift
-    if (particles) particles.rotation.y += 0.0005;
+    // Particle slow drift & mouse strength decay
+    if (particles) {
+      particles.rotation.y += 0.0005;
+      if (particles.material.uniforms && particles.material.uniforms.uMouseStrength) {
+        particles.material.uniforms.uMouseStrength.value *= 0.94;
+      }
+    }
 
     // Spin dynamically created 3D primitives
     scene.traverse(child => {

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const h = fs.readFileSync('scratch/demo_3d_site/index.html', 'utf8');
-const m = h.match(/<script>([\s\S]*?)<\/script>\s*<\/body>/);
+const m = h.match(/<script>([\s\S]*?initWebGL\(\);[\s\S]*?)<\/script>/);
 try { new Function(m[1]); console.log('SYNTAX OK'); } catch(e) { console.error('SYNTAX ERROR:', e.message); process.exit(1); }
 
 const checks = [

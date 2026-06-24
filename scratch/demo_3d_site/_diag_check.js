@@ -20,7 +20,7 @@ const checks = [
   ['renderLoop defined', script.includes('function renderLoop')],
   ['preloader dismiss', script.includes("classList.add('done')")],
   ['debug-toggle.on added', script.includes("classList.add('on')")],
-  ['applyKeyframe defined', script.includes('function applyKeyframe')],
+  ['applyTimeline defined', script.includes('function applyTimeline')],
   ['sand canvas tick', script.includes('function tick()')],
 ];
 

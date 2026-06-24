@@ -19,8 +19,8 @@
       "source": "local",
       "sourceType": "local",
       "skillPath": "html-to-video-orchestrator/html-to-video-orchestrator_skill.md",
-      "computedHash": "7643f938d6df6afb05ddbea485e29dbdabf6bbbdab4df108a425669c0bd7fc4a",
-      "approved_at": "2026-06-24T17:17:11"
+      "computedHash": "ddabfaf001a691ca8b17dfe6aeb6a10ae116aa56720990f7cfc541afe570957e",
+      "approved_at": "2026-06-24T17:33:17"
     },
     "mysql": {
       "source": "planetscale/database-skills",

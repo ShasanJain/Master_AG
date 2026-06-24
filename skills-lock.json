@@ -8,6 +8,13 @@
       "computedHash": "8ad1b601073b871dd3caa8eb18c7f06e6b8fab92259a4908e9c7201aec3474c6",
       "approved_at": "2026-06-20T12:47:12"
     },
+    "document-visualization-evaluator": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": "document-visualization-evaluator/document-visualization-evaluator_skill.md",
+      "computedHash": "af6aac6295d12afe1f52bb35ef0ae1d2dda1d3c6e9d245f0a13ecdb1f500f27f",
+      "approved_at": "2026-06-24T17:07:49"
+    },
     "mysql": {
       "source": "planetscale/database-skills",
       "sourceType": "github",

@@ -8,6 +8,13 @@
       "computedHash": "8ad1b601073b871dd3caa8eb18c7f06e6b8fab92259a4908e9c7201aec3474c6",
       "approved_at": "2026-06-20T12:47:12"
     },
+    "autonomous-agent-loop": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": "autonomous-agent-loop/autonomous-agent-loop_skill.md",
+      "computedHash": "1eff61adea980a34856b5192de004ed3f5b2275774cbe7486fe117e1d4a1c854",
+      "approved_at": "2026-06-24T17:44:05"
+    },
     "document-visualization-evaluator": {
       "source": "local",
       "sourceType": "local",

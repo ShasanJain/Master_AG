@@ -53,6 +53,9 @@ Before making any major architectural changes, mass file operations, or systemic
 - Commit and push the current stable state to GitHub.
 - This is a non-negotiable safety net to ensure 100% recovery in case of failure.
 
+**2. Execution Paradigm Gate (MANDATORY)**
+Before embarking on any major implementation task (e.g., scaffolding a project, heavy refactoring, writing >100 lines of code), you MUST explicitly ask the USER whether they prefer the **Cursor Method** (autonomous self-annealing with max 2 retries) or the **Cline Method** (step-by-step sequential validation). If the user does not specify, default to the **Cursor Method**.
+
 **2. Slash Command Orchestration**
 Your workspace is now command-driven. When the user inputs a slash command (e.g., `/create`, `/audit`, `/debug`):
 - You MUST immediately read the corresponding workflow file in `skills/planning/workflows/[command].md`.
@@ -61,6 +64,15 @@ Your workspace is now command-driven. When the user inputs a slash command (e.g.
 
 **3. Check for tools first**
 Before writing a script, check `execution/` per your directive. Only create new scripts if none exist.
+
+**4. Semantic Toolkit Retrieval (MANDATORY)**
+Before taking action on any complex task, feature build, or bug fix, you MUST query your vector memory to load the optimal set of skills for the task.
+- Run `python execution/find_skills.py "<your specific task description>"`
+- The vector engine will return a broad payload of highly relevant modules across UI, logic, frameworks, etc.
+- Review the output and explicitly invoke the returned skills via the `skills/` directory check before proceeding.
+
+**5. Layered Implementation Protocol (MANDATORY)**
+For any complex feature build, you MUST adhere to the [Layered Implementation Protocol](file:///C:/Users/swaya/.gemini/skills/meta/agent/behavioral-modes/sub-skills/layered-implementation.md). Build features in three distinct passes: (1) Logic & Backend Engine, (2) User Interface & Layout Skeleton, and (3) Aesthetic Polish & Micro-interactions. During layout and polish passes, automatically retrieve and apply the appropriate design preset from `skills/design/system/` (e.g., `design-taste`, `minimalist-ui`, `brutalist-ui`, or `soft-ui`) based on the project's visual direction without requiring explicit user invocation.
 
 **2. Self-anneal when things break**
 
@@ -93,6 +105,7 @@ Errors are learning opportunities. When something breaks:
 
 - `.tmp/` - All intermediate files (dossiers, scraped data, temp exports). Never commit, always regenerated.
 - `skills/` - Specialized capabilities and resources for the agent. Contains a `[folder_name]_skill.md` inside each feature folder. (NOTE: Do NOT rely on SKILL.md. Scan for the specific `*_skill.md` file.)
+  - **Standard Templates**: Standard documentation templates are stored in `C:\Users\swaya\.gemini\skills\meta\templates\`. These include [prd-guide.md](file:///C:/Users/swaya/.gemini/skills/meta/templates/prd-guide.md), [runbooks-guide.md](file:///C:/Users/swaya/.gemini/skills/meta/templates/runbooks-guide.md), [incident-response-guide.md](file:///C:/Users/swaya/.gemini/skills/meta/templates/incident-response-guide.md), and [system-architecture-guide.md](file:///C:/Users/swaya/.gemini/skills/meta/templates/system-architecture-guide.md). Use them when creating project guides or plans.
 - `execution/` - Python scripts (the deterministic tools)
 - `directives/` - SOPs in Markdown (the instruction set)
 - `.env` - Environment variables and API keys

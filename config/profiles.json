@@ -1,0 +1,30 @@
+{
+  "profiles": {
+    "FastViral": {
+      "aspect_ratio": "9:16",
+      "font": "Impact",
+      "font_size": 80,
+      "text_color": "#FFFFFF",
+      "highlight_color": "#FFFF00",
+      "stroke_color": "#000000",
+      "stroke_width": 4,
+      "words_per_chunk": 3,
+      "bg_music_volume": 0.1,
+      "sfx_enabled": false,
+      "transitions": "rapid"
+    },
+    "CorporateClean": {
+      "aspect_ratio": "16:9",
+      "font": "Arial",
+      "font_size": 50,
+      "text_color": "#FFFFFF",
+      "highlight_color": "#00A8FF",
+      "stroke_color": "#000000",
+      "stroke_width": 2,
+      "words_per_chunk": 5,
+      "bg_music_volume": 0.2,
+      "sfx_enabled": false,
+      "transitions": "crossfade"
+    }
+  }
+}

@@ -58,6 +58,34 @@ async def forget_memory(memory_id: str):
     mem = get_memory()
     await mem.delete(memory_id)
 
+async def update_meta(memory_id: str, key: str, value: bool):
+    """Patch metadata of an existing memory directly in sqlite."""
+    import sqlite3
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT meta FROM memories WHERE id = ?", (memory_id,))
+        row = cursor.fetchone()
+        if not row:
+            conn.close()
+            return False
+            
+        meta = {}
+        if row[0]:
+            try: meta = json.loads(row[0])
+            except: pass
+            
+        meta[key] = value
+        
+        cursor.execute("UPDATE memories SET meta = ? WHERE id = ?", (json.dumps(meta), memory_id))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        import sys
+        print(f"Update error: {e}", file=sys.stderr)
+        return False
+
 async def list_memories(user_id: str = "jack"):
     """List all memories for a user."""
     mem = get_memory()
@@ -83,14 +111,84 @@ async def purge_memories(sector: str = None, user_id: str = "jack"):
     return deleted_count
 
 async def get_stats(user_id: str = "jack"):
-    """Get memory statistics."""
-    mem = get_memory()
-    results = await mem.search("*", user_id=user_id, limit=1000)
+    """Get memory statistics bypassing expensive embedding calls."""
+    import sqlite3
     sectors = {}
-    for r in results:
-        sec = r.get('metadata', {}).get('sector') or r.get('primary_sector', 'unknown')
-        sectors[sec] = sectors.get(sec, 0) + 1
-    return {"total": len(results), "sectors": sectors}
+    total = 0
+    if os.path.exists(DB_PATH):
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+            cursor.execute("SELECT primary_sector, meta FROM memories WHERE user_id = ?", (user_id,))
+            rows = cursor.fetchall()
+            for row in rows:
+                sec = row[0]
+                meta_str = row[1]
+                if meta_str:
+                    try:
+                        meta = json.loads(meta_str)
+                        if meta.get('sector'):
+                            sec = meta['sector']
+                    except:
+                        pass
+                if not sec: sec = 'unknown'
+                sectors[sec] = sectors.get(sec, 0) + 1
+                total += 1
+            conn.close()
+        except Exception as e:
+            pass
+    return {"total": total, "sectors": sectors}
+
+async def list_paginated(limit: int = 12, offset: int = 0, sector: str = None, search: str = None, user_id: str = "jack"):
+    """Get paginated memories bypassing expensive embedding calls, directly from sqlite."""
+    import sqlite3
+    if not os.path.exists(DB_PATH):
+        return {"items": [], "total": 0}
+        
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        
+        query = "SELECT id, content, meta, primary_sector FROM memories WHERE user_id = ?"
+        count_query = "SELECT COUNT(*) FROM memories WHERE user_id = ?"
+        params = [user_id]
+        
+        if sector and sector != 'all':
+            query += " AND primary_sector = ?"
+            count_query += " AND primary_sector = ?"
+            params.append(sector)
+            
+        if search:
+            query += " AND content LIKE ?"
+            count_query += " AND content LIKE ?"
+            params.append(f"%{search}%")
+            
+        query += " ORDER BY id DESC LIMIT ? OFFSET ?"
+        
+        cursor.execute(count_query, params)
+        total = cursor.fetchone()[0]
+        
+        cursor.execute(query, params + [limit, offset])
+        rows = cursor.fetchall()
+        
+        items = []
+        for row in rows:
+            meta = {}
+            if row[2]:
+                try:
+                    meta = json.loads(row[2])
+                except: pass
+            items.append({
+                "id": row[0],
+                "content": row[1],
+                "metadata": meta,
+                "sector": row[3]
+            })
+            
+        conn.close()
+        return {"items": items, "total": total}
+    except Exception as e:
+        return {"error": str(e), "items": [], "total": 0}
 
 if __name__ == "__main__":
     import argparse
@@ -104,10 +202,21 @@ if __name__ == "__main__":
     p_list = sub.add_parser("list")
     p_list.add_argument("--json", action="store_true")
     
+    p_list_paginated = sub.add_parser("list_paginated")
+    p_list_paginated.add_argument("--limit", type=int, default=12)
+    p_list_paginated.add_argument("--offset", type=int, default=0)
+    p_list_paginated.add_argument("--sector", default=None)
+    p_list_paginated.add_argument("--search", default=None)
+    
     p_stats = sub.add_parser("stats")
     
     p_forget = sub.add_parser("forget")
     p_forget.add_argument("memory_id")
+    
+    p_update = sub.add_parser("update")
+    p_update.add_argument("memory_id")
+    p_update.add_argument("key")
+    p_update.add_argument("value")
     
     p_purge = sub.add_parser("purge")
     p_purge.add_argument("--sector", default=None)
@@ -139,12 +248,19 @@ if __name__ == "__main__":
             for r in res:
                 sec = r.get('metadata', {}).get('sector') or r.get('primary_sector', 'unknown')
                 print(f"[{sec.upper()}] {r.get('content')}")
+    elif args.command == "list_paginated":
+        res = asyncio.run(list_paginated(limit=args.limit, offset=args.offset, sector=args.sector, search=args.search))
+        print(json.dumps(res))
     elif args.command == "stats":
         res = asyncio.run(get_stats())
         print(json.dumps(res))
     elif args.command == "forget":
         asyncio.run(forget_memory(args.memory_id))
         print(f"Deleted memory {args.memory_id}")
+    elif args.command == "update":
+        val = args.value.lower() == 'true'
+        success = asyncio.run(update_meta(args.memory_id, args.key, val))
+        print(json.dumps({"success": success}))
     elif args.command == "purge":
         sec = args.sector if not args.all else None
         count = asyncio.run(purge_memories(sector=sec))

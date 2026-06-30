@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Hardware Profile Config",
+  "type": "object",
+  "required": ["model", "backend", "vram_gb", "comfyui_url"],
+  "additionalProperties": false,
+  "properties": {
+    "model":       { "type": "string", "minLength": 1 },
+    "backend":     { "type": "string", "enum": ["comfyui", "a1111", "ollama"] },
+    "vram_gb":     { "type": "number", "minimum": 0 },
+    "comfyui_url": { "type": "string", "pattern": "^https?://" }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Video Profiles Config",
+  "type": "object",
+  "required": ["profiles"],
+  "properties": {
+    "profiles": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["aspect_ratio", "font", "font_size", "text_color"],
+        "properties": {
+          "aspect_ratio":      { "type": "string", "pattern": "^\\d+:\\d+$" },
+          "font":              { "type": "string" },
+          "font_size":         { "type": "integer", "minimum": 8 },
+          "text_color":        { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+          "highlight_color":   { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+          "stroke_color":      { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+          "stroke_width":      { "type": "integer", "minimum": 0 },
+          "words_per_chunk":   { "type": "integer", "minimum": 1 },
+          "bg_music_volume":   { "type": "number", "minimum": 0, "maximum": 1 },
+          "sfx_enabled":       { "type": "boolean" },
+          "transitions":       { "type": "string" }
+        }
+      }
+    }
+  }
+}

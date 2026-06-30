@@ -83,12 +83,12 @@ def compute_degrees(graphify_links):
     return degree
 
 
-async def generate_graph(limit_mem=100, limit_skills=100, threshold=0.75):
+async def generate_graph(limit_mem=500, threshold=0.65):
     nodes = []
     links = []
+    all_vectors = []
     
-    # 1. Fetch Personal Memories from SQLite (OpenMemory)
-    memories_data = []
+    # 1. Fetch All Cognitive Traces from SQLite (OpenMemory)
     if os.path.exists(DB_PATH):
         try:
             conn = sqlite3.connect(DB_PATH)
@@ -102,178 +102,129 @@ async def generate_graph(limit_mem=100, limit_skills=100, threshold=0.75):
                 mem_id, content, sector, vec_blob, salience, meta_str = row
                 vec = decode_vector(vec_blob)
                 
-                # Try parsing metadata for custom title/labels
-                title = content[:30] + "..." if len(content) > 30 else content
+                meta = {}
                 try:
-                    meta = json.loads(meta_str) if meta_str else {}
-                    if meta.get("tags"):
-                        title = f"#{meta['tags'][0]} - {title}"
+                    if meta_str: meta = json.loads(meta_str)
                 except:
                     pass
                 
+                title = content[:40] + "..." if len(content) > 40 else content
+                group = "personal"
+                
+                if meta.get("ast_id"):
+                    group = "ast"
+                    title = meta.get("ast_id")
+                elif meta.get("skill_name"):
+                    group = "industrial"
+                    title = meta.get("skill_name")
+                elif meta.get("tags"):
+                    title = f"#{meta['tags'][0]} - {title}"
+                elif sector == "structural":
+                    group = "ast"
+                elif sector == "procedural":
+                    group = "industrial"
+                    
                 node = {
                     "id": mem_id,
                     "label": title,
-                    "group": "personal",
+                    "group": group,
                     "content": content,
-                    "sector": sector or "semantic",
-                    "salience": float(salience) if salience is not None else 1.0
+                    "sector": sector or meta.get("sector") or "semantic",
+                    "salience": float(salience) if salience is not None else 1.0,
+                    "source_file": meta.get("source_file"),
                 }
                 nodes.append(node)
                 if vec is not None:
-                    memories_data.append((mem_id, vec))
+                    all_vectors.append((mem_id, vec))
             conn.close()
-        except Exception:
-            pass
-
-    # 2. Fetch Industrial Skills from Deep Lake (skill_vault)
-    skills_data = []
-    if os.path.exists(VAULT_PATH):
-        try:
-            with SilenceStdout():
-                ds = deeplake.load(VAULT_PATH, read_only=True)
-            num_skills = min(len(ds), limit_skills)
-            if num_skills > 0:
-                texts = ds.text.data()["value"][:num_skills]
-                embeddings = ds.embedding.data()["value"][:num_skills]
-                metadatas = ds.metadata.data()["value"][:num_skills]
-                
-                for i in range(num_skills):
-                    skill_id = f"skill_{i}"
-                    meta = metadatas[i] or {}
-                    title = meta.get("name") or meta.get("title") or meta.get("file") or f"Skill {i}"
-                    
-                    node = {
-                        "id": skill_id,
-                        "label": title,
-                        "group": "industrial",
-                        "content": texts[i],
-                        "sector": "procedural",
-                        "salience": 1.0
-                    }
-                    nodes.append(node)
-                    
-                    vec = embeddings[i]
-                    if vec is not None:
-                        skills_data.append((skill_id, np.array(vec, dtype='float32')))
-        except Exception:
-            pass
-
-    # 3. Fetch Graphify AST structure from graphify-out/graph.json
-    graphify_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "graphify-out", "graph.json")
-    report_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "graphify-out", "GRAPH_REPORT.md")
-
-    if os.path.exists(graphify_path):
-        try:
-            with open(graphify_path, "r", encoding="utf-8") as f:
-                graphify_data = json.load(f)
-            
-            graphify_links = graphify_data.get("links", [])
-            degree = compute_degrees(graphify_links)
-
-            # ── Phase 1: Prune isolated nodes (degree ≤ 1) ──
-            graphify_node_ids = set()
-            community_members = {}  # community_id -> list of node IDs
-
-            for g_node in graphify_data.get("nodes", []):
-                node_id = g_node.get("id")
-                node_degree = degree.get(node_id, 0)
-
-                # Skip isolated nodes — they have no structural value
-                if node_degree <= 1:
-                    continue
-
-                comm_id = g_node.get("community")
-
-                node = {
-                    "id": node_id,
-                    "label": g_node.get("label", node_id),
-                    "group": "ast",
-                    "content": f"AST: {g_node.get('file_type', 'code')} in {g_node.get('source_file')}",
-                    "sector": "structural",
-                    "salience": min(0.3 + (node_degree * 0.1), 1.0),  # Degree-weighted salience
-                    "source_file": g_node.get("source_file"),
-                    "source_location": g_node.get("source_location"),
-                    "cluster": comm_id,  # Phase 1: attach community cluster ID
-                }
-                nodes.append(node)
-                graphify_node_ids.add(node_id)
-
-                # Track community membership for Phase 2
-                if comm_id is not None:
-                    community_members.setdefault(comm_id, []).append(node_id)
-            
-            # Merge graphify links (only between non-pruned nodes)
-            for g_link in graphify_links:
-                src = g_link.get("source")
-                tgt = g_link.get("target")
-                if src in graphify_node_ids and tgt in graphify_node_ids:
-                    links.append({
-                        "source": src,
-                        "target": tgt,
-                        "value": g_link.get("weight", 0.5),
-                        "relation": g_link.get("relation", "contains")
-                    })
-
-            # ── Phase 2: Inject Community Summary Nodes ──
-            comm_summaries = parse_community_summaries(report_path)
-
-            for comm_id, member_ids in community_members.items():
-                if len(member_ids) < 2:
-                    continue  # Skip trivial communities with <2 connected members
-
-                summary = comm_summaries.get(comm_id, {})
-                cohesion = summary.get("cohesion", 0)
-                node_count = summary.get("node_count", len(member_ids))
-                nodes_text = summary.get("nodes_text", "")
-
-                comm_node_id = f"community_{comm_id}"
-                if nodes_text:
-                    top_nodes = [n.strip().replace("()", "") for n in nodes_text.split(",")[:2]]
-                    short_desc = ", ".join(top_nodes)
-                    comm_label = short_desc or f"Cluster {comm_id}"
-                    description = f"Community {comm_id} ({node_count} members, cohesion {cohesion:.2f}): {nodes_text}"
-                else:
-                    member_labels = []
-                    for n in nodes:
-                        if n.get("cluster") == comm_id and n["group"] == "ast":
-                            member_labels.append(n["label"])
-                    top_nodes = [n.replace("()", "") for n in member_labels[:2]]
-                    short_desc = ", ".join(top_nodes)
-                    comm_label = short_desc or f"Cluster {comm_id}"
-                    description = f"Community {comm_id} ({len(member_labels)} connected members): {', '.join(member_labels[:8])}"
-                    if len(member_labels) > 8:
-                        description += f" (+{len(member_labels) - 8} more)"
-
-                community_node = {
-                    "id": comm_node_id,
-                    "label": comm_label,
-                    "group": "community",
-                    "content": description,
-                    "sector": "structural",
-                    "salience": min(0.5 + cohesion, 1.0),
-                    "cluster": comm_id,
-                    "cohesion": cohesion,
-                    "member_count": len(member_ids),
-                }
-                nodes.append(community_node)
-
-                # Link community node to each member (lightweight hub-spoke)
-                for mid in member_ids:
-                    links.append({
-                        "source": comm_node_id,
-                        "target": mid,
-                        "value": 0.3,
-                        "relation": "community_member"
-                    })
-
         except Exception as e:
-            sys.stderr.write(f"Warning loading Graphify: {e}\n")
+            sys.stderr.write(f"DB Error: {e}\n")
 
-    # 4. Combine vectors and calculate semantic proximity clusters
-    all_vectors = memories_data + skills_data
-    
-    # Calculate relationships (Cosine Similarity)
+    # 1.5 Inject File System Skills and Cluster Hubs
+    try:
+        home_dir = os.environ.get("USERPROFILE") or os.environ.get("HOME") or ""
+        scan_dirs = [
+            os.path.join(home_dir, ".gemini", "skills"),
+            os.path.abspath(os.path.join(os.getcwd(), "..", ".agent", "skills")),
+            os.path.abspath(os.path.join(os.getcwd(), "..", "skills"))
+        ]
+        
+        category_counts = Counter()
+        skill_nodes = []
+        processed_titles = set()
+        
+        for d in scan_dirs:
+            if not os.path.exists(d): continue
+            for root_dir, _, files in os.walk(d):
+                for f in files:
+                    if f == "SKILL.md" or f.endswith("_skill.md"):
+                        filepath = os.path.join(root_dir, f)
+                        try:
+                            with open(filepath, "r", encoding="utf-8") as file_obj:
+                                content = file_obj.read()
+                            # Parse YAML frontmatter manually
+                            meta = {}
+                            match = re.search(r"^---\n([\s\S]*?)\n---", content)
+                            if match:
+                                for line in match.group(1).split("\n"):
+                                    if ":" in line:
+                                        k, v = line.split(":", 1)
+                                        meta[k.strip()] = v.strip().strip("'").strip('"')
+                            
+                            title = meta.get("name") or os.path.basename(os.path.dirname(filepath))
+                            if title in processed_titles: continue
+                            processed_titles.add(title)
+                            
+                            cat = "CORE"
+                            file_lower = filepath.lower()
+                            if meta.get("category"): cat = meta["category"].upper()
+                            elif "design" in file_lower or "ui" in file_lower: cat = "DESIGN"
+                            elif "execution" in file_lower or "dev" in file_lower or "code" in file_lower: cat = "DEV"
+                            elif "planning" in file_lower: cat = "PLANNING"
+                            elif "review" in file_lower or "security" in file_lower or "ops" in file_lower: cat = "SRE"
+                            elif "automation" in file_lower: cat = "AUTOMATION"
+                            
+                            category_counts[cat] += 1
+                            node_id = f"skill_{title}"
+                            skill_nodes.append({
+                                "id": node_id,
+                                "label": title,
+                                "group": "industrial",
+                                "content": meta.get("description", "Dynamic Skill Module"),
+                                "sector": cat,
+                                "salience": 2.0,
+                                "source_file": filepath
+                            })
+                            
+                        except Exception:
+                            pass
+        
+        # Add Hub Nodes for each Category and link skills to them
+        for cat, count in category_counts.items():
+            hub_id = f"hub_{cat}"
+            nodes.append({
+                "id": hub_id,
+                "label": cat,
+                "group": "community",
+                "content": f"Central hub for {cat} modules.",
+                "member_count": count,
+                "salience": float(count) * 2.0
+            })
+            
+            # Link each skill in this category to the hub
+            for snode in skill_nodes:
+                if snode["sector"] == cat:
+                    links.append({
+                        "source": snode["id"],
+                        "target": hub_id,
+                        "value": 10.0, # High gravity to pull them close
+                        "relation": "belongs_to_category"
+                    })
+        nodes.extend(skill_nodes)
+    except Exception as e:
+        sys.stderr.write(f"Skill injection Error: {e}\n")
+
+    # 2. Calculate pure semantic relationships (Cosine Similarity)
     n = len(all_vectors)
     for i in range(n):
         node_id_i, vec_i = all_vectors[i]
@@ -286,9 +237,9 @@ async def generate_graph(limit_mem=100, limit_skills=100, threshold=0.75):
             if sim >= threshold:
                 similarities.append((node_id_j, sim))
                 
-        # Sort and take top 3 semantic links per node to avoid visual overload
+        # Sort and take top 4 semantic links per node to avoid visual overload
         similarities.sort(key=lambda x: x[1], reverse=True)
-        for target_id, val in similarities[:3]:
+        for target_id, val in similarities[:4]:
             # Add undirected link (prevent duplicates if already linked in other direction)
             exists = False
             for link in links:
@@ -303,22 +254,6 @@ async def generate_graph(limit_mem=100, limit_skills=100, threshold=0.75):
                     "value": val,
                     "relation": "semantic_similarity"
                 })
-
-    # 5. Connect AST nodes to corresponding industrial skills/memories based on filename matches
-    for node in nodes:
-        if node["group"] == "ast" and node.get("source_file"):
-            # Check if any skill or memory corresponds to this file
-            src_file = node["source_file"].replace("/", "\\").lower()
-            for other in nodes:
-                if other["group"] == "industrial" and other.get("content") and "skill" in other.get("content").lower():
-                    # Check if file path is in the content
-                    if src_file in other.get("content").lower() or other["label"].lower() in src_file:
-                        links.append({
-                            "source": node["id"],
-                            "target": other["id"],
-                            "value": 1.0,
-                            "relation": "implements"
-                        })
 
     return {
         "nodes": nodes,

@@ -1,0 +1,45 @@
+{
+  "today": [
+    {
+      "model": "dolphin-llama3-latest",
+      "prompt_tokens": 24740,
+      "completion_tokens": 8490
+    },
+    {
+      "model": "nomic-embed-text-latest",
+      "prompt_tokens": 76000,
+      "completion_tokens": 0
+    },
+    {
+      "model": "claude-3-5-sonnet",
+      "prompt_tokens": 8200,
+      "completion_tokens": 2400
+    }
+  ],
+  "total": [
+    {
+      "model": "dolphin-llama3-latest",
+      "prompt_tokens": 425000,
+      "completion_tokens": 142000
+    },
+    {
+      "model": "nomic-embed-text-latest",
+      "prompt_tokens": 1340000,
+      "completion_tokens": 0
+    },
+    {
+      "model": "claude-3-5-sonnet",
+      "prompt_tokens": 89000,
+      "completion_tokens": 14000
+    }
+  ],
+  "history": [
+    64500,
+    81200,
+    58400,
+    92000,
+    77500,
+    114000,
+    119500
+  ]
+}

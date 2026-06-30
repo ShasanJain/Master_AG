@@ -4,13 +4,22 @@
     "**/.next": true,
     "**/.tmp": true,
     "**/*.db": true,
-    "**/*.log": true
+    "**/*.log": true,
+    "**/graphify-out/cache": true,
+    "**/graphify-out/graph.json": true
   },
   "files.exclude": {
     "**/node_modules": true,
     "**/.next": true,
     "**/.tmp": true,
-    "**/*.db": true
+    "**/*.db": true,
+    "**/graphify-out/cache": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/*/**": true,
+    "**/.next/*/**": true,
+    "**/graphify-out/cache/*/**": true,
+    "**/.git/*/**": true
   },
   "python.analysis.extraPaths": [
     "./execution"

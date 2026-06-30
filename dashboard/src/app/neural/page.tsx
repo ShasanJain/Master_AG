@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { Moon, Sun, Maximize2, Minimize2 } from 'lucide-react';
 
 // Import ForceGraph3D dynamically to prevent SSR issues
 const ForceGraph3D = dynamic(
@@ -36,11 +37,22 @@ export default function NeuralMapPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
-  const [selectedGroup, setSelectedGroup] = useState<string>('ALL');
+  const [selectedGroups, setSelectedGroups] = useState<string[]>(['ALL']);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
   const fgRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [graphBg, setGraphBg] = useState('#000000');
+  const [isGraphLight, setIsGraphLight] = useState(false);
+  const [skillUsageMap, setSkillUsageMap] = useState<Record<string, number>>({});
+
+  const toggleGraphBg = () => {
+    setIsGraphLight(prev => {
+      const next = !prev;
+      setGraphBg(next ? '#F5F5F0' : '#000000');
+      return next;
+    });
+  };
 
   // Drag, minimize, and resize states for Inspector
   const [inspectorPosition, setInspectorPosition] = useState({ x: 16, y: 16 });
@@ -105,10 +117,27 @@ export default function NeuralMapPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch('/api/neural');
-        const data = await res.json();
+        const [graphRes, logsRes] = await Promise.all([
+          fetch('/api/neural'),
+          fetch('/api/logs').catch(() => null)
+        ]);
+        
+        const data = await graphRes.json();
         setGraphData(data);
         setFilteredData(data);
+        
+        if (logsRes && logsRes.ok) {
+          const logsData = await logsRes.json();
+          const usage: Record<string, number> = {};
+          logsData.forEach((log: any) => {
+            if (log.skill) {
+              const skillId = `skill_${log.skill}`;
+              usage[skillId] = (usage[skillId] || 0) + 1;
+            }
+          });
+          setSkillUsageMap(usage);
+        }
+        
         setLoading(false);
       } catch (err) {
         console.error('Error fetching neural graph:', err);
@@ -122,8 +151,8 @@ export default function NeuralMapPage() {
     let nodes = graphData.nodes;
     let links = graphData.links;
 
-    if (selectedGroup !== 'ALL') {
-      nodes = nodes.filter(n => n.group === selectedGroup || n.sector === selectedGroup);
+    if (!selectedGroups.includes('ALL') && selectedGroups.length > 0) {
+      nodes = nodes.filter(n => selectedGroups.includes(n.group) || (n.sector && selectedGroups.includes(n.sector)));
       const nodeIds = new Set(nodes.map(n => n.id));
       links = links.filter(l => {
         const sourceId = typeof l.source === 'object' ? (l.source as any).id : l.source;
@@ -147,7 +176,7 @@ export default function NeuralMapPage() {
     }
 
     setFilteredData({ nodes, links });
-  }, [searchTerm, selectedGroup, graphData]);
+  }, [searchTerm, selectedGroups, graphData]);
 
   const handleNodeClick = (node: any) => {
     setSelectedNode(node);
@@ -171,7 +200,11 @@ export default function NeuralMapPage() {
       if (node.sector === 'procedural') return '#34d399'; // Emerald
       return '#c084fc'; // Purple (Semantic)
     }
-    if (node.group === 'industrial') return '#10b981'; // Green
+    if (node.group === 'industrial') {
+      // Heatmap glow for highly used skills
+      if (skillUsageMap[node.id]) return '#10b981'; // Emerald/Green for active skills
+      return '#06b6d4'; // Cyan (distinct from Emerald)
+    }
     return '#fbbf24'; // Amber (AST / structural)
   };
 
@@ -180,7 +213,7 @@ export default function NeuralMapPage() {
   };
 
   return (
-    <div ref={containerRef} className={"flex flex-col relative overflow-hidden bg-black " + (isFullscreen ? "w-screen h-screen fixed inset-0 z-[9999]" : "h-[calc(100vh-160px)] rounded-2xl border border-[var(--border)]")}>
+    <div ref={containerRef} className={"flex flex-col relative overflow-hidden bg-[var(--background)] " + (isFullscreen ? "w-screen h-screen fixed inset-0 z-[9999]" : "h-[calc(100vh-160px)] rounded-2xl border border-[var(--border)]")}>
       {/* HUD Header */}
       <section className="absolute top-4 left-4 z-10 flex items-start pointer-events-auto">
         <div className="relative flex items-start">
@@ -188,66 +221,103 @@ export default function NeuralMapPage() {
             <div className="glass-card p-6 w-80 space-y-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-xl font-bold tracking-tighter text-white">NEURAL MAP</h2>
-                  <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest">
+                  <h2 className="text-xl font-bold tracking-tighter text-[var(--foreground)]">NEURAL MAP</h2>
+                  <p className="text-xs font-bold text-[var(--muted)] uppercase tracking-widest">
                     Unified semantic-structural graph
                   </p>
                 </div>
-                <button
-                  onClick={toggleFullscreen}
-                  className="p-2 rounded bg-white/5 border border-white/10 hover:bg-white/15 text-[10px] text-white/70 hover:text-white transition-all flex items-center justify-center font-bold"
-                  title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-                >
-                  {isFullscreen ? "⛶" : "⬜"}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={toggleGraphBg}
+                    className="p-2 rounded bg-[var(--surface)] border border-[var(--border)] hover:bg-[var(--border)] text-[10px] text-[var(--foreground)]/70 hover:text-[var(--foreground)] transition-all flex items-center justify-center font-bold"
+                    title={isGraphLight ? "Switch to Dark Canvas" : "Switch to Light Canvas"}
+                  >
+                    {isGraphLight ? <Moon size={14} /> : <Sun size={14} />}
+                  </button>
+                  <button
+                    onClick={toggleFullscreen}
+                    className="p-2 rounded bg-[var(--surface)] border border-[var(--border)] hover:bg-[var(--border)] text-[10px] text-[var(--foreground)]/70 hover:text-[var(--foreground)] transition-all flex items-center justify-center font-bold"
+                    title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+                  >
+                    {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[9px] font-bold text-[var(--faint)] uppercase tracking-widest">Search Matrix</label>
+                <label className="text-[10px] font-bold text-[var(--faint)] uppercase tracking-widest">Search Matrix</label>
                 <input
                   type="text"
                   placeholder="LOCATE SYMBOL OR MEMORY..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-[10px] font-bold tracking-widest text-white placeholder:text-[var(--faint)] outline-none focus:border-[var(--primary)] transition-all"
+                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-[10px] font-bold tracking-widest text-[var(--foreground)] placeholder:text-[var(--faint)] outline-none focus:border-[var(--primary)] transition-all"
                 />
               </div>
 
-              <div className="space-y-2">
-                  <label className="text-[9px] font-bold text-[var(--faint)] uppercase tracking-widest">Filter Sector</label>
-                  <div className="relative">
-                    <select
-                      value={selectedGroup}
-                      onChange={(e) => setSelectedGroup(e.target.value)}
-                      className="w-full bg-black/40 border border-[var(--border)] rounded-lg px-3 py-2 text-[10px] font-bold tracking-widest uppercase text-white appearance-none outline-none focus:border-[var(--primary)] transition-all cursor-pointer hover:bg-white/5"
-                    >
-                      {['ALL', 'personal', 'industrial', 'ast', 'community', 'semantic', 'procedural'].map((group) => (
-                        <option key={group} value={group} className="bg-[#0f1115] text-[10px] font-bold tracking-wider uppercase">
-                          {group}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-[var(--faint)]">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
+              <div className="space-y-2 relative">
+                  <label className="text-[9px] font-bold text-[var(--faint)] uppercase tracking-widest">Filter Sectors (Multi-Select)</label>
+                  
+                  <details className="group relative">
+                    <summary className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-2 text-[10px] font-bold tracking-widest uppercase text-[var(--foreground)] outline-none focus:border-[var(--primary)] transition-all cursor-pointer hover:bg-[var(--surface)] list-none flex justify-between items-center select-none">
+                      <span className="truncate">
+                        {selectedGroups.includes('ALL') ? 'ALL SECTORS' : selectedGroups.join(', ')}
+                      </span>
+                      <svg className="w-3 h-3 transition-transform group-open:rotate-180 text-[var(--faint)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
+                    </summary>
+                    
+                    <div className="absolute top-full left-0 mt-1 w-full z-30 bg-[#0f1115] border border-[var(--border)] rounded-lg shadow-xl overflow-hidden">
+                      <div className="max-h-48 overflow-y-auto p-2 flex flex-col gap-1">
+                        {['ALL', 'personal', 'industrial', 'ast', 'community', 'semantic', 'procedural'].map((group) => (
+                          <label key={group} className="flex items-center gap-2 cursor-pointer bg-[var(--surface)] px-3 py-2 rounded border border-transparent hover:border-[var(--border)] hover:bg-[var(--border)] transition-colors">
+                            <input 
+                              type="checkbox" 
+                              checked={selectedGroups.includes(group)}
+                              onChange={() => {
+                                if (group === 'ALL') {
+                                   setSelectedGroups(['ALL']);
+                                } else {
+                                   let newGroups = selectedGroups.filter(g => g !== 'ALL');
+                                   if (newGroups.includes(group)) {
+                                       newGroups = newGroups.filter(g => g !== group);
+                                   } else {
+                                       newGroups.push(group);
+                                   }
+                                   if (newGroups.length === 0) newGroups = ['ALL'];
+                                   setSelectedGroups(newGroups);
+                                }
+                              }}
+                              className="w-3.5 h-3.5 accent-[var(--primary)]"
+                            />
+                            <span className="text-[10px] font-bold tracking-wider uppercase text-[var(--foreground)]/80">
+                              {group}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  </details>
+                  
                 {/* Sector Description */}
-                <div className="p-2 rounded bg-white/5 border border-white/5 mt-1">
-                  <p className="text-[8px] leading-normal text-[var(--muted)] font-mono uppercase tracking-wider">
-                    {selectedGroup === 'ALL' && "Unified view of codebase structure & cognitive/procedural memory systems."}
-                    {selectedGroup === 'personal' && "Cognitive memory traces, episodic events, and fact retention."}
-                    {selectedGroup === 'industrial' && "Automated procedural script workflow instructions."}
-                    {selectedGroup === 'ast' && "Structural code elements (files, components, imports, syntax)."}
-                    {selectedGroup === 'community' && "Leiden-detected architectural clusters. Hub nodes summarizing code communities."}
-                    {selectedGroup === 'semantic' && "Long-term general factual relations and concept links."}
-                    {selectedGroup === 'procedural' && "Active system execution scripts and procedural tasks."}
+                <div className="p-2 rounded bg-[var(--surface)] border border-[var(--border)] mt-2">
+                  <p className="text-[10px] leading-normal text-[var(--muted)] font-mono uppercase tracking-wider">
+                    {selectedGroups.includes('ALL') && "Unified view of codebase structure & cognitive/procedural memory systems."}
+                    {!selectedGroups.includes('ALL') && selectedGroups.map(g => {
+                      if (g === 'personal') return "Cognitive memory traces, episodic events, and fact retention. ";
+                      if (g === 'industrial') return "Automated procedural script workflow instructions. ";
+                      if (g === 'ast') return "Structural code elements (files, components, imports, syntax). ";
+                      if (g === 'community') return "Leiden-detected architectural clusters. Hub nodes summarizing code communities. ";
+                      if (g === 'semantic') return "Long-term general factual relations and concept links. ";
+                      if (g === 'procedural') return "Active system execution scripts and procedural tasks. ";
+                      return "";
+                    }).join("")}
                   </p>
                 </div>
               </div>
 
               {/* Key Legend */}
               <details className="group border-t border-[var(--border)] pt-4">
-                <summary className="text-[9px] font-bold text-[var(--faint)] uppercase tracking-widest cursor-pointer list-none flex items-center justify-between hover:text-white transition-colors">
+                <summary className="text-[9px] font-bold text-[var(--faint)] uppercase tracking-widest cursor-pointer list-none flex items-center justify-between hover:text-[var(--foreground)] transition-colors">
                   Node Key Legend
                   <span className="text-[8px] transition-transform group-open:rotate-180">▼</span>
                 </summary>
@@ -255,7 +325,7 @@ export default function NeuralMapPage() {
                   <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#60a5fa] block shadow-[0_0_8px_#60a5fa80]"></span> <span className="truncate">Episodic</span></div>
                   <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#c084fc] block shadow-[0_0_8px_#c084fc80]"></span> <span className="truncate">Semantic</span></div>
                   <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#34d399] block shadow-[0_0_8px_#34d39980]"></span> <span className="truncate">Procedural</span></div>
-                  <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#10b981] block shadow-[0_0_8px_#10b98180]"></span> <span className="truncate">Skill</span></div>
+                  <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#06b6d4] block shadow-[0_0_8px_#06b6d480]"></span> <span className="truncate">Skill</span></div>
                   <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#fbbf24] block shadow-[0_0_8px_#fbbf2480]"></span> <span className="truncate">AST Symbol</span></div>
                   <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#fb7185] block shadow-[0_0_8px_#fb718580]"></span> <span className="truncate">Cluster</span></div>
                 </div>
@@ -263,15 +333,15 @@ export default function NeuralMapPage() {
 
               {/* Controls Hint */}
               <details className="group border-t border-[var(--border)] pt-4">
-                <summary className="text-[9px] font-bold text-[var(--faint)] uppercase tracking-widest cursor-pointer list-none flex items-center justify-between hover:text-white transition-colors">
+                <summary className="text-xs font-bold text-[var(--faint)] uppercase tracking-widest cursor-pointer list-none flex items-center justify-between hover:text-[var(--foreground)] transition-colors">
                   Camera Controls
-                  <span className="text-[8px] transition-transform group-open:rotate-180">▼</span>
+                  <span className="text-[10px] transition-transform group-open:rotate-180">▼</span>
                 </summary>
-                <div className="grid grid-cols-2 gap-2 text-[8px] font-mono text-[var(--muted)] mt-3">
-                  <div className="bg-white/5 p-1.5 rounded text-center">Left-Click + Drag<br/><span className="text-white font-bold">Rotate</span></div>
-                  <div className="bg-white/5 p-1.5 rounded text-center">Right-Click + Drag<br/><span className="text-white font-bold">Pan View</span></div>
-                  <div className="bg-white/5 p-1.5 rounded text-center">Scroll Wheel<br/><span className="text-white font-bold">Zoom</span></div>
-                  <div className="bg-white/5 p-1.5 rounded text-center">Click Node<br/><span className="text-white font-bold">Center</span></div>
+                <div className="grid grid-cols-2 gap-2 text-[10px] font-mono text-[var(--muted)] mt-3">
+                  <div className="bg-[var(--surface)] p-1.5 rounded text-center">Left-Click + Drag<br/><span className="text-[var(--foreground)] font-bold">Rotate</span></div>
+                  <div className="bg-[var(--surface)] p-1.5 rounded text-center">Right-Click + Drag<br/><span className="text-[var(--foreground)] font-bold">Pan View</span></div>
+                  <div className="bg-[var(--surface)] p-1.5 rounded text-center">Scroll Wheel<br/><span className="text-[var(--foreground)] font-bold">Zoom</span></div>
+                  <div className="bg-[var(--surface)] p-1.5 rounded text-center">Click Node<br/><span className="text-[var(--foreground)] font-bold">Center</span></div>
                 </div>
               </details>
 
@@ -285,7 +355,7 @@ export default function NeuralMapPage() {
           {/* Small circular toggle button */}
           <button
             onClick={() => setIsSidebarMinimized(!isSidebarMinimized)}
-            className="absolute top-6 w-6 h-6 bg-[var(--background)] hover:bg-[var(--surface)] border border-[var(--border)] text-[var(--muted)] hover:text-white flex items-center justify-center rounded-full cursor-pointer shadow-lg z-20 transition-all duration-300"
+            className="absolute top-6 w-6 h-6 bg-[var(--background)] hover:bg-[var(--surface)] border border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] flex items-center justify-center rounded-full cursor-pointer shadow-lg z-20 transition-all duration-300"
             style={{ left: isSidebarMinimized ? '0px' : '308px' }}
             title={isSidebarMinimized ? "Expand Controls" : "Minimize Controls"}
           >
@@ -297,9 +367,9 @@ export default function NeuralMapPage() {
       </section>
 
       {/* 3D Force Graph Container */}
-      <div className="flex-1 w-full h-full bg-black relative">
+      <div className="flex-1 w-full h-full bg-[var(--background)] relative">
         {loading ? (
-          <div className="absolute inset-0 flex items-center justify-center text-white font-mono text-sm uppercase tracking-widest animate-pulse z-20">
+          <div className="absolute inset-0 flex items-center justify-center text-[var(--foreground)] font-mono text-sm uppercase tracking-widest animate-pulse z-20">
             Initializing 3D Neural Map...
           </div>
         ) : (
@@ -318,7 +388,14 @@ export default function NeuralMapPage() {
               return `<div style="${baseStyle} border-color: #60a5fa; color: white;"><strong style="color: #60a5fa; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;">Memory</strong><br/>${node.label}</div>`;
             }}
             nodeColor={getNodeColor}
-            nodeVal={(node: any) => node.group === 'community' ? (node.member_count || 3) * 2 : (node.salience || 1.0) * 4}
+            nodeVal={(node: any) => {
+              if (node.group === 'community') return (node.member_count || 3) * 2;
+              let val = (node.salience || 1.0) * 4;
+              if (node.group === 'industrial' && skillUsageMap[node.id]) {
+                val += skillUsageMap[node.id] * 8; // Heatmap size boost
+              }
+              return val;
+            }}
             nodeResolution={24}
             linkLabel={getLinkLabel as any}
             linkWidth={(link: any) => link.value * 1.5}
@@ -326,7 +403,7 @@ export default function NeuralMapPage() {
             linkDirectionalParticles={2}
             linkDirectionalParticleSpeed={0.005}
             onNodeClick={handleNodeClick}
-            backgroundColor="#000000"
+            backgroundColor={graphBg}
           />
         )}
       </div>
@@ -354,23 +431,26 @@ export default function NeuralMapPage() {
             {/* Header / Drag Handle */}
             <div 
               onMouseDown={handleMouseDown}
-              className="drag-handle cursor-move p-4 bg-white/5 border-b border-white/5 flex justify-between items-center select-none"
+              className="drag-handle cursor-move p-4 bg-[var(--surface)] border-b border-[var(--border)] flex justify-between items-center select-none"
             >
               <div className="space-y-1">
-                <span className={`text-[8px] font-bold px-2 py-0.5 rounded bg-white/5 uppercase tracking-widest ${
-                  selectedNode.group === 'community' ? 'text-rose-400' : selectedNode.group === 'ast' ? 'text-amber-400' : 'text-blue-400'
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded bg-[var(--surface)] uppercase tracking-widest ${
+                  selectedNode.group === 'community' ? 'text-rose-400' : selectedNode.group === 'ast' ? 'text-amber-400' : 'text-[var(--primary)]'
                 }`}>
                   {selectedNode.group.toUpperCase()}{selectedNode.group === 'community' && selectedNode.cohesion != null ? ` (cohesion ${selectedNode.cohesion.toFixed(2)})` : ''} / {selectedNode.sector?.toUpperCase()}
                 </span>
                 {!isInspectorMinimized && (
-                  <h3 className="text-sm font-bold text-white leading-tight truncate max-w-[200px]">{selectedNode.label}</h3>
+                  <h3 className="text-sm font-bold text-[var(--foreground)] leading-tight truncate max-w-[200px]">{selectedNode.label}</h3>
                 )}
               </div>
               <div className="flex items-center gap-2">
+                <button onClick={() => setIsGraphLight(!isGraphLight)} className="p-1.5 hover:bg-[var(--primary)]/10 text-[var(--faint)] hover:text-[var(--primary)] rounded transition-colors" title="Toggle Graph Theme">
+                    {isGraphLight ? <Moon size={14} /> : <Sun size={14} />}
+                </button>
                 {/* Minimize Button */}
                 <button
                   onClick={() => setIsInspectorMinimized(!isInspectorMinimized)}
-                  className="text-[var(--faint)] hover:text-white text-xs p-1 font-bold"
+                  className="text-[var(--faint)] hover:text-[var(--foreground)] text-xs p-1 font-bold"
                   title={isInspectorMinimized ? "Expand" : "Minimize"}
                 >
                   {isInspectorMinimized ? "🗖" : "🗕"}
@@ -378,7 +458,7 @@ export default function NeuralMapPage() {
                 {/* Close Button */}
                 <button 
                   onClick={() => setSelectedNode(null)} 
-                  className="text-[var(--faint)] hover:text-white text-sm p-1 font-bold"
+                  className="text-[var(--faint)] hover:text-[var(--foreground)] text-sm p-1 font-bold"
                   title="Close"
                 >
                   ×
@@ -392,7 +472,7 @@ export default function NeuralMapPage() {
                 <div className="space-y-3 text-xs leading-relaxed">
                   <div>
                     <span className="text-[9px] font-bold text-[var(--faint)] uppercase tracking-wider block">ID</span>
-                    <span className="font-mono text-[10px] text-white/50">{selectedNode.id}</span>
+                    <span className="font-mono text-[10px] text-[var(--foreground)]/50">{selectedNode.id}</span>
                   </div>
 
                   {selectedNode.source_file && (
@@ -405,7 +485,7 @@ export default function NeuralMapPage() {
                   {selectedNode.content && (
                     <div>
                       <span className="text-[9px] font-bold text-[var(--faint)] uppercase tracking-wider block">Decoded Trace</span>
-                      <div className="bg-black/40 p-3 rounded-lg border border-white/5 font-mono text-[10px] text-white/70 overflow-x-auto whitespace-pre-wrap max-h-80">
+                      <div className="bg-[var(--background)] p-3 rounded-lg border border-[var(--border)] font-mono text-[10px] text-[var(--foreground)]/70 overflow-x-auto whitespace-pre-wrap max-h-80">
                         {selectedNode.content}
                       </div>
                     </div>

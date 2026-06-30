@@ -1,0 +1,3946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master-AG | The Power of Digital Storytelling</title>
+  <meta name="description" content="An immersive 3D experience — scroll-driven WebGL, spatial depth, and cinematic transitions.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Outfit:wght@400;600&family=Syne:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="_editor.css">
+
+  <style>
+  /* ═══════════════════════════════════════════════════════════════
+     RESET + TOKENS
+  ═══════════════════════════════════════════════════════════════ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #f4f0ec;
+    --text:       #1a1612;
+    --mid:        #5a5248;
+    --faint:      #9c948c;
+    --lavender:   #cebdf8;
+    --ice:        #c0d4f5;
+    --rose:       #eabdf6;
+    --border:     rgba(26,22,18,.10);
+    --glass:      rgba(255,255,255,.55);
+    --radius-pill: 100px;
+    --blur-glass: blur(18px);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     BASE
+  ═══════════════════════════════════════════════════════════════ */
+  html { scroll-behavior: smooth; }
+
+  body {
+    /* Rich layered gradient background — mimics Noomo's colour-washed canvas */
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(ellipse 85% 65% at  12%  5%,  rgba(206,189,248,.38) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 55% at  88% 95%,  rgba(192,212,245,.32) 0%, transparent 55%),
+      radial-gradient(ellipse 55% 45% at  55% 48%,  rgba(234,189,246,.18) 0%, transparent 50%),
+      radial-gradient(ellipse 70% 35% at  25% 80%,  rgba(192,212,245,.20) 0%, transparent 50%),
+      linear-gradient(175deg, #faf8f5 0%, #f0ecf9 40%, #edf3fb 100%);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+    transition: background-color 1.1s ease, color 1.1s ease;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     DARK MODE  — toggled via body.dark
+  ═══════════════════════════════════════════════════════════════ */
+  body.dark {
+    --bg:     #07080f;
+    --text:   #f0ece8;
+    --mid:    #a89f96;
+    --faint:  #6b6560;
+    --border: rgba(240,236,232,.08);
+    --glass:  rgba(10,12,22,.65);
+    background-image:
+      radial-gradient(ellipse 80% 60% at 10%  8%,  rgba(85,51,255,.22) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 88% 92%,  rgba(136,85,255,.16) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 50% 50%,  rgba(51,170,255,.10) 0%, transparent 50%),
+      linear-gradient(175deg, #070810 0%, #09060f 50%, #060a12 100%);
+  }
+  body.dark .glass-card {
+    border-color: rgba(255,255,255,.05);
+    box-shadow: 0 4px 40px rgba(206,189,248,.04), inset 0 1px 0 rgba(255,255,255,.03);
+  }
+  body.dark #cursor-dot  { background: #f0ece8; }
+  body.dark #cursor-ring { border-color: rgba(240,236,232,.18); }
+  body.dark .blob-1 { background: radial-gradient(circle,rgba(85,51,255,.18) 0%,transparent 70%); }
+  body.dark .blob-2 { background: radial-gradient(circle,rgba(136,85,255,.13) 0%,transparent 70%); }
+  body.dark .blob-3 { background: radial-gradient(circle,rgba(51,170,255,.09) 0%,transparent 70%); }
+
+  /* ═══════════════════════════════════════════════════════════════
+     CURSOR
+  ═══════════════════════════════════════════════════════════════ */
+  #cursor-dot, #cursor-ring {
+    position: fixed; border-radius: 50%;
+    pointer-events: none; z-index: 999999;
+    top: 0; left: 0;
+    transform: translate3d(0,0,0) translate(-50%,-50%);
+    will-change: transform;
+  }
+  #cursor-dot  { width:6px; height:6px; background:var(--text); transition: transform .15s, background .2s; }
+  #cursor-dot.cross {
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+  #cursor-dot.cross::before, #cursor-dot.cross::after {
+    content: '';
+    position: absolute;
+    background: var(--text);
+  }
+  #cursor-dot.cross::before {
+    top: 50%; left: 0; width: 100%; height: 1.5px; transform: translateY(-50%);
+  }
+  #cursor-dot.cross::after {
+    left: 50%; top: 0; height: 100%; width: 1.5px; transform: translateX(-50%);
+  }
+  #cursor-ring { width:40px; height:40px; border:1px solid rgba(26,22,18,.22); transition: width .3s, height .3s, border-color .3s; }
+  body.cursor-hover #cursor-dot  { transform:translate(-50%,-50%) scale(4); background:var(--lavender); }
+  body.cursor-hover #cursor-ring { width:56px; height:56px; border-color:rgba(206,189,248,.55); }
+
+  /* Editor Mode Contextual Cursors */
+  #cursor-dot.cross-grabbing {
+    width: 14px !important;
+    height: 14px !important;
+    border-radius: 50% !important;
+    background: var(--text) !important;
+    border: 2px solid var(--bg);
+  }
+  #cursor-dot.cross-grabbing::before, #cursor-dot.cross-grabbing::after {
+    display: none !important;
+  }
+  #cursor-dot.cross-text {
+    width: 2px !important;
+    height: 18px !important;
+    border-radius: 0 !important;
+    background: var(--text) !important;
+  }
+  #cursor-dot.cross-text::before, #cursor-dot.cross-text::after {
+    display: none !important;
+  }
+  #cursor-dot.cross-resize-hidden {
+    opacity: 0 !important;
+  }
+  #cursor-ring.cross-resize-hidden {
+    opacity: 0 !important;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     FIXED LAYERS
+  ═══════════════════════════════════════════════════════════════ */
+  /* Grain noise */
+  #noise {
+    position: fixed; inset: 0; z-index: 998; pointer-events: none; opacity: .04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+  }
+  /* WebGL canvas */
+  #canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+
+  /* Background cursor spotlight — follows mouse, sits above blobs (optimized to use translate3d) */
+  #bg-spotlight {
+    position: fixed;
+    width: 1000px;
+    height: 1000px;
+    border-radius: 50%;
+    margin-left: -500px;
+    margin-top: -500px;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(circle 500px at 50% 50%, rgba(206,189,248,.18) 0%, rgba(192,212,245,.08) 40%, rgba(234,189,246,.04) 65%, transparent 80%);
+    will-change: transform;
+  }
+
+  /* Sand particle canvas — sits above everything, pointer-events none */
+  #sand-canvas {
+    position: fixed; inset: 0; z-index: 994; pointer-events: none;
+  }
+
+  /* Scroll progress bar */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 2px; width: 0;
+    background: linear-gradient(90deg, var(--lavender), var(--ice));
+    z-index: 999; pointer-events: none; transition: width .08s linear;
+  }
+
+  /* Ambient blobs */
+  .blob {
+    position: fixed; border-radius: 50%; filter: blur(100px);
+    pointer-events: none; z-index: 0; opacity: 0;
+    transition: opacity 2.5s ease, background 1.8s ease;
+    will-change: transform;
+  }
+  .blob.on { opacity: 1; }
+  /* Bigger, richer blobs — slow GSAP float applied via JS */
+  .blob-1 { width:800px; height:800px; top:-160px; left:-200px; background: radial-gradient(circle,rgba(206,189,248,.40) 0%,rgba(234,189,246,.20) 40%,transparent 70%); }
+  .blob-2 { width:700px; height:700px; bottom:5%;  right:-180px; background: radial-gradient(circle,rgba(192,212,245,.36) 0%,rgba(175,215,255,.18) 40%,transparent 70%); }
+  .blob-3 { width:600px; height:600px; top:40%;   left:30%;    background: radial-gradient(circle,rgba(248,200,250,.28) 0%,rgba(234,189,246,.14) 40%,transparent 70%); }
+  .blob-4 { width:500px; height:500px; top:65%;   left:60%;    background: radial-gradient(circle,rgba(200,230,255,.25) 0%,rgba(192,212,245,.12) 40%,transparent 70%); }
+
+  /* ═══════════════════════════════════════════════════════════════
+     PRELOADER
+  ═══════════════════════════════════════════════════════════════ */
+  #preloader {
+    position: fixed; inset: 0; z-index: 1000;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+    background: linear-gradient(135deg,#cebdf8 0%,#e2dbf8 50%,#f4e9fb 100%);
+    transition: opacity .8s ease;
+  }
+  #preloader.done { opacity: 0; pointer-events: none; }
+  .pre-word {
+    font-family: 'Playfair Display', serif; font-style: italic;
+    font-size: clamp(48px,8vw,96px); color: #1a1612; letter-spacing: -.04em;
+  }
+  .pre-track {
+    width: 120px; height: 1px; background: rgba(26,22,18,.15);
+    position: relative; overflow: hidden;
+  }
+  .pre-track::after {
+    content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+    background: #1a1612; animation: sweep 1.2s ease-in-out infinite;
+  }
+  @keyframes sweep { to { left: 100%; } }
+
+  /* ═══════════════════════════════════════════════════════════════
+     HEADER
+  ═══════════════════════════════════════════════════════════════ */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 28px 48px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif; font-style: italic;
+    font-size: 22px; color: var(--text); text-decoration: none;
+    letter-spacing: -.02em; cursor: none;
+  }
+  nav { display: flex; gap: 8px; align-items: center; }
+
+  /* Nav link — Noomo animated underline sweep */
+  .nav-link {
+    font-size: 15px; color: var(--text); text-decoration: none;
+    padding: 8px 16px; border-radius: var(--radius-pill);
+    position: relative; cursor: none;
+  }
+  .nav-link::after {
+    content: ''; position: absolute; bottom: 4px; left: 50%;
+    transform: translateX(-50%); width: 0; height: 1.5px;
+    background: linear-gradient(90deg,transparent 4%,var(--text) 50%,transparent 96%);
+    transition: width .3s ease;
+  }
+  .nav-link:hover::after { width: 80%; }
+
+  /* Primary pill button */
+  .btn-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 22px; background: var(--text); color: var(--bg);
+    font-size: 14px; font-weight: 500; border-radius: var(--radius-pill);
+    text-decoration: none; cursor: none; border: none;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .btn-pill:hover { transform: scale(1.03); box-shadow: 0 6px 24px rgba(26,22,18,.15); }
+
+  /* ═══════════════════════════════════════════════════════════════
+     CRYSTAL MODE BUTTON
+     Border uses the Noomo gradient-mask technique on ::before.
+     overflow: visible — ripples are global, not clipped here.
+  ═══════════════════════════════════════════════════════════════ */
+  #mode-btn {
+    position: fixed; bottom: 36px; right: 48px; z-index: 200;
+    display: flex; align-items: center; gap: 12px; padding: 13px 22px;
+    background: rgba(255,255,255,.28); border: none; border-radius: var(--radius-pill);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    cursor: none; opacity: 0; pointer-events: none;
+    transition: opacity .5s ease .4s, transform .2s ease, background .2s ease;
+  }
+  #mode-btn.on { opacity: 1; pointer-events: all; }
+  #mode-btn:hover { transform: scale(1.04); background: rgba(255,255,255,.4); }
+  #mode-btn:active { transform: scale(.97); }
+  /* Animated border sweep — gradient mask, no overflow clipping needed */
+  #mode-btn::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+    background: linear-gradient(90deg,rgba(255,255,255,.7) 0%,rgba(255,255,255,.1) 45%,rgba(255,255,255,.7) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none; transition: opacity .35s ease;
+  }
+  #mode-btn::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+    background: linear-gradient(270deg,var(--lavender) 0%,rgba(206,189,248,.1) 45%,var(--lavender) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none; opacity: 0; transition: opacity .35s ease;
+  }
+  #mode-btn:hover::before { opacity: 0; }
+  #mode-btn:hover::after  { opacity: 1; }
+  .mode-icon  { font-size: 18px; line-height: 1; position: relative; z-index: 1; }
+  .mode-label { font-family:'Inter',sans-serif; font-size:14px; font-weight:500; color:var(--text); position:relative; z-index:1; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     GLOBAL RIPPLE — viewport-fixed, visible, never clips parent */
+  .g-ripple {
+    position: fixed; border-radius: 50%; pointer-events: none; z-index: 9990;
+    width: 40px; height: 40px; margin: -20px 0 0 -20px;
+    border: 2px solid rgba(26,22,18,.55);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     HERO
+  ═══════════════════════════════════════════════════════════════ */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: flex-start; justify-content: flex-end;
+    padding: 0 48px 10vh; position: relative;
+  }
+  .hero-eye {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: .15em; text-transform: uppercase; color: var(--faint);
+    margin-bottom: 24px; opacity: 0; transform: translateY(20px);
+    animation: fadeUp .9s ease 1.4s forwards;
+  }
+  .hero-h1 {
+    font-family: 'Playfair Display', serif; font-style: italic;
+    font-size: clamp(72px,13.5vw,200px); font-weight: 400;
+    line-height: .92; letter-spacing: -.04em; margin-bottom: 32px;
+    background: linear-gradient(180deg,#1a1612 0% 18%,#3a5080 78% 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    opacity: 0; transform: translateY(30px); animation: fadeUp 1s ease 1.6s forwards;
+  }
+  .hero-sub {
+    font-size: clamp(14px,1.2vw,18px); color: var(--mid); max-width: 420px; line-height: 1.75;
+    opacity: 0; transform: translateY(20px); animation: fadeUp .9s ease 1.9s forwards;
+  }
+  .hero-scroll {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--faint); text-align: center;
+    opacity: 0; animation: fadeUp .9s ease 2.4s forwards;
+  }
+  .hero-scroll::after {
+    content: ''; display: block; width: 1px; height: 48px;
+    background: var(--faint); margin: 10px auto 0;
+    animation: linepulse 1.8s ease-in-out infinite;
+  }
+  @keyframes fadeUp   { to { opacity: 1; transform: translateY(0); } }
+  @keyframes linepulse { 0%,100%{opacity:.3;transform:scaleY(.6)} 50%{opacity:1;transform:scaleY(1)} }
+
+  /* ═══════════════════════════════════════════════════════════════
+     SECTIONS
+  ═══════════════════════════════════════════════════════════════ */
+  .section { min-height: 100vh; display: flex; align-items: center; padding: 80px 48px; }
+  .section:nth-child(odd)  { justify-content: flex-start; }
+  .section:nth-child(even) { justify-content: flex-end; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     GLASS CARD
+     Spotlight via CSS custom props --cx/--cy (set by JS mousemove).
+     Border sweep via ::after gradient mask.
+     No overflow:hidden — keeps perspective tilt clean.
+  ═══════════════════════════════════════════════════════════════ */
+  .glass-card {
+    max-width: 520px; padding: 48px; border-radius: 24px;
+    background: var(--glass);
+    backdrop-filter: var(--blur-glass); -webkit-backdrop-filter: var(--blur-glass);
+    border: 1px solid rgba(255,255,255,.7);
+    box-shadow: 0 4px 40px rgba(206,189,248,.15), inset 0 1px 0 rgba(255,255,255,.8);
+    /* NO transform-style:preserve-3d — it breaks pseudo-elements under backdrop-filter in Chrome */
+    transform-origin: center center;
+    position: relative; cursor: none;
+    transition: box-shadow .35s ease;
+  }
+  .glass-card:hover {
+    box-shadow: 0 8px 60px rgba(206,189,248,.28), inset 0 1px 0 rgba(255,255,255,.9);
+  }
+
+  /* Glass card ::before spot */
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    background: radial-gradient(circle 280px at var(--cx, 50%) var(--cy, 50%), rgba(147,120,230,.35) 0%, rgba(100,149,237,.18) 50%, transparent 75%);
+    transition: opacity .3s ease;
+  }
+  .glass-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Glass card ::after border */
+  .glass-card::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    background: linear-gradient(135deg, rgba(206,189,248,.6) 0%, rgba(255,255,255,.05) 50%, rgba(192,212,245,.6) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    padding: 1px;
+    transition: opacity .4s ease;
+  }
+  .glass-card:hover::after {
+    opacity: 1;
+  }
+
+  /* All real children sit above the pseudo-layers */
+  .glass-card > *:not(.card-glow):not(.card-border) { position: relative; z-index: 1; }
+
+  .card-eye   { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--faint); margin-bottom:20px; }
+  .card-title { font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(32px,3.5vw,52px); line-height:1.1; letter-spacing:-.025em; color:var(--text); margin-bottom:20px; }
+  .card-body  { font-size:15px; color:var(--mid); line-height:1.8; }
+  .card-rule  { width:100%; height:1px; background:var(--border); margin:28px 0; }
+  .card-stats { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .stat-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--faint); margin-bottom:6px; }
+  .stat-val   { font-family:'Playfair Display',serif; font-size:18px; color:var(--text); }
+  .stat-val.a { color:#5b7abf; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     SCROLL REVEAL
+  ═══════════════════════════════════════════════════════════════ */
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .9s ease, transform .9s ease; }
+  .reveal.on { opacity:1; transform:translateY(0); }
+  .d1 { transition-delay:.15s; }
+  .d2 { transition-delay:.3s;  }
+  .d3 { transition-delay:.45s; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     FOOTER
+  ═══════════════════════════════════════════════════════════════ */
+  footer { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px 48px; text-align:center; }
+  .footer-pre  { font-size:15px; color:var(--mid); max-width:380px; line-height:1.75; margin-bottom:36px; }
+  .footer-logo { position:relative; margin-bottom:40px; }
+  .footer-logo-blur  { font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(48px,8vw,120px); letter-spacing:-.05em; color:transparent; -webkit-text-stroke:1px rgba(26,22,18,.15); filter:blur(5px); position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+  .footer-logo-solid { font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(48px,8vw,120px); letter-spacing:-.05em; color:var(--text); }
+  .footer-email { font-family:'Playfair Display',serif; font-size:clamp(20px,3vw,44px); color:var(--text); text-decoration:none; letter-spacing:-.02em; border-bottom:1px solid var(--border); padding-bottom:4px; transition:border-color .3s; cursor:none; }
+  .footer-email:hover { border-color:var(--text); }
+  .footer-social { display:flex; gap:32px; margin-top:60px; }
+  .footer-social a { font-size:14px; color:var(--faint); text-decoration:none; transition:color .2s; cursor:none; }
+  .footer-social a:hover { color:var(--text); }
+
+  /* ═══════════════════════════════════════════════════════════════
+     SCROLLBAR
+  ═══════════════════════════════════════════════════════════════ */
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-track { background:var(--bg); }
+  ::-webkit-scrollbar-thumb { background:rgba(26,22,18,.15); border-radius:2px; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     CREATIVE CONTROL DEBUG PANEL
+  ═══════════════════════════════════════════════════════════════ */
+  #debug-toggle {
+    position: fixed; bottom: 36px; left: 48px; z-index: 200;
+    width: 44px; height: 44px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,.28); backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px); font-size: 18px; cursor: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: left 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.2s ease, background 0.2s ease, opacity 0.5s ease .4s;
+    opacity: 0; pointer-events: none;
+  }
+  #debug-toggle.active-btn { left: 16px; }
+  #debug-toggle.on { opacity: 1; pointer-events: all; }
+  #debug-toggle:hover { transform: scale(1.08) rotate(30deg); background: rgba(255,255,255,.4); }
+  #debug-toggle:active { transform: scale(.95) rotate(10deg); }
+  #debug-toggle::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+    background: linear-gradient(90deg,rgba(255,255,255,.7) 0%,rgba(255,255,255,.1) 45%,rgba(255,255,255,.7) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+  }
+  #debug-panel {
+    position: fixed; bottom: 36px; left: 76px; z-index: 199;
+    width: 270px; padding: 16px; display: none; flex-direction: column; gap: 10px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08); border-radius: 16px;
+    background: rgba(255,255,255,.68); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,.4);
+    transform: translateX(-10px); opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    max-height: 85vh; overflow-y: auto; scrollbar-width: thin;
+  }
+  #debug-panel.active { display: flex; transform: translateX(0); opacity: 1; }
+  .debug-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+  .debug-control-group { display: flex; align-items: center; gap: 6px; }
+  .debug-num-control {
+    display: flex; align-items: center; background: rgba(0,0,0,0.06); 
+    border: 1px solid var(--border); border-radius: 6px; overflow: hidden; height: 22px;
+  }
+  body.dark .debug-num-control { background: rgba(255,255,255,0.08); }
+  .btn-dec, .btn-inc {
+    background: transparent; border: none; width: 22px; height: 100%;
+    font-size: 13px; font-weight: bold; color: var(--text); cursor: none;
+    display: flex; align-items: center; justify-content: center; user-select: none;
+    transition: background 0.2s;
+  }
+  .btn-dec:hover, .btn-inc:hover { background: rgba(0,0,0,0.08); }
+  body.dark .btn-dec:hover, body.dark .btn-inc:hover { background: rgba(255,255,255,0.08); }
+  .num-input {
+    width: 42px; height: 100%; border: none; background: transparent;
+    text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--text); outline: none; cursor: none;
+  }
+  .debug-row label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text); opacity: 0.8; text-transform: uppercase; letter-spacing: 0.05em; }
+  .debug-row input[type="range"] {
+    flex: 1; -webkit-appearance: none; background: rgba(0,0,0,0.08); height: 4px; border-radius: 2px; outline: none; transition: background 0.2s;
+  }
+  .debug-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--text); cursor: none; transition: transform 0.1s;
+  }
+  .debug-row input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+  body.dark #debug-toggle { background: rgba(10,12,22,.65); }
+  body.dark #debug-panel { background: rgba(10,12,22,.82); border-color: rgba(255,255,255,.05); }
+  body.dark .debug-row input[type="range"] { background: rgba(255,255,255,0.12); }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor -->
+  <canvas id="trail-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9998;"></canvas>
+  <canvas id="ripple-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9997;"></canvas>
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Fixed scene layers -->
+  <div id="noise"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+  <!-- Background mouse spotlight -->
+  <div id="bg-spotlight"></div>
+  <!-- Sand particle canvas -->
+  <canvas id="sand-canvas"></canvas>
+  <div id="canvas"></div>
+  <div id="progress-bar"></div>
+
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="pre-word">storytelling</div>
+    <div class="pre-track"></div>
+  </div>
+
+  <!-- Crystal Mode Button -->
+  <button id="mode-btn" aria-label="Cycle crystal mode">
+    <span class="mode-icon">💎</span>
+    <span class="mode-label">Crystal Mode</span>
+  </button>
+
+  <!-- Creative Control Debugger -->
+  <button id="debug-toggle" aria-label="Toggle creative control panel">⚙️</button>
+  <!-- Layer Panel Toggle -->
+  <button id="layer-toggle-btn" aria-label="Toggle layer panel" title="Layers">⬛</button>
+  <div id="debug-panel">
+    <div id="debug-panel-drag" title="Drag to move settings panel"></div>
+    <div id="debug-panel-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+      <h3 style="font-family:'Playfair Display',serif; font-size:18px; font-style:italic; color:var(--text); margin:0;">Creative Control</h3>
+      <button id="debug-min-btn" class="debug-min-btn" title="Minimize settings panel">−</button>
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; margin-bottom:8px; color:var(--text); opacity:0.85; display: flex; justify-content: space-between;">
+      <span>Scroll: <span id="dbg-scroll-val">0.0%</span></span>
+    </div>
+
+    <!-- Page Editor Mode toggle -->
+    <div style="margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+      <button id="editor-mode-btn">✏️ Editor Mode: OFF</button>
+      <div id="editor-status-bar"></div>
+      <button id="editor-save-btn">💾 Save Changes</button>
+    </div>
+
+    <!-- Page Creator & Asset Editor (Sidebar UI) -->
+    <div id="sidebar-asset-editor" style="display: none; flex-direction: column; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+      
+      <!-- Copy / Paste / Delete -->
+      <div style="display: flex; gap: 6px; align-items: center; justify-content: space-between;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; opacity:0.6;">Actions</span>
+        <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+          <button id="btn-copy-asset" class="ed-btn" style="font-size:10px; padding:3px 6px;">📋 Copy</button>
+          <button id="btn-paste-asset" class="ed-btn" style="font-size:10px; padding:3px 6px;">📋 Paste</button>
+          <button id="btn-lock-asset" class="ed-btn" style="font-size:10px; padding:3px 6px; background: rgba(255,170,0,0.12); color: #ffaa00; border-color: rgba(255,170,0,0.25);">🔓 Lock</button>
+          <button id="btn-delete-asset" class="ed-btn" style="font-size:10px; padding:3px 6px; background: rgba(220,53,69,0.15); color: #dc3545; border-color: rgba(220,53,69,0.2);">🗑️ Del</button>
+        </div>
+      </div>
+
+      <div class="ed-toolbar-divider"></div>
+
+
+
+      <!-- Scroll Animation Section -->
+      <div id="sb-anim-section">
+        <div class="sb-anim-header" id="sb-anim-toggle">
+          <span class="sb-anim-title">✦ Scroll Animation</span>
+          <span id="sb-anim-kf-count" style="font-size:9px; opacity:0.45; font-family:'JetBrains Mono',monospace;">0 frames</span>
+        </div>
+        <div id="sb-kf-pills" class="sb-kf-pills"><span class="sb-kf-pill-empty">No keyframes recorded</span></div>
+        <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+          <button id="sb-record-kf" class="ed-btn" style="flex:1; font-size:10px; background:rgba(206,189,248,0.15); color:#8a6ee0; border-color:rgba(206,189,248,0.4);">● Record Frame</button>
+          <button id="sb-preview-anim" class="ed-btn" style="flex:1; font-size:10px;">▶ Preview</button>
+        </div>
+        <button id="sb-clear-kf" class="ed-btn" style="width:100%; font-size:10px; color:#dc3545; background:rgba(220,53,69,0.08); border-color:rgba(220,53,69,0.2);">🗑 Clear Keyframes</button>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; opacity:0.4; text-align:center; margin-top:5px; line-height:1.5;">Drag element → scroll to % → Record Frame</div>
+      </div>
+
+    </div>
+
+    <!-- Element Creator Panel -->
+    <div id="sidebar-element-creator" style="display: none; flex-direction: column; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; opacity:0.6;">Add New Element</span>
+      <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+        <button id="add-text-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ Text</button>
+        <button id="add-card-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ Card</button>
+        <button id="add-button-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ Button</button>
+      </div>
+      <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;">
+        <button id="add-image-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ Image</button>
+        <button id="add-mesh-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ 3D Mesh</button>
+        <button id="add-particles-btn" class="ed-btn" style="font-size: 10px; padding: 4px 8px; flex: 1;">＋ Particles</button>
+      </div>
+    </div>
+
+    <!-- Background Styling Customizer -->
+    <div id="sidebar-background-customizer" style="display: none; flex-direction: column; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; opacity:0.6;">Background & Lights</span>
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label" style="width: 70px;">Spotlight</span>
+        <input type="color" id="sb-bg-spotlight" value="#cebdf8" style="width: 36px; height: 20px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; background: none; padding: 1px;">
+      </div>
+    </div>
+
+    <!-- Asset List View (default) -->
+    <div id="panel-assets-view">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text); opacity:0.6;">Scene Assets</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text); opacity:0.4;" id="asset-count">3 objects</span>
+      </div>
+      <div id="asset-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+    </div>
+
+    <!-- Editor View (drill-down per asset) -->
+    <div id="panel-editor-view" style="display:none;">
+      <!-- Back nav -->
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+        <button id="btn-back-assets" style="background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 8px; cursor:pointer;">&#8592; Assets</button>
+        <span id="editing-asset-label" style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:bold; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;"></span>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div id="editor-tabs" style="display: flex; gap: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px;">
+        <button id="tab-transform" style="background: transparent; border: none; font-family: 'JetBrains Mono', monospace; font-size: 11px; cursor: none; color: var(--text); border-bottom: 2px solid var(--text); font-weight: bold; padding-bottom: 2px;">Transform</button>
+        <button id="tab-material" style="background: transparent; border: none; font-family: 'JetBrains Mono', monospace; font-size: 11px; cursor: none; color: var(--text); opacity: 0.5; padding-bottom: 2px;">Material</button>
+        <button id="tab-visualizer" style="background: transparent; border: none; font-family: 'JetBrains Mono', monospace; font-size: 11px; cursor: none; color: var(--text); opacity: 0.5; padding-bottom: 2px;">Visualizer</button>
+      </div>
+
+    <!-- Shared Scrub Timeline -->
+    <div class="debug-row" style="background: rgba(0,0,0,0.03); padding: 8px; border-radius: 8px; margin-bottom: 12px; border: 1px solid var(--border);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <label style="margin-bottom: 0;">Timeline Scrub (<span id="lbl-scrub">0%</span>)</label>
+        <div style="display: flex; align-items: center; gap: 2px;">
+          <input type="number" id="dbg-scrub-num" min="0" max="100" value="0" style="width: 44px; font-family: 'JetBrains Mono', monospace; font-size: 10px; background: rgba(0,0,0,0.06); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 1px 3px; text-align: right; outline: none; cursor: none;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text);">%</span>
+        </div>
+      </div>
+      <input type="range" id="dbg-scrub" min="0" max="1" step="0.01" value="0">
+    </div>
+
+    <!-- Primary Section: Transform Settings -->
+    <div id="section-transform">
+
+      <!-- GROUP: Position -->
+      <div onclick="(function(){var b=document.getElementById('grp-position');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;">
+        <span class="grp-arrow">&#9660;</span>Position
+      </div>
+      <div id="grp-position">
+        <div class="debug-row">
+          <label>X</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-pos-x" min="-2.0" max="2.0" step="0.02" value="0.55">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-pos-x" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-pos-x" class="num-input" value="0.55">
+              <button class="btn-inc" data-id="dbg-pos-x" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="debug-row">
+          <label>Y</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-pos-y" min="-1.5" max="1.5" step="0.02" value="0.0">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-pos-y" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-pos-y" class="num-input" value="0.00">
+              <button class="btn-inc" data-id="dbg-pos-y" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="debug-row">
+          <label>Z</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-pos-z" min="0.0" max="2.0" step="0.02" value="0.5">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-pos-z" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-pos-z" class="num-input" value="0.50">
+              <button class="btn-inc" data-id="dbg-pos-z" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GROUP: Rotation -->
+      <div onclick="(function(){var b=document.getElementById('grp-rotation');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;">
+        <span class="grp-arrow">&#9660;</span>Rotation
+      </div>
+      <div id="grp-rotation">
+        <div class="debug-row">
+          <label>X</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-rot-x-val" min="-3.14" max="3.14" step="0.02" value="0.0">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-rot-x-val" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-rot-x-val" class="num-input" value="0.00">
+              <button class="btn-inc" data-id="dbg-rot-x-val" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="debug-row">
+          <label>Y</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-rot-y-val" min="-3.14" max="3.14" step="0.02" value="0.0">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-rot-y-val" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-rot-y-val" class="num-input" value="0.00">
+              <button class="btn-inc" data-id="dbg-rot-y-val" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="debug-row">
+          <label>Z</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-rot-z-val" min="-3.14" max="3.14" step="0.02" value="0.0">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-rot-z-val" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-rot-z-val" class="num-input" value="0.00">
+              <button class="btn-inc" data-id="dbg-rot-z-val" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GROUP: Scale -->
+      <div onclick="(function(){var b=document.getElementById('grp-scale');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;">
+        <span class="grp-arrow">&#9660;</span>Scale
+      </div>
+      <div id="grp-scale">
+        <div class="debug-row">
+          <label>Scale</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-scale" min="0.2" max="2.0" step="0.02" value="1.0">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-scale" data-step="-0.02">−</button>
+              <input type="text" id="val-dbg-scale" class="num-input" value="1.00">
+              <button class="btn-inc" data-id="dbg-scale" data-step="0.02">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GROUP: Idle Spin -->
+      <div onclick="(function(){var b=document.getElementById('grp-spin');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;">
+        <span class="grp-arrow">&#9660;</span>Idle Spin
+      </div>
+      <div id="grp-spin">
+        <div class="debug-row">
+          <label>Spin Y</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-spin-y" min="0.0" max="0.02" step="0.0002" value="0.003">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-spin-y" data-step="-0.0002">−</button>
+              <input type="text" id="val-dbg-spin-y" class="num-input" value="0.003">
+              <button class="btn-inc" data-id="dbg-spin-y" data-step="0.0002">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="debug-row">
+          <label>Spin X</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-spin-x" min="0.0" max="0.01" step="0.0001" value="0.0008">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-spin-x" data-step="-0.0001">−</button>
+              <input type="text" id="val-dbg-spin-x" class="num-input" value="0.0008">
+              <button class="btn-inc" data-id="dbg-spin-x" data-step="0.0001">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spotlight Radius (global, not per-keyframe) -->
+      <div onclick="(function(){var b=document.getElementById('grp-ui');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;">
+        <span class="grp-arrow">&#9660;</span>UI / Lighting
+      </div>
+      <div id="grp-ui">
+        <div class="debug-row">
+          <label>Spotlight R</label>
+          <div class="debug-control-group">
+            <input type="range" id="dbg-spotlight-rad" min="200" max="800" step="10" value="520">
+            <div class="debug-num-control">
+              <button class="btn-dec" data-id="dbg-spotlight-rad" data-step="-10">−</button>
+              <input type="text" id="val-dbg-spotlight-rad" class="num-input" value="520">
+              <button class="btn-inc" data-id="dbg-spotlight-rad" data-step="10">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Secondary Section: Material Settings -->
+    <div id="section-material" style="display: none;">
+      <div class="debug-row">
+        <label>Opacity</label>
+        <div class="debug-control-group">
+          <input type="range" id="dbg-opacity" min="0.0" max="1.0" step="0.02" value="0.92">
+          <div class="debug-num-control">
+            <button class="btn-dec" data-id="dbg-opacity" data-step="-0.02">−</button>
+            <input type="text" id="val-dbg-opacity" class="num-input" value="0.92">
+            <button class="btn-inc" data-id="dbg-opacity" data-step="0.02">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="debug-row">
+        <label>Metalness</label>
+        <div class="debug-control-group">
+          <input type="range" id="dbg-metalness" min="0.0" max="1.0" step="0.02" value="0.12">
+          <div class="debug-num-control">
+            <button class="btn-dec" data-id="dbg-metalness" data-step="-0.02">−</button>
+            <input type="text" id="val-dbg-metalness" class="num-input" value="0.12">
+            <button class="btn-inc" data-id="dbg-metalness" data-step="0.02">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="debug-row">
+        <label>Roughness</label>
+        <div class="debug-control-group">
+          <input type="range" id="dbg-roughness" min="0.0" max="1.0" step="0.02" value="0.06">
+          <div class="debug-num-control">
+            <button class="btn-dec" data-id="dbg-roughness" data-step="-0.02">−</button>
+            <input type="text" id="val-dbg-roughness" class="num-input" value="0.06">
+            <button class="btn-inc" data-id="dbg-roughness" data-step="0.02">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="debug-row">
+        <label>Emissive Intensity</label>
+        <div class="debug-control-group">
+          <input type="range" id="dbg-emissive" min="0.0" max="5.0" step="0.05" value="1.80">
+          <div class="debug-num-control">
+            <button class="btn-dec" data-id="dbg-emissive" data-step="-0.05">−</button>
+            <input type="text" id="val-dbg-emissive" class="num-input" value="1.80">
+            <button class="btn-inc" data-id="dbg-emissive" data-step="0.05">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="debug-row">
+        <label>Emissive Color</label>
+        <div class="debug-control-group" style="align-items:center; gap:8px;">
+          <input type="color" id="dbg-emissive-color" value="#8eb4f8" style="width:40px; height:28px; border:1px solid var(--border); border-radius:4px; cursor:pointer; background:none; padding:1px;">
+          <input type="text" id="val-dbg-emissive-color" class="num-input" value="#8eb4f8" style="width:62px;">
+        </div>
+      </div>
+      <div class="debug-row">
+        <label>Wire Opacity</label>
+        <div class="debug-control-group">
+          <input type="range" id="dbg-wire-opacity" min="0.0" max="1.0" step="0.02" value="0.22">
+          <div class="debug-num-control">
+            <button class="btn-dec" data-id="dbg-wire-opacity" data-step="-0.02">−</button>
+            <input type="text" id="val-dbg-wire-opacity" class="num-input" value="0.22">
+            <button class="btn-inc" data-id="dbg-wire-opacity" data-step="0.02">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Tertiary Section: Visualizer Settings -->
+    <div id="section-visualizer" style="display: none;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text); line-height: 1.4; display: flex; flex-direction: column; gap: 8px;">
+        <label style="display:flex; align-items:center; gap:6px; cursor:none;">
+          <input type="checkbox" id="dbg-toggle-vis" style="cursor:none;"> Enable Spline Visualizer
+        </label>
+        <div style="border-top:1px solid var(--border); margin:4px 0;"></div>
+        <div id="vis-selected-kf-label" style="font-weight:bold; margin-bottom: 2px;">Selected Anchor: None</div>
+        <div style="font-size:10px; opacity:0.6; padding-left:4px; margin-bottom:2px;">
+          Click a sphere or row below. 🟦 cyan = current scroll position.
+        </div>
+        <!-- Keyframe List -->
+        <div id="kf-list-wrap" style="display:none; flex-direction:column; gap:2px; max-height:160px; overflow-y:auto; border:1px solid var(--border); border-radius:6px; padding:4px; background:rgba(0,0,0,0.06);">
+          <!-- rows injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+      <button class="btn-pill" id="dbg-add-kf" style="font-size:11px; padding:6px; cursor:none; justify-content:center;">Record Frame</button>
+      <button class="btn-pill" id="dbg-clear-kf" style="font-size:11px; padding:6px; cursor:none; justify-content:center; background:rgba(220,53,69,0.18); color:#d9534f;">Clear All</button>
+    </div>
+    <button class="btn-pill" id="dbg-play-transition" style="font-size:11px; padding:8px; width:100%; cursor:none; justify-content:center; margin-top:8px; background:rgba(0,123,255,0.15); color:#007bff;">Preview Spline Motion</button>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:8px;">
+      <button class="btn-pill" id="dbg-export-kf" style="font-size:11px; padding:8px; cursor:none; justify-content:center; background:rgba(26,22,18,0.06); color:var(--text);">📋 Copy</button>
+      <button class="btn-pill" id="dbg-download-kf" style="font-size:11px; padding:8px; cursor:none; justify-content:center; background:rgba(40,167,69,0.15); color:#28a745;">⬇ Export</button>
+      <button class="btn-pill" id="dbg-import-kf" style="font-size:11px; padding:8px; cursor:none; justify-content:center; background:rgba(138,43,226,0.15); color:#b06fff;">⬆ Import</button>
+    </div>
+    <input type="file" id="dbg-import-file" accept=".json,application/json" style="display:none;">
+    <button class="btn-pill" id="dbg-save-kf" style="font-size:11px; padding:8px; width:100%; cursor:none; justify-content:center; margin-top:6px; background:rgba(0,123,255,0.12); color:#5ba3ff;">💾 Patch index.html</button>
+    <!-- Output panel: collapsible -->
+    <div id="dbg-output-wrap" style="display:none; margin-top:6px; border:1px solid var(--border); border-radius:6px; overflow:hidden;">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:4px 8px; background:rgba(0,0,0,0.08); font-size:10px; font-family:'JetBrains Mono',monospace; cursor:pointer;" id="dbg-output-header">
+        <span>Exported JSON</span>
+        <button id="dbg-output-collapse" style="background:none; border:none; color:var(--text); font-size:12px; cursor:pointer; padding:0 2px; line-height:1;">▲</button>
+      </div>
+      <textarea id="dbg-output" style="width:100%; height:120px; font-family:'JetBrains Mono',monospace; font-size:9px; background:rgba(0,0,0,0.05); color:var(--text); border:none; border-top:1px solid var(--border); padding:6px; resize:vertical; outline:none; box-sizing:border-box; display:block; overflow:auto;" readonly></textarea>
+    </div>
+    <!-- Background Editor Section -->
+    <div id="section-background" style="display:none;">
+      <div onclick="(function(){var b=document.getElementById('bg-grp-colour');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;"><span class="grp-arrow">&#9660;</span>Colour</div>
+      <div id="bg-grp-colour">
+        <div class="debug-row"><label>Grid Color A</label><div class="debug-control-group" style="align-items:center;gap:8px;"><input type="color" id="bg-color-a" value="#6ab5ff" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-bg-color-a" class="num-input" value="#6ab5ff" style="width:62px;"></div></div>
+        <div class="debug-row"><label>Grid Color B</label><div class="debug-control-group" style="align-items:center;gap:8px;"><input type="color" id="bg-color-b" value="#99d9ff" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-bg-color-b" class="num-input" value="#99d9ff" style="width:62px;"></div></div>
+        <div class="debug-row"><label>Page Background</label><div class="debug-control-group" style="align-items:center;gap:8px;"><input type="color" id="bg-page-color" value="#0d0d0f" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-bg-page-color" class="num-input" value="#0d0d0f" style="width:62px;"></div></div>
+      </div>
+      <div onclick="(function(){var b=document.getElementById('bg-grp-grid');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;"><span class="grp-arrow">&#9660;</span>Grid</div>
+      <div id="bg-grp-grid">
+        <div class="debug-row"><label>Scale</label><div class="debug-control-group"><input type="range" id="bg-density" min="4" max="80" step="1" value="32"><div class="debug-num-control"><button class="btn-dec" data-id="bg-density" data-step="-1">&#8722;</button><input type="text" id="val-bg-density" class="num-input" value="32"><button class="btn-inc" data-id="bg-density" data-step="1">+</button></div></div></div>
+        <div class="debug-row"><label>Sharpness</label><div class="debug-control-group"><input type="range" id="bg-sharpness" min="0.80" max="0.995" step="0.005" value="0.97"><div class="debug-num-control"><button class="btn-dec" data-id="bg-sharpness" data-step="-0.005">&#8722;</button><input type="text" id="val-bg-sharpness" class="num-input" value="0.97"><button class="btn-inc" data-id="bg-sharpness" data-step="0.005">+</button></div></div></div>
+        <div class="debug-row"><label>Opacity</label><div class="debug-control-group"><input type="range" id="bg-opacity" min="0" max="1" step="0.01" value="0.18"><div class="debug-num-control"><button class="btn-dec" data-id="bg-opacity" data-step="-0.01">&#8722;</button><input type="text" id="val-bg-opacity" class="num-input" value="0.18"><button class="btn-inc" data-id="bg-opacity" data-step="0.01">+</button></div></div></div>
+        <div class="debug-row"><label>Blur (px)</label><div class="debug-control-group"><input type="range" id="bg-blur" min="0" max="20" step="0.5" value="0"><div class="debug-num-control"><button class="btn-dec" data-id="bg-blur" data-step="-0.5">&#8722;</button><input type="text" id="val-bg-blur" class="num-input" value="0"><button class="btn-inc" data-id="bg-blur" data-step="0.5">+</button></div></div></div>
+      </div>
+      <div onclick="(function(){var b=document.getElementById('bg-grp-wave');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;"><span class="grp-arrow">&#9660;</span>Wave</div>
+      <div id="bg-grp-wave">
+        <div class="debug-row"><label>Amplitude</label><div class="debug-control-group"><input type="range" id="bg-wave-amp" min="0" max="1.5" step="0.01" value="0.28"><div class="debug-num-control"><button class="btn-dec" data-id="bg-wave-amp" data-step="-0.01">&#8722;</button><input type="text" id="val-bg-wave-amp" class="num-input" value="0.28"><button class="btn-inc" data-id="bg-wave-amp" data-step="0.01">+</button></div></div></div>
+        <div class="debug-row"><label>Speed</label><div class="debug-control-group"><input type="range" id="bg-wave-speed" min="0" max="3" step="0.05" value="1"><div class="debug-num-control"><button class="btn-dec" data-id="bg-wave-speed" data-step="-0.05">&#8722;</button><input type="text" id="val-bg-wave-speed" class="num-input" value="1.00"><button class="btn-inc" data-id="bg-wave-speed" data-step="0.05">+</button></div></div></div>
+      </div>
+      <div onclick="(function(){var b=document.getElementById('bg-grp-pos');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;"><span class="grp-arrow">&#9660;</span>Position</div>
+      <div id="bg-grp-pos">
+        <div class="debug-row"><label>Y Offset</label><div class="debug-control-group"><input type="range" id="bg-pos-y" min="-8" max="2" step="0.1" value="-2.2"><div class="debug-num-control"><button class="btn-dec" data-id="bg-pos-y" data-step="-0.1">&#8722;</button><input type="text" id="val-bg-pos-y" class="num-input" value="-2.2"><button class="btn-inc" data-id="bg-pos-y" data-step="0.1">+</button></div></div></div>
+        <div class="debug-row"><label>Rot X</label><div class="debug-control-group"><input type="range" id="bg-rot-x" min="-3.14" max="0" step="0.02" value="-1.5708"><div class="debug-num-control"><button class="btn-dec" data-id="bg-rot-x" data-step="-0.02">&#8722;</button><input type="text" id="val-bg-rot-x" class="num-input" value="-1.57"><button class="btn-inc" data-id="bg-rot-x" data-step="0.02">+</button></div></div></div>
+        <div class="debug-row"><label>Rot Y</label><div class="debug-control-group"><input type="range" id="bg-rot-y" min="-3.14" max="3.14" step="0.02" value="0"><div class="debug-num-control"><button class="btn-dec" data-id="bg-rot-y" data-step="-0.02">&#8722;</button><input type="text" id="val-bg-rot-y" class="num-input" value="0.00"><button class="btn-inc" data-id="bg-rot-y" data-step="0.02">+</button></div></div></div>
+      </div>
+    </div>
+
+    <!-- Cursor Editor Section -->
+    <div id="section-cursor" style="display:none;">
+      <div onclick="(function(){var b=document.getElementById('cur-grp-style');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;"><span class="grp-arrow">&#9660;</span>Cursor Style</div>
+      <div id="cur-grp-style">
+        <div class="debug-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
+          <label style="margin-bottom:2px;">Style Toggles</label>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text);">
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="cur-toggle-dot" checked style="cursor:pointer;"> Dot</label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="cur-toggle-ring" checked style="cursor:pointer;"> Ring</label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="cur-toggle-cross" style="cursor:pointer;"> Crosshair</label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="cur-toggle-noomo" style="cursor:pointer;"> Noomo Physics</label>
+          </div>
+        </div>
+        <div class="debug-row"><label>Dot Size</label><div class="debug-control-group"><input type="range" id="cur-dot-size" min="2" max="24" step="1" value="6"><div class="debug-num-control"><button class="btn-dec" data-id="cur-dot-size" data-step="-1">&#8722;</button><input type="text" id="val-cur-dot-size" class="num-input" value="6"><button class="btn-inc" data-id="cur-dot-size" data-step="1">+</button></div></div></div>
+        <div class="debug-row"><label>Ring Size</label><div class="debug-control-group"><input type="range" id="cur-ring-size" min="16" max="80" step="2" value="40"><div class="debug-num-control"><button class="btn-dec" data-id="cur-ring-size" data-step="-2">&#8722;</button><input type="text" id="val-cur-ring-size" class="num-input" value="40"><button class="btn-inc" data-id="cur-ring-size" data-step="2">+</button></div></div></div>
+        <div class="debug-row"><label>Dot Color</label><div class="debug-control-group" style="align-items:center;gap:8px;"><input type="color" id="cur-dot-color" value="#1a1612" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-cur-dot-color" class="num-input" value="#1a1612" style="width:62px;"></div></div>
+      </div>
+      <div onclick="(function(){var b=document.getElementById('cur-grp-trail');b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.grp-arrow').textContent=b.style.display==='none'?'&#9658;':'&#9660;';}).call(this)" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 2px;margin:4px 0 2px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:bold;color:var(--text);opacity:0.7;user-select:none;"><span class="grp-arrow">&#9660;</span>Particle Trail</div>
+      <div id="cur-grp-trail">
+        <div class="debug-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
+          <label style="margin-bottom:2px;">Trail Type</label>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <button class="trail-type-btn btn-pill" data-type="none"    style="font-size:10px;padding:3px 8px;">None</button>
+            <button class="trail-type-btn btn-pill" data-type="water"   style="font-size:10px;padding:3px 8px;background:rgba(0,191,255,0.15);color:#00bfff;">&#128167; Watery</button>
+            <button class="trail-type-btn btn-pill" data-type="glitter" style="font-size:10px;padding:3px 8px;background:rgba(255,215,0,0.15);color:#ffd700;">&#10022; Glitter</button>
+            <button class="trail-type-btn btn-pill" data-type="sand"    style="font-size:10px;padding:3px 8px;background:rgba(210,180,140,0.15);color:#d2b48c;">&#11044; Sand</button>
+            <button class="trail-type-btn btn-pill" data-type="sparks"  style="font-size:10px;padding:3px 8px;background:rgba(255,100,0,0.15);color:#ff6400;">&#10033; Sparks</button>
+            <button class="trail-type-btn btn-pill" data-type="snow"    style="font-size:10px;padding:3px 8px;background:rgba(200,230,255,0.15);color:#c8e6ff;">&#10052; Snow</button>
+            <button class="trail-type-btn btn-pill" data-type="smoke"   style="font-size:10px;padding:3px 8px;background:rgba(150,150,150,0.15);color:#aaa;">&#9729; Smoke</button>
+          </div>
+        </div>
+        <div class="debug-row"><label>Density</label><div class="debug-control-group"><input type="range" id="cur-trail-density" min="1" max="25" step="1" value="5"><div class="debug-num-control"><button class="btn-dec" data-id="cur-trail-density" data-step="-1">&#8722;</button><input type="text" id="val-cur-trail-density" class="num-input" value="5"><button class="btn-inc" data-id="cur-trail-density" data-step="1">+</button></div></div></div>
+        <div class="debug-row"><label>Size</label><div class="debug-control-group"><input type="range" id="cur-trail-size" min="1" max="24" step="0.5" value="3"><div class="debug-num-control"><button class="btn-dec" data-id="cur-trail-size" data-step="-0.5">&#8722;</button><input type="text" id="val-cur-trail-size" class="num-input" value="3"><button class="btn-inc" data-id="cur-trail-size" data-step="0.5">+</button></div></div></div>
+        <div class="debug-row"><label>Speed</label><div class="debug-control-group"><input type="range" id="cur-trail-speed" min="0.5" max="6" step="0.1" value="1.5"><div class="debug-num-control"><button class="btn-dec" data-id="cur-trail-speed" data-step="-0.1">&#8722;</button><input type="text" id="val-cur-trail-speed" class="num-input" value="1.5"><button class="btn-inc" data-id="cur-trail-speed" data-step="0.1">+</button></div></div></div>
+        <div class="debug-row"><label>Lifetime</label><div class="debug-control-group"><input type="range" id="cur-trail-life" min="10" max="150" step="5" value="45"><div class="debug-num-control"><button class="btn-dec" data-id="cur-trail-life" data-step="-5">&#8722;</button><input type="text" id="val-cur-trail-life" class="num-input" value="45"><button class="btn-inc" data-id="cur-trail-life" data-step="5">+</button></div></div></div>
+        <div class="debug-row"><label>Gravity</label><div class="debug-control-group"><input type="range" id="cur-trail-gravity" min="-0.15" max="0.15" step="0.005" value="0.04"><div class="debug-num-control"><button class="btn-dec" data-id="cur-trail-gravity" data-step="-0.005">&#8722;</button><input type="text" id="val-cur-trail-gravity" class="num-input" value="0.04"><button class="btn-inc" data-id="cur-trail-gravity" data-step="0.005">+</button></div></div></div>
+        <div class="debug-row"><label>Color Mode</label>
+          <select id="cur-trail-color-mode" style="background:var(--glass);color:var(--text);border:1px solid var(--border);border-radius:4px;font-size:10px;font-family:'JetBrains Mono',monospace;padding:2px 4px;outline:none;">
+            <option value="default">Default Type</option>
+            <option value="solid">Solid Override</option>
+            <option value="gradient">Gradient Sweep</option>
+          </select>
+        </div>
+        <div id="cur-trail-solid-group" style="display:none;">
+          <div class="debug-row"><label>Solid Color</label><div class="debug-control-group" style="align-items:center;gap:6px;"><input type="color" id="cur-trail-color" value="#ffd700" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-cur-trail-color" class="num-input" value="#ffd700" style="width:62px;"></div></div>
+        </div>
+        <div id="cur-trail-grad-group" style="display:none;">
+          <div class="debug-row"><label>Grad Color A</label><div class="debug-control-group" style="align-items:center;gap:8px;"><input type="color" id="cur-trail-color-a" value="#ffd700" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-cur-trail-color-a" class="num-input" value="#ffd700" style="width:62px;"></div></div>
+          <div class="debug-row"><label>Grad Color B</label><div class="debug-control-group" style="align-items:center;gap:8px;"><input type="color" id="cur-trail-color-b" value="#00bfff" style="width:40px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px;"><input type="text" id="val-cur-trail-color-b" class="num-input" value="#00bfff" style="width:62px;"></div></div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /panel-editor-view -->
+  </div>
+
+  <!-- Header -->
+  <header>
+    <a href="#" class="logo" data-editable>Master_AG</a>
+    <nav>
+      <a href="#s2" class="nav-link" data-editable>Work</a>
+      <a href="#s3" class="nav-link" data-editable>Method</a>
+      <a href="#footer" class="nav-link" data-editable>Contact</a>
+      <button class="btn-pill" id="audio-btn" style="cursor:none;">
+        <span id="audio-icon">♪</span>
+        <span id="audio-lbl">Sound</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Scroll content -->
+  <main>
+
+    <!-- Hero -->
+    <section class="hero">
+      <span class="hero-eye" data-editable>Scene 01 — Crystalline Depth</span>
+      <h1 class="hero-h1" data-editable>story<br>telling</h1>
+      <p class="hero-sub" data-editable>Scroll-driven WebGL storytelling. A living crystal formation, a cosmic particle field, and a rippling wave grid — three Z-layers creating cinematic spatial volume.</p>
+      <div class="hero-scroll" data-editable>Scroll to explore</div>
+    </section>
+
+    <!-- Section 2 -->
+    <section class="section" id="s2">
+      <div class="glass-card">
+        <div class="card-eye reveal" data-editable>Scene 02 — The Shift</div>
+        <h2 class="card-title reveal d1" data-editable>Coordinate<br><em>Warp</em></h2>
+        <p class="card-body reveal d2" data-editable>The camera glides along a CatmullRom spline as you scroll. The crystal formation rotates through space — geometry becoming narrative.</p>
+        <div class="card-rule"></div>
+        <div class="card-stats reveal d3">
+          <div><div class="stat-label" data-editable>Particle Field</div><div class="stat-val" data-editable>3,200 Stars</div></div>
+          <div><div class="stat-label" data-editable>Camera Path</div><div class="stat-val a" data-editable>CatmullRom</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3 -->
+    <section class="section" id="s3">
+      <div class="glass-card">
+        <div class="card-eye reveal" data-editable>Scene 03 — Separation</div>
+        <h2 class="card-title reveal d1" data-editable>Dimensional<br><em>Layers</em></h2>
+        <p class="card-body reveal d2" data-editable>Crystal shards at three independent Z-depths create realistic parallax. The wave grid recedes to infinity. Cosmic dust fills everything between.</p>
+        <div class="card-rule"></div>
+        <div class="card-stats reveal d3">
+          <div><div class="stat-label" data-editable>Crystal Shards</div><div class="stat-val" data-editable>7 Facets</div></div>
+          <div><div class="stat-label" data-editable>Depth Range</div><div class="stat-val a" data-editable>Z −5 to +5</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4 -->
+    <section class="section" id="s4">
+      <div class="glass-card">
+        <div class="card-eye reveal" data-editable>Scene 04 — Finale</div>
+        <h2 class="card-title reveal d1" data-editable>Begin Your<br><em>Narrative</em></h2>
+        <p class="card-body reveal d2" data-editable>Create cinematic experiences that captivate and convert. Scroll-driven storytelling and immersive WebGL — at your fingertips.</p>
+        <div class="card-rule"></div>
+        <a href="#footer" class="btn-pill reveal d3" style="display:inline-flex;" data-editable>Deploy Cinematic Stack →</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <p class="footer-pre reveal" data-editable>Let us help you tell your story the way it was meant to be told.</p>
+    <div class="footer-logo">
+      <div class="footer-logo-blur">Master_AG</div>
+      <div class="footer-logo-solid">Master_AG</div>
+    </div>
+    <a href="mailto:hello@master-ag.dev" class="footer-email reveal" data-editable>hello@master-ag.dev</a>
+    <div class="footer-social">
+      <a href="#">GitHub</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Twitter</a>
+    </div>
+  </footer>
+
+  <!-- ─────────────────────────────────────────────────────
+       LIBRARIES (all confirmed 200 on CDN)
+  ───────────────────────────────────────────────────── -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <script>
+  'use strict';
+  if (location.hash === '#clear' || location.search.includes('clear')) {
+    localStorage.clear();
+    location.href = location.pathname;
+  }
+  gsap.registerPlugin(ScrollTrigger);
+
+  // === DEBUG ERROR OVERLAY: catches any JS crash and shows it on screen ===
+  (function() {
+    const overlay = document.createElement('div');
+    overlay.id = 'err-overlay';
+    overlay.style.cssText = 'display:none;position:fixed;bottom:0;left:0;right:0;background:#c00;color:#fff;font-family:monospace;font-size:12px;padding:12px 16px;z-index:99999;max-height:200px;overflow:auto;white-space:pre-wrap;';
+    document.body.appendChild(overlay);
+    window.onerror = function(msg, src, line, col, err) {
+      overlay.style.display = 'block';
+      overlay.textContent += '\u274C ' + msg + ' (line ' + line + ':' + col + ')\n' + (err && err.stack ? err.stack + '\n' : '');
+      // Force preloader off so we can see the error
+      const pre = document.getElementById('preloader');
+      if (pre) { pre.style.opacity = '0'; pre.style.pointerEvents = 'none'; }
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      overlay.style.display = 'block';
+      overlay.textContent += '\u274C Promise: ' + e.reason + '\n';
+    });
+  })();
+
+  // Creative Debug Panel State
+  let rotSpeedY = 0.003;
+  let rotSpeedX = 0.0008;
+  let debugScale = 1.0;
+  let spotlightRad = 520;
+  let currentScroll = 0.0;
+  let isEditing = false;
+  let editingTimeout = null;
+
+  // Render loop target interpolation variables for smooth WebGL transitions
+  let targetPos = new THREE.Vector3(0.8, 0, 0.5);
+  let targetRot = new THREE.Euler(0, 0, 0);
+  let targetScale = 0.82;
+  let parallaxRot = { x: 0, y: 0 };
+
+  // Master keyframes: array of objects sorted by scroll progress [0, 1]
+  let keyframes = [
+  {
+    "scroll": 0,
+    "x": 0.94,
+    "y": 0,
+    "z": 0.24,
+    "rx": 0.64,
+    "ry": -0.58,
+    "scale": 1.42,
+    "opacity": 0.52,
+    "metalness": 0.74,
+    "roughness": 0.5,
+    "emissiveIntensity": 0.85
+  },
+  {
+    "scroll": 0.132,
+    "x": 0,
+    "y": 0.06,
+    "z": 0.44,
+    "rx": 0,
+    "ry": 0,
+    "scale": 0.78
+  },
+  {
+    "scroll": 0.25,
+    "x": -0.82,
+    "y": 0.02,
+    "z": 0.72,
+    "rx": 0.82,
+    "ry": 0,
+    "scale": 1.18,
+    "opacity": 0.92,
+    "metalness": 0.48,
+    "roughness": 0.06,
+    "emissiveIntensity": 1.8
+  },
+  {
+    "scroll": 0.358,
+    "x": -0.02,
+    "y": 0.14,
+    "z": 0.1,
+    "rx": -0.8,
+    "ry": 0,
+    "scale": 0.84,
+    "opacity": 0.92,
+    "metalness": 0.12,
+    "roughness": 0.06,
+    "emissiveIntensity": 1.8
+  },
+  {
+    "scroll": 0.405,
+    "x": 0.22,
+    "y": 0.14,
+    "z": 0.06,
+    "rx": -0.88,
+    "ry": 0,
+    "scale": 0.84
+  },
+  {
+    "scroll": 0.5,
+    "x": 0.66,
+    "y": 0.04,
+    "z": 0.26,
+    "rx": -0.34,
+    "ry": 0,
+    "scale": 1.1,
+    "opacity": 1,
+    "metalness": 1,
+    "roughness": 0,
+    "emissiveIntensity": 5
+  },
+  {
+    "scroll": 0.635,
+    "x": 0,
+    "y": 0.02,
+    "z": 0.4,
+    "rx": 0.06,
+    "ry": 0,
+    "scale": 0.82,
+    "opacity": 0.92,
+    "metalness": 0.12,
+    "roughness": 0.06,
+    "emissiveIntensity": 1.8
+  },
+  {
+    "scroll": 0.75,
+    "x": -0.66,
+    "y": 0.1,
+    "z": 0.4,
+    "rx": 0.08,
+    "ry": 0,
+    "scale": 0.82
+  },
+  {
+    "scroll": 0.817,
+    "x": -0.02,
+    "y": 0.1,
+    "z": 0.4,
+    "rx": 0,
+    "ry": 0,
+    "scale": 0.82,
+    "opacity": 0.92,
+    "metalness": 0.12,
+    "roughness": 0.06,
+    "emissiveIntensity": 1.8
+  },
+  {
+    "scroll": 0.851,
+    "x": -0.04,
+    "y": 0.08,
+    "z": 0.48,
+    "rx": -1.06,
+    "ry": -0.7,
+    "scale": 0.5,
+    "opacity": 0.92,
+    "metalness": 0.12,
+    "roughness": 0.06,
+    "emissiveIntensity": 1.8
+  },
+  {
+    "scroll": 1,
+    "x": 0,
+    "y": -0.2,
+    "z": 2,
+    "rx": 1.94,
+    "ry": 3.14,
+    "scale": 2,
+    "opacity": 0.14,
+    "metalness": 1,
+    "roughness": 0,
+    "emissiveIntensity": 5
+  }
+];
+
+  window.currentTarget = { x: 0.55, y: 0.0, z: 0.5 };
+
+  function getResponsiveX(x) {
+    if (Math.abs(x) < 0.01) return 0; // centered
+    const sign = Math.sign(x);
+    const aspect = window.innerWidth / window.innerHeight;
+
+    if (Math.abs(x) < 0.6) {
+      return sign * Math.min(0.55, 0.38 * aspect);
+    }
+    if (aspect < 1.25) {
+      return sign * Math.min(Math.abs(x), 0.68 * aspect);
+    }
+    return x;
+  }
+
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function interpolateHermite(progress, keys, field) {
+    const n = keys.length;
+    
+    // Default values if a property is missing on older keyframes
+    const getVal = (kf) => {
+      if (kf[field] !== undefined) return kf[field];
+      if (field === 'opacity') return 0.92;
+      if (field === 'metalness') return 0.12;
+      if (field === 'roughness') return 0.06;
+      if (field === 'emissiveIntensity') return 1.80;
+      if (field === 'rz') return 0.0;
+      if (field === 'spinY') return 0.003;
+      if (field === 'spinX') return 0.0008;
+      if (field === 'wireOpacity') return 0.22;
+      return 0.0;
+    };
+
+    if (n === 0) return 0;
+    if (n === 1) return getVal(keys[0]);
+
+    if (progress <= keys[0].scroll) return getVal(keys[0]);
+    if (progress >= keys[n - 1].scroll) return getVal(keys[n - 1]);
+
+    let i = 0;
+    for (let j = 0; j < n - 1; j++) {
+      if (progress >= keys[j].scroll && progress <= keys[j + 1].scroll) {
+        i = j;
+        break;
+      }
+    }
+
+    const k0 = keys[i];
+    const k1 = keys[i + 1];
+    const h = k1.scroll - k0.scroll;
+    if (h === 0) return getVal(k0);
+
+    const val0 = getVal(k0);
+    const val1 = getVal(k1);
+    const s = (progress - k0.scroll) / h;
+
+    let m0 = 0, m1 = 0;
+    const delta = (val1 - val0) / h;
+
+    if (n === 2) {
+      m0 = delta;
+      m1 = delta;
+    } else {
+      if (i === 0) {
+        m0 = delta;
+      } else {
+        const kPrev = keys[i - 1];
+        const deltaL = (val0 - getVal(kPrev)) / (k0.scroll - kPrev.scroll);
+        m0 = (Math.sign(deltaL) !== Math.sign(delta)) ? 0 : (deltaL + delta) / 2;
+      }
+
+      if (i + 1 === n - 1) {
+        m1 = delta;
+      } else {
+        const kNext = keys[i + 2];
+        const deltaR = (getVal(kNext) - val1) / (kNext.scroll - k1.scroll);
+        m1 = (Math.sign(delta) !== Math.sign(deltaR)) ? 0 : (delta + deltaR) / 2;
+      }
+    }
+
+    // Monotone cubic Hermite spline slope limiter (Fritsch-Carlson algorithm) to prevent overshoot
+    if (delta === 0) {
+      m0 = 0;
+      m1 = 0;
+    } else {
+      const alpha = m0 / delta;
+      const beta = m1 / delta;
+      if (alpha * alpha + beta * beta > 9) {
+        const tau = 3 / Math.sqrt(alpha * alpha + beta * beta);
+        m0 = tau * alpha * delta;
+        m1 = tau * beta * delta;
+      }
+    }
+
+    const s2 = s * s;
+    const s3 = s2 * s;
+
+    const h00 = 2 * s3 - 3 * s2 + 1;
+    const h10 = s3 - 2 * s2 + s;
+    const h01 = -2 * s3 + 3 * s2;
+    const h11 = s3 - s2;
+
+    return h00 * val0 + h10 * h * m0 + h01 * val1 + h11 * h * m1;
+  }
+
+  function applyTimeline(progress) {
+    currentScroll = progress;
+    document.getElementById('dbg-scroll-val').textContent = (progress * 100).toFixed(1) + '%';
+    document.getElementById('dbg-scrub').value = progress;
+    document.getElementById('lbl-scrub').textContent = (progress * 100).toFixed(0) + '%';
+    document.getElementById('dbg-scrub-num').value = Math.round(progress * 100);
+    
+    // Do not interpolate while user is actively tweaking sliders
+    if (isEditing) return;
+
+    const x = interpolateHermite(progress, keyframes, 'x');
+    const y = interpolateHermite(progress, keyframes, 'y');
+    const z = interpolateHermite(progress, keyframes, 'z');
+    const rx = interpolateHermite(progress, keyframes, 'rx');
+    const ry = interpolateHermite(progress, keyframes, 'ry');
+    const scale = interpolateHermite(progress, keyframes, 'scale') * debugScale;
+    
+    const opacity = interpolateHermite(progress, keyframes, 'opacity');
+    const metalness = interpolateHermite(progress, keyframes, 'metalness');
+    const roughness = interpolateHermite(progress, keyframes, 'roughness');
+    const emissive = interpolateHermite(progress, keyframes, 'emissiveIntensity');
+    const rz       = interpolateHermite(progress, keyframes, 'rz');
+    const spinY    = interpolateHermite(progress, keyframes, 'spinY');
+    const spinX    = interpolateHermite(progress, keyframes, 'spinX');
+    const wireOpacity = interpolateHermite(progress, keyframes, 'wireOpacity');
+
+    // Interpolate emissive color between nearest keyframes
+    let emissiveColorHex = '#8eb4f8';
+    if (keyframes.length >= 1) {
+      let iLow = 0, iHigh = keyframes.length - 1;
+      for (let j = 0; j < keyframes.length - 1; j++) {
+        if (progress >= keyframes[j].scroll && progress <= keyframes[j+1].scroll) {
+          iLow = j; iHigh = j + 1; break;
+        }
+      }
+      const cA = new THREE.Color(keyframes[iLow].emissiveColor  || '#8eb4f8');
+      const cB = new THREE.Color(keyframes[iHigh].emissiveColor || '#8eb4f8');
+      const h = keyframes[iHigh].scroll - keyframes[iLow].scroll;
+      const t = h > 0 ? Math.max(0, Math.min(1, (progress - keyframes[iLow].scroll) / h)) : 0;
+      cA.lerp(cB, t);
+      emissiveColorHex = '#' + cA.getHexString();
+    }
+
+    // Apply new globals
+    rotSpeedY = spinY;
+    rotSpeedX = spinX;
+
+    // Keep resize target synced
+    window.currentTarget.x = x;
+    window.currentTarget.y = y;
+    window.currentTarget.z = z;
+
+    // Sync input sliders
+    document.getElementById('dbg-pos-x').value = x;
+    document.getElementById('dbg-pos-y').value = y;
+    document.getElementById('dbg-pos-z').value = z;
+    document.getElementById('dbg-rot-x-val').value = rx;
+    document.getElementById('dbg-rot-y-val').value = ry;
+    document.getElementById('dbg-rot-z-val').value = rz;
+    document.getElementById('dbg-scale').value = scale / debugScale;
+    document.getElementById('dbg-spin-y').value = spinY;
+    document.getElementById('dbg-spin-x').value = spinX;
+    
+    document.getElementById('dbg-opacity').value = opacity;
+    document.getElementById('dbg-metalness').value = metalness;
+    document.getElementById('dbg-roughness').value = roughness;
+    document.getElementById('dbg-emissive').value = emissive;
+    document.getElementById('dbg-emissive-color').value = emissiveColorHex;
+    document.getElementById('val-dbg-emissive-color').value = emissiveColorHex;
+    document.getElementById('dbg-wire-opacity').value = wireOpacity;
+
+    updateSliderLabels(x, y, z, rx, ry, rz, scale / debugScale, spinY, spinX, opacity, metalness, roughness, emissive, emissiveColorHex, wireOpacity);
+
+    if (crystalGroup) {
+      const rxX = getResponsiveX(x);
+      targetPos.set(rxX, y, z);
+      targetRot.set(rx, ry, rz);
+      targetScale = scale;
+      
+      const _emColor = new THREE.Color(emissiveColorHex);
+      crystalGroup.traverse(child => {
+        if (!child.isMesh || !child.material) return;
+        // Skip halo rings — they use MeshBasicMaterial (no emissive/metalness/roughness)
+        if (child.name === 'halo' || child.name === 'halo2') return;
+        if (child.material.wireframe) {
+          child.material.opacity = wireOpacity !== undefined ? wireOpacity : 0.22;
+          if (child.material.emissiveIntensity !== undefined) child.material.emissiveIntensity = emissive * 0.4;
+        } else {
+          child.material.opacity = opacity !== undefined ? opacity : 0.92;
+          if (child.material.emissiveIntensity !== undefined) child.material.emissiveIntensity = emissive;
+          if (child.material.emissive) child.material.emissive.copy(_emColor);
+          if (child.material.metalness !== undefined) child.material.metalness = metalness;
+          if (child.material.roughness !== undefined) child.material.roughness = roughness;
+        }
+      });
+    }
+  }
+
+  function updateSliderLabels(x, y, z, rx, ry, rz = 0, scale = 1, spinY = 0.003, spinX = 0.0008, opacity = 0.92, metalness = 0.12, roughness = 0.06, emissive = 1.80, emissiveColor = '#8eb4f8', wireOpacity = 0.22) {
+    document.getElementById('val-dbg-pos-x').value = parseFloat(x).toFixed(2);
+    document.getElementById('val-dbg-pos-y').value = parseFloat(y).toFixed(2);
+    document.getElementById('val-dbg-pos-z').value = parseFloat(z).toFixed(2);
+    document.getElementById('val-dbg-rot-x-val').value = parseFloat(rx).toFixed(2);
+    document.getElementById('val-dbg-rot-y-val').value = parseFloat(ry).toFixed(2);
+    document.getElementById('val-dbg-rot-z-val').value = parseFloat(rz).toFixed(2);
+    document.getElementById('val-dbg-scale').value = parseFloat(scale).toFixed(2);
+    document.getElementById('val-dbg-spin-y').value = parseFloat(spinY).toFixed(4);
+    document.getElementById('val-dbg-spin-x').value = parseFloat(spinX).toFixed(4);
+    
+    document.getElementById('val-dbg-opacity').value = parseFloat(opacity).toFixed(2);
+    document.getElementById('val-dbg-metalness').value = parseFloat(metalness).toFixed(2);
+    document.getElementById('val-dbg-roughness').value = parseFloat(roughness).toFixed(2);
+    document.getElementById('val-dbg-emissive').value = parseFloat(emissive).toFixed(2);
+    document.getElementById('val-dbg-wire-opacity').value = parseFloat(wireOpacity).toFixed(2);
+    const ecEl = document.getElementById('val-dbg-emissive-color');
+    if (ecEl) ecEl.value = emissiveColor;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // CURSOR
+  // ═══════════════════════════════════════════════════════════════
+  const cursorDot  = document.getElementById('cursor-dot');
+  const cursorRing = document.getElementById('cursor-ring');
+  let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+  let dotX = mouseX, dotY = mouseY;
+  let ringX = mouseX, ringY = mouseY;
+  let cursorStyle = 'dot-ring';
+
+  window.addEventListener('mousemove', e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+  });
+
+  let curShowDot = true;
+  let curShowRing = true;
+  let curShowCross = false;
+  let curShowNoomo = false;
+
+  (function updateCursor() {
+    // 1. Elastic/Noomo physics interpolation
+    if (curShowNoomo) {
+      const dx = mouseX - dotX;
+      const dy = mouseY - dotY;
+      dotX += dx * 0.14;
+      dotY += dy * 0.14;
+
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const stretch = 1 + Math.min(dist / 80, 1.3);
+      const squeeze = 1 - Math.min(dist / 160, 0.4);
+      const angle = Math.atan2(dy, dx);
+      const hoverScale = document.body.classList.contains('cursor-hover') ? 2.5 : 1.0;
+
+      cursorDot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%) rotate(${angle}rad) scale(${stretch * hoverScale}, ${squeeze * hoverScale})`;
+    } else {
+      dotX = mouseX;
+      dotY = mouseY;
+      const hoverScale = document.body.classList.contains('cursor-hover') ? 1.5 : 1.0;
+      cursorDot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%) scale(${hoverScale})`;
+    }
+
+    // 2. Ring following logic
+    ringX += (dotX - ringX) * 0.11;
+    ringY += (dotY - ringY) * 0.11;
+    const ringScale = document.body.classList.contains('cursor-hover') ? 1.4 : 1.0;
+    
+    // Stretch ring if Noomo is enabled on dot (gives incredibly organic look!)
+    if (curShowNoomo) {
+      const dx = dotX - ringX;
+      const dy = dotY - ringY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const rStretch = 1 + Math.min(dist / 70, 0.8);
+      const rSqueeze = 1 - Math.min(dist / 140, 0.3);
+      const rAngle = Math.atan2(dy, dx);
+      cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%) rotate(${rAngle}rad) scale(${rStretch * ringScale}, ${rSqueeze * ringScale})`;
+    } else {
+      cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%) scale(${ringScale})`;
+    }
+
+    // Update displays
+    cursorDot.style.display = curShowDot ? 'block' : 'none';
+    cursorRing.style.display = curShowRing ? 'block' : 'none';
+
+    if (curShowCross) {
+      cursorDot.classList.add('cross');
+      cursorDot.style.display = 'block'; // cross overrides hidden dot
+    } else {
+      cursorDot.classList.remove('cross');
+    }
+
+    requestAnimationFrame(updateCursor);
+  })();
+
+  // Hover state for interactive elements
+  function refreshHoverTriggers() {
+    document.querySelectorAll('a, button, .nav-link, .btn-pill, #mode-btn, #debug-toggle, .glass-card, input[type="range"]').forEach(el => {
+      el.removeEventListener('mouseenter', addCursorHover);
+      el.removeEventListener('mouseleave', removeCursorHover);
+      el.addEventListener('mouseenter', addCursorHover);
+      el.addEventListener('mouseleave', removeCursorHover);
+    });
+  }
+  function addCursorHover()    { document.body.classList.add('cursor-hover'); }
+  function removeCursorHover() { document.body.classList.remove('cursor-hover'); }
+  setTimeout(refreshHoverTriggers, 100);
+
+  // ═══════════════════════════════════════════════════════════════
+  // AMBIENT BLOBS — fade in on load
+  // ═══════════════════════════════════════════════════════════════
+  // Animated blob float — slow GSAP loops
+  setTimeout(() => {
+    document.querySelectorAll('.blob').forEach(b => b.classList.add('on'));
+    const blobs = document.querySelectorAll('.blob');
+    blobs.forEach((b, i) => {
+      gsap.to(b, {
+        x: (i % 2 === 0 ? 1 : -1) * (30 + i * 12),
+        y: (i % 2 === 0 ? -1 : 1) * (24 + i * 8),
+        duration: 9 + i * 2.5,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true,
+        delay: i * 1.2,
+      });
+    });
+  }, 400);
+
+  // ═══════════════════════════════════════════════════════════════
+  // BACKGROUND SPOTLIGHT — large lavender radial glow follows cursor (optimized using translate3d)
+  // ═══════════════════════════════════════════════════════════════
+  (function bgSpotlightInit() {
+    const el = document.getElementById('bg-spotlight');
+    let lx = -9999, ly = -9999;
+    let tx = lx, ty = ly;
+
+    window.addEventListener('mousemove', e => {
+      tx = e.clientX; ty = e.clientY;
+    });
+
+    (function bgLoop() {
+      lx += (tx - lx) * 0.075;
+      ly += (ty - ly) * 0.075;
+      el.style.transform = `translate3d(${lx}px, ${ly}px, 0)`;
+      requestAnimationFrame(bgLoop);
+    })();
+  })();
+
+  // ═══════════════════════════════════════════════════════════════
+  // SAND PARTICLE SYSTEM — warm-toned grains spawn on mousemove
+  // Each grain: drifts upward, falls under gravity, fades out
+  // ═══════════════════════════════════════════════════════════════
+  (function sandInit() {
+    const canvas = document.getElementById('sand-canvas');
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width  = innerWidth;
+    let H = canvas.height = innerHeight;
+
+    window.addEventListener('resize', () => {
+      W = canvas.width  = innerWidth;
+      H = canvas.height = innerHeight;
+    });
+
+    // Sandy warm palette
+    const PALETTE = [
+      [215, 190, 130],   // tan
+      [235, 208, 148],   // warm sand
+      [198, 172, 112],   // dark sand
+      [248, 218, 160],   // pale gold
+      [225, 196, 136],   // mid sand
+      [252, 230, 172],   // bleached sand
+      [185, 160, 100],   // earthy
+    ];
+
+    const pool = [];   // all live particles
+    let vel = { x: 0, y: 0 };   // recent mouse velocity for directional scatter
+    let prevX = 0, prevY = 0;
+    let spawnBudget = 0;         // fractional carry-over so fast moves get more grains
+
+    function newGrain(x, y) {
+      const rgb = PALETTE[Math.floor(Math.random() * PALETTE.length)];
+      const speed = 0.8 + Math.random() * 1.8;
+      const angle = -Math.PI / 2 + (Math.random() - 0.5) * 2.0 + Math.atan2(vel.y * 0.3, vel.x * 0.3);
+      return {
+        x: x + (Math.random() - 0.5) * 22,
+        y: y + (Math.random() - 0.5) * 22,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 1.0,
+        decay: 0.012 + Math.random() * 0.016,
+        size: 0.7 + Math.random() * 2.0,
+        r: rgb[0], g: rgb[1], b: rgb[2],
+      };
+    }
+
+    window.addEventListener('mousemove', e => {
+      const dx = e.clientX - prevX;
+      const dy = e.clientY - prevY;
+      vel.x = dx; vel.y = dy;
+      prevX = e.clientX; prevY = e.clientY;
+
+      const speed = Math.sqrt(dx * dx + dy * dy);
+      if (speed < 2) return; // ignore static/minor moves
+
+      // Drastically lower spawning rate (cap at 3 instead of 12)
+      spawnBudget += Math.min(1 + speed * 0.05, 3);
+      const toSpawn = Math.floor(spawnBudget);
+      spawnBudget -= toSpawn;
+
+      for (let i = 0; i < toSpawn; i++) {
+        if (pool.length < 120) { // Strict upper bound on live particles
+          pool.push(newGrain(e.clientX, e.clientY));
+        }
+      }
+    });
+
+    function tick() {
+      ctx.clearRect(0, 0, W, H);
+
+      for (let i = pool.length - 1; i >= 0; i--) {
+        const p = pool[i];
+
+        // Physics
+        p.x  += p.vx;
+        p.y  += p.vy;
+        p.vy += 0.055;   // gravity
+        p.vx *= 0.975;   // horizontal drag
+        p.life -= p.decay;
+
+        if (p.life <= 0) { pool.splice(i, 1); continue; }
+
+        // Draw grain
+        const alpha = Math.pow(p.life, 1.5) * 0.88;  // ease out opacity
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle   = `rgb(${p.r},${p.g},${p.b})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(tick);
+    }
+
+    tick();
+  })();
+
+  // ═══════════════════════════════════════════════════════════════
+  // GLOBAL RIPPLE — viewport-fixed, never clips any parent element
+  // ═══════════════════════════════════════════════════════════════
+  function spawnRipple(x, y, color) {
+    const r = document.createElement('div');
+    r.className = 'g-ripple';
+    r.style.left  = x + 'px';
+    r.style.top   = y + 'px';
+    r.style.borderColor = color || 'rgba(26,22,18,.6)';
+    document.body.appendChild(r);
+    gsap.fromTo(r,
+      { scale: 0.1, opacity: 1 },
+      { scale: 20, opacity: 0, duration: 0.75, ease: 'power2.out', onComplete: () => r.remove() }
+    );
+  }
+
+  // Attach ripples to interactive elements
+  document.querySelectorAll('.nav-link, .btn-pill').forEach(el => {
+    el.addEventListener('click', e => spawnRipple(e.clientX, e.clientY, 'rgba(26,22,18,.25)'));
+  });
+
+  document.querySelectorAll('.glass-card').forEach(card => {
+    card.addEventListener('click', e => spawnRipple(e.clientX, e.clientY));
+  });
+
+  document.getElementById('mode-btn').addEventListener('click', e => {
+    spawnRipple(e.clientX, e.clientY);
+  });
+
+  // ═══════════════════════════════════════════════════════════════
+  // GLASS CARD — spotlight + magnetic tilt
+  // ═══════════════════════════════════════════════════════════════
+  document.querySelectorAll('.glass-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+      const nx = (cx / rect.width  - 0.5) * 2;
+      const ny = (cy / rect.height - 0.5) * 2;
+
+      // CSS custom props spotlight
+      card.style.setProperty('--cx', cx + 'px');
+      card.style.setProperty('--cy', cy + 'px');
+
+      // Magnetic 3D tilt
+      gsap.to(card, {
+        rotateX: -ny * 7,
+        rotateY:  nx * 9,
+        duration: 0.3,
+        ease: 'power1.out',
+        transformPerspective: 900,
+      });
+    });
+
+    card.addEventListener('mouseleave', () => {
+      gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.65, ease: 'power2.out' });
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════
+  // CRYSTAL MODES
+  // ═══════════════════════════════════════════════════════════════
+  const MODES = [
+    { icon:'💎', label:'Crystal Mode',  body:0x88ccff, emissive:0x0055ff, ei:1.8, lColor:0x4488ff, gA:[0.40,0.70,1.00], gB:[0.60,0.85,1.00] },
+    { icon:'🔥', label:'Ember Mode',    body:0xff6b1a, emissive:0xff2200, ei:2.5, lColor:0xff4400, gA:[0.90,0.45,0.15], gB:[1.00,0.60,0.20] },
+    { icon:'☀️', label:'Solar Mode',    body:0xffe566, emissive:0xffcc00, ei:3.2, lColor:0xffdd00, gA:[1.00,0.90,0.30], gB:[1.00,0.95,0.50] },
+    { icon:'🌑', label:'Void Mode',     body:0x8833ff, emissive:0x5500dd, ei:2.8, lColor:0x6600ff, gA:[0.50,0.10,1.00], gB:[0.30,0.05,0.80] },
+  ];
+  let modeIdx = 0;
+
+  // ═══════════════════════════════════════════════════════════════
+  // WEBGL SETUP
+  // ═══════════════════════════════════════════════════════════════
+  let scene, camera, renderer, clock;
+  let crystalGroup, crystalLight, innerCrystal;
+  let particles, gridMat;
+  let camPath;
+
+  // Visualizer / Editor State
+  let visualizerActive = false;
+  let pathGroup = null;
+  let selectedAnchorIdx = -1;
+  let anchorSpheres = [];
+  let raycaster = new THREE.Raycaster();
+  let mouse = new THREE.Vector2();
+
+  function initWebGL() {
+    clock    = new THREE.Clock();
+    scene    = new THREE.Scene();
+    window._webglScene = scene; // Expose scene globally
+    camera   = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 100);
+    camera.position.set(0, 0, 5);
+
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.3;
+    renderer.setClearColor(0x000000, 0);
+    document.getElementById('canvas').appendChild(renderer.domElement);
+
+    // Camera spline — 4-point path traversed during scroll
+    camPath = new THREE.CatmullRomCurve3([
+      new THREE.Vector3( 0.0,  0.0, 5.0),
+      new THREE.Vector3( 1.6,  0.5, 3.6),
+      new THREE.Vector3(-1.4, -0.3, 2.8),
+      new THREE.Vector3( 0.0,  0.0, 2.0),
+    ]);
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+    const sun = new THREE.DirectionalLight(0xfffaf0, 2.5);
+    sun.position.set(4, 6, 4);
+    scene.add(sun);
+    const fill = new THREE.DirectionalLight(0xcebdf8, 0.9);
+    fill.position.set(-4, -2, -4);
+    scene.add(fill);
+
+    try { buildCrystal(); } catch(e) { console.error('buildCrystal failed:', e); window.onerror(e.message, 'index.html', 0, 0, e); }
+    try { buildParticles(); } catch(e) { console.error('buildParticles failed:', e); window.onerror(e.message, 'index.html', 0, 0, e); }
+    try { buildGrid(); } catch(e) { console.error('buildGrid failed:', e); window.onerror(e.message, 'index.html', 0, 0, e); }
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      camera.aspect = W / H;
+      camera.updateProjectionMatrix();
+      renderer.setSize(W, H);
+
+      if (crystalGroup && window.currentTarget) {
+        const responsiveX = getResponsiveX(window.currentTarget.x);
+        const aspect = W / H;
+        const scale = (aspect < 1.25 ? Math.max(0.40, 0.82 * (aspect / 1.25)) : 0.82) * debugScale;
+        targetPos.set(responsiveX, window.currentTarget.y, window.currentTarget.z);
+        targetScale = scale;
+      }
+    });
+
+    // Mouse parallax — crystal + particles track cursor
+    window.addEventListener('mousemove', e => {
+      const nx = (e.clientX / innerWidth)  * 2 - 1;
+      const ny = (e.clientY / innerHeight) * 2 - 1;  // intentionally not negated (natural lean)
+      gsap.to(parallaxRot, { x: -ny * 0.05, y: nx * 0.08, duration: 1.4, ease: 'power1.out', overwrite: 'auto' });
+      if (particles)    gsap.to(particles.rotation,    { x: -ny * 0.04, y: particles.rotation.y + nx * 0.025, duration: 2.0, ease: 'power1.out' });
+      
+      // Update interactive 3D particle gravity field uniforms
+      if (particles && particles.material.uniforms) {
+        particles.material.uniforms.uMouse.value.set(nx, -ny);
+        particles.material.uniforms.uMouseStrength.value = 1.0;
+      }
+    });
+
+    // Scene ready — dismiss preloader and boot scroll
+    setTimeout(() => {
+      document.getElementById('preloader').classList.add('done');
+      setupScroll();
+      renderLoop();
+      setTimeout(() => {
+        document.getElementById('mode-btn').classList.add('on');
+        document.getElementById('debug-toggle').classList.add('on');
+      }, 1400);
+    }, 700);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // CRYSTAL GEM CLUSTER
+  // ═══════════════════════════════════════════════════════════════
+  function buildCrystal() {
+    crystalGroup = new THREE.Group();
+    innerCrystal = new THREE.Group();
+    innerCrystal.name = 'innerCrystal';
+    crystalGroup.add(innerCrystal);
+
+    const mode = MODES[modeIdx];
+
+    // Solid material
+    const matSolid = new THREE.MeshStandardMaterial({
+      color:    new THREE.Color(mode.body),
+      emissive: new THREE.Color(mode.emissive),
+      emissiveIntensity: mode.ei,
+      metalness: 0.12, roughness: 0.06,
+      transparent: true, opacity: 0.92,
+    });
+
+    // Wireframe overlay
+    const matWire = new THREE.MeshStandardMaterial({
+      color:    new THREE.Color(mode.body),
+      emissive: new THREE.Color(mode.emissive),
+      emissiveIntensity: mode.ei * 0.4,
+      wireframe: true, transparent: true, opacity: 0.22,
+    });
+
+    // Central icosahedron (low-poly = crystal facet look)
+    const coreGeo  = new THREE.IcosahedronGeometry(0.55, 0);
+    const coreMesh = new THREE.Mesh(coreGeo, matSolid);
+    coreMesh.name  = 'core';
+    innerCrystal.add(coreMesh);
+
+    // Wireframe shell
+    const wireShell = new THREE.Mesh(coreGeo, matWire);
+    wireShell.scale.setScalar(1.025);
+    wireShell.name = 'wire';
+    innerCrystal.add(wireShell);
+
+    // 6 satellite shards at varying positions + sizes
+    const shards = [
+      { pos: [ 0.72,  0.30,  0.10], scale: 0.22 },
+      { pos: [-0.68,  0.25, -0.15], scale: 0.19 },
+      { pos: [ 0.55, -0.45,  0.20], scale: 0.25 },
+      { pos: [-0.50, -0.30, -0.20], scale: 0.17 },
+      { pos: [ 0.20,  0.62, -0.18], scale: 0.20 },
+      { pos: [-0.18, -0.58,  0.15], scale: 0.15 },
+    ];
+
+    shards.forEach(({ pos, scale }, i) => {
+      const geo  = new THREE.IcosahedronGeometry(scale, 0);
+      const mat  = matSolid.clone();
+      mat.emissiveIntensity = mode.ei * (0.65 + (i % 3) * 0.15);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(...pos);
+      mesh.rotation.set(i * 1.1, i * 0.9, i * 0.7);
+      mesh.name = 'shard' + i;
+      innerCrystal.add(mesh);
+    });
+
+    // Glow light at centre
+    crystalLight = new THREE.PointLight(mode.lColor, 2.5, 4.5);
+    innerCrystal.add(crystalLight);
+
+    // Halo ring — translucent orbiting ring around the crystal cluster
+    const haloGeo = new THREE.RingGeometry(0.85, 1.08, 64);
+    const haloMat = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(mode.emissive),
+      transparent: true, opacity: 0.18,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+    const haloMesh = new THREE.Mesh(haloGeo, haloMat);
+    haloMesh.name = 'halo';
+    haloMesh.rotation.x = Math.PI / 2.6; // tilted like a planetary ring
+    haloMesh.rotation.z = 0.3;
+    innerCrystal.add(haloMesh);
+
+    // Second outer ring for depth
+    const haloGeo2 = new THREE.RingGeometry(1.12, 1.22, 64);
+    const haloMat2 = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(mode.body),
+      transparent: true, opacity: 0.09,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+    const haloMesh2 = new THREE.Mesh(haloGeo2, haloMat2);
+    haloMesh2.name = 'halo2';
+    haloMesh2.rotation.x = Math.PI / 2.6;
+    haloMesh2.rotation.z = 0.3;
+    innerCrystal.add(haloMesh2);
+
+    crystalGroup.position.set(0.8, 0, 0.5);  // right of centre, stays on screen
+    crystalGroup.scale.setScalar(0.82);
+    scene.add(crystalGroup);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // APPLY CRYSTAL MODE — called on button click
+  // ═══════════════════════════════════════════════════════════════
+  function applyCrystalMode(idx) {
+    const mode = MODES[idx];
+    if (!crystalGroup) return;
+
+    const bodyCol = new THREE.Color(mode.body);
+    const emCol   = new THREE.Color(mode.emissive);
+    const lCol    = new THREE.Color(mode.lColor);
+
+    crystalGroup.traverse(child => {
+      if (!child.isMesh) return;
+      if (child.name === 'halo') {
+        // Halo inner ring — emissive color
+        gsap.to(child.material.color, { r: emCol.r, g: emCol.g, b: emCol.b, duration: 0.9 });
+        return;
+      }
+      if (child.name === 'halo2') {
+        // Halo outer ring — body color
+        gsap.to(child.material.color, { r: bodyCol.r, g: bodyCol.g, b: bodyCol.b, duration: 0.9 });
+        return;
+      }
+      gsap.to(child.material.color,    { r: bodyCol.r, g: bodyCol.g, b: bodyCol.b, duration: 0.9 });
+      gsap.to(child.material.emissive, { r: emCol.r,   g: emCol.g,   b: emCol.b,   duration: 0.9 });
+      const targetEI = child.material.wireframe ? mode.ei * 0.4 : mode.ei;
+      gsap.to(child.material,          { emissiveIntensity: targetEI,               duration: 0.9 });
+    });
+
+    if (crystalLight) {
+      gsap.to(crystalLight.color, { r: lCol.r, g: lCol.g, b: lCol.b, duration: 0.9 });
+    }
+
+    // Grid tint — only update when in light mode
+    if (gridMat && !document.body.classList.contains('dark')) {
+      gsap.to(gridMat.uniforms.uColorA.value, { r: mode.gA[0], g: mode.gA[1], b: mode.gA[2], duration: 1.0 });
+      gsap.to(gridMat.uniforms.uColorB.value, { r: mode.gB[0], g: mode.gB[1], b: mode.gB[2], duration: 1.0 });
+    }
+
+    // Elastic scale burst
+    gsap.fromTo(crystalGroup.scale,
+      { x: 1.2, y: 1.2, z: 1.2 },
+      { x: 1.0, y: 1.0, z: 1.0, duration: 0.65, ease: 'elastic.out(1,0.4)' }
+    );
+
+    // Particles color and burst transition
+    if (particles && particles.material.uniforms) {
+      const modeColorA = new THREE.Color(mode.body);
+      const modeColorB = new THREE.Color(mode.emissive);
+      gsap.to(particles.material.uniforms.uColorA.value, { r: modeColorA.r, g: modeColorA.g, b: modeColorA.b, duration: 0.9 });
+      gsap.to(particles.material.uniforms.uColorB.value, { r: modeColorB.r, g: modeColorB.g, b: modeColorB.b, duration: 0.9 });
+      
+      // Blast particles outward in a fluid wave
+      gsap.fromTo(particles.material.uniforms.uBurstProgress,
+        { value: 1.0 },
+        { value: 0.0, duration: 1.5, ease: 'power2.out' }
+      );
+    }
+
+    // Button label
+    document.querySelector('#mode-btn .mode-icon').textContent  = mode.icon;
+    document.querySelector('#mode-btn .mode-label').textContent = mode.label;
+  }
+
+  document.getElementById('mode-btn').addEventListener('click', () => {
+    modeIdx = (modeIdx + 1) % MODES.length;
+    applyCrystalMode(modeIdx);
+  });
+
+  // ═══════════════════════════════════════════════════════════════
+  // PARTICLE FIELD — warm/cool mixed, breathing via shader
+  // ═══════════════════════════════════════════════════════════════
+  function buildParticles() {
+    const N   = 3200;
+    const geo = new THREE.BufferGeometry();
+    const pos = new Float32Array(N * 3);
+    const rat = new Float32Array(N);
+    const sz  = new Float32Array(N);
+
+    // Initial default colors matching Crystal Mode (0x88ccff and 0x0055ff)
+    const initColA = new THREE.Color(0x88ccff);
+    const initColB = new THREE.Color(0x0055ff);
+
+    for (let i = 0; i < N; i++) {
+      const i3 = i * 3;
+      pos[i3]   = (Math.random() - 0.5) * 16;
+      pos[i3+1] = (Math.random() - 0.5) * 16;
+      pos[i3+2] = (Math.random() - 0.5) * 14;
+      rat[i] = Math.random();
+      sz[i] = Math.random();
+    }
+
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('aRatio',   new THREE.BufferAttribute(rat, 1));
+    geo.setAttribute('aSize',    new THREE.BufferAttribute(sz,  1));
+
+    const mat = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime:          { value: 0 },
+        uPR:            { value: Math.min(devicePixelRatio, 2) },
+        uMouse:         { value: new THREE.Vector2(0, 0) },
+        uMouseStrength: { value: 0.0 },
+        uBurstProgress: { value: 0.0 },
+        uColorA:        { value: initColA },
+        uColorB:        { value: initColB },
+      },
+      vertexShader: `
+        attribute float aSize; attribute float aRatio;
+        uniform float uTime, uPR, uBurstProgress, uMouseStrength;
+        uniform vec2 uMouse;
+        uniform vec3 uColorA, uColorB;
+        varying vec3 vColor; varying float vAlpha;
+
+        // Simple fractional wave combination to simulate 3D liquid currents
+        vec3 getFluidDisplacement(vec3 pos, float time) {
+          vec3 d = pos;
+          float t = time * 0.9;
+          d.x += sin(pos.y * 0.4 + t) * cos(pos.z * 0.3 + t * 0.7);
+          d.y += sin(pos.z * 0.5 + t * 1.1) * cos(pos.x * 0.4 - t * 0.8);
+          d.z += sin(pos.x * 0.6 - t * 0.7) * cos(pos.y * 0.5 + t * 1.2);
+          return (d - pos) * 0.45;
+        }
+
+        void main() {
+          vColor = mix(uColorA, uColorB, aRatio);
+          
+          // Warp position with liquid currents
+          vec3 displaced = position + getFluidDisplacement(position, uTime);
+          
+          // Outward explosion burst on mode changes
+          vec3 dir = normalize(position);
+          displaced += dir * uBurstProgress * 3.5;
+          
+          // Interactive mouse gravity repulsion/attraction field (push particles slightly)
+          vec4 mv = modelViewMatrix * vec4(displaced, 1.0);
+          vec4 screenPos = projectionMatrix * mv;
+          vec2 screenNDC = screenPos.xy / screenPos.w;
+          float distToMouse = distance(screenNDC, uMouse);
+          if (distToMouse < 0.8 && uMouseStrength > 0.0) {
+            float force = (0.8 - distToMouse) * 1.2 * uMouseStrength;
+            mv.xy -= normalize(screenNDC - uMouse) * force * (1.0 / -mv.z);
+          }
+
+          float b = sin(uTime * 1.4 + position.x * 0.8 + position.y * 0.5) * 0.5 + 0.5;
+          gl_PointSize = (2.5 + aSize * 4.0 + b * 1.5) * uPR * (1.0 / -mv.z);
+          vAlpha = 0.35 + b * 0.45;
+          gl_Position = projectionMatrix * mv;
+        }`,
+      fragmentShader: `
+        varying vec3 vColor; varying float vAlpha;
+        void main() {
+          vec2 uv = gl_PointCoord - 0.5;
+          float d  = length(uv);
+          if (d > 0.5) discard;
+          
+          // Liquid drop glow calculation (hot core)
+          float glow = exp(-d * 5.0);
+          float soft = 1.0 - smoothstep(0.08, 0.5, d);
+          
+          // Blend particle color with a white-hot glowing center
+          vec3 liquidCol = mix(vColor, vec3(1.0, 1.0, 1.0), glow * 0.65);
+          gl_FragColor = vec4(liquidCol, (soft * 0.35 + glow * 0.65) * vAlpha);
+        }`,
+      transparent: true,
+      depthWrite:  false,
+      blending:    THREE.AdditiveBlending,
+    });
+
+    particles = new THREE.Points(geo, mat);
+    scene.add(particles);
+    window._particleMesh = particles; // expose for sceneRegistry
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // WAVE GRID — GLSL animated grid plane
+  // ═══════════════════════════════════════════════════════════════
+  function buildGrid() {
+    const geo = new THREE.PlaneGeometry(30, 30, 55, 55);
+    gridMat = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime:       { value: 0 },
+        uColorA:     { value: new THREE.Color(0.40, 0.70, 1.00) },
+        uColorB:     { value: new THREE.Color(0.60, 0.85, 1.00) },
+        uDensity:    { value: 32.0 },
+        uWaveAmp:    { value: 0.28 },
+        uWaveSpeed:  { value: 1.0 },
+        uGridAlpha:  { value: 0.18 },
+        uSharpness:  { value: 0.97 },
+      },
+      vertexShader: `
+        uniform float uTime, uWaveAmp, uWaveSpeed;
+        varying vec2 vUv; varying float vEl;
+        void main() {
+          vUv = uv;
+          vec4 mp = modelMatrix * vec4(position, 1.0);
+          float el = sin(mp.x * 0.6 + uTime * uWaveSpeed) * cos(mp.y * 0.6 + uTime * uWaveSpeed * 0.7) * uWaveAmp;
+          mp.y += el; vEl = el;
+          gl_Position = projectionMatrix * viewMatrix * mp;
+        }`,
+      fragmentShader: `
+        uniform vec3 uColorA, uColorB;
+        uniform float uDensity, uGridAlpha, uSharpness;
+        varying vec2 vUv; varying float vEl;
+        void main() {
+          float gx   = step(uSharpness, fract(vUv.x * uDensity));
+          float gy   = step(uSharpness, fract(vUv.y * uDensity));
+          float grid = max(gx, gy);
+          if (grid < 0.1) discard;
+          vec3 col = mix(uColorA, uColorB, vEl + 0.5);
+          gl_FragColor = vec4(col, uGridAlpha * grid);
+        }`,
+      transparent: true,
+    });
+
+    const mesh = new THREE.Mesh(geo, gridMat);
+    mesh.rotation.x = -Math.PI * 0.5;
+    mesh.position.set(0, -2.2, -2);
+    scene.add(mesh);
+    window._gridMesh = mesh; // expose for sceneRegistry
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // SPLINE PATH VISUALIZER & INTERACTIVE EDITOR
+  // ═══════════════════════════════════════════════════════════════
+  function updatePathVisualizer() {
+    if (pathGroup) {
+      scene.remove(pathGroup);
+      pathGroup.traverse(child => {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+          if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+          else child.material.dispose();
+        }
+      });
+      pathGroup = null;
+    }
+
+    anchorSpheres = [];
+
+    if (!visualizerActive) {
+      document.getElementById('vis-selected-kf-label').textContent = 'Selected Anchor: None';
+      return;
+    }
+
+    pathGroup = new THREE.Group();
+    scene.add(pathGroup);
+
+    // 1. Draw Camera Path (dashed line)
+    if (camPath) {
+      const camPoints = camPath.getPoints(100);
+      const camGeo = new THREE.BufferGeometry().setFromPoints(camPoints);
+      const camMat = new THREE.LineDashedMaterial({
+        color: 0xcebdf8,
+        dashSize: 0.12,
+        gapSize: 0.06,
+      });
+      const camLine = new THREE.Line(camGeo, camMat);
+      camLine.computeLineDistances();
+      pathGroup.add(camLine);
+    }
+
+    // 2. Draw Crystal Interpolated Path (dashed line)
+    if (keyframes && keyframes.length > 1) {
+      const cryPoints = [];
+      const steps = 100;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const x = interpolateHermite(t, keyframes, 'x');
+        const y = interpolateHermite(t, keyframes, 'y');
+        const z = interpolateHermite(t, keyframes, 'z');
+        cryPoints.push(new THREE.Vector3(getResponsiveX(x), y, z));
+      }
+      const cryGeo = new THREE.BufferGeometry().setFromPoints(cryPoints);
+      const cryMat = new THREE.LineDashedMaterial({
+        color: 0xffe566,
+        dashSize: 0.08,
+        gapSize: 0.04,
+      });
+      const cryLine = new THREE.Line(cryGeo, cryMat);
+      cryLine.computeLineDistances();
+      pathGroup.add(cryLine);
+    }
+
+    // 3. Draw Keyframe Anchors (Spheres)
+    keyframes.forEach((kf, idx) => {
+      const isSelected = idx === selectedAnchorIdx;
+      const geo = new THREE.SphereGeometry(isSelected ? 0.075 : 0.045, 16, 16);
+      const mat = new THREE.MeshBasicMaterial({
+        color: isSelected ? 0xff4400 : 0xffcc00,
+        transparent: true,
+        opacity: isSelected ? 0.95 : 0.65,
+        depthTest: false,
+        depthWrite: false
+      });
+      const sphere = new THREE.Mesh(geo, mat);
+      sphere.position.set(getResponsiveX(kf.x), kf.y, kf.z);
+      sphere.userData = { index: idx };
+      
+      pathGroup.add(sphere);
+      anchorSpheres.push(sphere);
+    });
+
+    // Find nearest keyframe to current scroll for active-sphere highlighting
+    let nearestIdx = 0, nearestDist = Infinity;
+    keyframes.forEach(function(kf, i) {
+      var d = Math.abs(kf.scroll - currentScroll);
+      if (d < nearestDist) { nearestDist = d; nearestIdx = i; }
+    });
+
+    // Colour each sphere: red=selected, cyan=active scroll, gold=idle
+    anchorSpheres.forEach(function(sphere, idx) {
+      var isSel    = idx === selectedAnchorIdx;
+      var isActive = idx === nearestIdx && !isSel;
+      sphere.material.color.setHex(isSel ? 0xff3300 : isActive ? 0x00ffe0 : 0xffe566);
+      sphere.material.opacity = isSel ? 1.0 : isActive ? 0.9 : 0.6;
+      sphere.scale.setScalar(isSel ? 1.8 : isActive ? 1.4 : 1.0);
+    });
+
+    var lbl = document.getElementById('vis-selected-kf-label');
+    if (selectedAnchorIdx !== -1 && keyframes[selectedAnchorIdx]) {
+      lbl.textContent = 'Editing #' + selectedAnchorIdx + ' | Active: #' + nearestIdx + ' (' + (keyframes[nearestIdx].scroll * 100).toFixed(0) + '%)';
+    } else {
+      lbl.textContent = 'Active Keyframe: #' + nearestIdx + ' (' + (keyframes[nearestIdx].scroll * 100).toFixed(0) + '%)';
+    }
+  }
+
+  // Lightweight per-scroll highlight refresh (no geo rebuild).
+  function updateAnchorHighlights() {
+    if (!anchorSpheres.length) return;
+    var nearestIdx = 0, nearestDist = Infinity;
+    keyframes.forEach(function(kf, i) {
+      var d = Math.abs(kf.scroll - currentScroll);
+      if (d < nearestDist) { nearestDist = d; nearestIdx = i; }
+    });
+    anchorSpheres.forEach(function(sphere, idx) {
+      var isSel    = idx === selectedAnchorIdx;
+      var isActive = idx === nearestIdx && !isSel;
+      sphere.material.color.setHex(isSel ? 0xff3300 : isActive ? 0x00ffe0 : 0xffe566);
+      sphere.material.opacity = isSel ? 1.0 : isActive ? 0.9 : 0.6;
+      sphere.scale.setScalar(isSel ? 1.8 : isActive ? 1.4 : 1.0);
+    });
+    var lbl = document.getElementById('vis-selected-kf-label');
+    if (selectedAnchorIdx !== -1 && keyframes[selectedAnchorIdx]) {
+      lbl.textContent = 'Editing #' + selectedAnchorIdx + ' | Active: #' + nearestIdx + ' (' + (keyframes[nearestIdx].scroll * 100).toFixed(0) + '%)';
+    } else {
+      lbl.textContent = 'Active Keyframe: #' + nearestIdx + ' (' + (keyframes[nearestIdx].scroll * 100).toFixed(0) + '%)';
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // SCROLL — camera spline + crystal positioning + dark transition
+  // Crystal uses per-section ScrollTrigger (not a scrubbed timeline)
+  // so it fires precisely when each section enters the viewport.
+  // ═══════════════════════════════════════════════════════════════
+  function setupScroll() {
+    // Camera glides along spline — driven by scroll progress directly
+    ScrollTrigger.create({
+      trigger: document.body,
+      start: 'top top',
+      end:   'bottom bottom',
+      scrub: 1.5,
+      onUpdate(self) {
+        document.getElementById('progress-bar').style.width = (self.progress * 100) + '%';
+        // Freeze camera movement when visualizer is active (static reference frame)
+        if (!visualizerActive) {
+          const pt = camPath.getPointAt(Math.min(self.progress, 0.999));
+          camera.position.copy(pt);
+          camera.lookAt(0, 0, 0);
+        }
+        
+        // Scrub the crystal frame keyframe timeline
+        applyTimeline(self.progress);
+
+        // Refresh sphere highlights to track scroll position
+        if (visualizerActive) updateAnchorHighlights();
+      },
+    });
+
+    // Creative Control Panel Listeners
+    document.getElementById('debug-toggle').addEventListener('click', () => {
+      document.getElementById('debug-panel').classList.toggle('active');
+      document.getElementById('debug-toggle').classList.toggle('active-btn');
+    });
+
+
+    // \u2500\u2500 Scene Registry & Asset Panel \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+    const sceneRegistry = [
+      {
+        id: 'crystal', category: '3D Objects', label: 'Crystal', sublabel: 'Polygon \u00b7 Animated',
+        icon: '\ud83d\udc8e', iconBg: 'rgba(142,180,248,0.15)', iconColor: '#8eb4f8',
+        tabs: ['Transform', 'Material', 'Visualizer'],
+        getObj: () => crystalGroup,
+      },
+      {
+        id: 'particles', category: '3D Objects', label: 'Particles', sublabel: 'Point Cloud',
+        icon: '\u2726', iconBg: 'rgba(255,255,180,0.12)', iconColor: '#ffe566',
+        tabs: [],
+        getObj: () => window._particleMesh || null,
+      },
+      {
+        id: 'grid', category: 'Background & Grid', label: 'Background Grid', sublabel: 'GLSL Shader',
+        icon: '\u2b21', iconBg: 'rgba(100,200,255,0.10)', iconColor: '#64c8ff',
+        tabs: [],
+        getObj: () => window._gridMesh || null,
+      },
+      {
+        id: 'cursor', category: 'Cursor Experience', label: 'Cursor & Trails', sublabel: 'Glitter \u00b7 Sand \u00b7 Sparks',
+        icon: '\u2728', iconBg: 'rgba(255,160,255,0.15)', iconColor: '#ff8eff',
+        tabs: [],
+        getObj: () => null,
+      }
+    ];
+
+    let currentAssetId = 'crystal';
+
+    function renderAssetList() {
+      const list  = document.getElementById('asset-list');
+      const count = document.getElementById('asset-count');
+      if (!list) return;
+      count.textContent = sceneRegistry.length + ' object' + (sceneRegistry.length !== 1 ? 's' : '');
+      list.innerHTML = '';
+
+      // Group assets by category
+      const categories = {};
+      sceneRegistry.forEach(function(asset) {
+        const cat = asset.category || 'Other';
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(asset);
+      });
+
+      Object.keys(categories).forEach(function(catName) {
+        // Add Category Header
+        var catHeader = document.createElement('div');
+        catHeader.style.cssText = 'font-family:\'JetBrains Mono\',monospace;font-size:9px;font-weight:bold;color:var(--text);opacity:0.45;letter-spacing:1px;margin:12px 0 6px;text-transform:uppercase;';
+        catHeader.textContent = catName;
+        list.appendChild(catHeader);
+
+        // Add Category Group wrapper
+        var catGroup = document.createElement('div');
+        catGroup.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
+
+        categories[catName].forEach(function(asset) {
+          var obj = asset.getObj();
+          var isVisible = obj ? obj.visible : true;
+
+          var card = document.createElement('div');
+          card.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,0.03);cursor:pointer;transition:background 0.15s;';
+          card.onmouseenter = function() { card.style.background = 'rgba(255,255,255,0.07)'; };
+          card.onmouseleave = function() { card.style.background = 'rgba(255,255,255,0.03)'; };
+
+          var icon = document.createElement('div');
+          icon.style.cssText = 'width:32px;height:32px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;background:' + asset.iconBg + ';';
+          icon.textContent = asset.icon;
+
+          var textDiv = document.createElement('div');
+          textDiv.style.cssText = 'flex:1;min-width:0;';
+          textDiv.innerHTML = '<div style="font-family:\'JetBrains Mono\',monospace;font-size:11px;font-weight:bold;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + asset.label + '</div>'
+            + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:9px;color:' + asset.iconColor + ';opacity:0.85;margin-top:1px;">' + asset.sublabel + '</div>';
+
+          card.appendChild(icon);
+          card.appendChild(textDiv);
+
+          // Add visibility toggle only if getObj returns an object
+          if (obj) {
+            var vis = document.createElement('button');
+            vis.title = isVisible ? 'Hide' : 'Show';
+            vis.style.cssText = 'background:none;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;padding:2px 5px;cursor:pointer;flex-shrink:0;opacity:' + (isVisible ? '1' : '0.3') + ';';
+            vis.textContent = '\ud83d\udc41';
+            vis.addEventListener('click', function(e) {
+              e.stopPropagation();
+              var o = asset.getObj();
+              if (o) { o.visible = !o.visible; renderAssetList(); }
+            });
+            card.appendChild(vis);
+          }
+
+          var chevron = document.createElement('span');
+          chevron.style.cssText = 'font-size:16px;color:var(--text);opacity:0.35;flex-shrink:0;';
+          chevron.textContent = '\u203a';
+          card.appendChild(chevron);
+
+          (function(aid) {
+            card.addEventListener('click', function() { openAssetEditor(aid); });
+          })(asset.id);
+          catGroup.appendChild(card);
+        });
+
+        list.appendChild(catGroup);
+      });
+    }
+
+    function openAssetEditor(assetId) {
+      currentAssetId = assetId;
+      var asset = sceneRegistry.filter(function(a) { return a.id === assetId; })[0];
+      document.getElementById('panel-assets-view').style.display = 'none';
+      document.getElementById('panel-editor-view').style.display = 'block';
+      document.getElementById('editing-asset-label').textContent = asset ? (asset.icon + '  ' + asset.label) : assetId;
+
+      // Hide all editor sections
+      var sections = ['section-transform', 'section-material', 'section-visualizer', 'section-background', 'section-cursor'];
+      sections.forEach(function(sId) {
+        var el = document.getElementById(sId);
+        if (el) el.style.display = 'none';
+      });
+
+      var tabsHeader = document.getElementById('editor-tabs');
+
+      if (assetId === 'crystal') {
+        tabsHeader.style.display = 'flex';
+        var tT = document.getElementById('tab-transform');
+        var tM = document.getElementById('tab-material');
+        var tV = document.getElementById('tab-visualizer');
+        tT.style.display = '';
+        tM.style.display = '';
+        tV.style.display = '';
+        tT.click();
+      } else {
+        tabsHeader.style.display = 'none';
+        if (assetId === 'grid') {
+          var secBg = document.getElementById('section-background');
+          if (secBg) secBg.style.display = 'block';
+        } else if (assetId === 'cursor') {
+          var secCur = document.getElementById('section-cursor');
+          if (secCur) secCur.style.display = 'block';
+        }
+      }
+    }
+
+    function goBackToAssets() {
+      document.getElementById('panel-editor-view').style.display = 'none';
+      document.getElementById('panel-assets-view').style.display = 'block';
+      renderAssetList();
+    }
+
+    document.getElementById('btn-back-assets').addEventListener('click', goBackToAssets);
+
+    // Start on the asset list
+    goBackToAssets();
+
+    // Tab Switching Logic
+    const tabTransform = document.getElementById('tab-transform');
+    const tabMaterial = document.getElementById('tab-material');
+    const tabVisualizer = document.getElementById('tab-visualizer');
+    const secTransform = document.getElementById('section-transform');
+    const secMaterial = document.getElementById('section-material');
+    const secVisualizer = document.getElementById('section-visualizer');
+
+    tabTransform.addEventListener('click', () => {
+      tabTransform.style.borderBottom = '2px solid var(--text)';
+      tabTransform.style.fontWeight = 'bold';
+      tabTransform.style.opacity = '1';
+      tabMaterial.style.borderBottom = 'none';
+      tabMaterial.style.fontWeight = 'normal';
+      tabMaterial.style.opacity = '0.5';
+      tabVisualizer.style.borderBottom = 'none';
+      tabVisualizer.style.fontWeight = 'normal';
+      tabVisualizer.style.opacity = '0.5';
+      secTransform.style.display = 'block';
+      secMaterial.style.display = 'none';
+      secVisualizer.style.display = 'none';
+    });
+
+    tabMaterial.addEventListener('click', () => {
+      tabMaterial.style.borderBottom = '2px solid var(--text)';
+      tabMaterial.style.fontWeight = 'bold';
+      tabMaterial.style.opacity = '1';
+      tabTransform.style.borderBottom = 'none';
+      tabTransform.style.fontWeight = 'normal';
+      tabTransform.style.opacity = '0.5';
+      tabVisualizer.style.borderBottom = 'none';
+      tabVisualizer.style.fontWeight = 'normal';
+      tabVisualizer.style.opacity = '0.5';
+      secMaterial.style.display = 'block';
+      secTransform.style.display = 'none';
+      secVisualizer.style.display = 'none';
+    });
+
+    tabVisualizer.addEventListener('click', () => {
+      tabVisualizer.style.borderBottom = '2px solid var(--text)';
+      tabVisualizer.style.fontWeight = 'bold';
+      tabVisualizer.style.opacity = '1';
+      tabTransform.style.borderBottom = 'none';
+      tabTransform.style.fontWeight = 'normal';
+      tabTransform.style.opacity = '0.5';
+      tabMaterial.style.borderBottom = 'none';
+      tabMaterial.style.fontWeight = 'normal';
+      tabMaterial.style.opacity = '0.5';
+      secVisualizer.style.display = 'block';
+      secTransform.style.display = 'none';
+      secMaterial.style.display = 'none';
+    });
+
+    // Timeline Scrub Control (Slider)
+    document.getElementById('dbg-scrub').addEventListener('input', e => {
+      isEditing = true;
+      clearTimeout(editingTimeout);
+      editingTimeout = setTimeout(() => { isEditing = false; }, 2000);
+
+      const progress = parseFloat(e.target.value);
+      const maxScroll = document.body.scrollHeight - window.innerHeight;
+      window.scrollTo(0, progress * maxScroll);
+      applyTimeline(progress);
+    });
+
+    // Timeline Scrub Control (Numeric Input)
+    document.getElementById('dbg-scrub-num').addEventListener('input', e => {
+      isEditing = true;
+      clearTimeout(editingTimeout);
+      editingTimeout = setTimeout(() => { isEditing = false; }, 2000);
+
+      let pct = parseFloat(e.target.value);
+      if (isNaN(pct)) pct = 0;
+      pct = Math.max(0, Math.min(100, pct));
+      const progress = pct / 100;
+      
+      const maxScroll = document.body.scrollHeight - window.innerHeight;
+      window.scrollTo(0, progress * maxScroll);
+      applyTimeline(progress);
+    });
+
+    const inputs = ['dbg-pos-x', 'dbg-pos-y', 'dbg-pos-z', 'dbg-rot-x-val', 'dbg-rot-y-val', 'dbg-rot-z-val', 'dbg-scale', 'dbg-spin-y', 'dbg-spin-x', 'dbg-spotlight-rad', 'dbg-opacity', 'dbg-metalness', 'dbg-roughness', 'dbg-emissive', 'dbg-wire-opacity'];
+    inputs.forEach(id => {
+      document.getElementById(id).addEventListener('input', () => {
+        isEditing = true;
+        clearTimeout(editingTimeout);
+        editingTimeout = setTimeout(() => { isEditing = false; }, 2000);
+
+        const x = parseFloat(document.getElementById('dbg-pos-x').value);
+        const y = parseFloat(document.getElementById('dbg-pos-y').value);
+        const z = parseFloat(document.getElementById('dbg-pos-z').value);
+        const rx = parseFloat(document.getElementById('dbg-rot-x-val').value);
+        const ry = parseFloat(document.getElementById('dbg-rot-y-val').value);
+        const rz = parseFloat(document.getElementById('dbg-rot-z-val').value);
+        const scale = parseFloat(document.getElementById('dbg-scale').value);
+        const spinY = parseFloat(document.getElementById('dbg-spin-y').value);
+        const spinX = parseFloat(document.getElementById('dbg-spin-x').value);
+        spotlightRad = parseInt(document.getElementById('dbg-spotlight-rad').value);
+        
+        const opacity = parseFloat(document.getElementById('dbg-opacity').value);
+        const metalness = parseFloat(document.getElementById('dbg-metalness').value);
+        const roughness = parseFloat(document.getElementById('dbg-roughness').value);
+        const emissive = parseFloat(document.getElementById('dbg-emissive').value);
+        const wireOpacity = parseFloat(document.getElementById('dbg-wire-opacity').value);
+        const emissiveColor = document.getElementById('dbg-emissive-color').value;
+
+        updateSliderLabels(x, y, z, rx, ry, rz, scale, spinY, spinX, opacity, metalness, roughness, emissive, emissiveColor, wireOpacity);
+        document.getElementById('val-dbg-spotlight-rad').value = spotlightRad;
+
+        if (selectedAnchorIdx !== -1 && keyframes[selectedAnchorIdx]) {
+          const kf = keyframes[selectedAnchorIdx];
+          kf.x = x; kf.y = y; kf.z = z;
+          kf.rx = rx; kf.ry = ry; kf.rz = rz;
+          kf.scale = scale;
+          kf.spinY = spinY; kf.spinX = spinX;
+          kf.opacity = opacity;
+          kf.metalness = metalness;
+          kf.roughness = roughness;
+          kf.emissiveIntensity = emissive;
+          kf.emissiveColor = emissiveColor;
+          kf.wireOpacity = wireOpacity;
+          updatePathVisualizer();
+        }
+
+        if (crystalGroup) {
+          targetPos.set(getResponsiveX(x), y, z);
+          targetRot.set(rx, ry, rz);
+          targetScale = scale * debugScale;
+          rotSpeedY = spinY;
+          rotSpeedX = spinX;
+          const _ec = new THREE.Color(emissiveColor);
+          crystalGroup.traverse(child => {
+            if (!child.isMesh || !child.material) return;
+            // Skip halo rings — MeshBasicMaterial has no emissive/metalness/roughness
+            if (child.name === 'halo' || child.name === 'halo2') return;
+            if (child.material.wireframe) {
+              child.material.opacity = wireOpacity !== undefined ? wireOpacity : 0.22;
+              if (child.material.emissiveIntensity !== undefined) child.material.emissiveIntensity = emissive * 0.4;
+            } else {
+              child.material.opacity = opacity !== undefined ? opacity : 0.92;
+              if (child.material.emissiveIntensity !== undefined) child.material.emissiveIntensity = emissive;
+              if (child.material.emissive) child.material.emissive.copy(_ec);
+              if (child.material.metalness !== undefined) child.material.metalness = metalness;
+              if (child.material.roughness !== undefined) child.material.roughness = roughness;
+            }
+          });
+        }
+      });
+
+      // Text input box change listener
+      const txt = document.getElementById('val-' + id);
+      if (txt) {
+        txt.addEventListener('change', e => {
+          isEditing = true;
+          clearTimeout(editingTimeout);
+          editingTimeout = setTimeout(() => { isEditing = false; }, 2000);
+
+          const slider = document.getElementById(id);
+          let val = parseFloat(e.target.value);
+          if (isNaN(val)) val = parseFloat(slider.value);
+          const min = parseFloat(slider.min);
+          const max = parseFloat(slider.max);
+          val = Math.max(min, Math.min(max, val));
+
+          slider.value = val;
+          slider.dispatchEvent(new Event('input'));
+        });
+      }
+    });
+
+    // Emissive color picker — live apply + bidirectional sync with text box
+    document.getElementById('dbg-emissive-color').addEventListener('input', function(e) {
+      var emissiveColor = e.target.value;
+      document.getElementById('val-dbg-emissive-color').value = emissiveColor;
+      if (crystalGroup) {
+        var _ec = new THREE.Color(emissiveColor);
+        crystalGroup.traverse(function(child) {
+          if (!child.isMesh || !child.material) return;
+          if (child.name === 'halo' || child.name === 'halo2') return;
+          if (!child.material.wireframe && child.material.emissive) {
+            child.material.emissive.copy(_ec);
+          }
+        });
+      }
+      if (selectedAnchorIdx !== -1 && keyframes[selectedAnchorIdx]) {
+        keyframes[selectedAnchorIdx].emissiveColor = emissiveColor;
+      }
+      isEditing = true;
+      clearTimeout(editingTimeout);
+      editingTimeout = setTimeout(function() { isEditing = false; }, 2000);
+    });
+    document.getElementById('val-dbg-emissive-color').addEventListener('change', function(e) {
+      var val = e.target.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('dbg-emissive-color').value = val;
+        document.getElementById('dbg-emissive-color').dispatchEvent(new Event('input'));
+      }
+    });
+
+    // Increment / Decrement Buttons Listener
+    document.querySelectorAll('.btn-dec, .btn-inc').forEach(btn => {
+      btn.addEventListener('click', e => {
+        isEditing = true;
+        clearTimeout(editingTimeout);
+        editingTimeout = setTimeout(() => { isEditing = false; }, 2000);
+
+        const targetId = btn.getAttribute('data-id');
+        const step = parseFloat(btn.getAttribute('data-step'));
+        const slider = document.getElementById(targetId);
+        
+        let val = parseFloat(slider.value) + step;
+        const min = parseFloat(slider.min);
+        const max = parseFloat(slider.max);
+        val = Math.max(min, Math.min(max, val));
+        
+        slider.value = val;
+        slider.dispatchEvent(new Event('input'));
+      });
+    });
+
+
+    // ═══════════════════════════════════════════════════════════════
+    // BACKGROUND & GRID CONTROLLER
+    // ═══════════════════════════════════════════════════════════════
+    function syncBgVal(id, val) {
+      const el = document.getElementById('val-' + id);
+      if (el) el.value = typeof val === 'number' ? val.toFixed(id.indexOf('sharp') !== -1 ? 3 : 2) : val;
+    }
+
+    // Grid Color A
+    document.getElementById('bg-color-a').addEventListener('input', e => {
+      const val = e.target.value;
+      syncBgVal('bg-color-a', val);
+      if (gridMat) gridMat.uniforms.uColorA.value.set(val);
+    });
+    document.getElementById('val-bg-color-a').addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('bg-color-a').value = val;
+        if (gridMat) gridMat.uniforms.uColorA.value.set(val);
+      }
+    });
+
+    // Grid Color B
+    document.getElementById('bg-color-b').addEventListener('input', e => {
+      const val = e.target.value;
+      syncBgVal('bg-color-b', val);
+      if (gridMat) gridMat.uniforms.uColorB.value.set(val);
+    });
+    document.getElementById('val-bg-color-b').addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('bg-color-b').value = val;
+        if (gridMat) gridMat.uniforms.uColorB.value.set(val);
+      }
+    });
+
+    // Page Background
+    document.getElementById('bg-page-color').addEventListener('input', e => {
+      const val = e.target.value;
+      syncBgVal('bg-page-color', val);
+      document.body.style.setProperty('--bg', val);
+    });
+    document.getElementById('val-bg-page-color').addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('bg-page-color').value = val;
+        document.body.style.setProperty('--bg', val);
+      }
+    });
+
+    // Scale (Density)
+    document.getElementById('bg-density').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-density', val);
+      if (gridMat) gridMat.uniforms.uDensity.value = val;
+    });
+
+    // Sharpness
+    document.getElementById('bg-sharpness').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-sharpness', val);
+      if (gridMat) gridMat.uniforms.uSharpness.value = val;
+    });
+
+    // Opacity
+    document.getElementById('bg-opacity').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-opacity', val);
+      if (gridMat) gridMat.uniforms.uGridAlpha.value = val;
+    });
+
+    // Blur (px)
+    document.getElementById('bg-blur').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-blur', val);
+      const canvasEl = document.getElementById('canvas');
+      if (canvasEl) canvasEl.style.filter = val > 0 ? 'blur(' + val + 'px)' : 'none';
+    });
+
+    // Amplitude
+    document.getElementById('bg-wave-amp').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-wave-amp', val);
+      if (gridMat) gridMat.uniforms.uWaveAmp.value = val;
+    });
+
+    // Speed
+    document.getElementById('bg-wave-speed').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-wave-speed', val);
+      if (gridMat) gridMat.uniforms.uWaveSpeed.value = val;
+    });
+
+    // Position Y
+    document.getElementById('bg-pos-y').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-pos-y', val);
+      if (window._gridMesh) window._gridMesh.position.y = val;
+    });
+
+    // Rot X
+    document.getElementById('bg-rot-x').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-rot-x', val);
+      if (window._gridMesh) window._gridMesh.rotation.x = val;
+    });
+
+    // Rot Y
+    document.getElementById('bg-rot-y').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncBgVal('bg-rot-y', val);
+      if (window._gridMesh) window._gridMesh.rotation.y = val;
+    });
+
+
+    // ═══════════════════════════════════════════════════════════════
+    // CURSOR & TRAILS CONTROLLER
+    // ═══════════════════════════════════════════════════════════════
+    function syncCurVal(id, val) {
+      const el = document.getElementById('val-' + id);
+      if (el) el.value = typeof val === 'number' ? val.toFixed(2) : val;
+    }
+
+    // Modular Toggles
+    document.getElementById('cur-toggle-dot').addEventListener('change', e => {
+      curShowDot = e.target.checked;
+    });
+    document.getElementById('cur-toggle-ring').addEventListener('change', e => {
+      curShowRing = e.target.checked;
+    });
+    document.getElementById('cur-toggle-cross').addEventListener('change', e => {
+      curShowCross = e.target.checked;
+    });
+    document.getElementById('cur-toggle-noomo').addEventListener('change', e => {
+      curShowNoomo = e.target.checked;
+      const cDot = document.getElementById('cursor-dot');
+      if (curShowNoomo) {
+        cDot.style.backgroundColor = '#ffffff';
+        cDot.style.mixBlendMode = 'difference';
+      } else {
+        cDot.style.mixBlendMode = 'normal';
+        cDot.style.backgroundColor = document.getElementById('cur-dot-color').value;
+      }
+    });
+
+    // Trail Color Mode toggle UI panels
+    // Declare all trail state variables HERE — before updateColorModeUI uses them
+    let trailType = 'none';
+    let trailDensity = 5;
+    let trailSize = 3;
+    let trailSpeed = 1.5;
+    let trailLife = 45;
+    let trailGravity = 0.04;
+    let trailColorOverride = false;
+    let trailColor = '#ffd700';
+    let particlesList = [];
+
+    // ── Color interpolation utility (used by gradient trail mode) ──
+    function lerpColor(hexA, hexB, t) {
+      function parse(h) {
+        h = h.replace('#','');
+        if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+        return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+      }
+      try {
+        const [r1,g1,b1] = parse(hexA);
+        const [r2,g2,b2] = parse(hexB);
+        const r = Math.round(r1 + (r2-r1)*t);
+        const g = Math.round(g1 + (g2-g1)*t);
+        const b = Math.round(b1 + (b2-b1)*t);
+        return 'rgb('+r+','+g+','+b+')';
+      } catch(e) { return hexA; }
+    }
+
+    const colorModeSelect = document.getElementById('cur-trail-color-mode');
+    const solidGrp = document.getElementById('cur-trail-solid-group');
+    const gradGrp = document.getElementById('cur-trail-grad-group');
+    
+    function updateColorModeUI() {
+      const mode = colorModeSelect.value;
+      solidGrp.style.display = mode === 'solid' ? 'block' : 'none';
+      gradGrp.style.display = mode === 'gradient' ? 'block' : 'none';
+      
+      if (mode === 'gradient') {
+        trailColorOverride = false;
+      } else if (mode === 'solid') {
+        trailColorOverride = true;
+        trailColor = document.getElementById('cur-trail-color').value;
+      } else {
+        trailColorOverride = false;
+      }
+    }
+    colorModeSelect.addEventListener('change', updateColorModeUI);
+    updateColorModeUI();
+
+    // Gradient A Picker
+    document.getElementById('cur-trail-color-a').addEventListener('input', e => {
+      syncCurVal('cur-trail-color-a', e.target.value);
+    });
+    document.getElementById('val-cur-trail-color-a').addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('cur-trail-color-a').value = val;
+      }
+    });
+
+    // Gradient B Picker
+    document.getElementById('cur-trail-color-b').addEventListener('input', e => {
+      syncCurVal('cur-trail-color-b', e.target.value);
+    });
+    document.getElementById('val-cur-trail-color-b').addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('cur-trail-color-b').value = val;
+      }
+    });
+
+    // Dot Size
+    document.getElementById('cur-dot-size').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncCurVal('cur-dot-size', val);
+      const cDot = document.getElementById('cursor-dot');
+      if (cDot) {
+        cDot.style.width = val + 'px';
+        cDot.style.height = val + 'px';
+      }
+    });
+
+    // Ring Size
+    document.getElementById('cur-ring-size').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      syncCurVal('cur-ring-size', val);
+      const cRing = document.getElementById('cursor-ring');
+      if (cRing) {
+        cRing.style.width = val + 'px';
+        cRing.style.height = val + 'px';
+      }
+    });
+
+    // Dot/Cursor Color
+    document.getElementById('cur-dot-color').addEventListener('input', e => {
+      const val = e.target.value;
+      syncCurVal('cur-dot-color', val);
+      document.body.style.setProperty('--cursor-color', val);
+      const cDot = document.getElementById('cursor-dot');
+      if (cDot) cDot.style.backgroundColor = val;
+    });
+    document.getElementById('val-cur-dot-color').addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('cur-dot-color').value = val;
+        document.body.style.setProperty('--cursor-color', val);
+        const cDot = document.getElementById('cursor-dot');
+        if (cDot) cDot.style.backgroundColor = val;
+      }
+    });
+
+    // (trail vars declared above — moved to fix TDZ)
+    const trailCanvas = document.getElementById('trail-canvas');
+    const trailCtx = trailCanvas.getContext('2d');
+
+    function resizeTrailCanvas() {
+      if (trailCanvas) {
+        trailCanvas.width = window.innerWidth;
+        trailCanvas.height = window.innerHeight;
+      }
+    }
+    window.addEventListener('resize', resizeTrailCanvas);
+    resizeTrailCanvas();
+
+    class TrailParticle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * trailSpeed;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+
+        if (trailType === 'snow') {
+          this.vx = (Math.random() - 0.5) * 0.5 * trailSpeed;
+          this.vy = (0.3 + Math.random() * 0.5) * trailSpeed * 0.5;
+        } else if (trailType === 'smoke') {
+          this.vx = (Math.random() - 0.5) * 0.3 * trailSpeed;
+          this.vy = -(0.3 + Math.random() * 0.5) * trailSpeed * 0.5;
+        } else if (trailType === 'water') {
+          this.vx = (Math.random() - 0.5) * 0.7 * trailSpeed;
+          this.vy = (Math.random() - 0.5) * 0.7 * trailSpeed;
+        }
+
+        this.life = trailLife;
+        this.maxLife = trailLife;
+        this.size = (0.4 + Math.random() * 0.6) * (trailType === 'water' ? trailSize * 1.8 : trailSize);
+        
+        // Dynamic Color calculation
+        const cMode = document.getElementById('cur-trail-color-mode').value;
+        if (cMode === 'gradient') {
+          const colA = document.getElementById('cur-trail-color-a').value;
+          const colB = document.getElementById('cur-trail-color-b').value;
+          this.color = lerpColor(colA, colB, 0); // initial
+        } else if (trailColorOverride) {
+          this.color = trailColor;
+        } else {
+          if (trailType === 'glitter') {
+            this.color = 'hsl(' + (40 + Math.random() * 15) + ', 100%, ' + (60 + Math.random() * 20) + '%)';
+          } else if (trailType === 'sand') {
+            this.color = '#d2b48c';
+          } else if (trailType === 'sparks') {
+            this.color = 'rgb(255, ' + Math.floor(100 + Math.random() * 100) + ', 0)';
+          } else if (trailType === 'snow') {
+            this.color = 'rgba(220, 240, 255, ' + (0.4 + Math.random() * 0.4) + ')';
+          } else if (trailType === 'smoke') {
+            this.color = 'rgba(150, 150, 150, ' + (0.1 + Math.random() * 0.1) + ')';
+          } else if (trailType === 'water') {
+            this.color = 'rgba(0, 191, 255, 0.4)';
+          }
+        }
+
+        this.rot = Math.random() * Math.PI * 2;
+        this.rotSpeed = (Math.random() - 0.5) * 0.1;
+        this.wobbleSpeed = 0.05 + Math.random() * 0.05;
+        this.wobble = Math.random() * 100;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy + trailGravity;
+        
+        if (trailType === 'snow') {
+          this.wobble += this.wobbleSpeed;
+          this.x += Math.sin(this.wobble) * 0.3;
+        }
+
+        this.life--;
+        this.rot += this.rotSpeed;
+      }
+
+      draw() {
+        const alpha = this.life / this.maxLife;
+        trailCtx.save();
+        trailCtx.globalAlpha = alpha;
+        
+        // Gradient color interpolation over lifetime
+        const cMode = document.getElementById('cur-trail-color-mode').value;
+        if (cMode === 'gradient') {
+          const colA = document.getElementById('cur-trail-color-a').value;
+          const colB = document.getElementById('cur-trail-color-b').value;
+          this.color = lerpColor(colA, colB, 1 - alpha);
+        }
+
+        if (trailType === 'sparks') {
+          trailCtx.strokeStyle = this.color;
+        } else {
+          trailCtx.fillStyle = this.color;
+        }
+        
+        trailCtx.translate(this.x, this.y);
+        trailCtx.rotate(this.rot);
+
+        if (trailType === 'glitter') {
+          trailCtx.beginPath();
+          for (let i = 0; i < 4; i++) {
+            trailCtx.lineTo(0, -this.size * 1.5);
+            trailCtx.rotate(Math.PI / 4);
+            trailCtx.lineTo(0, -this.size * 0.4);
+            trailCtx.rotate(Math.PI / 4);
+          }
+          trailCtx.closePath();
+          trailCtx.fill();
+        } else if (trailType === 'sparks') {
+          trailCtx.beginPath();
+          trailCtx.lineWidth = this.size * 0.5;
+          trailCtx.moveTo(0, -this.size * 2);
+          trailCtx.lineTo(0, this.size * 2);
+          trailCtx.stroke();
+        } else if (trailType === 'smoke') {
+          const scaleSize = this.size * (1 + (1 - alpha) * 2);
+          trailCtx.beginPath();
+          trailCtx.arc(0, 0, scaleSize, 0, Math.PI * 2);
+          trailCtx.fill();
+        } else if (trailType === 'water') {
+          // Draw watery drop using a soft radial gradient
+          const grad = trailCtx.createRadialGradient(0, 0, 0, 0, 0, this.size);
+          grad.addColorStop(0, this.color);
+          grad.addColorStop(0.3, this.color);
+          grad.addColorStop(1, 'rgba(255,255,255,0)');
+          trailCtx.fillStyle = grad;
+          trailCtx.beginPath();
+          trailCtx.arc(0, 0, this.size, 0, Math.PI * 2);
+          trailCtx.fill();
+        } else {
+          trailCtx.beginPath();
+          trailCtx.arc(0, 0, this.size, 0, Math.PI * 2);
+          trailCtx.fill();
+        }
+
+        trailCtx.restore();
+      }
+    }
+
+    window.addEventListener('mousemove', e => {
+      if (trailType === 'none') return;
+      for (let i = 0; i < trailDensity; i++) {
+        particlesList.push(new TrailParticle(e.clientX, e.clientY));
+      }
+    });
+
+function lerpColor(a, b, amount) {
+    const ah = parseInt(a.replace(/#/g, ''), 16),
+          bh = parseInt(b.replace(/#/g, ''), 16),
+          ar = ah >> 16, ag = ah >> 8 & 0xff, ab = ah & 0xff,
+          br = bh >> 16, bg = bh >> 8 & 0xff, bb = bh & 0xff,
+          rr = ar + amount * (br - ar),
+          rg = ag + amount * (bg - ag),
+          rb = ab + amount * (bb - ab);
+    return 'rgb(' + Math.round(rr) + ',' + Math.round(rg) + ',' + Math.round(rb) + ')';
+  }
+    function tickParticles() {
+      if (trailCtx) {
+        trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+        
+        // Fluid watery liquid metaball canvas filter recipe
+        if (trailType === 'water') {
+          trailCtx.filter = 'blur(6px) contrast(1.8)';
+        } else {
+          trailCtx.filter = 'none';
+        }
+        
+        if (trailType !== 'none' || particlesList.length > 0) {
+          for (let i = particlesList.length - 1; i >= 0; i--) {
+            const p = particlesList[i];
+            p.update();
+            if (p.life <= 0) {
+              particlesList.splice(i, 1);
+            } else {
+              p.draw();
+            }
+          }
+        }
+      }
+      requestAnimationFrame(tickParticles);
+    }
+    tickParticles();
+
+    // ════════════════════════════════════════════════════════════
+    // RIPPLE FEEDBACK SYSTEM — spawned by editor on asset events
+    // ════════════════════════════════════════════════════════════
+    const rippleCanvas = document.getElementById('ripple-canvas');
+    const rippleCtx    = rippleCanvas ? rippleCanvas.getContext('2d') : null;
+    let   ripplesList  = [];
+
+    function resizeRippleCanvas() {
+      if (rippleCanvas) {
+        rippleCanvas.width  = window.innerWidth;
+        rippleCanvas.height = window.innerHeight;
+      }
+    }
+    window.addEventListener('resize', resizeRippleCanvas);
+    resizeRippleCanvas();
+
+    class Ripple {
+      constructor(x, y, color, big) {
+        this.x = x; this.y = y;
+        this.color = color || '#cebdf8';
+        this.radius = 0;
+        this.maxRadius = big ? 120 + Math.random() * 40 : 60 + Math.random() * 30;
+        this.life = 1.0;
+        this.decay = 0.022 + Math.random() * 0.012;
+        this.lw = 2.5 + Math.random() * 1.5;
+      }
+      update() {
+        const prog = 1 - this.radius / this.maxRadius;
+        this.radius += 4 + prog * 2;
+        this.life -= this.decay;
+      }
+      draw() {
+        if (!rippleCtx || this.life <= 0) return;
+        rippleCtx.save();
+        rippleCtx.globalAlpha = Math.max(0, this.life) * 0.65;
+        rippleCtx.strokeStyle = this.color;
+        rippleCtx.lineWidth = this.lw * this.life;
+        rippleCtx.shadowBlur = 8;
+        rippleCtx.shadowColor = this.color;
+        rippleCtx.beginPath();
+        rippleCtx.arc(this.x, this.y, Math.max(0, this.radius), 0, Math.PI * 2);
+        rippleCtx.stroke();
+        rippleCtx.restore();
+      }
+    }
+
+    function tickRipples() {
+      if (rippleCtx && ripplesList.length > 0) {
+        rippleCtx.clearRect(0, 0, rippleCanvas.width, rippleCanvas.height);
+        for (let i = ripplesList.length - 1; i >= 0; i--) {
+          const r = ripplesList[i];
+          r.update();
+          if (r.life <= 0) { ripplesList.splice(i, 1); }
+          else { r.draw(); }
+        }
+      }
+      requestAnimationFrame(tickRipples);
+    }
+    tickRipples();
+
+    // Global API — called by _editor.js on asset events
+    window.spawnRipple = function(x, y, color, count, big) {
+      const n = count || 3;
+      for (let i = 0; i < n; i++) {
+        setTimeout(() => { ripplesList.push(new Ripple(x, y, color, big)); }, i * 55);
+      }
+    };
+
+    // Trail Type Buttons
+    document.querySelectorAll('.trail-type-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.trail-type-btn').forEach(b => {
+          b.style.background = '';
+          b.style.color = '';
+        });
+        const type = btn.getAttribute('data-type');
+        trailType = type;
+        
+        let bg = 'rgba(255,255,255,0.1)';
+        let fg = 'var(--text)';
+        if (type === 'glitter') { bg = 'rgba(255,215,0,0.15)'; fg = '#ffd700'; }
+        else if (type === 'sand') { bg = 'rgba(210,180,140,0.15)'; fg = '#d2b48c'; }
+        else if (type === 'sparks') { bg = 'rgba(255,100,0,0.15)'; fg = '#ff6400'; }
+        else if (type === 'snow') { bg = 'rgba(200,230,255,0.15)'; fg = '#c8e6ff'; }
+        else if (type === 'smoke') { bg = 'rgba(150,150,150,0.15)'; fg = '#aaa'; }
+        else if (type === 'water') { bg = 'rgba(0,191,255,0.15)'; fg = '#00bfff'; }
+
+        btn.style.background = bg;
+        btn.style.color = fg;
+      });
+    });
+
+    // Density
+    document.getElementById('cur-trail-density').addEventListener('input', e => {
+      trailDensity = parseInt(e.target.value);
+      syncCurVal('cur-trail-density', trailDensity);
+    });
+
+    // Size
+    document.getElementById('cur-trail-size').addEventListener('input', e => {
+      trailSize = parseFloat(e.target.value);
+      syncCurVal('cur-trail-size', trailSize);
+    });
+
+    // Speed
+    document.getElementById('cur-trail-speed').addEventListener('input', e => {
+      trailSpeed = parseFloat(e.target.value);
+      syncCurVal('cur-trail-speed', trailSpeed);
+    });
+
+    // Lifetime
+    document.getElementById('cur-trail-life').addEventListener('input', e => {
+      trailLife = parseFloat(e.target.value);
+      syncCurVal('cur-trail-life', trailLife);
+    });
+
+    // Gravity
+    document.getElementById('cur-trail-gravity').addEventListener('input', e => {
+      trailGravity = parseFloat(e.target.value);
+      syncCurVal('cur-trail-gravity', trailGravity);
+    });
+
+    // Color picker
+    document.getElementById('cur-trail-color')?.addEventListener('input', e => {
+      trailColor = e.target.value;
+      syncCurVal('cur-trail-color', trailColor);
+    });
+    document.getElementById('val-cur-trail-color')?.addEventListener('change', e => {
+      const val = e.target.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById('cur-trail-color')?.value !== undefined &&
+          (document.getElementById('cur-trail-color').value = val);
+        trailColor = val;
+      }
+    });
+
+    // Record Keyframe
+    // ── Keyframe List Renderer ────────────────────────────────────────────────
+    function renderKfList() {
+      const wrap = document.getElementById('kf-list-wrap');
+      if (!visualizerActive) { wrap.style.display = 'none'; return; }
+      wrap.style.display = 'flex';
+      wrap.innerHTML = '';
+
+      if (!keyframes.length) {
+        wrap.innerHTML = '<div style="font-size:10px;opacity:0.5;padding:4px;">No keyframes recorded.</div>';
+        return;
+      }
+
+      // Find nearest to current scroll
+      let nearIdx = 0, nearDist = Infinity;
+      keyframes.forEach((kf, i) => {
+        const d = Math.abs(kf.scroll - currentScroll);
+        if (d < nearDist) { nearDist = d; nearIdx = i; }
+      });
+
+      keyframes.forEach((kf, idx) => {
+        const isSel    = idx === selectedAnchorIdx;
+        const isActive = idx === nearIdx && !isSel;
+        const row = document.createElement('div');
+        row.style.cssText = [
+          'display:flex', 'align-items:center', 'justify-content:space-between',
+          'padding:3px 5px', 'border-radius:4px', 'cursor:pointer',
+          'font-size:10px', 'gap:4px',
+          isSel    ? 'background:rgba(255,51,0,0.18); color:#ff6644; font-weight:bold;' :
+          isActive ? 'background:rgba(0,255,224,0.14); color:#00e0c0;' :
+                     'background:transparent; color:var(--text); opacity:0.85;'
+        ].join(';');
+
+        const label = document.createElement('span');
+        label.style.cssText = 'flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;';
+        label.textContent = '#' + idx + '  @' + (kf.scroll * 100).toFixed(1) + '%'
+          + '  pos(' + kf.x.toFixed(2) + ', ' + kf.y.toFixed(2) + ', ' + kf.z.toFixed(2) + ')';
+
+        const btnSel = document.createElement('button');
+        btnSel.textContent = isSel ? '✓' : 'Sel';
+        btnSel.style.cssText = 'font-size:9px; padding:1px 5px; border-radius:3px; border:1px solid currentColor; background:none; color:inherit; cursor:pointer; flex-shrink:0;';
+        btnSel.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectedAnchorIdx = idx;
+          const kfSel = keyframes[idx];
+          document.getElementById('dbg-pos-x').value = kfSel.x;
+          document.getElementById('dbg-pos-y').value = kfSel.y;
+          document.getElementById('dbg-pos-z').value = kfSel.z;
+          document.getElementById('dbg-rot-x-val').value = kfSel.rx || 0;
+          document.getElementById('dbg-rot-y-val').value = kfSel.ry || 0;
+          document.getElementById('dbg-rot-z-val').value = kfSel.rz || 0;
+          document.getElementById('dbg-scale').value = kfSel.scale || 1;
+          document.getElementById('dbg-spin-y').value = kfSel.spinY !== undefined ? kfSel.spinY : 0.003;
+          document.getElementById('dbg-spin-x').value = kfSel.spinX !== undefined ? kfSel.spinX : 0.0008;
+          document.getElementById('dbg-opacity').value = kfSel.opacity || 0.92;
+          document.getElementById('dbg-metalness').value = kfSel.metalness || 0.12;
+          document.getElementById('dbg-roughness').value = kfSel.roughness || 0.06;
+          document.getElementById('dbg-emissive').value = kfSel.emissiveIntensity || 1.8;
+          document.getElementById('dbg-emissive-color').value = kfSel.emissiveColor || '#8eb4f8';
+          document.getElementById('val-dbg-emissive-color').value = kfSel.emissiveColor || '#8eb4f8';
+          document.getElementById('dbg-wire-opacity').value = kfSel.wireOpacity !== undefined ? kfSel.wireOpacity : 0.22;
+          const maxScroll = document.body.scrollHeight - window.innerHeight;
+          window.scrollTo(0, kfSel.scroll * maxScroll);
+          applyTimeline(kfSel.scroll);
+          updatePathVisualizer();
+          renderKfList();
+        });
+
+        const btnDel = document.createElement('button');
+        btnDel.textContent = '✕';
+        btnDel.style.cssText = 'font-size:9px; padding:1px 5px; border-radius:3px; border:1px solid rgba(220,53,69,0.5); background:rgba(220,53,69,0.1); color:#d9534f; cursor:pointer; flex-shrink:0;';
+        btnDel.addEventListener('click', (e) => {
+          e.stopPropagation();
+          keyframes.splice(idx, 1);
+          if (selectedAnchorIdx === idx) selectedAnchorIdx = -1;
+          else if (selectedAnchorIdx > idx) selectedAnchorIdx--;
+          updatePathVisualizer();
+          renderKfList();
+        });
+
+        row.appendChild(label);
+        row.appendChild(btnSel);
+        row.appendChild(btnDel);
+        // Click row = select (same as Sel button)
+        row.addEventListener('click', () => btnSel.click());
+        wrap.appendChild(row);
+      });
+    }
+
+    document.getElementById('dbg-add-kf').addEventListener('click', () => {
+      const x = parseFloat(document.getElementById('dbg-pos-x').value);
+      const y = parseFloat(document.getElementById('dbg-pos-y').value);
+      const z = parseFloat(document.getElementById('dbg-pos-z').value);
+      const rx = parseFloat(document.getElementById('dbg-rot-x-val').value);
+      const ry = parseFloat(document.getElementById('dbg-rot-y-val').value);
+      const rz = parseFloat(document.getElementById('dbg-rot-z-val').value);
+      const scale = parseFloat(document.getElementById('dbg-scale').value);
+      const spinY = parseFloat(document.getElementById('dbg-spin-y').value);
+      const spinX = parseFloat(document.getElementById('dbg-spin-x').value);
+      const opacity = parseFloat(document.getElementById('dbg-opacity').value);
+      const metalness = parseFloat(document.getElementById('dbg-metalness').value);
+      const roughness = parseFloat(document.getElementById('dbg-roughness').value);
+      const emissiveIntensity = parseFloat(document.getElementById('dbg-emissive').value);
+      const emissiveColor = document.getElementById('dbg-emissive-color').value;
+      const wireOpacity = parseFloat(document.getElementById('dbg-wire-opacity').value);
+
+      const progress = currentScroll;
+      const threshold = 0.012;
+      let existingIdx = keyframes.findIndex(kf => Math.abs(kf.scroll - progress) < threshold);
+      
+      const newKf = { 
+        scroll: parseFloat(progress.toFixed(3)), 
+        x, y, z, rx, ry, rz, scale, spinY, spinX,
+        opacity, metalness, roughness, emissiveIntensity,
+        emissiveColor, wireOpacity
+      };
+      
+      if (existingIdx !== -1) {
+        keyframes[existingIdx] = newKf;
+      } else {
+        keyframes.push(newKf);
+      }
+      keyframes.sort((a, b) => a.scroll - b.scroll);
+      
+      const btn = document.getElementById('dbg-add-kf');
+      btn.textContent = 'Recorded!';
+      setTimeout(() => { btn.textContent = 'Record Frame'; }, 1000);
+      
+      // Update exported view
+      if (document.getElementById('dbg-output').style.display === 'block') {
+        document.getElementById('dbg-output').value = JSON.stringify(keyframes, null, 2);
+      }
+      if (visualizerActive) { updatePathVisualizer(); renderKfList(); }
+    });
+
+    // Clear All Keyframes
+    document.getElementById('dbg-clear-kf').addEventListener('click', () => {
+      keyframes = [
+        { scroll: 0.0, x: 0.55, y: 0.0, z: 0.5, rx: 0.0, ry: 0.0, rz: 0.0, scale: 0.82, spinY: 0.003, spinX: 0.0008, opacity: 0.92, metalness: 0.12, roughness: 0.06, emissiveIntensity: 1.80, emissiveColor: '#8eb4f8', wireOpacity: 0.22 },
+        { scroll: 1.0, x: 0.0, y: -0.2, z: 0.6, rx: 0.0, ry: 0.0, rz: 0.0, scale: 0.82, spinY: 0.003, spinX: 0.0008, opacity: 0.92, metalness: 0.12, roughness: 0.06, emissiveIntensity: 1.80, emissiveColor: '#8eb4f8', wireOpacity: 0.22 }
+      ];
+      const btn = document.getElementById('dbg-clear-kf');
+      btn.textContent = 'Cleared!';
+      setTimeout(() => { btn.textContent = 'Clear All'; }, 1000);
+      
+      if (document.getElementById('dbg-output').style.display === 'block') {
+        document.getElementById('dbg-output').value = JSON.stringify(keyframes, null, 2);
+      }
+      applyTimeline(currentScroll);
+      if (visualizerActive) { updatePathVisualizer(); renderKfList(); }
+    });
+
+    // ── Export: Copy JSON to clipboard ──────────────────────────────────────
+    function showOutputPanel(json) {
+      const wrap = document.getElementById('dbg-output-wrap');
+      const area = document.getElementById('dbg-output');
+      wrap.style.display = 'block';
+      area.value = json;
+      // Auto-scroll debug panel to show output
+      const panel = document.getElementById('debug-panel');
+      if (panel) setTimeout(() => { panel.scrollTop = panel.scrollHeight; }, 50);
+    }
+
+    document.getElementById('dbg-export-kf').addEventListener('click', () => {
+      const json = JSON.stringify(keyframes, null, 2);
+      showOutputPanel(json);
+      navigator.clipboard.writeText(json).then(() => {
+        const btn = document.getElementById('dbg-export-kf');
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => { btn.textContent = '📋 Copy JSON'; }, 1800);
+      }).catch(() => {});
+    });
+
+    // ── Export: Download as .json file ───────────────────────────────────────
+    document.getElementById('dbg-download-kf').addEventListener('click', () => {
+      const json = JSON.stringify(keyframes, null, 2);
+      showOutputPanel(json);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = 'keyframes.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      const btn = document.getElementById('dbg-download-kf');
+      btn.textContent = '✓ Downloaded!';
+      setTimeout(() => { btn.textContent = '⬇ Export'; }, 1800);
+    });
+
+    // ── Import .json ───────────────────────────────────────────────────
+    document.getElementById('dbg-import-kf').addEventListener('click', () => {
+      document.getElementById('dbg-import-file').click();
+    });
+
+    document.getElementById('dbg-import-file').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          if (!Array.isArray(parsed)) throw new Error('Not an array');
+          // Validate each entry has at minimum a scroll field
+          parsed.forEach((kf, i) => {
+            if (typeof kf.scroll !== 'number') throw new Error('Entry ' + i + ' missing scroll');
+          });
+          // Sort by scroll position
+          parsed.sort((a, b) => a.scroll - b.scroll);
+          keyframes = parsed;
+          selectedAnchorIdx = -1;
+          applyTimeline(currentScroll);
+          if (visualizerActive) { updatePathVisualizer(); renderKfList(); }
+          const btn = document.getElementById('dbg-import-kf');
+          btn.textContent = '✓ Imported ' + keyframes.length + ' kf';
+          setTimeout(() => { btn.textContent = '⬆ Import'; }, 2000);
+          // Show the loaded data in the output panel
+          showOutputPanel(JSON.stringify(keyframes, null, 2));
+        } catch (err) {
+          const btn = document.getElementById('dbg-import-kf');
+          btn.textContent = '✗ Bad JSON';
+          setTimeout(() => { btn.textContent = '⬆ Import'; }, 2000);
+          console.error('Import failed:', err);
+        }
+        // Reset file input so same file can be re-imported
+        e.target.value = '';
+      };
+      reader.readAsText(file);
+    });
+
+    // ── Output panel collapse/expand ─────────────────────────────────────────
+    document.getElementById('dbg-output-header').addEventListener('click', () => {
+      const area  = document.getElementById('dbg-output');
+      const arrow = document.getElementById('dbg-output-collapse');
+      const collapsed = area.style.display === 'none';
+      area.style.display   = collapsed ? 'block' : 'none';
+      arrow.textContent    = collapsed ? '▲' : '▼';
+    });
+
+    // Play Transition preview
+    let isPlaying = false;
+    document.getElementById('dbg-play-transition').addEventListener('click', () => {
+      if (isPlaying) return;
+      isPlaying = true;
+      const btn = document.getElementById('dbg-play-transition');
+      btn.textContent = 'Playing...';
+      
+      const obj = { progress: 0 };
+      gsap.to(obj, {
+        progress: 1,
+        duration: 4.5,
+        ease: 'power1.inOut',
+        onUpdate() {
+          const maxScroll = document.body.scrollHeight - window.innerHeight;
+          window.scrollTo(0, obj.progress * maxScroll);
+          
+          if (camPath && camera) {
+            const pt = camPath.getPointAt(Math.min(obj.progress, 0.999));
+            camera.position.copy(pt);
+            camera.lookAt(0, 0, 0);
+          }
+          
+          applyTimeline(obj.progress);
+        },
+        onComplete() {
+          btn.textContent = 'Preview Spline Motion';
+          isPlaying = false;
+        }
+      });
+    });
+
+    // Patch index.html with current keyframes
+    document.getElementById('dbg-save-kf').addEventListener('click', () => {
+      const btn = document.getElementById('dbg-save-kf');
+      btn.textContent = 'Patching...';
+      fetch('/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(keyframes)
+      })
+      .then(res => {
+        if (res.ok) {
+          btn.textContent = '✓ Patched!';
+          setTimeout(() => { btn.textContent = '💾 Patch index.html'; }, 1800);
+        } else {
+          btn.textContent = '✗ Failed';
+          setTimeout(() => { btn.textContent = '💾 Patch index.html'; }, 1800);
+        }
+      })
+      .catch(() => {
+        btn.textContent = '✗ Error';
+        setTimeout(() => { btn.textContent = '💾 Patch index.html'; }, 1800);
+      });
+    });
+
+    // Text reveals
+    document.querySelectorAll('.reveal').forEach(el => {
+      ScrollTrigger.create({
+        trigger: el,
+        start:   'top 88%',
+        onEnter:     () => el.classList.add('on'),
+        onLeaveBack: () => el.classList.remove('on'),
+      });
+    });
+
+    // Dark-mode transition — activates when section-3 is 60% in view
+    let isDark = false;
+    ScrollTrigger.create({
+      trigger: '#s3',
+      start: 'top 60%',
+      end:   'bottom 40%',
+      scrub: true,
+      onUpdate(self) {
+        if (self.progress > 0.5 && !isDark) {
+          isDark = true;
+          document.body.classList.add('dark');
+        } else if (self.progress <= 0.5 && isDark) {
+          isDark = false;
+          document.body.classList.remove('dark');
+        }
+      },
+    });
+
+    // Visualizer Toggle Listener
+    document.getElementById('dbg-toggle-vis').addEventListener('change', e => {
+      visualizerActive = e.target.checked;
+      const canvasEl = document.getElementById('canvas');
+      if (visualizerActive) {
+        // Lock camera to a static overhead editor position
+        camera.position.set(0, 0.5, 4.0);
+        camera.lookAt(0, 0, 0);
+        // Enable clicks through the canvas layer
+        canvasEl.style.pointerEvents = 'all';
+      } else {
+        selectedAnchorIdx = -1;
+        // Restore camera to scroll-driven position
+        const pt = camPath.getPointAt(Math.min(currentScroll, 0.999));
+        camera.position.copy(pt);
+        camera.lookAt(0, 0, 0);
+        // Disable clicks again so page scrolls normally
+        canvasEl.style.pointerEvents = 'none';
+      }
+      updatePathVisualizer();
+      renderKfList();
+    });
+
+    // Raycast click selector — attach to #canvas div (domElement sits inside it)
+    document.getElementById('canvas').addEventListener('click', e => {
+      if (!visualizerActive) return;
+      e.stopPropagation();
+
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(anchorSpheres, false);
+
+      if (intersects.length > 0) {
+        const idx = intersects[0].object.userData.index;
+        selectedAnchorIdx = idx;
+        
+        const kf = keyframes[idx];
+        // Load keyframe values into all sliders
+        document.getElementById('dbg-pos-x').value = kf.x;
+        document.getElementById('dbg-pos-y').value = kf.y;
+        document.getElementById('dbg-pos-z').value = kf.z;
+        document.getElementById('dbg-rot-x-val').value = kf.rx !== undefined ? kf.rx : 0.0;
+        document.getElementById('dbg-rot-y-val').value = kf.ry !== undefined ? kf.ry : 0.0;
+        document.getElementById('dbg-scale').value = kf.scale !== undefined ? kf.scale : 1.0;
+        document.getElementById('dbg-opacity').value = kf.opacity !== undefined ? kf.opacity : 0.92;
+        document.getElementById('dbg-metalness').value = kf.metalness !== undefined ? kf.metalness : 0.12;
+        document.getElementById('dbg-roughness').value = kf.roughness !== undefined ? kf.roughness : 0.06;
+        document.getElementById('dbg-emissive').value = kf.emissiveIntensity !== undefined ? kf.emissiveIntensity : 1.80;
+
+        // Scrub scroll to match this keyframe
+        const maxScroll = document.body.scrollHeight - window.innerHeight;
+        window.scrollTo(0, kf.scroll * maxScroll);
+        applyTimeline(kf.scroll);
+
+        updatePathVisualizer();
+        renderKfList();
+      }
+    });
+
+    ScrollTrigger.refresh();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // RENDER LOOP
+  // ═══════════════════════════════════════════════════════════════
+  function renderLoop() {
+    requestAnimationFrame(renderLoop);
+    const t = clock.getElapsedTime();
+
+    // Shader time uniforms
+    if (particles?.material?.uniforms?.uTime) particles.material.uniforms.uTime.value = t;
+    if (gridMat?.uniforms?.uTime)             gridMat.uniforms.uTime.value = t;
+
+    // Interpolate crystalGroup toward target states (lerp on every frame for perfect smoothness)
+    if (crystalGroup) {
+      crystalGroup.position.x += (targetPos.x - crystalGroup.position.x) * 0.085;
+      crystalGroup.position.y += (targetPos.y - crystalGroup.position.y) * 0.085;
+      crystalGroup.position.z += (targetPos.z - crystalGroup.position.z) * 0.085;
+
+      crystalGroup.rotation.x += (targetRot.x + parallaxRot.x - crystalGroup.rotation.x) * 0.085;
+      crystalGroup.rotation.y += (targetRot.y + parallaxRot.y - crystalGroup.rotation.y) * 0.085;
+
+      const currentScale = crystalGroup.scale.x;
+      const nextScale = currentScale + (targetScale - currentScale) * 0.085;
+      crystalGroup.scale.setScalar(nextScale);
+    }
+
+    // Crystal local idle animation (self-spin + gentle float + shard micro-orbit)
+    if (innerCrystal) {
+      innerCrystal.rotation.y += rotSpeedY;
+      innerCrystal.rotation.x += rotSpeedX;
+      innerCrystal.position.y = Math.sin(t * 1.6) * 0.05;
+
+      // Shard micro-oscillation
+      for (let i = 0; i < 6; i++) {
+        const shard = innerCrystal.getObjectByName('shard' + i);
+        if (shard) {
+          shard.rotation.x += 0.004 + i * 0.001;
+          shard.rotation.z += 0.003 - i * 0.0005;
+          shard.position.y = Math.sin(t * 1.4 + i * 1.1) * 0.03;
+        }
+      }
+
+      // Glow breathe
+      if (crystalLight) crystalLight.intensity = 2.2 + Math.sin(t * 2.8) * 0.8;
+
+      // Halo ring pulse — opacity breathes independently
+      const halo = innerCrystal.getObjectByName('halo');
+      if (halo) {
+        halo.material.opacity = 0.14 + Math.sin(t * 1.2) * 0.06;
+        halo.rotation.z += 0.002; // slow counter-spin
+      }
+      const halo2 = innerCrystal.getObjectByName('halo2');
+      if (halo2) {
+        halo2.material.opacity = 0.06 + Math.sin(t * 0.9 + 1.0) * 0.04;
+      }
+    }
+
+    // Particle slow drift & mouse strength decay
+    if (particles) {
+      particles.rotation.y += 0.0005;
+      if (particles.material.uniforms && particles.material.uniforms.uMouseStrength) {
+        particles.material.uniforms.uMouseStrength.value *= 0.94;
+      }
+    }
+
+    // Spin dynamically created 3D primitives
+    scene.traverse(child => {
+      if (child.isMesh && child.name && child.name.startsWith('created_mesh_')) {
+        child.rotation.y += 0.005;
+        child.rotation.x += 0.002;
+      }
+      if (child.isPoints && child.name && child.name.startsWith('created_particles_')) {
+        const speed = parseFloat(child.userData.noiseSpeed ?? 1.0);
+        const behavior = child.userData.behavior || 'drift';
+        if (behavior === 'drift') {
+          child.rotation.y += 0.002 * speed;
+          child.rotation.x += 0.0008 * speed;
+        } else if (behavior === 'orbit') {
+          child.rotation.y += 0.008 * speed;
+        } else if (behavior === 'vortex') {
+          child.rotation.y += 0.015 * speed;
+          const pos = child.geometry.attributes.position;
+          const count = pos.count;
+          for (let i = 0; i < count; i++) {
+            let px = pos.getX(i);
+            let py = pos.getY(i);
+            let pz = pos.getZ(i);
+            const dist = Math.sqrt(px*px + pz*pz) + 0.1;
+            const angle = 0.003 * speed * (1.0 / dist);
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+            pos.setX(i, px * cos - pz * sin);
+            pos.setZ(i, px * sin + pz * cos);
+          }
+          pos.needsUpdate = true;
+        }
+      }
+    });
+
+    renderer.render(scene, camera);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // AUDIO
+  // ═══════════════════════════════════════════════════════════════
+  const bgAudio = new Audio('https://assets.mixkit.co/music/preview/mixkit-gentle-forest-ambient-1090.mp3');
+  bgAudio.loop = true; bgAudio.volume = 0.18;
+  let soundOn = false;
+
+  document.getElementById('audio-btn').addEventListener('click', () => {
+    soundOn = !soundOn;
+    if (soundOn) {
+      bgAudio.play().catch(() => {});
+      document.getElementById('audio-icon').textContent = '♫';
+      document.getElementById('audio-lbl').textContent  = 'Sound On';
+    } else {
+      bgAudio.pause();
+      document.getElementById('audio-icon').textContent = '♪';
+      document.getElementById('audio-lbl').textContent  = 'Sound';
+    }
+  });
+
+  // ═══════════════════════════════════════════════════════════════
+  // BOOT
+  // ═══════════════════════════════════════════════════════════════
+  initWebGL();
+  </script>
+  <!-- Overlay Selection Box with Resize Handles -->
+  <div id="editor-select-box" style="display: none;">
+    <div class="ed-resize-handle tl" data-handle="tl"></div>
+    <div class="ed-resize-handle tr" data-handle="tr"></div>
+    <div class="ed-resize-handle bl" data-handle="bl"></div>
+    <div class="ed-resize-handle br" data-handle="br"></div>
+    <div class="ed-resize-handle t" data-handle="t"></div>
+    <div class="ed-resize-handle b" data-handle="b"></div>
+    <div class="ed-resize-handle l" data-handle="l"></div>
+    <div class="ed-resize-handle r" data-handle="r"></div>
+    
+    <!-- Move Handle (glove icon) and Dimension Badge -->
+    <div class="ed-move-handle" title="Drag to move asset">🖐️</div>
+    <div class="ed-dimension-badge" style="display: none;">0 × 0</div>
+  </div>
+
+  <!-- Floating Contextual Asset Properties Pop-up -->
+  <div id="floating-asset-settings" style="display: none;">
+    <div id="floating-asset-settings-drag" class="floating-panel-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; cursor: move; user-select: none;" title="Drag properties panel">
+      <span>✏️ Asset Settings</span>
+      <div style="display: flex; gap: 4px; pointer-events: auto;">
+        <button id="sb-undo" class="ed-btn" style="font-size: 9px; padding: 2px 4px; cursor: pointer;">↩</button>
+        <button id="sb-redo" class="ed-btn" style="font-size: 9px; padding: 2px 4px; cursor: pointer;">↪</button>
+        <button id="sb-reset" class="ed-btn" style="font-size: 9px; padding: 2px 4px; cursor: pointer;">Reset</button>
+      </div>
+    </div>
+    
+    <!-- Text specific properties group -->
+    <div id="sb-text-properties-group" style="display: flex; flex-direction: column; gap: 6px;">
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Font</span>
+        <select id="sb-font" style="flex: 1; font-size: 10px; padding: 2px 4px;"></select>
+      </div>
+
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Size</span>
+        <input type="range" id="sb-font-size" min="8" max="300" step="1" value="16" style="flex: 1;">
+        <input type="text" id="val-sb-font-size" class="num-input" value="16" style="width: 32px; font-size: 9px; text-align: center; height: 18px; padding: 0;">
+      </div>
+
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Height</span>
+        <input type="range" id="sb-line-height" min="0.8" max="3.5" step="0.1" value="1.2" style="flex: 1;">
+        <input type="text" id="val-sb-line-height" class="num-input" value="1.2" style="width: 32px; font-size: 9px; text-align: center; height: 18px; padding: 0;">
+      </div>
+
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Spacing</span>
+        <input type="range" id="sb-letter-spacing" min="-2" max="15" step="0.5" value="0" style="flex: 1;">
+        <input type="text" id="val-sb-letter-spacing" class="num-input" value="0" style="width: 32px; font-size: 9px; text-align: center; height: 18px; padding: 0;">
+      </div>
+
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Color</span>
+        <input type="color" id="sb-color" value="#000000" style="width: 36px; height: 20px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; background: none; padding: 1px;">
+        <button id="sb-bold" class="ed-btn" style="font-size: 10px; padding: 2px 6px;">B</button>
+        <button id="sb-italic" class="ed-btn" style="font-size: 10px; padding: 2px 6px; font-style: italic;">I</button>
+        <button class="ed-btn" data-sb-align="left" style="font-size: 9px; padding: 2px 4px;">L</button>
+        <button class="ed-btn" data-sb-align="center" style="font-size: 9px; padding: 2px 4px;">C</button>
+        <button class="ed-btn" data-sb-align="right" style="font-size: 9px; padding: 2px 4px;">R</button>
+        <button class="ed-btn" data-sb-align="justify" style="font-size: 9px; padding: 2px 4px;">J</button>
+      </div>
+    </div>
+    <div class="ed-toolbar-row" id="sb-image-url-row" style="display: none;">
+      <span class="ed-toolbar-label">Image URL</span>
+      <input type="text" id="sb-image-url" style="flex: 1; font-size: 10px; padding: 2px 4px; border: 1px solid var(--border); border-radius: 4px; background: rgba(0,0,0,0.05); color: var(--text); outline: none;">
+    </div>
+    <!-- Particle Customizer controls -->
+    <div id="sb-particles-row" style="display: none; flex-direction: column; gap: 6px;">
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Density</span>
+        <input type="range" id="sb-part-density" min="50" max="2500" step="50" value="500" style="flex: 1;">
+        <input type="text" id="val-sb-part-density" class="num-input" value="500" style="width: 32px; font-size: 9px; text-align: center; height: 18px; padding: 0;">
+      </div>
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Noise Spd</span>
+        <input type="range" id="sb-part-noise" min="0" max="10" step="0.1" value="1.0" style="flex: 1;">
+        <input type="text" id="val-sb-part-noise" class="num-input" value="1.0" style="width: 32px; font-size: 9px; text-align: center; height: 18px; padding: 0;">
+      </div>
+      <div class="ed-toolbar-row">
+        <span class="ed-toolbar-label">Behavior</span>
+        <select id="sb-part-behavior" style="flex: 1; font-size: 10px; padding: 2px 4px;">
+          <option value="drift">Floating Drift</option>
+          <option value="orbit">Orbit Sphere</option>
+          <option value="vortex">Cosmic Vortex</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- Style Presets Group -->
+    <div id="sb-presets-group" style="display: none; flex-direction: column; gap: 6px; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+      <span class="ed-toolbar-label" style="font-weight: bold; margin-bottom: 2px;">Style Presets</span>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;">
+        <button class="preset-btn ed-btn" data-preset="glass" style="font-size: 8px; padding: 4px 2px;">Glass</button>
+        <button class="preset-btn ed-btn" data-preset="cyber" style="font-size: 8px; padding: 4px 2px; color: #00f3ff;">Cyber</button>
+        <button class="preset-btn ed-btn" data-preset="luxury" style="font-size: 8px; padding: 4px 2px; color: #ffd700;">Luxury</button>
+        <button class="preset-btn ed-btn" data-preset="brutalist" style="font-size: 8px; padding: 4px 2px; color: #ff007f;">Brutal</button>
+      </div>
+    </div>
+  </div>
+
+
+
+      <script src="_editor.js"></script>
+    <script src="_scroll_anim.js"></script>
+    <script src="_layers.js"></script>
+    <script src="_timeline.js"></script>
+</body>
+</html>
+
+
+
+
+

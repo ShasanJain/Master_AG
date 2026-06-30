@@ -2,24 +2,33 @@
                 INDUSTRIAL SKILL REGISTRY AUDIT REPORT           
 =================================================================
 
-Total Skills Audited: 4175
-Passed Completeness (>= 70): 4175
+Total Skills Audited: 4630
+Passed Completeness (>= 70): 4630
 Failed Completeness (< 70): 0
 
 SECTOR SUMMARY:
 -----------------------------------------------------------------
 Sector: README.md       | Count: 1     | Avg Score: 100.00/100 | Failed: 0   
-Sector: design          | Count: 486   | Avg Score: 99.85/100 | Failed: 0   
-Sector: engineering     | Count: 2883  | Avg Score: 99.92/100 | Failed: 0   
-Sector: intelligence    | Count: 189   | Avg Score: 100.00/100 | Failed: 0   
-Sector: meta            | Count: 118   | Avg Score: 100.00/100 | Failed: 0   
-Sector: ops             | Count: 269   | Avg Score: 99.61/100 | Failed: 0   
-Sector: production      | Count: 70    | Avg Score: 100.00/100 | Failed: 0   
-Sector: security        | Count: 159   | Avg Score: 99.91/100 | Failed: 0   
+Sector: 3d-websites     | Count: 1     | Avg Score: 100.00/100 | Failed: 0   
+Sector: 3d-websites-settings | Count: 1     | Avg Score: 100.00/100 | Failed: 0   
+Sector: design          | Count: 626   | Avg Score: 99.46/100 | Failed: 0   
+Sector: engineering     | Count: 2888  | Avg Score: 99.92/100 | Failed: 0   
+Sector: ghost_cms       | Count: 1     | Avg Score: 100.00/100 | Failed: 0   
+Sector: intelligence    | Count: 191   | Avg Score: 100.00/100 | Failed: 0   
+Sector: meta            | Count: 134   | Avg Score: 99.37/100 | Failed: 0   
+Sector: misc            | Count: 119   | Avg Score: 97.35/100 | Failed: 0   
+Sector: ops             | Count: 422   | Avg Score: 97.88/100 | Failed: 0   
+Sector: production      | Count: 78    | Avg Score: 99.62/100 | Failed: 0   
+Sector: repo-analysis   | Count: 2     | Avg Score: 100.00/100 | Failed: 0   
+Sector: security        | Count: 162   | Avg Score: 99.81/100 | Failed: 0   
+Sector: task-scheduler  | Count: 2     | Avg Score: 100.00/100 | Failed: 0   
+Sector: ui-master       | Count: 2     | Avg Score: 100.00/100 | Failed: 0   
 
 DETAILED MODULE LOG:
 -----------------------------------------------------------------
 [PASS] README.md | Score: 100 | Issues: None
+[PASS] 3d-websites\3d-websites_skill.md | Score: 100 | Issues: None
+[PASS] 3d-websites-settings\3d-websites-settings_skill.md | Score: 100 | Issues: None
 [PASS] design\accessibility\accessibility-debt-tracking\accessibility_debt_tracking_skill.md | Score: 100 | Issues: None
 [PASS] design\accessibility\accessibility-testing-strategy\accessibility_testing_strategy_skill.md | Score: 100 | Issues: None
 [PASS] design\accessibility\cognitive-accessibility-review\cognitive_accessibility_review_skill.md | Score: 100 | Issues: None
@@ -38,9 +47,45 @@ DETAILED MODULE LOG:
 [PASS] design\branding\theme-factory\themes\sunset-boulevard.md | Score: 100 | Issues: None
 [PASS] design\branding\theme-factory\themes\tech-innovation.md | Score: 100 | Issues: None
 [PASS] design\components\component_library_skill.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\SKILL.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\examples\custom-cell-render.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\examples\custom-theme.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\examples\interaction-examples.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\examples\layout-examples.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\examples\pivot-sheet-basic.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\examples\react-component-usage.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\examples\table-sheet-basic.md | Score: 70 | Issues: Insufficient execution steps (2 step)
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\00-overview.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\01-sheet-types.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\02-framework-bindings.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\03-theme-style.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\04-custom-cell.md | Score: 70 | Issues: Insufficient execution steps (2 step)
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\05-events-interaction.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\06-data-config.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\07-sort.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\08-totals.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\09-copy-export.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\10-pagination.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\11-conditions.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\12-tooltip.md | Score: 70 | Issues: Insufficient execution steps (2 step)
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\13-frozen.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\14-icon.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\15-ssr.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\knowledge\16-react-components.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\type\s2-data-config.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\type\s2-event.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\type\s2-options.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\type\s2-theme.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-s2-expert\references\type\sheet-component.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\antv-skills-maintainer\SKILL.md | Score: 100 | Issues: None
+[PASS] design\data-visualization\chart-visualization\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] design\data-visualization\icon-retrieval\SKILL.md | Score: 85 | Issues: Description is brief (under 150 characters)
+[PASS] design\data-visualization\infographic-creator\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] design\data-visualization\narrative-text-visualization\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\ability-spectrum-mapping\ability_spectrum_mapping_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\accessible-content-review\accessible_content_review_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\adaptive-personalisation\adaptive_personalisation_skill.md | Score: 100 | Issues: None
+[PASS] design\misc\affinity-diagram\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\agent-code-guide\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\agent-code-guide\sub-skills\debugging.md | Score: 100 | Issues: None
 [PASS] design\misc\agent-code-guide\sub-skills\template-general.md | Score: 100 | Issues: None
@@ -135,6 +180,8 @@ DETAILED MODULE LOG:
 [PASS] design\misc\browser-extension-builder\sub-skills\requesting-all-permissions.md | Score: 100 | Issues: None
 [PASS] design\misc\browser-extension-builder\sub-skills\storage-and-state.md | Score: 100 | Issues: None
 [PASS] design\misc\browser-extension-builder\sub-skills\storage-limits.md | Score: 100 | Issues: None
+[PASS] design\misc\card-sort-analysis\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\case-study\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\cognitive-load-assessment\cognitive_load_assessment_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\colour-independence\colour_independence_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\compliance-mapping\compliance_mapping_skill.md | Score: 100 | Issues: None
@@ -148,17 +195,29 @@ DETAILED MODULE LOG:
 [PASS] design\misc\database-design\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\decision-documentation\decision_documentation_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\design-an-interface\design_an_interface_skill.md | Score: 100 | Issues: None
+[PASS] design\misc\design-critique\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\design-debt-audit\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\design-flow\design_flow_skill.md | Score: 100 | Issues: None
+[PASS] design\misc\design-impact-reporting\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\design-negotiation\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\design-orchestration\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\design-orchestration\sub-skills\step-1-brainstorming-mandatory.md | Score: 100 | Issues: None
 [PASS] design\misc\design-orchestration\sub-skills\step-2-risk-assessment.md | Score: 100 | Issues: None
 [PASS] design\misc\design-orchestration\sub-skills\step-3-conditional-escalation.md | Score: 85 | Issues: Description is brief (under 150 characters)
 [PASS] design\misc\design-orchestration\sub-skills\step-4-multi-agent-review-if-invoked.md | Score: 100 | Issues: None
 [PASS] design\misc\design-orchestration\sub-skills\step-5-execution-readiness-check.md | Score: 100 | Issues: None
+[PASS] design\misc\design-qa-checklist\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\design-quality-gate\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\design-rationale\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\design-review-process\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\design-sprint-plan\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\design-system-adoption\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\design-token-audit\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\diary-study-plan\SKILL.md | Score: 85 | Issues: Description is brief (under 150 characters)
 [PASS] design\misc\disability-inclusive-personas\disability_inclusive_personas_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\document\document_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\edge-case-identification\edge_case_identification_skill.md | Score: 100 | Issues: None
+[PASS] design\misc\empathy-map\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\environment-setup-guide\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\environment-setup-guide\sub-skills\do-this.md | Score: 100 | Issues: None
 [PASS] design\misc\environment-setup-guide\sub-skills\dont-do-this.md | Score: 100 | Issues: None
@@ -219,6 +278,7 @@ DETAILED MODULE LOG:
 [PASS] design\misc\generate\generate_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\gesture-alternatives\gesture_alternatives_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\handoff\handoff_skill.md | Score: 100 | Issues: None
+[PASS] design\misc\handoff-spec\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\heading-structure\heading_structure_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\icon-retrieval\icon_retrieval_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\improve-codebase-architecture\improve_codebase_architecture_skill.md | Score: 100 | Issues: None
@@ -226,6 +286,9 @@ DETAILED MODULE LOG:
 [PASS] design\misc\inclusive-user-stories\inclusive_user_stories_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\infographic-creator\infographic_creator_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\information-density\information_density_skill.md | Score: 100 | Issues: None
+[PASS] design\misc\interview-script\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\jobs-to-be-done\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\journey-map\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\keyboard-navigation\keyboard_navigation_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\keyboard-review\keyboard_review_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\kpi-dashboard-design\SKILL.md | Score: 100 | Issues: None
@@ -286,6 +349,7 @@ DETAILED MODULE LOG:
 [PASS] design\misc\personal-tool-builder\sub-skills\why-local-first-for-personal-tools.md | Score: 100 | Issues: None
 [PASS] design\misc\plain-language-design\plain_language_design_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\preference-audit\preference_audit_skill.md | Score: 100 | Issues: None
+[PASS] design\misc\presentation-deck\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\react-ui-patterns\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\react-ui-patterns\sub-skills\always-show-errors.md | Score: 100 | Issues: None
 [PASS] design\misc\react-ui-patterns\sub-skills\button-loading-state.md | Score: 100 | Issues: None
@@ -346,6 +410,7 @@ DETAILED MODULE LOG:
 [PASS] design\misc\remotion-best-practices\rules\transitions.md | Score: 100 | Issues: None
 [PASS] design\misc\remotion-best-practices\rules\trimming.md | Score: 100 | Issues: None
 [PASS] design\misc\remotion-best-practices\rules\videos.md | Score: 100 | Issues: None
+[PASS] design\misc\research-repository\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\responsive-review\responsive_review_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\review\review_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\rewrite\rewrite_skill.md | Score: 100 | Issues: None
@@ -365,6 +430,8 @@ DETAILED MODULE LOG:
 [PASS] design\misc\specify\specify_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\stakeholder-communication\stakeholder_communication_skill.md | Score: 100 | Issues: None
 [PASS] design\misc\structure\structure_skill.md | Score: 100 | Issues: None
+[PASS] design\misc\summarize-interview\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\survey-design\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\tailwind-design-system\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\tailwind-design-system\sub-skills\implementation-playbook.md | Score: 100 | Issues: None
 [PASS] design\misc\tailwind-patterns\SKILL.md | Score: 100 | Issues: None
@@ -389,6 +456,7 @@ DETAILED MODULE LOG:
 [PASS] design\misc\tailwind-patterns\sub-skills\when-to-extend-vs-override.md | Score: 100 | Issues: None
 [PASS] design\misc\tailwind-patterns\sub-skills\when-to-extract.md | Score: 100 | Issues: None
 [PASS] design\misc\tailwind-patterns\sub-skills\when-to-use.md | Score: 85 | Issues: Description is brief (under 150 characters)
+[PASS] design\misc\team-workflow\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\telegram-bot-builder\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\telegram-bot-builder\sub-skills\basic-keyboard.md | Score: 100 | Issues: None
 [PASS] design\misc\telegram-bot-builder\sub-skills\basic-telegraf-setup.md | Score: 100 | Issues: None
@@ -433,7 +501,11 @@ DETAILED MODULE LOG:
 [PASS] design\misc\ui-visual-validator\sub-skills\modern-visual-testing-tools.md | Score: 100 | Issues: None
 [PASS] design\misc\ui-visual-validator\sub-skills\visual-analysis-mastery.md | Score: 100 | Issues: None
 [PASS] design\misc\ui-visual-validator\sub-skills\visual-quality-assurance.md | Score: 100 | Issues: None
+[PASS] design\misc\usability-test-plan\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\user-persona\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\user-preference-respect\user_preference_respect_skill.md | Score: 100 | Issues: None
+[PASS] design\misc\ux-writing\SKILL.md | Score: 100 | Issues: None
+[PASS] design\misc\version-control-strategy\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\viral-generator-builder\SKILL.md | Score: 100 | Issues: None
 [PASS] design\misc\viral-generator-builder\sub-skills\boring-share-cards.md | Score: 100 | Issues: None
 [PASS] design\misc\viral-generator-builder\sub-skills\forgettable-results.md | Score: 100 | Issues: None
@@ -463,6 +535,26 @@ DETAILED MODULE LOG:
 [PASS] design\misc\web-artifacts-builder\sub-skills\step-4-share-artifact-with-user.md | Score: 100 | Issues: None
 [PASS] design\misc\web-artifacts-builder\sub-skills\step-5-testingvisualizing-the-artifact-optional.md | Score: 100 | Issues: None
 [PASS] design\misc\web-design-guidelines\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\animation-principles\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\doherty-threshold\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\error-handling-ux\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\feedback-patterns\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\fitts-law\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\form-design\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\gesture-patterns\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\hicks-law\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\interfaces-that-feel\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\loading-states\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\micro-interaction-spec\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\millers-law\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\motion-framer\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\motion-framer\assets\examples\README.md | Score: 100 | Issues: None
+[PASS] design\motion\motion-framer\assets\starter_motion\README.md | Score: 100 | Issues: None
+[PASS] design\motion\motion-framer\references\api_reference.md | Score: 100 | Issues: None
+[PASS] design\motion\navigation-patterns\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\onboarding-design\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\search-ux\SKILL.md | Score: 100 | Issues: None
+[PASS] design\motion\state-machine\SKILL.md | Score: 100 | Issues: None
 [PASS] design\stitch\design-md\README.md | Score: 100 | Issues: None
 [PASS] design\stitch\design-md\SKILL.md | Score: 100 | Issues: None
 [PASS] design\stitch\design-md\examples\DESIGN.md | Score: 100 | Issues: None
@@ -500,12 +592,69 @@ DETAILED MODULE LOG:
 [PASS] design\stitch\stitch-loop\resources\site-template.md | Score: 100 | Issues: None
 [PASS] design\stitch\taste-design\SKILL.md | Score: 100 | Issues: None
 [PASS] design\stitch\taste-design\resources\DESIGN.md | Score: 100 | Issues: None
+[PASS] design\strategy\business-design\SKILL.md | Score: 100 | Issues: None
+[PASS] design\strategy\competitive-analysis\SKILL.md | Score: 100 | Issues: None
+[PASS] design\strategy\content-strategy\SKILL.md | Score: 100 | Issues: None
+[PASS] design\strategy\design-brief\SKILL.md | Score: 100 | Issues: None
+[PASS] design\strategy\design-principles\SKILL.md | Score: 100 | Issues: None
+[PASS] design\strategy\experience-map\SKILL.md | Score: 100 | Issues: None
+[PASS] design\strategy\information-architecture\SKILL.md | Score: 100 | Issues: None
+[PASS] design\strategy\metrics-definition\SKILL.md | Score: 100 | Issues: None
+[PASS] design\strategy\north-star-vision\SKILL.md | Score: 100 | Issues: None
+[PASS] design\strategy\opportunity-framework\SKILL.md | Score: 85 | Issues: Brief step procedure (4 steps, recommended >= 5)
+[PASS] design\strategy\service-blueprint\SKILL.md | Score: 100 | Issues: None
+[PASS] design\strategy\stakeholder-alignment\SKILL.md | Score: 100 | Issues: None
 [PASS] design\system\design_system_skill.md | Score: 100 | Issues: None
+[PASS] design\system\accessibility-audit\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\brutalist-ui\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\component-spec\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\design-system-governance\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\design-taste\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\design-token\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\documentation-template\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\icon-system\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\localization-design\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\minimalist-ui\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\motion-system\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\naming-convention\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\pattern-library\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\soft-ui\SKILL.md | Score: 100 | Issues: None
+[PASS] design\system\theming-system\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\a-b-test-design\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\accessibility-test-plan\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\aesthetic-usability\SKILL.md | Score: 100 | Issues: None
 [PASS] design\ui\canvas-design\SKILL.md | Score: 100 | Issues: None
 [PASS] design\ui\canvas-design\sub-skills\essential-principles.md | Score: 100 | Issues: None
 [PASS] design\ui\canvas-design\sub-skills\how-to-generate-a-visual-philosophy.md | Score: 100 | Issues: None
 [PASS] design\ui\canvas-design\sub-skills\philosophy-examples.md | Score: 100 | Issues: None
 [PASS] design\ui\canvas-design\sub-skills\the-critical-understanding.md | Score: 100 | Issues: None
+[PASS] design\ui\click-test-plan\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\color-system\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\critique-affordance\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\critique-brand-consistency\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\critique-color\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\critique-composition\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\critique-information-density\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\critique-typography\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\critique-visual-hierarchy\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\dark-mode-design\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\data-visualization\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\heuristic-evaluation\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\illustration-style\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\law-of-common-region\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\law-of-proximity\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\layout-grid\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\prototype-strategy\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\readable-measure\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\redesign\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\responsive-design\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\spacing-system\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\test-scenario\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\typography-scale\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\user-flow-diagram\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\visual-hierarchy\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\von-restorff-effect\SKILL.md | Score: 100 | Issues: None
+[PASS] design\ui\wireframe-spec\SKILL.md | Score: 100 | Issues: None
 [PASS] engineering\architect\airflow-dag-patterns\SKILL.md | Score: 100 | Issues: None
 [PASS] engineering\architect\airflow-dag-patterns\sub-skills\implementation-playbook.md | Score: 100 | Issues: None
 [PASS] engineering\architect\api-patterns\api-style.md | Score: 100 | Issues: None
@@ -998,6 +1147,7 @@ DETAILED MODULE LOG:
 [PASS] engineering\data\database-migrations-sql-migrations\sub-skills\implementation-playbook.md | Score: 100 | Issues: None
 [PASS] engineering\data\dbt-transformation-patterns\SKILL.md | Score: 100 | Issues: None
 [PASS] engineering\data\dbt-transformation-patterns\sub-skills\implementation-playbook.md | Score: 100 | Issues: None
+[PASS] engineering\data\metabase-embedded-analytics\SKILL.md | Score: 100 | Issues: None
 [PASS] engineering\data\mysql\mysql_skill.md | Score: 100 | Issues: None
 [PASS] engineering\data\mysql\references\character-sets.md | Score: 100 | Issues: None
 [PASS] engineering\data\mysql\references\composite-indexes.md | Score: 100 | Issues: None
@@ -1076,6 +1226,9 @@ DETAILED MODULE LOG:
 [PASS] engineering\misc\algolia-search\sub-skills\nextjs-server-side-rendering.md | Score: 100 | Issues: None
 [PASS] engineering\misc\algolia-search\sub-skills\react-instantsearch-with-hooks.md | Score: 100 | Issues: None
 [PASS] engineering\misc\algorithmic-art\algorithmic_art_skill.md | Score: 100 | Issues: None
+[PASS] engineering\misc\android-cli\SKILL.md | Score: 100 | Issues: None
+[PASS] engineering\misc\android-cli\references\interact.md | Score: 100 | Issues: None
+[PASS] engineering\misc\android-cli\references\journeys.md | Score: 100 | Issues: None
 [PASS] engineering\misc\angular-migration\SKILL.md | Score: 100 | Issues: None
 [PASS] engineering\misc\angular-migration\sub-skills\1-big-bang-complete-rewrite.md | Score: 100 | Issues: None
 [PASS] engineering\misc\angular-migration\sub-skills\2-incremental-hybrid-approach.md | Score: 100 | Issues: None
@@ -2984,6 +3137,7 @@ DETAILED MODULE LOG:
 [PASS] engineering\misc\xlsx-official\sub-skills\working-with-pandas.md | Score: 100 | Issues: None
 [PASS] engineering\misc\xlsx-official\sub-skills\wrong-hardcoding-calculated-values.md | Score: 100 | Issues: None
 [PASS] engineering\misc\xlsx-official\sub-skills\zero-formula-errors.md | Score: 100 | Issues: None
+[PASS] engineering\performance\agent-performance-engineer\SKILL.md | Score: 100 | Issues: None
 [PASS] engineering\testing\code-review-ai-ai-review\SKILL.md | Score: 100 | Issues: None
 [PASS] engineering\testing\code-review-ai-ai-review\sub-skills\ai-assisted-review.md | Score: 100 | Issues: None
 [PASS] engineering\testing\code-review-ai-ai-review\sub-skills\architectural-coherence.md | Score: 100 | Issues: None
@@ -3389,6 +3543,7 @@ DETAILED MODULE LOG:
 [PASS] engineering\web\web-performance-optimization\sub-skills\step-4-implement-optimizations.md | Score: 100 | Issues: None
 [PASS] engineering\web\web-performance-optimization\sub-skills\step-5-verify-improvements.md | Score: 100 | Issues: None
 [PASS] engineering\web\webapp-testing\webapp_testing_skill.md | Score: 100 | Issues: None
+[PASS] ghost_cms\ghost_cms_skill.md | Score: 100 | Issues: None
 [PASS] intelligence\memory\agent-memory-mcp\SKILL.md | Score: 100 | Issues: None
 [PASS] intelligence\memory\agent-memory-mcp\sub-skills\memory_read.md | Score: 100 | Issues: None
 [PASS] intelligence\memory\agent-memory-mcp\sub-skills\memory_search.md | Score: 100 | Issues: None
@@ -3578,10 +3733,19 @@ DETAILED MODULE LOG:
 [PASS] intelligence\orchestration\agent-orchestration\sub-skills\profiling-strategy.md | Score: 100 | Issues: None
 [PASS] intelligence\orchestration\agent-orchestration\sub-skills\workflow-1-e-commerce-platform-optimization.md | Score: 100 | Issues: None
 [PASS] intelligence\orchestration\agent-orchestration\sub-skills\workflow-2-enterprise-api-performance-enhancement.md | Score: 100 | Issues: None
+[PASS] intelligence\orchestration\document-visualization-evaluator\SKILL.md | Score: 100 | Issues: None
+[PASS] intelligence\orchestration\llm-council\SKILL.md | Score: 100 | Issues: None
 [PASS] meta\agent\advanced-workflows\mcp-integration.md | Score: 100 | Issues: None
 [PASS] meta\agent\advanced-workflows\stateful-persistence.md | Score: 100 | Issues: None
 [PASS] meta\agent\advanced-workflows\supervisor-orchestration.md | Score: 100 | Issues: None
+[PASS] meta\agent\advanced-workflows\autonomous-agent-loop\SKILL.md | Score: 100 | Issues: None
 [PASS] meta\agent\behavioral-modes\SKILL.md | Score: 100 | Issues: None
+[PASS] meta\agent\behavioral-modes\ponytail\ponytail\SKILL.md | Score: 100 | Issues: None
+[PASS] meta\agent\behavioral-modes\ponytail\ponytail-audit\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] meta\agent\behavioral-modes\ponytail\ponytail-debt\SKILL.md | Score: 100 | Issues: None
+[PASS] meta\agent\behavioral-modes\ponytail\ponytail-gain\SKILL.md | Score: 100 | Issues: None
+[PASS] meta\agent\behavioral-modes\ponytail\ponytail-help\SKILL.md | Score: 100 | Issues: None
+[PASS] meta\agent\behavioral-modes\ponytail\ponytail-review\SKILL.md | Score: 80 | Issues: Missing clear title
 [PASS] meta\agent\behavioral-modes\sub-skills\1-brainstorm-mode.md | Score: 100 | Issues: None
 [PASS] meta\agent\behavioral-modes\sub-skills\1-explore-mode.md | Score: 100 | Issues: None
 [PASS] meta\agent\behavioral-modes\sub-skills\2-implement-mode.md | Score: 100 | Issues: None
@@ -3591,12 +3755,16 @@ DETAILED MODULE LOG:
 [PASS] meta\agent\behavioral-modes\sub-skills\4-review-mode.md | Score: 100 | Issues: None
 [PASS] meta\agent\behavioral-modes\sub-skills\5-teach-mode.md | Score: 100 | Issues: None
 [PASS] meta\agent\behavioral-modes\sub-skills\6-ship-mode.md | Score: 100 | Issues: None
+[PASS] meta\agent\behavioral-modes\sub-skills\cline-step-by-step.md | Score: 85 | Issues: Brief step procedure (4 steps, recommended >= 5)
 [PASS] meta\agent\behavioral-modes\sub-skills\code-quality.md | Score: 100 | Issues: None
 [PASS] meta\agent\behavioral-modes\sub-skills\critical.md | Score: 100 | Issues: None
+[PASS] meta\agent\behavioral-modes\sub-skills\cursor-autonomous-loop.md | Score: 100 | Issues: None
 [PASS] meta\agent\behavioral-modes\sub-skills\example.md | Score: 100 | Issues: None
 [PASS] meta\agent\behavioral-modes\sub-skills\good.md | Score: 100 | Issues: None
 [PASS] meta\agent\behavioral-modes\sub-skills\how-it-works.md | Score: 100 | Issues: None
 [PASS] meta\agent\behavioral-modes\sub-skills\improvements.md | Score: 100 | Issues: None
+[PASS] meta\agent\behavioral-modes\sub-skills\layered-implementation.md | Score: 100 | Issues: None
+[PASS] meta\agent\behavioral-modes\sub-skills\mcp-memory.md | Score: 100 | Issues: None
 [PASS] meta\agent\behavioral-modes\sub-skills\performance.md | Score: 100 | Issues: None
 [PASS] meta\agent\behavioral-modes\sub-skills\ready-to-deploy.md | Score: 100 | Issues: None
 [PASS] meta\agent\behavioral-modes\sub-skills\security.md | Score: 100 | Issues: None
@@ -3689,6 +3857,7 @@ DETAILED MODULE LOG:
 [PASS] meta\skills\draft-skills\task-scheduler.md | Score: 100 | Issues: None
 [PASS] meta\skills\find-skills\find_skills_skill.md | Score: 100 | Issues: None
 [PASS] meta\skills\organize-skills\organize_skills_skill.md | Score: 100 | Issues: None
+[PASS] meta\skills\workflow-skill-creator\SKILL.md | Score: 100 | Issues: None
 [PASS] meta\skills\write-a-skill\write_a_skill_skill.md | Score: 100 | Issues: None
 [PASS] meta\skills\writing-skills\anthropic-best-practices.md | Score: 100 | Issues: None
 [PASS] meta\skills\writing-skills\internal-comms.md | Score: 100 | Issues: None
@@ -3696,17 +3865,155 @@ DETAILED MODULE LOG:
 [PASS] meta\skills\writing-skills\testing-skills-with-subagents.md | Score: 100 | Issues: None
 [PASS] meta\skills\writing-skills\writing_skills_skill.md | Score: 100 | Issues: None
 [PASS] meta\skills\writing-skills\examples\CLAUDE_MD_TESTING.md | Score: 100 | Issues: None
+[PASS] meta\templates\incident-response-guide.md | Score: 100 | Issues: None
+[PASS] meta\templates\prd-guide.md | Score: 100 | Issues: None
+[PASS] meta\templates\runbooks-guide.md | Score: 85 | Issues: Description is brief (under 150 characters)
+[PASS] meta\templates\system-architecture-guide.md | Score: 85 | Issues: Description is brief (under 150 characters)
+[PASS] misc\mysql\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\character-sets.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\composite-indexes.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\connection-management.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\covering-indexes.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\data-types.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\deadlocks.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\explain-analysis.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\fulltext-indexes.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\index-maintenance.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\isolation-levels.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\json-column-patterns.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\n-plus-one.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\online-ddl.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\partitioning.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\primary-keys.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\query-optimization-pitfalls.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\replication-lag.md | Score: 100 | Issues: None
+[PASS] misc\mysql\references\row-locking-gotchas.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] misc\neki\SKILL.md | Score: 85 | Issues: Brief step procedure (4 steps, recommended >= 5)
+[PASS] misc\neki\references\sharding-readiness.md | Score: 100 | Issues: None
+[PASS] misc\oci\README.md | Score: 100 | Issues: None
+[PASS] misc\oci\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\USE_CASES.md | Score: 100 | Issues: None
+[PASS] misc\oci\best-practices\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\best-practices\references\oci-well-architected-checklist.md | Score: 100 | Issues: None
+[PASS] misc\oci\compute-management\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\compute-management\references\oci-compute-shapes-reference.md | Score: 100 | Issues: None
+[PASS] misc\oci\database-management\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\database-management\references\oci-dbcs-cli.md | Score: 100 | Issues: None
+[PASS] misc\oci\fastify-better-auth-bridge\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\finops-cost-optimization\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\finops-cost-optimization\references\oci-cost-cli.md | Score: 100 | Issues: None
+[PASS] misc\oci\genai-services\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\genai-services\references\oci-genai-reference.md | Score: 100 | Issues: None
+[PASS] misc\oci\iam-identity-management\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\iam-identity-management\references\oci-iam-policies-reference.md | Score: 100 | Issues: None
+[PASS] misc\oci\infrastructure-as-code\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\infrastructure-as-code\references\oci-terraform-auth-matrix.md | Score: 100 | Issues: None
+[PASS] misc\oci\infrastructure-as-code\references\oci-terraform-bastion.md | Score: 100 | Issues: None
+[PASS] misc\oci\infrastructure-as-code\references\oci-terraform-import-drift.md | Score: 100 | Issues: None
+[PASS] misc\oci\infrastructure-as-code\references\oci-terraform-module-quality.md | Score: 100 | Issues: None
+[PASS] misc\oci\infrastructure-as-code\references\oci-terraform-patterns.md | Score: 100 | Issues: None
+[PASS] misc\oci\infrastructure-as-code\references\oci-terraform-realms-regions.md | Score: 100 | Issues: None
+[PASS] misc\oci\infrastructure-as-code\references\oci-terraform-secrets-state.md | Score: 100 | Issues: None
+[PASS] misc\oci\infrastructure-as-code\references\oci-terraform-state-backends.md | Score: 100 | Issues: None
+[PASS] misc\oci\infrastructure-as-code\references\oci-terraform-zpr.md | Score: 100 | Issues: None
+[PASS] misc\oci\landing-zones\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\landing-zones\references\landing-zone-cli.md | Score: 85 | Issues: Description is brief (under 150 characters)
+[PASS] misc\oci\landing-zones\references\landing-zone-patterns.md | Score: 70 | Issues: Missing descriptive introduction section
+[PASS] misc\oci\landing-zones\references\oci-well-architected-framework.md | Score: 100 | Issues: None
+[PASS] misc\oci\landing-zones\references\security-zone-automation.md | Score: 100 | Issues: None
+[PASS] misc\oci\managed-bastion-access\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\managed-bastion-access\references\managed-bastion-reference.md | Score: 100 | Issues: None
+[PASS] misc\oci\monitoring-operations\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\monitoring-operations\references\oci-monitoring-reference.md | Score: 100 | Issues: None
+[PASS] misc\oci\networking-management\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\networking-management\references\oci-networking-reference.md | Score: 100 | Issues: None
+[PASS] misc\oci\networking-management\references\oci-terraform-networking-patterns.md | Score: 100 | Issues: None
+[PASS] misc\oci\oci-events\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\oci-events\references\events-cli.md | Score: 85 | Issues: Description is brief (under 150 characters)
+[PASS] misc\oci\oci-events\references\events-patterns.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] misc\oci\oci-events\references\oci-events-reference.md | Score: 100 | Issues: None
+[PASS] misc\oci\oci-pptx\editing.md | Score: 100 | Issues: None
+[PASS] misc\oci\oci-pptx\pptxgenjs.md | Score: 100 | Issues: None
+[PASS] misc\oci\oci-pptx\README.md | Score: 100 | Issues: None
+[PASS] misc\oci\oci-pptx\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\oci-pptx\references\color-palettes.md | Score: 70 | Issues: Missing descriptive introduction section
+[PASS] misc\oci\oci-pptx\references\implementation-examples.md | Score: 100 | Issues: None
+[PASS] misc\oci\oci-resource-manager\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\oci-resource-manager\references\resource-manager-reference.md | Score: 100 | Issues: None
+[PASS] misc\oci\oci-security-control-plane\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\oracle-dba\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\oracle-dba\references\adb-ha-dr.md | Score: 100 | Issues: None
+[PASS] misc\oci\oracle-dba\references\adb-security.md | Score: 100 | Issues: None
+[PASS] misc\oci\oracle-dba\references\api_reference.md | Score: 100 | Issues: None
+[PASS] misc\oci\oracle-dba\references\cost-reference.md | Score: 100 | Issues: None
+[PASS] misc\oci\oracle-dba\references\mcp-tools.md | Score: 100 | Issues: None
+[PASS] misc\oci\oracle-dba\references\oci-adb-best-practices.md | Score: 100 | Issues: None
+[PASS] misc\oci\oracle-dba\references\oci-cli-adb.md | Score: 85 | Issues: Description is brief (under 150 characters)
+[PASS] misc\oci\oracle-dba\references\oci-cli.md | Score: 100 | Issues: None
+[PASS] misc\oci\oracle-dba\references\sql-patterns.md | Score: 100 | Issues: None
+[PASS] misc\oci\oracle-dba\references\sqlcl-workflows.md | Score: 85 | Issues: Description is brief (under 150 characters)
+[PASS] misc\oci\oracle-idcs-better-auth-setup\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\oracle-idcs-org-provisioning\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\secrets-management\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\secrets-management\references\oci-vault-reference.md | Score: 100 | Issues: None
+[PASS] misc\oci\sqlite-to-oracle-planner\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\zpr-security\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\oci\zpr-security\references\zpr-reference.md | Score: 100 | Issues: None
+[PASS] misc\postgres\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\backup-recovery.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\index-optimization.md | Score: 85 | Issues: Brief step procedure (4 steps, recommended >= 5)
+[PASS] misc\postgres\references\indexing.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\memory-management-ops.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\monitoring.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\mvcc-transactions.md | Score: 85 | Issues: Brief step procedure (4 steps, recommended >= 5)
+[PASS] misc\postgres\references\mvcc-vacuum.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\optimization-checklist.md | Score: 70 | Issues: Missing descriptive introduction section
+[PASS] misc\postgres\references\partitioning.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\pgbouncer-configuration.md | Score: 70 | Issues: Insufficient execution steps (2 step)
+[PASS] misc\postgres\references\process-architecture.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\ps-cli-api-insights.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\ps-cli-commands.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\ps-connection-pooling.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\ps-connections.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] misc\postgres\references\ps-extensions.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] misc\postgres\references\ps-insights.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\query-patterns.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\replication.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\schema-design.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\storage-layout.md | Score: 100 | Issues: None
+[PASS] misc\postgres\references\wal-operations.md | Score: 85 | Issues: Brief step procedure (4 steps, recommended >= 5)
+[PASS] misc\vitess\SKILL.md | Score: 100 | Issues: None
+[PASS] misc\vitess\references\architecture.md | Score: 100 | Issues: None
+[PASS] misc\vitess\references\query-serving.md | Score: 100 | Issues: None
+[PASS] misc\vitess\references\schema-changes.md | Score: 100 | Issues: None
+[PASS] misc\vitess\references\vreplication.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] misc\vitess\references\vschema.md | Score: 100 | Issues: None
+[PASS] ops\automation\academic-search-orchestrator\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\automation\academic-search-orchestrator\references\authors.md | Score: 100 | Issues: None
+[PASS] ops\automation\academic-search-orchestrator\references\geo_and_language.md | Score: 100 | Issues: None
+[PASS] ops\automation\academic-search-orchestrator\references\institutions.md | Score: 100 | Issues: None
+[PASS] ops\automation\academic-search-orchestrator\references\publishers_funders.md | Score: 100 | Issues: None
+[PASS] ops\automation\academic-search-orchestrator\references\query_syntax.md | Score: 100 | Issues: None
+[PASS] ops\automation\academic-search-orchestrator\references\sources.md | Score: 100 | Issues: None
+[PASS] ops\automation\academic-search-orchestrator\references\taxonomy.md | Score: 100 | Issues: None
+[PASS] ops\automation\academic-search-orchestrator\references\topics.md | Score: 100 | Issues: None
+[PASS] ops\automation\academic-search-orchestrator\references\type_values.md | Score: 100 | Issues: None
+[PASS] ops\automation\academic-search-orchestrator\references\works.md | Score: 100 | Issues: None
 [PASS] ops\automation\billing-automation\SKILL.md | Score: 100 | Issues: None
 [PASS] ops\automation\billing-automation\sub-skills\implementation-playbook.md | Score: 100 | Issues: None
 [PASS] ops\automation\browser-automation\SKILL.md | Score: 100 | Issues: None
 [PASS] ops\automation\browser-automation\sub-skills\arbitrary-timeouts.md | Score: 100 | Issues: None
 [PASS] ops\automation\browser-automation\sub-skills\auto-wait-pattern.md | Score: 100 | Issues: None
 [PASS] ops\automation\browser-automation\sub-skills\cssxpath-first.md | Score: 100 | Issues: None
+[PASS] ops\automation\browser-automation\sub-skills\playwright-video-recording.md | Score: 70 | Issues: Insufficient execution steps (1 step)
 [PASS] ops\automation\browser-automation\sub-skills\single-browser-context-for-everything.md | Score: 100 | Issues: None
 [PASS] ops\automation\browser-automation\sub-skills\test-isolation-pattern.md | Score: 100 | Issues: None
 [PASS] ops\automation\browser-automation\sub-skills\user-facing-locator-pattern.md | Score: 100 | Issues: None
 [PASS] ops\automation\changelog-automation\SKILL.md | Score: 100 | Issues: None
 [PASS] ops\automation\changelog-automation\sub-skills\implementation-playbook.md | Score: 100 | Issues: None
+[PASS] ops\automation\chatwoot-customer-support\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\automation\context7-cli\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\automation\docuseal-document-signing\SKILL.md | Score: 100 | Issues: None
 [PASS] ops\automation\inngest\SKILL.md | Score: 100 | Issues: None
 [PASS] ops\automation\inngest\sub-skills\basic-function-setup.md | Score: 100 | Issues: None
 [PASS] ops\automation\inngest\sub-skills\huge-event-payloads.md | Score: 100 | Issues: None
@@ -3715,6 +4022,74 @@ DETAILED MODULE LOG:
 [PASS] ops\automation\inngest\sub-skills\not-using-steps.md | Score: 100 | Issues: None
 [PASS] ops\automation\inngest\sub-skills\scheduledcron-functions.md | Score: 100 | Issues: None
 [PASS] ops\automation\janitor\janitor_skill.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\CHANGELOG.md | Score: 85 | Issues: Description is brief (under 150 characters)
+[PASS] ops\automation\seo\CODE_OF_CONDUCT.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\CONTRIBUTING.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\improvements.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\automation\seo\README.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\SECURITY.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\SUPPORT.md | Score: 85 | Issues: Brief step procedure (4 steps, recommended >= 5)
+[PASS] ops\automation\seo\.github\pull_request_template.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\.github\ISSUE_TEMPLATE\bug_report.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\.github\ISSUE_TEMPLATE\feature_request.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\agents\seo-content.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\automation\seo\resources\agents\seo-github-analyst.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\agents\seo-github-benchmark.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\agents\seo-github-data.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\agents\seo-performance.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\agents\seo-schema.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\automation\seo\resources\agents\seo-sitemap.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\automation\seo\resources\agents\seo-technical.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\automation\seo\resources\agents\seo-verifier.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\automation\seo\resources\agents\seo-visual.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\automation\seo\resources\references\cwv-thresholds.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\references\eeat-framework.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\references\github-api-ops.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\references\github-ranking-factors.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\references\google-seo-reference.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\references\link-building.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\references\llm-audit-rubric.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\references\quality-gates.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\references\readme-audit-rubric.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\references\schema-types.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-aeo.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-article.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] ops\automation\seo\resources\skills\seo-audit.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-competitor-pages.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-content.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-geo.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-github.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-hreflang.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-images.md | Score: 85 | Issues: Description is brief (under 150 characters)
+[PASS] ops\automation\seo\resources\skills\seo-links.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-page.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-plan.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-programmatic.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-schema.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-sitemap.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\skills\seo-technical.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\templates\agency.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\templates\blog-post.md | Score: 85 | Issues: Description is brief (under 150 characters)
+[PASS] ops\automation\seo\resources\templates\ecommerce.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\templates\generic.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\templates\github-seo-report.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\templates\github-weekly-scorecard.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\templates\local-service.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\templates\news-article.md | Score: 85 | Issues: Description is brief (under 150 characters)
+[PASS] ops\automation\seo\resources\templates\publisher.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\templates\saas.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\resources\templates\technical-article.md | Score: 85 | Issues: Description is brief (under 150 characters)
+[PASS] ops\automation\seo\wiki\Audit-Workflow.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\wiki\Command-Reference.md | Score: 70 | Issues: Insufficient execution steps (2 step)
+[PASS] ops\automation\seo\wiki\Example-Prompts.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\wiki\Home.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\wiki\Installation.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\wiki\Release-and-Packaging.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\wiki\Reports-and-Outputs.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\wiki\Script-Inventory.md | Score: 100 | Issues: None
+[PASS] ops\automation\seo\wiki\Troubleshooting.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] ops\automation\seo\wiki\_Sidebar.md | Score: 100 | Issues: None
 [PASS] ops\automation\trigger-dev\SKILL.md | Score: 100 | Issues: None
 [PASS] ops\automation\trigger-dev\sub-skills\ai-task-with-openai-integration.md | Score: 100 | Issues: None
 [PASS] ops\automation\trigger-dev\sub-skills\basic-task-setup.md | Score: 100 | Issues: None
@@ -3838,6 +4213,8 @@ DETAILED MODULE LOG:
 [PASS] ops\env\shared\verticals\domain-blueprints\standard-pro-agents.md | Score: 100 | Issues: None
 [PASS] ops\env\shared\verticals\infra-blueprints\deployment_specs.md | Score: 100 | Issues: None
 [PASS] ops\env\shared\verticals\infra-blueprints\README.md | Score: 100 | Issues: None
+[PASS] ops\env\uv\SKILL.md | Score: 85 | Issues: Brief step procedure (4 steps, recommended >= 5)
+[PASS] ops\infrastructure\runpod\SKILL.md | Score: 100 | Issues: None
 [PASS] ops\misc\analytics-reporting\analytics_reporting_skill.md | Score: 100 | Issues: None
 [PASS] ops\misc\brainstorming\brainstorming_skill.md | Score: 100 | Issues: None
 [PASS] ops\misc\brainstorming\spec-document-reviewer-prompt.md | Score: 100 | Issues: None
@@ -3929,6 +4306,74 @@ DETAILED MODULE LOG:
 [PASS] ops\workflows\planning-with-files\templates\findings.md | Score: 100 | Issues: None
 [PASS] ops\workflows\planning-with-files\templates\progress.md | Score: 100 | Issues: None
 [PASS] ops\workflows\planning-with-files\templates\task_plan.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\ab-test-analysis\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\analyze-feature-requests\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\ansoff-matrix\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\beachhead-segment\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\brainstorm-experiments-existing\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\brainstorm-experiments-new\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\brainstorm-ideas-existing\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\brainstorm-ideas-new\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\brainstorm-okrs\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\business-model\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\cohort-analysis\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\competitive-battlecard\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\competitor-analysis\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\create-prd\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\customer-journey-map\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\draft-nda\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\dummy-dataset\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\grammar-check\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\growth-loops\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\gtm-motions\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\gtm-strategy\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\ideal-customer-profile\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\identify-assumptions-existing\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\identify-assumptions-new\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\intended-vs-implemented\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\interview-script\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\job-stories\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\lean-canvas\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\market-segments\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\market-sizing\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\marketing-ideas\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\metrics-dashboard\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\monetization-strategy\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\north-star-metric\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\opportunity-solution-tree\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\outcome-roadmap\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\pestle-analysis\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\porters-five-forces\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\positioning-ideas\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\pre-mortem\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\pricing-strategy\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\prioritization-frameworks\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\prioritize-assumptions\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\prioritize-features\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\privacy-policy\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\product-name\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\product-strategy\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\product-vision\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\release-notes\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\retro\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\review-resume\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\sentiment-analysis\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\shipping-artifacts\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\sprint-plan\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\sql-queries\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\stakeholder-map\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\startup-canvas\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\strategy-red-team\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\summarize-interview\SKILL.md | Score: 80 | Issues: Missing clear title
+[PASS] ops\workflows\pm-skills\summarize-meeting\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\swot-analysis\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\test-scenarios\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\user-personas\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\user-segmentation\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\user-stories\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\value-prop-statements\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\value-proposition\SKILL.md | Score: 100 | Issues: None
+[PASS] ops\workflows\pm-skills\wwas\SKILL.md | Score: 85 | Issues: Description is brief (under 150 characters)
 [PASS] ops\workflows\prd-to-issues\prd_to_issues_skill.md | Score: 100 | Issues: None
 [PASS] ops\workflows\prd-to-plan\prd_to_plan_skill.md | Score: 100 | Issues: None
 [PASS] ops\workflows\request-refactor-plan\request_refactor_plan_skill.md | Score: 100 | Issues: None
@@ -3965,6 +4410,8 @@ DETAILED MODULE LOG:
 [PASS] ops\workflows\write-a-prd\write_a_prd_skill.md | Score: 100 | Issues: None
 [PASS] ops\workflows\writing-plans\plan-document-reviewer-prompt.md | Score: 100 | Issues: None
 [PASS] ops\workflows\writing-plans\writing_plans_skill.md | Score: 100 | Issues: None
+[PASS] production\audio\acestep\SKILL.md | Score: 100 | Issues: None
+[PASS] production\audio\local-tts-whisperx\local_tts_whisperx_skill.md | Score: 100 | Issues: None
 [PASS] production\audio\narration\narration_skill.md | Score: 100 | Issues: None
 [PASS] production\audio\voice-agents\SKILL.md | Score: 100 | Issues: None
 [PASS] production\audio\voice-agents\sub-skills\ignoring-latency-budget.md | Score: 100 | Issues: None
@@ -3975,12 +4422,16 @@ DETAILED MODULE LOG:
 [PASS] production\audio\voice-agents\sub-skills\voice-activity-detection-pattern.md | Score: 100 | Issues: None
 [PASS] production\audio\voice-ai-development\SKILL.md | Score: 100 | Issues: None
 [PASS] production\audio\voice-ai-development\sub-skills\deepgram-stt-elevenlabs-tts.md | Score: 100 | Issues: None
+[PASS] production\audio\voice-ai-development\sub-skills\elevenlabs-advanced-synthesis.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
 [PASS] production\audio\voice-ai-development\sub-skills\ignoring-interruptions.md | Score: 100 | Issues: None
 [PASS] production\audio\voice-ai-development\sub-skills\non-streaming-pipeline.md | Score: 100 | Issues: None
 [PASS] production\audio\voice-ai-development\sub-skills\openai-realtime-api.md | Score: 100 | Issues: None
 [PASS] production\audio\voice-ai-development\sub-skills\single-provider-lock-in.md | Score: 100 | Issues: None
 [PASS] production\audio\voice-ai-development\sub-skills\vapi-voice-agent.md | Score: 100 | Issues: None
 [PASS] production\audio\voice-ai-engine-development\SKILL.md | Score: 100 | Issues: None
+[PASS] production\video\html-to-video-orchestrator\SKILL.md | Score: 100 | Issues: None
+[PASS] production\video\ltx2\SKILL.md | Score: 100 | Issues: None
+[PASS] production\video\moviepy\SKILL.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
 [PASS] production\video\stitch-loop\README.md | Score: 100 | Issues: None
 [PASS] production\video\stitch-loop\stitch_loop_skill.md | Score: 100 | Issues: None
 [PASS] production\video\stitch-loop\examples\next-prompt.md | Score: 100 | Issues: None
@@ -3994,6 +4445,8 @@ DETAILED MODULE LOG:
 [PASS] production\video\youtube-scripting\youtube_scripting_skill.md | Score: 100 | Issues: None
 [PASS] production\video\youtube-seo\youtube_seo_skill.md | Score: 100 | Issues: None
 [PASS] production\video\youtube-titles\youtube_titles_skill.md | Score: 100 | Issues: None
+[PASS] production\visuals\3d-websites-settings_skill.md | Score: 100 | Issues: None
+[PASS] production\visuals\3d-websites_skill.md | Score: 100 | Issues: None
 [PASS] production\visuals\visually.md | Score: 100 | Issues: None
 [PASS] production\visuals\figma\figma-code-connect\figma_code_connect_skill.md | Score: 100 | Issues: None
 [PASS] production\visuals\figma\figma-code-connect\references\advanced-patterns.md | Score: 100 | Issues: None
@@ -4035,6 +4488,8 @@ DETAILED MODULE LOG:
 [PASS] production\visuals\remotion\resources\composition-checklist.md | Score: 100 | Issues: None
 [PASS] production\visuals\video-visuals\video_visuals_skill.md | Score: 100 | Issues: None
 [PASS] production\visuals\youtube-visuals\youtube_visuals_skill.md | Score: 100 | Issues: None
+[PASS] repo-analysis\repo_analysis_skill.md | Score: 100 | Issues: None
+[PASS] repo-analysis\SKILL.md | Score: 100 | Issues: None
 [PASS] security\active-directory-attacks\SKILL.md | Score: 100 | Issues: None
 [PASS] security\active-directory-attacks\references\advanced-attacks.md | Score: 100 | Issues: None
 [PASS] security\active-directory-attacks\sub-skills\as-rep-roasting.md | Score: 100 | Issues: None
@@ -4059,25 +4514,11 @@ DETAILED MODULE LOG:
 [PASS] security\active-directory-attacks\sub-skills\zerologon-cve-2020-1472.md | Score: 100 | Issues: None
 [PASS] security\attack-tree-construction\SKILL.md | Score: 100 | Issues: None
 [PASS] security\attack-tree-construction\sub-skills\implementation-playbook.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\SKILL.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\attack-limitations.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\common-test-payloads.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\encoding-types.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\injection-contexts.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\phase-1-understanding-html-injection.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\phase-10-prevention-and-remediation.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\phase-2-identifying-injection-points.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\phase-3-basic-html-injection-testing.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\phase-4-types-of-html-injection.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\phase-5-phishing-attack-construction.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\phase-6-defacement-payloads.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\phase-7-advanced-injection-techniques.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\phase-8-bypass-techniques.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\phase-9-automated-testing.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\required-knowledge.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\required-tools.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\severity-assessment.md | Score: 100 | Issues: None
-[PASS] security\html-injection-testing\sub-skills\testing-considerations.md | Score: 100 | Issues: None
+[PASS] security\audit\performing-security-code-review\SKILL.md | Score: 100 | Issues: None
+[PASS] security\audit\performing-security-code-review\assets\README.md | Score: 100 | Issues: None
+[PASS] security\audit\performing-security-code-review\assets\report_template.md | Score: 85 | Issues: Brief step procedure (3 steps, recommended >= 5)
+[PASS] security\audit\performing-security-code-review\references\README.md | Score: 100 | Issues: None
+[PASS] security\audit\performing-security-code-review\scripts\README.md | Score: 100 | Issues: None
 [PASS] security\metasploit-framework\SKILL.md | Score: 100 | Issues: None
 [PASS] security\metasploit-framework\sub-skills\common-exploit-modules.md | Score: 100 | Issues: None
 [PASS] security\metasploit-framework\sub-skills\essential-msfconsole-commands.md | Score: 100 | Issues: None
@@ -4105,6 +4546,24 @@ DETAILED MODULE LOG:
 [PASS] security\privilege-escalation-methods\sub-skills\example-2-windows-kerberoasting.md | Score: 85 | Issues: Description is brief (under 150 characters)
 [PASS] security\privilege-escalation-methods\sub-skills\linux-privilege-escalation.md | Score: 100 | Issues: None
 [PASS] security\privilege-escalation-methods\sub-skills\windows-privilege-escalation.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\1-system-enumeration.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\2-credential-harvesting.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\3-service-exploitation.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\4-token-impersonation.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\5-kernel-exploitation.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\6-additional-techniques.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\common-privilege-escalation-vectors.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\default-writable-folders.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\detection-considerations.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\enumeration-tools.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\example-1-service-binary-path-exploitation.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\example-2-alwaysinstallelevated-exploitation.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\example-3-juicypotato-token-impersonation.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\example-4-unquoted-service-path.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\example-5-credential-harvesting-from-registry.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\impersonation-privilege-exploits.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\legal-requirements.md | Score: 100 | Issues: None
+[PASS] security\privilege-escalation-methods\sub-skills\windows\operational-boundaries.md | Score: 100 | Issues: None
 [PASS] security\secrets-management\SKILL.md | Score: 100 | Issues: None
 [PASS] security\secrets-management\sub-skills\automated-rotation-with-aws.md | Score: 100 | Issues: None
 [PASS] security\secrets-management\sub-skills\aws-secrets-manager.md | Score: 100 | Issues: None
@@ -4154,43 +4613,46 @@ DETAILED MODULE LOG:
 [PASS] security\shodan-reconnaissance\sub-skills\useful-filter-combinations.md | Score: 100 | Issues: None
 [PASS] security\vulnerability-scanner\checklists.md | Score: 100 | Issues: None
 [PASS] security\vulnerability-scanner\SKILL.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\SKILL.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\1-system-enumeration.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\2-credential-harvesting.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\3-service-exploitation.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\4-token-impersonation.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\5-kernel-exploitation.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\6-additional-techniques.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\common-privilege-escalation-vectors.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\default-writable-folders.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\detection-considerations.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\enumeration-tools.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\example-1-service-binary-path-exploitation.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\example-2-alwaysinstallelevated-exploitation.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\example-3-juicypotato-token-impersonation.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\example-4-unquoted-service-path.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\example-5-credential-harvesting-from-registry.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\impersonation-privilege-exploits.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\legal-requirements.md | Score: 100 | Issues: None
-[PASS] security\windows-privilege-escalation\sub-skills\operational-boundaries.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\SKILL.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\common-xss-payloads.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\cookie-theft-payload.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\example-1-stored-xss-in-comment-section.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\example-2-reflected-xss-via-search-parameter.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\example-3-dom-based-xss-via-hash-fragment.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\example-4-csp-bypass-via-jsonp-endpoint.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\legal-and-ethical-requirements.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\legal-prerequisites.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\operational-boundaries.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\phase-1-vulnerability-detection.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\phase-2-stored-xss-exploitation.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\phase-3-reflected-xss-exploitation.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\phase-4-dom-based-xss-exploitation.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\phase-5-html-injection-techniques.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\phase-6-filter-bypass-techniques.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\required-access.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\session-hijacking-template.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\technical-limitations.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\technical-requirements.md | Score: 100 | Issues: None
-[PASS] security\xss-html-injection\sub-skills\xss-detection-checklist.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\SKILL.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\attack-limitations.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\common-test-payloads.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\encoding-types.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\injection-contexts.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\phase-1-understanding-html-injection.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\phase-10-prevention-and-remediation.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\phase-2-identifying-injection-points.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\phase-3-basic-html-injection-testing.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\phase-4-types-of-html-injection.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\phase-5-phishing-attack-construction.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\phase-6-defacement-payloads.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\phase-7-advanced-injection-techniques.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\phase-8-bypass-techniques.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\phase-9-automated-testing.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\required-knowledge.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\required-tools.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\severity-assessment.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\html\testing-considerations.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\common-xss-payloads.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\cookie-theft-payload.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\example-1-stored-xss-in-comment-section.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\example-2-reflected-xss-via-search-parameter.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\example-3-dom-based-xss-via-hash-fragment.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\example-4-csp-bypass-via-jsonp-endpoint.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\legal-and-ethical-requirements.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\legal-prerequisites.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\operational-boundaries.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\phase-1-vulnerability-detection.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\phase-2-stored-xss-exploitation.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\phase-3-reflected-xss-exploitation.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\phase-4-dom-based-xss-exploitation.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\phase-5-html-injection-techniques.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\phase-6-filter-bypass-techniques.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\required-access.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\session-hijacking-template.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\technical-limitations.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\technical-requirements.md | Score: 100 | Issues: None
+[PASS] security\web-injection-testing\sub-skills\xss\xss-detection-checklist.md | Score: 100 | Issues: None
+[PASS] task-scheduler\SKILL.md | Score: 100 | Issues: None
+[PASS] task-scheduler\task_scheduler_skill.md | Score: 100 | Issues: None
+[PASS] ui-master\SKILL.md | Score: 100 | Issues: None
+[PASS] ui-master\ui_master_skill.md | Score: 100 | Issues: None

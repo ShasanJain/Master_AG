@@ -1,6 +1,9 @@
-import { execSync } from "child_process";
+import { exec } from "child_process";
+import { promisify } from "util";
 import path from "path";
 import { purgeMemory } from "../actions/memory";
+
+const execAsync = promisify(exec);
 
 export default async function MemoryStats() {
   let stats = null;
@@ -9,8 +12,13 @@ export default async function MemoryStats() {
   try {
     // Determine path to python script (assuming dashboard is one level down from root)
     const scriptPath = path.resolve(process.cwd(), "../execution/vector_memory.py");
-    const output = execSync(`python ${scriptPath} stats`, { encoding: 'utf-8' });
-    stats = JSON.parse(output.trim());
+    const { stdout } = await execAsync(`python "${scriptPath}" stats`);
+    const match = stdout.match(/\{[\s\S]*\}/);
+    if (match) {
+      stats = JSON.parse(match[0]);
+    } else {
+      stats = JSON.parse(stdout.trim());
+    }
   } catch (err) {
     error = "Failed to load memory engine stats.";
   }

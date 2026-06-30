@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Schedule Config",
+  "type": "object",
+  "required": ["tasks"],
+  "additionalProperties": false,
+  "properties": {
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "command", "schedule", "enabled"],
+        "additionalProperties": false,
+        "properties": {
+          "id":       { "type": "string", "minLength": 1 },
+          "command":  { "type": "string", "minLength": 1 },
+          "schedule": { "type": "string", "minLength": 1, "description": "HH:MM or Nm (e.g. 10m)" },
+          "last_run": { "type": ["string", "null"] },
+          "enabled":  { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

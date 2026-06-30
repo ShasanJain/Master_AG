@@ -4,6 +4,8 @@ import json
 import requests
 import numpy as np
 import deeplake
+import contextlib
+import io
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -34,12 +36,14 @@ def init_vault(overwrite=False):
             print(f"Reset Failure: {e}")
             
     if not os.path.exists(VAULT_PATH):
-        ds = deeplake.empty(VAULT_PATH, overwrite=True)
-        ds.create_tensor('text', htype='text')
-        ds.create_tensor('embedding', htype='generic')
-        ds.create_tensor('metadata', htype='json')
+        with contextlib.redirect_stdout(io.StringIO()):
+            ds = deeplake.empty(VAULT_PATH, overwrite=True)
+            ds.create_tensor('text', htype='text')
+            ds.create_tensor('embedding', htype='generic')
+            ds.create_tensor('metadata', htype='json')
         return ds
-    return deeplake.load(VAULT_PATH)
+    with contextlib.redirect_stdout(io.StringIO()):
+        return deeplake.load(VAULT_PATH)
 
 async def search_vault(query_text, limit=3):
     """
@@ -50,7 +54,8 @@ async def search_vault(query_text, limit=3):
         if not os.path.exists(VAULT_PATH):
             return []
             
-        ds = deeplake.load(VAULT_PATH, read_only=True)
+        with contextlib.redirect_stdout(io.StringIO()):
+            ds = deeplake.load(VAULT_PATH, read_only=True)
         if len(ds) == 0:
             return []
             
@@ -86,7 +91,8 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "stats":
         if os.path.exists(VAULT_PATH):
             try:
-                ds = deeplake.load(VAULT_PATH, read_only=True)
+                with contextlib.redirect_stdout(io.StringIO()):
+                    ds = deeplake.load(VAULT_PATH, read_only=True)
                 print(json.dumps({"total_skills": len(ds)}))
             except Exception as e:
                 print(json.dumps({"error": str(e)}))

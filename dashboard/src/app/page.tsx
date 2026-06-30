@@ -2,131 +2,407 @@
 
 import Link from "next/link";
 import { StatusBadge } from "./components/StatusBadge";
+import { TokenWidget } from "./components/TokenWidget";
+import { motion, Variants } from "framer-motion";
+import { Terminal, LayoutGrid, Activity, Cpu, Database, GitBranch, ShieldAlert } from "lucide-react";
 import { useState, useEffect } from "react";
+import dynamic from 'next/dynamic';
+import { executeSwarmCommand } from "./actions/chat";
+import { useRouter } from "next/navigation";
+import { ThemeToggle } from "./components/ThemeToggle";
+import { DataMatrix } from "./components/DataMatrix";
+import { syncSystemMemory } from "./actions/memory";
+
+const NeuralGraph3D = dynamic(() => import('./components/NeuralGraph3D'), { 
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-[var(--surface)] animate-pulse flex items-center justify-center text-[10px] font-mono text-[var(--muted)]">LOADING TELEMETRY ENGINE...</div>
+});
+
+const container: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const item: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+};
 
 export default function Dashboard() {
+  const [time, setTime] = useState<string>("00:00:00");
+  const [stats, setStats] = useState({ registry: 0, missions: 0, efficiency: 0, uptime: "0", topSkills: [] as string[], memoryNodes: 0 });
+  const [isLoading, setIsLoading] = useState(true);
+  const [commandQuery, setCommandQuery] = useState("");
+  const [activeScenario, setActiveScenario] = useState<'command' | 'data'>('command');
+  const router = useRouter();
+
+  const [cpuUsage, setCpuUsage] = useState(12);
+  const [memoryUsage, setMemoryUsage] = useState(48);
+  const [recentLogs, setRecentLogs] = useState<any[]>([]);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState("");
+
+  const handleSync = async () => {
+    setSyncing(true);
+    setSyncMessage("Syncing memory...");
+    try {
+      const res = await syncSystemMemory();
+      if (res.success) {
+        setSyncMessage("Memory Synced!");
+      } else {
+        setSyncMessage("Sync failed");
+      }
+    } catch {
+      setSyncMessage("Sync failed");
+    }
+    setTimeout(() => {
+      setSyncing(false);
+      setSyncMessage("");
+    }, 3000);
+  };
+
+  useEffect(() => {
+    setTime(new Date().toLocaleTimeString('en-GB'));
+    const interval = setInterval(() => {
+      setTime(new Date().toLocaleTimeString('en-GB'));
+      setCpuUsage(prev => Math.min(95, Math.max(5, prev + Math.floor(Math.random() * 11) - 5)));
+      setMemoryUsage(prev => Math.min(95, Math.max(20, prev + Math.floor(Math.random() * 5) - 2)));
+    }, 1000);
+    
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        setStats(data);
+      } catch (e) {
+        console.error("Failed to fetch stats", e);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    async function fetchRecentLogs() {
+      try {
+        const res = await fetch('/api/logs');
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setRecentLogs(data.slice(0, 3));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    fetchStats();
+    fetchRecentLogs();
+    const statsInterval = setInterval(fetchStats, 30000);
+    const logsInterval = setInterval(fetchRecentLogs, 10000);
+    
+    return () => {
+      clearInterval(interval);
+      clearInterval(statsInterval);
+      clearInterval(logsInterval);
+    };
+  }, []);
+
   return (
-    <div className="max-w-6xl mx-auto space-y-12">
-      {/* Header */}
-      <section className="flex justify-between items-end">
-        <div>
-          <h2 className="text-5xl font-bold tracking-tighter mb-3 text-[var(--foreground)]">Command Center</h2>
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-[0.2em]">Engine Status:</span>
-            <StatusBadge status="OPTIMAL" />
-          </div>
-        </div>
-        <div className="text-right">
-          <p className="text-[10px] font-bold text-[var(--faint)] uppercase tracking-widest mb-1">Local Time</p>
-          <p className="text-xl font-mono text-[var(--muted)]">13:54:22</p>
-        </div>
-      </section>
-
-      {/* Stats Grid */}
-      <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <StatCard label="Registry Density" value="151" unit="Skills" trend="+15100%" />
-        <StatCard label="Active Missions" value="06" unit="Tasks" />
-        <StatCard label="Token Efficiency" value="98.4" unit="%" trend="optimal" />
-        <StatCard label="Uptime" value="142" unit="Hrs" />
-      </section>
-
-      {/* Skill Armory Section */}
-      <section className="space-y-8">
-        <div className="flex items-center justify-between border-b border-[var(--faint)] pb-6">
-          <div className="flex items-center gap-4">
-            <h3 className="text-xl font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Skill Armory</h3>
-            <div className="h-4 w-px bg-[var(--faint)]" />
-            <span className="text-[10px] font-bold text-[var(--faint)] uppercase tracking-widest">Deployable Intelligence</span>
-          </div>
-          <Link href="/skills">
-            <button className="px-4 py-2 rounded-lg bg-[var(--faint)] border border-[var(--faint)] text-[10px] font-bold uppercase tracking-widest hover:bg-[var(--muted)]/10 transition-all text-[var(--muted)]">VIEW ALL SKILLS</button>
-          </Link>
-        </div>
+    <>
+      {/* Atmospheric Orbs */}
+      <div className="atmospheric-orb orb-emerald"></div>
+      <div className="atmospheric-orb orb-sapphire"></div>
+      
+      <div className="w-full h-full max-w-7xl mx-auto flex flex-col space-y-6 relative z-10 p-4 sm:p-6 lg:p-8">
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <SkillCard 
-            title="writing-skills" 
-            desc="High-Density BLUF Communication for executive reports. Industrial core module." 
-            category="CORE"
-            status="OPTIMAL"
-          />
-          <SkillCard 
-            title="systematic-debugging" 
-            desc="Scientific method approach to resolving complex state bugs in high-autonomy environments." 
-            category="SRE"
-            status="OPTIMAL"
-          />
-          <SkillCard 
-            title="design-audit" 
-            desc="UX & Accessibility verification using premium design tokens. Ensures visual excellence." 
-            category="DESIGN"
-            status="OPTIMAL"
-          />
-        </div>
-      </section>
+        {/* Universal Top Bar */}
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex justify-between items-center bg-[var(--surface)] border border-[var(--border)] p-2 px-4 rounded-sm shadow-sm"
+        >
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setActiveScenario('command')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-sm text-[10px] uppercase font-bold tracking-widest font-mono transition-all ${activeScenario === 'command' ? 'bg-[var(--primary)] text-[var(--background)] shadow-[0_0_10px_var(--primary-glow)]' : 'text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--background)]'}`}
+            >
+              <LayoutGrid size={14} />
+              Command Center
+            </button>
+            <button 
+              onClick={() => setActiveScenario('data')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-sm text-[10px] uppercase font-bold tracking-widest font-mono transition-all ${activeScenario === 'data' ? 'bg-[var(--primary)] text-[var(--background)] shadow-[0_0_10px_var(--primary-glow)]' : 'text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--background)]'}`}
+            >
+              <Activity size={14} />
+              Data Matrix
+            </button>
+          </div>
 
-      {/* Terminal Footer */}
-      <section className="glass-card p-6 border-l-4 border-l-[var(--primary)] bg-[var(--primary-glow)] relative overflow-hidden group">
-        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-          <span className="text-6xl font-black italic tracking-tighter text-[var(--foreground)]">CMD</span>
-        </div>
-        <div className="flex items-center gap-6 relative z-10">
-          <div className="w-12 h-12 rounded-xl bg-[var(--primary)]/20 flex items-center justify-center text-[var(--primary)] font-mono text-xl font-bold">
-            {">_"}
+          <div className="flex items-center gap-4">
+            {/* 1-Click Sync Control */}
+            <button 
+              onClick={handleSync}
+              disabled={syncing}
+              className="text-[9px] font-bold font-mono px-3 py-1.5 bg-[var(--primary)]/10 border border-[var(--primary)]/30 text-[var(--primary)] hover:bg-[var(--primary)]/20 transition-all rounded-sm cursor-pointer disabled:opacity-50"
+            >
+              {syncing ? syncMessage.toUpperCase() : "SYNC MEMORY"}
+            </button>
+            <div className="text-right hidden sm:block">
+              <p className="text-[10px] font-bold text-[var(--faint)] uppercase tracking-widest mb-0.5 font-mono">Local Time</p>
+              <p className="text-sm font-mono text-[var(--primary)] font-bold">{time}</p>
+            </div>
+            <ThemeToggle />
           </div>
-          <div className="flex-1">
-            <input 
-              type="text" 
-              placeholder="Orchestrate the swarm... (e.g. /audit --deep)" 
-              className="bg-transparent border-none outline-none w-full text-lg text-[var(--foreground)] placeholder:text-[var(--faint)] font-medium"
-            />
-          </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-[var(--faint)] border border-[var(--faint)]">
-            <span className="text-[10px] font-bold text-[var(--muted)]">ENTER</span>
-            <span className="text-[10px] font-bold text-[var(--faint)] uppercase">Dispatch</span>
-          </div>
-        </div>
-      </section>
-    </div>
+        </motion.div>
+
+        {activeScenario === 'command' ? (
+          /* Command Center (Open Design Focus) */
+          <>
+            <motion.section 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-between items-end border-b border-[var(--border)] pb-4 mt-2"
+            >
+              <div>
+                <h2 className="text-4xl font-bold tracking-tight mb-2 text-[var(--foreground)] font-mono">Command Center</h2>
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest font-mono">Engine Status:</span>
+                  <StatusBadge status="OPTIMAL" />
+                </div>
+              </div>
+            </motion.section>
+
+            <motion.div 
+              variants={container}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-1 md:grid-cols-12 gap-6 flex-1"
+            >
+              {/* Left Column */}
+              <div className="md:col-span-4 flex flex-col gap-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <StatCard label="Registry" value={isLoading ? "-" : stats.registry.toString()} unit="Skills" trend="optimal" delay={0.1} />
+                  <StatCard label="Missions" value={isLoading ? "-" : stats.missions.toString().padStart(2, '0')} unit="Tasks" delay={0.2} />
+                  <StatCard label="Token Eff." value={isLoading ? "-" : stats.efficiency.toString()} unit="%" trend="optimal" delay={0.3} />
+                  <StatCard label="Memory Nodes" value={isLoading ? "-" : stats.memoryNodes.toString()} unit="Nodes" trend="active" delay={0.4} />
+                </div>
+                
+                <motion.div variants={item} className="h-48 relative group">
+                  <TokenWidget />
+                </motion.div>
+
+                {/* System Health Indicators */}
+                <motion.div variants={item} className="border border-[var(--border)] bg-[var(--surface)] p-5 rounded-sm space-y-4 hover:border-[var(--primary)] transition-all">
+                  <span className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest font-mono flex items-center gap-2">
+                    <Cpu className="w-3.5 h-3.5" /> Hardware & Engine Metrics
+                  </span>
+                  <div className="space-y-3 font-mono text-xs">
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px] text-[var(--muted)]">
+                        <span>CPU Load</span>
+                        <span>{cpuUsage}%</span>
+                      </div>
+                      <div className="h-1 w-full bg-[var(--background)] rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${cpuUsage}%` }}></div>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px] text-[var(--muted)]">
+                        <span>Memory Load</span>
+                        <span>{memoryUsage}%</span>
+                      </div>
+                      <div className="h-1 w-full bg-[var(--background)] rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-500 transition-all duration-500" style={{ width: `${memoryUsage}%` }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Live Activity Feed */}
+                <motion.div variants={item} className="border border-[var(--border)] bg-[var(--surface)] p-5 rounded-sm space-y-3 hover:border-[var(--primary)] transition-all">
+                  <span className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest font-mono flex items-center gap-2">
+                    <GitBranch className="w-3.5 h-3.5" /> Recent Activity Stream
+                  </span>
+                  <div className="space-y-2 max-h-36 overflow-y-auto pr-1">
+                    {recentLogs.length === 0 ? (
+                      <p className="text-[10px] font-mono text-[var(--faint)]">Awaiting telemetry logs...</p>
+                    ) : (
+                      recentLogs.map((log) => (
+                        <div key={log.id} className="p-2 bg-[var(--background)] border border-[var(--border)] rounded-sm text-[10px] font-mono space-y-1">
+                          <div className="flex justify-between">
+                            <span className="text-[var(--foreground)] truncate max-w-[120px] font-bold">{log.mission}</span>
+                            <span className={log.status === 'SUCCESS' ? 'text-green-400' : 'text-red-400'}>{log.status}</span>
+                          </div>
+                          <p className="text-[9px] text-[var(--muted)] truncate">{log.details || 'Task execution logs processed.'}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </motion.div>
+
+                <motion.div variants={item} className="border border-[var(--border)] bg-[var(--surface)] p-5 flex flex-col gap-3 group hover:border-[var(--primary)] transition-all hover:shadow-[0_0_15px_var(--primary-glow)]">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest font-mono flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse"></span>
+                      Mobile Gateway Bot
+                    </span>
+                    <a href="https://t.me/jackag_bot" target="_blank" rel="noopener noreferrer" className="text-[9px] font-bold text-[var(--primary)] uppercase tracking-widest hover:underline font-mono">Launch Bot</a>
+                  </div>
+                  <p className="text-xs text-[var(--muted)] leading-relaxed font-mono">
+                    Authorized User: <span className="text-[var(--foreground)] font-bold">8828424379</span><br/>
+                    Status: <span className="text-[var(--primary)] font-bold">ONLINE (Polling)</span>
+                  </p>
+                  <div className="border-t border-[var(--border)] pt-2 mt-1">
+                    <span className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-widest font-mono">Commands:</span>
+                    <ul className="text-[10px] text-[var(--muted)] font-mono mt-1 space-y-1">
+                      <li>• `/list_skills` - View Registry</li>
+                      <li>• `/search_skills &lt;q&gt;` - Search</li>
+                      <li>• `/status` - Check Git status</li>
+                    </ul>
+                  </div>
+                </motion.div>
+
+                <motion.div variants={item} className="flex-1 min-h-[160px] border border-[var(--border)] bg-[var(--background)] p-0 flex flex-col relative overflow-hidden group hover:border-[var(--primary)] transition-colors">
+                  <Link href="/telemetry" className="absolute inset-0 z-20 cursor-pointer" aria-label="Go to Telemetry Dashboard" />
+                  <div className="absolute top-4 left-4 z-10 pointer-events-none">
+                    <span className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest flex items-center gap-2 font-mono">
+                      <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse shadow-[0_0_8px_var(--primary-glow)]"></span>
+                      System Telemetry [Click to Expand]
+                    </span>
+                  </div>
+                  <NeuralGraph3D />
+                </motion.div>
+              </div>
+
+              {/* Right Column */}
+              <div className="md:col-span-8 flex flex-col gap-6">
+                <motion.div variants={item} className="flex items-center justify-between border-b border-[var(--border)] pb-2">
+                  <div className="flex items-center gap-4">
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--foreground)] font-mono">Deployable Intelligence</h3>
+                  </div>
+                  <Link href="/skills">
+                    <button className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest hover:underline font-mono">VIEW ARMORY [↗]</button>
+                  </Link>
+                </motion.div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <SkillCard title="chat" desc="Neural conversation and thought exploration hub." category="NEURAL" status="OPTIMAL" href="/chat" />
+                  <SkillCard title="incubator" desc="Experimental core. Staging area for sovereign heuristics." category="CORE" status="ACTIVE" href="/incubator" />
+                  <SkillCard title="skill-studio" desc="Turn any workflow into a reusable agent skill. 6-phase guided builder powered by Gemini API." category="FORGE" status="OPTIMAL" href="/skill-studio" />
+                  <SkillCard title="journalist" desc="Autonomous LLM orchestrator linked to Ghost CMS." category="CONTENT" status="OPTIMAL" href="/journalist" />
+
+                  {!isLoading && stats.topSkills.filter(s => !['chat', 'incubator', 'reel-studio'].includes(s)).slice(0, 3).map((skill, idx) => (
+                    <SkillCard 
+                      key={idx} 
+                      title={skill} 
+                      desc="Frequently deployed intelligence module from recent missions." 
+                      category="CORE" 
+                      status="OPTIMAL" 
+                    />
+                  ))}
+                </div>
+                <motion.div variants={item} className="mt-auto bg-[var(--background)] p-4 relative overflow-hidden group hover:border-[var(--primary)] transition-all border border-[var(--border)] rounded-sm space-y-3">
+                  <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">
+                    <span className="text-6xl font-black tracking-tighter text-[var(--foreground)]">CMD</span>
+                  </div>
+                  <div className="flex items-center gap-4 relative z-10">
+                    <Terminal className="w-5 h-5 text-[var(--primary)]" />
+                    <div className="flex-1">
+                      <input 
+                        type="text" 
+                        value={commandQuery}
+                        onChange={(e) => setCommandQuery(e.target.value)}
+                        onKeyDown={async (e) => {
+                          if (e.key === 'Enter' && commandQuery.trim()) {
+                            await executeSwarmCommand(commandQuery);
+                            router.push('/chat');
+                          }
+                        }}
+                        placeholder="Orchestrate the swarm... (e.g., /learn)" 
+                        className="bg-transparent border-none outline-none w-full text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] font-mono"
+                      />
+                    </div>
+                    <button 
+                      onClick={async () => {
+                        if (commandQuery.trim()) {
+                          await executeSwarmCommand(commandQuery);
+                          router.push('/chat');
+                        }
+                      }}
+                      className="flex items-center gap-2 px-2 py-1 rounded bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--primary)] transition-all cursor-pointer"
+                    >
+                      <span className="text-[9px] font-bold text-[var(--primary)]">ENTER</span>
+                    </button>
+                  </div>
+                  
+                  {/* Command suggestion clickers */}
+                  <div className="flex flex-wrap gap-2 text-[9px] font-mono text-[var(--muted)] pt-1">
+                    <span>Quick commands:</span>
+                    {["/grill-me", "/learn", "/schedule", "/grill"].map(cmd => (
+                      <button 
+                        key={cmd}
+                        onClick={() => setCommandQuery(cmd)}
+                        className="hover:text-[var(--primary)] hover:underline cursor-pointer"
+                      >
+                        {cmd}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </>
+        ) : (
+          /* Data Matrix (UI-UX-Pro-Max Focus) */
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex-1"
+          >
+            <DataMatrix />
+          </motion.div>
+        )}
+      </div>
+    </>
   );
 }
 
-function StatCard({ label, value, unit, trend }: { label: string; value: string; unit: string; trend?: string }) {
+function StatCard({ label, value, unit, trend, delay = 0 }: { label: string; value: string; unit: string; trend?: string; delay?: number }) {
   return (
-    <div className="glass-card p-8 group relative overflow-hidden">
-      <div className="absolute -right-4 -top-4 w-24 h-24 bg-[var(--primary-glow)] rounded-full blur-3xl group-hover:bg-[var(--primary)] transition-all opacity-50" />
-      <div className="flex justify-between items-start mb-4">
-        <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--muted)]">{label}</p>
+    <motion.div variants={item} whileHover={{ scale: 1.02 }} className="border border-[var(--border)] bg-[var(--surface)] p-4 group relative overflow-hidden hover:border-[var(--primary)] transition-all hover:shadow-[0_0_15px_var(--primary-glow)]">
+      <div className="flex justify-between items-start mb-2">
+        <p className="text-[9px] uppercase tracking-widest font-bold text-[var(--muted)] font-mono">{label}</p>
         {trend && (
-          <span className={`text-[10px] font-bold ${trend === 'optimal' ? 'text-[var(--status-emerald)]' : 'text-[var(--status-blue)]'}`}>
-            {trend.startsWith('+') ? trend : '• ' + trend.toUpperCase()}
+          <span className={`text-[9px] font-bold font-mono ${trend === 'optimal' ? 'text-[var(--primary)]' : 'text-[var(--status-blue)]'}`}>
+            {trend}
           </span>
         )}
       </div>
-      <div className="flex items-baseline gap-2">
-        <span className="text-4xl font-bold text-[var(--foreground)] tracking-tighter">{value}</span>
-        <span className="text-xs uppercase text-[var(--status-blue)] font-bold tracking-widest opacity-60">{unit}</span>
+      <div className="flex items-baseline gap-1 mt-1">
+        <span className="text-2xl font-bold text-[var(--foreground)] font-mono tracking-tight">{value}</span>
+        <span className="text-[10px] uppercase text-[var(--muted)] font-bold tracking-widest font-mono">{unit}</span>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-function SkillCard({ title, desc, category, status }: { title: string; desc: string; category: string; status: any }) {
+function SkillCard({ title, desc, category, status, href = "/skills" }: { title: string; desc: string; category: string; status: any; href?: string }) {
   return (
-    <div className="glass-card p-8 flex flex-col h-full group border-b-2 border-b-transparent hover:border-b-[var(--primary)]">
-      <div className="flex justify-between items-start mb-6">
-        <div className="space-y-1">
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[var(--faint)] text-[var(--muted)] tracking-widest uppercase">{category}</span>
-          <h4 className="font-bold text-xl leading-tight text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors">{title}</h4>
+    <motion.div variants={item} whileHover={{ scale: 1.02 }} className="border border-[var(--border)] bg-[var(--surface)] p-5 flex flex-col h-full group hover:border-[var(--primary)] transition-all cursor-pointer hover:shadow-[0_0_15px_var(--primary-glow)]">
+      <div className="flex justify-between items-start mb-3">
+        <div className="space-y-2">
+          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[var(--background)] border border-[var(--border)] text-[var(--primary)] tracking-widest uppercase font-mono">{category}</span>
+          <h4 className="font-bold text-sm text-[var(--foreground)] font-mono">{title}</h4>
         </div>
-        <StatusBadge status={status} />
+        <div className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] shadow-[0_0_5px_var(--primary-glow)]"></div>
       </div>
-      <p className="text-sm text-[var(--muted)] leading-relaxed mb-8 flex-1">{desc}</p>
-      <Link href="/skills">
-        <button className="w-full py-3 rounded-xl bg-[var(--primary-glow)] border border-[var(--primary)] text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-[var(--primary)] hover:text-white transition-all shadow-xl text-[var(--primary)]">
-          Initialize Session
+      <p className="text-xs text-[var(--muted)] leading-relaxed mb-4 flex-1">{desc}</p>
+      <Link href={href} className="mt-auto">
+        <button className="w-full py-2 bg-[var(--background)] border border-[var(--border)] text-[10px] font-bold uppercase tracking-widest hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all text-[var(--foreground)] font-mono shiny-button">
+          INIT
         </button>
       </Link>
-    </div>
+    </motion.div>
   );
 }

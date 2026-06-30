@@ -135,7 +135,13 @@ async def chat_complete(messages, model=None, context="", depth=0):
     system_msg = (
         "You are Jack, a local autonomous engineer with DUAL-CORE memory.\n"
         "You have access to Personal Context (OpenMemory) and Industrial Skills (Deep Lake).\n"
-        "Use your File System tags and memory tags to assist the user. Speak naturally."
+        "Use your File System tags and memory tags to assist the user.\n\n"
+        "**ANTI-SLOP / HUMANIZER PROTOCOL (MANDATORY)**:\n"
+        "- Your output must NEVER contain AI jargon or 'slop'.\n"
+        "- Write direct, factual, humanized, and concise text.\n"
+        "- Do NOT simulate fake enthusiasm or robotic sycophancy (e.g. no 'Great question!', 'I hope this helps!').\n"
+        "- BANISHED WORDS: delve, tapestry, seamless, testament, pivotal, intricate, underscore, robust, dynamic, unlocking.\n"
+        "- Keep it terse, precise, and highly industrial."
     )
     if context and depth == 0:
         system_msg += f"\n\nContext:\n{context}"
@@ -143,7 +149,8 @@ async def chat_complete(messages, model=None, context="", depth=0):
     final_messages = [{"role": "system", "content": system_msg}] + messages
 
     try:
-        print(f"[THINKING] Model: {model or OLLAMA_MODEL} | Depth: {depth}")
+        import sys
+        print(f"[THINKING] Model: {model or OLLAMA_MODEL} | Depth: {depth}", file=sys.stderr)
         loop = asyncio.get_event_loop()
         response = await loop.run_in_executor(None, lambda: requests.post(url, json={
             "model": model or OLLAMA_MODEL,
@@ -157,7 +164,8 @@ async def chat_complete(messages, model=None, context="", depth=0):
         actions = await execute_cognitive_tags(raw_content)
         
         if actions:
-            print(f"[ACTION] Jack executed {len(actions)} tasks.")
+            import sys
+            print(f"[ACTION] Jack executed {len(actions)} tasks.", file=sys.stderr)
             messages.append({"role": "assistant", "content": raw_content})
             messages.append({"role": "user", "content": f"ACTION_RESULTS:\n{chr(10).join(actions)}"})
             return await chat_complete(messages, model=model, depth=depth + 1)

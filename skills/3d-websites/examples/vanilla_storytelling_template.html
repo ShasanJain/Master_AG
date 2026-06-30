@@ -1,0 +1,831 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master-AG | Immersive 3D Space Showcase</title>
+    
+    <!-- Outfit & JetBrains Mono Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #03050a;
+            cursor: none;
+        }
+        
+        /* Film Grain Overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0.035;
+            z-index: 999;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Tech Blueprint Grid */
+        .grid-blueprint {
+            background-size: 60px 60px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+        }
+
+        .glass-panel {
+            background: rgba(4, 7, 15, 0.45);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        /* Interactive Damped Cursor */
+        #custom-cursor {
+            width: 8px;
+            height: 8px;
+            background-color: #818cf8;
+            border-radius: 50%;
+            position: fixed;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1000;
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        #custom-cursor-ring {
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(129, 140, 248, 0.2);
+            border-radius: 50%;
+            position: fixed;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Make lil-gui debugger panel scrollable */
+        .lil-gui {
+            max-height: 85vh !important;
+            overflow-y: auto !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            background: rgba(8, 12, 24, 0.9) !important;
+            backdrop-filter: blur(12px) !important;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(3, 5, 10, 0.95);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.4);
+        }
+    </style>
+</head>
+<body class="text-slate-100 font-sans overflow-x-hidden selection:bg-indigo-500/30 selection:text-indigo-200">
+
+    <!-- Cursor Elements -->
+    <div id="custom-cursor"></div>
+    <div id="custom-cursor-ring"></div>
+
+    <!-- Background Blueprint Visuals -->
+    <div class="noise-overlay"></div>
+    <div class="fixed inset-0 grid-blueprint z-0 pointer-events-none"></div>
+
+    <!-- WebGL Canvas Layer -->
+    <div id="canvas-container" class="fixed top-0 left-0 w-screen h-screen z-0 pointer-events-none"></div>
+
+    <!-- Load Gate -->
+    <div id="loader" class="fixed inset-0 z-50 bg-[#03050a] flex flex-col items-center justify-center gap-4 transition-opacity duration-1000">
+        <div class="w-14 h-14 border-2 border-indigo-500/10 border-t-indigo-500 rounded-full animate-spin"></div>
+        <span class="text-[9px] font-mono tracking-widest text-indigo-400 animate-pulse uppercase">Assembling Cosmic WebGL Context</span>
+    </div>
+
+    <!-- Telemetry Inspector (Debug Mode Only) -->
+    <div id="telemetry-panel" class="fixed bottom-6 left-6 z-40 p-5 rounded-2xl glass-panel text-[11px] font-mono text-slate-300 max-w-sm hidden border border-white/5 shadow-2xl">
+        <div class="text-indigo-400 font-bold tracking-wider mb-2 border-b border-white/5 pb-1">SCROLL TELEMETRY</div>
+        <div class="flex justify-between"><span>Scroll Progress:</span> <span id="tel-scroll" class="font-bold text-slate-100">0%</span></div>
+        
+        <div class="text-indigo-400 font-bold tracking-wider mt-4 mb-1">PRIMARY (Avocado)</div>
+        <div class="flex justify-between"><span>Position:</span> <span id="tel-p1-pos" class="text-slate-100">[0.00, 0.00, 0.00]</span></div>
+        <div class="flex justify-between"><span>Rotation:</span> <span id="tel-p1-rot" class="text-slate-100">[0.00, 0.00, 0.00]</span></div>
+        
+        <div class="text-indigo-400 font-bold tracking-wider mt-4 mb-1">SECONDARY (Duck)</div>
+        <div class="flex justify-between"><span>Position:</span> <span id="tel-p2-pos" class="text-slate-100">[0.00, 0.00, 0.00]</span></div>
+        <div class="flex justify-between"><span>Rotation:</span> <span id="tel-p2-rot" class="text-slate-100">[0.00, 0.00, 0.00]</span></div>
+    </div>
+
+    <!-- Sticky Header -->
+    <header class="fixed top-6 left-6 right-6 z-40">
+        <nav class="max-w-7xl mx-auto px-6 py-4 rounded-2xl glass-panel flex justify-between items-center">
+            <div class="flex items-center space-x-3 hover-target">
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-bold text-sm tracking-tighter">AG</div>
+                <span class="font-bold tracking-tight text-lg">MASTER_AG</span>
+            </div>
+            <div class="flex items-center space-x-6 text-[10px] font-mono uppercase tracking-widest text-slate-400">
+                <span class="text-indigo-400 font-semibold flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span> DEEP SPACE PARTICLES ACTIVE
+                </span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Scroll Sections -->
+    <main class="relative z-10 w-full">
+
+        <!-- SECTION 1: HERO -->
+        <section class="w-full min-h-screen flex items-center px-6 max-w-7xl mx-auto">
+            <div class="max-w-2xl flex flex-col gap-6 pt-24">
+                <span class="text-[9px] tracking-widest text-indigo-400 uppercase font-mono bg-indigo-500/5 border border-indigo-500/10 px-3 py-1 rounded-full w-max">Scene 01 / Deep Particle Space</span>
+                <h1 class="text-6xl md:text-7xl font-extrabold tracking-tight leading-none reveal-text">
+                    Cosmic <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500">Dust & Glow</span>
+                </h1>
+                <p class="text-slate-400 text-base leading-relaxed max-w-md reveal-p">
+                    A dynamic 3D starfield particle system floats behind the assets. Scrolling shifts both the assets and the background space particles at independent depths.
+                </p>
+                <div class="flex items-center gap-2 mt-4 text-[10px] font-mono text-slate-500 uppercase tracking-widest animate-bounce">
+                    <span>Scroll to warp space</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: PARALLAX OFFSET -->
+        <section class="w-full min-h-screen flex items-center justify-end px-6 max-w-7xl mx-auto">
+            <div class="max-w-xl p-10 rounded-3xl glass-panel flex flex-col gap-5">
+                <span class="text-[9px] tracking-widest text-indigo-400 uppercase font-mono">Scene 02 / The Shift</span>
+                <h2 class="text-4xl font-extrabold tracking-tight reveal-text">Coordinate Warp</h2>
+                <p class="text-slate-400 leading-relaxed text-sm reveal-p">
+                    As the camera pans left, the background particle system rotates on the Z-axis, creating a spinning cosmos effect similar to the Noomo storytelling narrative.
+                </p>
+                <div class="h-px bg-white/5 my-2"></div>
+                <div class="grid grid-cols-2 gap-4 text-[10px] font-mono text-slate-400">
+                    <div>
+                        <span>PARTICLE DENSITY</span>
+                        <div class="font-bold text-slate-200 mt-1">2,500 Nodes</div>
+                    </div>
+                    <div>
+                        <span>ROTATION VECTOR</span>
+                        <div class="font-bold text-indigo-400 mt-1">Dynamic Z-pan</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: DEPTH LAYERS -->
+        <section class="w-full min-h-screen flex items-center px-6 max-w-7xl mx-auto">
+            <div class="max-w-xl p-10 rounded-3xl glass-panel flex flex-col gap-5">
+                <span class="text-[9px] tracking-widest text-indigo-400 uppercase font-mono">Scene 03 / Separation</span>
+                <h2 class="text-4xl font-extrabold tracking-tight reveal-text">Dimensional Layers</h2>
+                <p class="text-slate-400 leading-relaxed text-sm reveal-p">
+                    Three independent 3D elements (Foreground model, background asset, and starfield dust) create a highly realistic sense of scale and spatial volume in the browser window.
+                </p>
+                <div class="h-px bg-white/5 my-2"></div>
+                <ul class="flex flex-col gap-2.5 text-[10px] text-slate-400 font-mono">
+                    <li class="flex justify-between"><span class="text-slate-200">HELMET POSITION</span> <span>[1.0, 0.1, 0.5]</span></li>
+                    <li class="flex justify-between"><span class="text-slate-200">PARTICLE DEPTH</span> <span>Distributed Z [-5 to 5]</span></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SECTION 4: CALL TO ACTION -->
+        <section id="cta" class="w-full min-h-screen flex items-center justify-end px-6 max-w-7xl mx-auto">
+            <div class="max-w-xl p-12 rounded-3xl glass-panel flex flex-col gap-6">
+                <span class="text-[9px] tracking-widest text-indigo-400 uppercase font-mono">Scene 04 / Finish</span>
+                <h2 class="text-5xl font-extrabold tracking-tight reveal-text">Begin Your Narrative</h2>
+                <p class="text-slate-400 leading-relaxed reveal-p">
+                    Create highly cinematic experiences. Leverage 3D and scroll storytelling to captivate, educate, and convert.
+                </p>
+                <button class="px-8 py-4 bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white font-bold tracking-tight rounded-2xl shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.03] active:scale-[0.97] cursor-pointer hover-target">
+                    Deploy Cinematic Stack
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Three.js & GSAP Core Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
+
+    <script>
+        // Check if debug mode is active
+        const urlParams = new URLSearchParams(window.location.search);
+        const isDebug = urlParams.has('debug');
+
+        // Custom Mouse Tracker Animation
+        const cursor = document.getElementById('custom-cursor');
+        const cursorRing = document.getElementById('custom-cursor-ring');
+        
+        let mouseX = 0, mouseY = 0;
+        let ringX = 0, ringY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+        });
+
+        function updateCursorRing() {
+            ringX += (mouseX - ringX) * 0.1;
+            ringY += (mouseY - ringY) * 0.1;
+            cursorRing.style.left = ringX + 'px';
+            cursorRing.style.top = ringY + 'px';
+            requestAnimationFrame(updateCursorRing);
+        }
+        updateCursorRing();
+
+        // Hover expansions
+        document.querySelectorAll('.hover-target, button, a').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(4)';
+                cursor.style.backgroundColor = 'rgba(129, 140, 248, 0.2)';
+                cursorRing.style.transform = 'translate(-50%, -50%) scale(1.3)';
+                cursorRing.style.borderColor = 'rgba(236, 72, 153, 0.6)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursor.style.backgroundColor = '#818cf8';
+                cursorRing.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursorRing.style.borderColor = 'rgba(129, 140, 248, 0.2)';
+            });
+        });
+
+        // Initialize WebGL
+        const container = document.getElementById('canvas-container');
+        const loader = document.getElementById('loader');
+        
+        let scene, camera, renderer;
+        let model1, model2; 
+        let particles; // Particle system
+        let directionalLight, fillLight;
+        let modelsLoaded = 0;
+        const activeAssets = [];
+        let gui;
+
+        function init() {
+            scene = new THREE.Scene();
+            
+            camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.set(0, 0, 4);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.35;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            container.appendChild(renderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+
+            directionalLight = new THREE.DirectionalLight(0xffffff, 2.5);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+
+            fillLight = new THREE.DirectionalLight(0x818cf8, 0.8);
+            fillLight.position.set(-5, -2, -5);
+            scene.add(fillLight);
+
+            // 1. Build Deep Space Particle System
+            const particleCount = 2500;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 10;     
+                positions[i + 1] = (Math.random() - 0.5) * 10; 
+                positions[i + 2] = (Math.random() - 0.5) * 10; 
+
+                const mixRatio = Math.random();
+                colors[i] = 0.5 + mixRatio * 0.5;              
+                colors[i + 1] = 0.5 + mixRatio * 0.3;          
+                colors[i + 2] = 0.8 + mixRatio * 0.2;          
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.02,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.55,
+                blending: THREE.AdditiveBlending
+            });
+
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            const gltfLoader = new THREE.GLTFLoader();
+
+            // Load Model 1: Foregound (Avocado)
+            gltfLoader.load(
+                'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb',
+                function (gltf) {
+                    model1 = gltf.scene;
+                    scene.add(model1);
+                    model1.position.set(1.0, 0, 0); 
+                    model1.rotation.set(0.2, 0.5, 0);
+                    model1.scale.set(12.0, 12.0, 12.0); 
+
+                    checkAssetsLoad();
+                }
+            );
+
+            // Load Model 2: Background (Duck)
+            gltfLoader.load(
+                'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF-Binary/Duck.glb',
+                function (gltf) {
+                    model2 = gltf.scene;
+                    scene.add(model2);
+                    model2.position.set(0.8, -0.6, -1.5); 
+                    model2.rotation.set(0.1, -0.8, 0);
+                    model2.scale.set(0.7, 0.7, 0.7); 
+
+                    checkAssetsLoad();
+                }
+            );
+
+            window.addEventListener('resize', onWindowResize);
+            
+            // Mouse parallax tracking
+            window.addEventListener('mousemove', (e) => {
+                const normX = (e.clientX / window.innerWidth) * 2 - 1;
+                const normY = -(e.clientY / window.innerHeight) * 2 + 1;
+                
+                if (model1) {
+                    gsap.to(model1.rotation, {
+                        y: model1.rotation.y + (normX * 0.12),
+                        x: model1.rotation.x + (normY * 0.12),
+                        duration: 0.8,
+                        ease: 'power1.out'
+                    });
+                }
+                
+                if (model2) {
+                    gsap.to(model2.rotation, {
+                        y: model2.rotation.y + (normX * 0.05),
+                        x: model2.rotation.x + (normY * 0.05),
+                        duration: 1.0,
+                        ease: 'power1.out'
+                    });
+                }
+
+                if (particles) {
+                    gsap.to(particles.rotation, {
+                        y: normX * 0.08,
+                        x: normY * 0.08,
+                        duration: 1.5,
+                        ease: 'power1.out'
+                    });
+                }
+            });
+        }
+
+        function checkAssetsLoad() {
+            modelsLoaded++;
+            if (modelsLoaded === 2) {
+                // Register default assets
+                activeAssets.push({
+                    id: 'avocado',
+                    varName: 'model1',
+                    label: 'Avocado (Primary)',
+                    mesh: model1,
+                    scenes: [
+                        { pos: {x: 1.0, y: 0.0, z: 0.0}, rot: {x: 0.2, y: 0.5, z: 0.0}, scale: 12.0 },
+                        { pos: {x: -1.0, y: -0.2, z: 0.2}, rot: {x: 0.4, y: 2.8, z: 0.0}, scale: 10.0 },
+                        { pos: {x: 1.0, y: 0.1, z: 0.5}, rot: {x: -0.2, y: 4.5, z: 0.0}, scale: 16.0 },
+                        { pos: {x: -1.0, y: 0.2, z: 0.0}, rot: {x: 0.3, y: 6.28, z: 0.0}, scale: 12.0 }
+                    ]
+                });
+
+                activeAssets.push({
+                    id: 'duck',
+                    varName: 'model2',
+                    label: 'Rubber Duck (Secondary)',
+                    mesh: model2,
+                    scenes: [
+                        { pos: {x: 0.8, y: -0.6, z: -1.5}, rot: {x: 0.1, y: -0.8, z: 0.0}, scale: 0.7 },
+                        { pos: {x: -0.8, y: 0.2, z: -0.5}, rot: {x: 0.2, y: 1.5, z: 0.0}, scale: 0.7 },
+                        { pos: {x: 0.8, y: -0.4, z: -1.0}, rot: {x: 0.1, y: -1.0, z: 0.0}, scale: 0.7 },
+                        { pos: {x: -0.8, y: -0.4, z: -1.2}, rot: {x: 0.1, y: 0.5, z: 0.0}, scale: 0.7 }
+                    ]
+                });
+
+                gsap.to(loader, {
+                    opacity: 0,
+                    duration: 1.2,
+                    onComplete: () => {
+                        loader.style.display = 'none';
+                    }
+                });
+
+                if (isDebug) {
+                    document.getElementById('telemetry-panel').classList.remove('hidden');
+                    initDebugGUI();
+                }
+
+                setupScrollAnimations();
+                animate();
+            }
+        }
+
+        function initDebugGUI() {
+            rebuildGUI();
+        }
+
+        function rebuildGUI() {
+            if (gui) {
+                gui.destroy();
+            }
+            gui = new lil.GUI({ title: '3D Configurator' });
+            
+            // Loop through all active assets
+            activeAssets.forEach((asset, assetIdx) => {
+                const assetFolder = gui.addFolder(`Asset: ${asset.label}`);
+                
+                // Add Rename input
+                const nameController = assetFolder.add(asset, 'label').name('Edit Label');
+                nameController.onChange(() => {
+                    assetFolder.title(`Asset: ${asset.label}`);
+                });
+
+                // Scenes 1 to 4 folders
+                const sceneNames = ['Scene 1 (Hero)', 'Scene 2 (Shift)', 'Scene 3 (Separation)', 'Scene 4 (Finish)'];
+                asset.scenes.forEach((sceneData, sceneIdx) => {
+                    const sceneFolder = assetFolder.addFolder(`🎬 ${sceneNames[sceneIdx]}`);
+                    
+                    // Add Preview button
+                    const previewState = {
+                        preview: () => {
+                            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                            window.scrollTo({
+                                top: (sceneIdx / 3) * maxScroll,
+                                behavior: 'smooth'
+                            });
+                        }
+                    };
+                    sceneFolder.add(previewState, 'preview').name('🔍 Snap Scroll Here');
+                    
+                    // Add sliders
+                    sceneFolder.add(sceneData.pos, 'x', -8, 8, 0.01).name('Pos X').onChange(() => rebuildScrollAnimations());
+                    sceneFolder.add(sceneData.pos, 'y', -8, 8, 0.01).name('Pos Y').onChange(() => rebuildScrollAnimations());
+                    sceneFolder.add(sceneData.pos, 'z', -8, 8, 0.01).name('Pos Z').onChange(() => rebuildScrollAnimations());
+                    sceneFolder.add(sceneData.rot, 'x', -Math.PI, Math.PI, 0.01).name('Rot X').onChange(() => rebuildScrollAnimations());
+                    sceneFolder.add(sceneData.rot, 'y', -Math.PI, Math.PI, 0.01).name('Rot Y').onChange(() => rebuildScrollAnimations());
+                    sceneFolder.add(sceneData.rot, 'z', -Math.PI, Math.PI, 0.01).name('Rot Z').onChange(() => rebuildScrollAnimations());
+                    sceneFolder.add(sceneData, 'scale', 0.01, 50, 0.01).name('Scale').onChange((v) => {
+                        sceneData.scale = v;
+                        rebuildScrollAnimations();
+                    });
+                });
+                
+                // Asset level helpers
+                const helperState = {
+                    copyGSAP: () => {
+                        const code = generateAssetGSAPCode(asset);
+                        navigator.clipboard.writeText(code);
+                        alert(`Copied GSAP timeline code for '${asset.label}' to clipboard!`);
+                    },
+                    remove: () => {
+                        if (confirm(`Remove asset '${asset.label}'?`)) {
+                            scene.remove(asset.mesh);
+                            activeAssets.splice(assetIdx, 1);
+                            rebuildGUI();
+                            rebuildScrollAnimations();
+                        }
+                    }
+                };
+                assetFolder.add(helperState, 'copyGSAP').name('📋 Copy GSAP Timeline');
+                assetFolder.add(helperState, 'remove').name('Remove Mesh');
+            });
+            
+            // Cosmic Dust folder
+            const dustFolder = gui.addFolder('Cosmic Dust Particles');
+            if (particles) {
+                const dustState = {
+                    remove: () => { scene.remove(particles); },
+                    add: () => { scene.add(particles); }
+                };
+                dustFolder.add(particles.material, 'size', 0.001, 0.1, 0.001).name('Star Size');
+                dustFolder.add(particles.material, 'opacity', 0, 1, 0.05).name('Star Opacity');
+                dustFolder.add(particles.rotation, 'y', -Math.PI, Math.PI, 0.05).name('Space Spin');
+                dustFolder.add(dustState, 'remove').name('Remove Particles');
+                dustFolder.add(dustState, 'add').name('Restore Particles');
+            }
+
+            // Asset Creator Folder
+            const creatorState = {
+                url: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/ToyCar/glTF-Binary/ToyCar.glb',
+                scale: 1.0,
+                name: 'Custom Asset',
+                load: () => {
+                    const gltfLoader = new THREE.GLTFLoader();
+                    gltfLoader.load(creatorState.url, (gltf) => {
+                        const newModel = gltf.scene;
+                        scene.add(newModel);
+                        newModel.position.set(0, 0, 0);
+                        newModel.rotation.set(0, 0, 0);
+                        newModel.scale.set(creatorState.scale, creatorState.scale, creatorState.scale);
+                        
+                        const varName = 'customModel' + (activeAssets.length + 1);
+                        
+                        // Register in activeAssets
+                        activeAssets.push({
+                            id: 'custom_' + Date.now(),
+                            varName: varName,
+                            label: creatorState.name,
+                            mesh: newModel,
+                            scenes: [
+                                { pos: {x: 0, y: 0, z: 0}, rot: {x: 0, y: 0, z: 0}, scale: creatorState.scale },
+                                { pos: {x: 0, y: 0, z: 0}, rot: {x: 0, y: 0, z: 0}, scale: creatorState.scale },
+                                { pos: {x: 0, y: 0, z: 0}, rot: {x: 0, y: 0, z: 0}, scale: creatorState.scale },
+                                { pos: {x: 0, y: 0, z: 0}, rot: {x: 0, y: 0, z: 0}, scale: creatorState.scale }
+                            ]
+                        });
+                        
+                        rebuildGUI();
+                        rebuildScrollAnimations();
+                        alert(`Custom asset '${creatorState.name}' loaded and registered to GSAP timeline!`);
+                    }, undefined, (e) => {
+                        alert('Failed to load GLB model. Verify the URL is a direct raw GLB file.');
+                        console.error(e);
+                    });
+                }
+            };
+
+            const fCreator = gui.addFolder('🚀 Add Custom Asset');
+            fCreator.add(creatorState, 'name').name('Asset Label');
+            fCreator.add(creatorState, 'url').name('GLB CDN URL');
+            fCreator.add(creatorState, 'scale', 0.01, 50).name('Initial Scale');
+            fCreator.add(creatorState, 'load').name('Inject Into Scene');
+
+            // Lighting folder
+            const fLighting = gui.addFolder('Lighting Grid');
+            fLighting.add(directionalLight, 'intensity', 0, 10, 0.1).name('Sun Light');
+            fLighting.add(fillLight, 'intensity', 0, 10, 0.1).name('Indigo Fill');
+            
+            // Global Export Folder
+            const fExport = gui.addFolder('⚙️ Global Export');
+            const exportState = {
+                copyAll: () => {
+                    const fullCode = generateFullGSAPCode();
+                    navigator.clipboard.writeText(fullCode);
+                    alert('Copied entire timeline GSAP code to clipboard!');
+                }
+            };
+            fExport.add(exportState, 'copyAll').name('📋 Export Entire GSAP Code');
+        }
+
+        function generateAssetGSAPCode(asset) {
+            let code = `// GSAP Timeline segments for ${asset.label} (${asset.varName})\n`;
+            const s1 = asset.scenes[0];
+            code += `gsap.set(${asset.varName}.position, { x: ${s1.pos.x.toFixed(2)}, y: ${s1.pos.y.toFixed(2)}, z: ${s1.pos.z.toFixed(2)} });\n`;
+            code += `gsap.set(${asset.varName}.rotation, { x: ${s1.rot.x.toFixed(2)}, y: ${s1.rot.y.toFixed(2)}, z: ${s1.rot.z.toFixed(2)} });\n`;
+            code += `gsap.set(${asset.varName}.scale, { x: ${s1.scale.toFixed(2)}, y: ${s1.scale.toFixed(2)}, z: ${s1.scale.toFixed(2)} });\n\n`;
+            
+            const s2 = asset.scenes[1];
+            code += `// Section 1 -> Section 2\n`;
+            code += `tl.to(${asset.varName}.position, { x: ${s2.pos.x.toFixed(2)}, y: ${s2.pos.y.toFixed(2)}, z: ${s2.pos.z.toFixed(2)}, duration: 1 }, 0)\n`;
+            code += `  .to(${asset.varName}.rotation, { x: ${s2.rot.x.toFixed(2)}, y: ${s2.rot.y.toFixed(2)}, z: ${s2.rot.z.toFixed(2)}, duration: 1 }, 0)\n`;
+            code += `  .to(${asset.varName}.scale, { x: ${s2.scale.toFixed(2)}, y: ${s2.scale.toFixed(2)}, z: ${s2.scale.toFixed(2)}, duration: 1 }, 0);\n\n`;
+
+            const s3 = asset.scenes[2];
+            code += `// Section 2 -> Section 3\n`;
+            code += `tl.to(${asset.varName}.position, { x: ${s3.pos.x.toFixed(2)}, y: ${s3.pos.y.toFixed(2)}, z: ${s3.pos.z.toFixed(2)}, duration: 1 }, 1)\n`;
+            code += `  .to(${asset.varName}.rotation, { x: ${s3.rot.x.toFixed(2)}, y: ${s3.rot.y.toFixed(2)}, z: ${s3.rot.z.toFixed(2)}, duration: 1 }, 1)\n`;
+            code += `  .to(${asset.varName}.scale, { x: ${s3.scale.toFixed(2)}, y: ${s3.scale.toFixed(2)}, z: ${s3.scale.toFixed(2)}, duration: 1 }, 1);\n\n`;
+
+            const s4 = asset.scenes[3];
+            code += `// Section 3 -> Section 4\n`;
+            code += `tl.to(${asset.varName}.position, { x: ${s4.pos.x.toFixed(2)}, y: ${s4.pos.y.toFixed(2)}, z: ${s4.pos.z.toFixed(2)}, duration: 1 }, 2)\n`;
+            code += `  .to(${asset.varName}.rotation, { x: ${s4.rot.x.toFixed(2)}, y: ${s4.rot.y.toFixed(2)}, z: ${s4.rot.z.toFixed(2)}, duration: 1 }, 2)\n`;
+            code += `  .to(${asset.varName}.scale, { x: ${s4.scale.toFixed(2)}, y: ${s4.scale.toFixed(2)}, z: ${s4.scale.toFixed(2)}, duration: 1 }, 2);\n`;
+            return code;
+        }
+
+        function generateFullGSAPCode() {
+            let code = `// --- Generated GSAP Timeline Code for Master-AG ---\n`;
+            code += `gsap.registerPlugin(ScrollTrigger);\n\n`;
+            code += `const tl = gsap.timeline({\n`;
+            code += `    scrollTrigger: {\n`;
+            code += `        trigger: "body",\n`;
+            code += `        start: "top top",\n`;
+            code += `        end: "bottom bottom",\n`;
+            code += `        scrub: 1.3\n`;
+            code += `    }\n`;
+            code += `});\n\n`;
+            
+            activeAssets.forEach(asset => {
+                const s1 = asset.scenes[0];
+                code += `// Initial sets for ${asset.label}\n`;
+                code += `gsap.set(${asset.varName}.position, { x: ${s1.pos.x.toFixed(2)}, y: ${s1.pos.y.toFixed(2)}, z: ${s1.pos.z.toFixed(2)} });\n`;
+                code += `gsap.set(${asset.varName}.rotation, { x: ${s1.rot.x.toFixed(2)}, y: ${s1.rot.y.toFixed(2)}, z: ${s1.rot.z.toFixed(2)} });\n`;
+                code += `gsap.set(${asset.varName}.scale, { x: ${s1.scale.toFixed(2)}, y: ${s1.scale.toFixed(2)}, z: ${s1.scale.toFixed(2)} });\n`;
+            });
+            code += `\n`;
+            
+            for (let seq = 0; seq < 3; seq++) {
+                code += `// --- Transition Scene ${seq + 1} -> Scene ${seq + 2} ---\n`;
+                activeAssets.forEach(asset => {
+                    const nextScene = asset.scenes[seq + 1];
+                    code += `tl.to(${asset.varName}.position, { x: ${nextScene.pos.x.toFixed(2)}, y: ${nextScene.pos.y.toFixed(2)}, z: ${nextScene.pos.z.toFixed(2)}, duration: 1, ease: "none" }, ${seq})\n`;
+                    code += `  .to(${asset.varName}.rotation, { x: ${nextScene.rot.x.toFixed(2)}, y: ${nextScene.rot.y.toFixed(2)}, z: ${nextScene.rot.z.toFixed(2)}, duration: 1, ease: "none" }, ${seq})\n`;
+                    code += `  .to(${asset.varName}.scale, { x: ${nextScene.scale.toFixed(2)}, y: ${nextScene.scale.toFixed(2)}, z: ${nextScene.scale.toFixed(2)}, duration: 1, ease: "none" }, ${seq});\n`;
+                });
+                code += `\n`;
+            }
+            
+            if (particles) {
+                code += `// Background cosmic dust rotation\n`;
+                code += `tl.to(particles.rotation, { z: 1.2, duration: 1, ease: "none" }, 0)\n`;
+                code += `  .to(particles.position, { z: 1.5, duration: 1, ease: "none" }, 1)\n`;
+                code += `  .to(particles.rotation, { z: 2.5, duration: 1, ease: "none" }, 2)\n`;
+                code += `  .to(particles.position, { z: 0, duration: 1, ease: "none" }, 2);\n`;
+            }
+            return code;
+        }
+
+        let scrollTimeline = null;
+
+        function rebuildScrollAnimations() {
+            setupScrollAnimations();
+        }
+
+        function setupScrollAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+
+            if (scrollTimeline) {
+                scrollTimeline.kill();
+            }
+
+            scrollTimeline = gsap.timeline({
+                scrollTrigger: {
+                    trigger: "body",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 1.3,
+                    invalidateOnRefresh: true
+                }
+            });
+
+            // Set initial state (Scene 1) for all active assets
+            activeAssets.forEach(asset => {
+                if (!asset.mesh) return;
+                const s1 = asset.scenes[0];
+                gsap.set(asset.mesh.position, { x: s1.pos.x, y: s1.pos.y, z: s1.pos.z });
+                gsap.set(asset.mesh.rotation, { x: s1.rot.x, y: s1.rot.y, z: s1.rot.z });
+                gsap.set(asset.mesh.scale, { x: s1.scale, y: s1.scale, z: s1.scale });
+            });
+
+            // Section 1 -> Section 2 (Scroll progress 0 to 1)
+            activeAssets.forEach(asset => {
+                if (!asset.mesh) return;
+                const s2 = asset.scenes[1];
+                scrollTimeline.to(asset.mesh.position, { x: s2.pos.x, y: s2.pos.y, z: s2.pos.z, ease: "none", duration: 1 }, 0)
+                              .to(asset.mesh.rotation, { x: s2.rot.x, y: s2.rot.y, z: s2.rot.z, ease: "none", duration: 1 }, 0)
+                              .to(asset.mesh.scale, { x: s2.scale, y: s2.scale, z: s2.scale, ease: "none", duration: 1 }, 0);
+            });
+
+            // Section 2 -> Section 3 (Scroll progress 1 to 2)
+            activeAssets.forEach(asset => {
+                if (!asset.mesh) return;
+                const s3 = asset.scenes[2];
+                scrollTimeline.to(asset.mesh.position, { x: s3.pos.x, y: s3.pos.y, z: s3.pos.z, ease: "none", duration: 1 }, 1)
+                              .to(asset.mesh.rotation, { x: s3.rot.x, y: s3.rot.y, z: s3.rot.z, ease: "none", duration: 1 }, 1)
+                              .to(asset.mesh.scale, { x: s3.scale, y: s3.scale, z: s3.scale, ease: "none", duration: 1 }, 1);
+            });
+
+            // Section 3 -> Section 4 (Scroll progress 2 to 3)
+            activeAssets.forEach(asset => {
+                if (!asset.mesh) return;
+                const s4 = asset.scenes[3];
+                scrollTimeline.to(asset.mesh.position, { x: s4.pos.x, y: s4.pos.y, z: s4.pos.z, ease: "none", duration: 1 }, 2)
+                              .to(asset.mesh.rotation, { x: s4.rot.x, y: s4.rot.y, z: s4.rot.z, ease: "none", duration: 1 }, 2)
+                              .to(asset.mesh.scale, { x: s4.scale, y: s4.scale, z: s4.scale, ease: "none", duration: 1 }, 2);
+            });
+
+            // Particles rotation & depth shift
+            if (particles) {
+                scrollTimeline.to(particles.rotation, { z: 1.2, ease: "none", duration: 1 }, 0)
+                              .to(particles.position, { z: 1.5, ease: "none", duration: 1 }, 1)
+                              .to(particles.rotation, { z: 2.5, ease: "none", duration: 1 }, 2)
+                              .to(particles.position, { z: 0, ease: "none", duration: 1 }, 2);
+            }
+
+            // Staggered text reveals (only register once)
+            if (!window.textTriggersRegistered) {
+                document.querySelectorAll('.reveal-text').forEach(header => {
+                    gsap.from(header, {
+                        scrollTrigger: {
+                            trigger: header,
+                            start: "top 85%",
+                            toggleActions: "play none none reverse"
+                        },
+                        y: 50,
+                        opacity: 0,
+                        duration: 1.2,
+                        ease: "power3.out"
+                    });
+                });
+
+                document.querySelectorAll('.reveal-p').forEach(p => {
+                    gsap.from(p, {
+                        scrollTrigger: {
+                            trigger: p,
+                            start: "top 88%",
+                            toggleActions: "play none none reverse"
+                        },
+                        y: 25,
+                        opacity: 0,
+                        duration: 1.4,
+                        ease: "power2.out"
+                    });
+                });
+                window.textTriggersRegistered = true;
+            }
+
+            ScrollTrigger.refresh();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Only play floating idle animations when NOT in debug mode
+            if (!isDebug) {
+                if (model1 && modelsLoaded === 2) {
+                    model1.position.y += Math.sin(Date.now() * 0.0015) * 0.0008;
+                }
+                if (model2 && modelsLoaded === 2) {
+                    model2.position.y += Math.cos(Date.now() * 0.001) * 0.0005;
+                    model2.rotation.y += 0.002;
+                }
+                if (particles) {
+                    particles.rotation.y += 0.0008;
+                }
+            }
+
+            // Sync Telemetry UI overlay in real-time during debug phase
+            if (isDebug && modelsLoaded === 2) {
+                const triggers = ScrollTrigger.getAll();
+                if (triggers.length > 0) {
+                    const progress = triggers[0].progress;
+                    document.getElementById('tel-scroll').textContent = (progress * 100).toFixed(0) + '%';
+                }
+                if (model1) {
+                    document.getElementById('tel-p1-pos').textContent = `[${model1.position.x.toFixed(2)}, ${model1.position.y.toFixed(2)}, ${model1.position.z.toFixed(2)}]`;
+                    document.getElementById('tel-p1-rot').textContent = `[${model1.rotation.x.toFixed(2)}, ${model1.rotation.y.toFixed(2)}, ${model1.rotation.z.toFixed(2)}]`;
+                }
+                if (model2) {
+                    document.getElementById('tel-p2-pos').textContent = `[${model2.position.x.toFixed(2)}, ${model2.position.y.toFixed(2)}, ${model2.position.z.toFixed(2)}]`;
+                    document.getElementById('tel-p2-rot').textContent = `[${model2.rotation.x.toFixed(2)}, ${model2.rotation.y.toFixed(2)}, ${model2.rotation.z.toFixed(2)}]`;
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        init();
+    </script>
+</body>
+</html>

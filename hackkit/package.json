@@ -1,0 +1,40 @@
+{
+  "name": "hackkit",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "firebase": "^12.14.0",
+    "lucide-react": "^1.17.0",
+    "next": "16.2.9",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.9",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "jest": "^30.4.2",
+    "jest-axe": "^10.0.0",
+    "jest-environment-jsdom": "^30.4.1",
+    "ts-jest": "^29.4.11",
+    "typescript": "^5",
+    "whatwg-fetch": "^3.6.20"
+  }
+}

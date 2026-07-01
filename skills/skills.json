@@ -179,6 +179,465 @@
     },
     {
       "path": "skills/game-design/software-management/software-team-conflict-patterns"
+    },
+    {
+      "path": "skills/openmontage/INDEX.md"
+    },
+    {
+      "path": "skills/openmontage/core/color-grading.md"
+    },
+    {
+      "path": "skills/openmontage/core/ffmpeg.md"
+    },
+    {
+      "path": "skills/openmontage/core/hyperframes.md"
+    },
+    {
+      "path": "skills/openmontage/core/remotion.md"
+    },
+    {
+      "path": "skills/openmontage/core/subtitle-sync.md"
+    },
+    {
+      "path": "skills/openmontage/core/whisperx.md"
+    },
+    {
+      "path": "skills/openmontage/creative/animation-pipeline.md"
+    },
+    {
+      "path": "skills/openmontage/creative/bg-remove-usage.md"
+    },
+    {
+      "path": "skills/openmontage/creative/broll-planning.md"
+    },
+    {
+      "path": "skills/openmontage/creative/cinematic.md"
+    },
+    {
+      "path": "skills/openmontage/creative/data-visualization.md"
+    },
+    {
+      "path": "skills/openmontage/creative/diagram-gen-usage.md"
+    },
+    {
+      "path": "skills/openmontage/creative/enhancement-strategy.md"
+    },
+    {
+      "path": "skills/openmontage/creative/face-restore-usage.md"
+    },
+    {
+      "path": "skills/openmontage/creative/image-gen-usage.md"
+    },
+    {
+      "path": "skills/openmontage/creative/image-provider-usage.md"
+    },
+    {
+      "path": "skills/openmontage/creative/lip-sync-usage.md"
+    },
+    {
+      "path": "skills/openmontage/creative/long-form.md"
+    },
+    {
+      "path": "skills/openmontage/creative/manim-usage.md"
+    },
+    {
+      "path": "skills/openmontage/creative/music-gen-usage.md"
+    },
+    {
+      "path": "skills/openmontage/creative/scene-detect-usage.md"
+    },
+    {
+      "path": "skills/openmontage/creative/screen-recording.md"
+    },
+    {
+      "path": "skills/openmontage/creative/short-form.md"
+    },
+    {
+      "path": "skills/openmontage/creative/sound-design.md"
+    },
+    {
+      "path": "skills/openmontage/creative/stock-sourcing-usage.md"
+    },
+    {
+      "path": "skills/openmontage/creative/storytelling.md"
+    },
+    {
+      "path": "skills/openmontage/creative/talking-head-gen-usage.md"
+    },
+    {
+      "path": "skills/openmontage/creative/typography.md"
+    },
+    {
+      "path": "skills/openmontage/creative/upscale-usage.md"
+    },
+    {
+      "path": "skills/openmontage/creative/video-editing.md"
+    },
+    {
+      "path": "skills/openmontage/creative/video-gen-prompting.md"
+    },
+    {
+      "path": "skills/openmontage/creative/video-stitching.md"
+    },
+    {
+      "path": "skills/openmontage/creative/video-understand-usage.md"
+    },
+    {
+      "path": "skills/openmontage/creative/prompting/grok-prompting.md"
+    },
+    {
+      "path": "skills/openmontage/creative/prompting/hunyuan-prompting.md"
+    },
+    {
+      "path": "skills/openmontage/creative/prompting/ltx-prompting.md"
+    },
+    {
+      "path": "skills/openmontage/creative/prompting/seedance-prompting.md"
+    },
+    {
+      "path": "skills/openmontage/creative/prompting/sora-prompting.md"
+    },
+    {
+      "path": "skills/openmontage/creative/prompting/veo-prompting.md"
+    },
+    {
+      "path": "skills/openmontage/meta/animation-runtime-selector.md"
+    },
+    {
+      "path": "skills/openmontage/meta/bespoke-composition.md"
+    },
+    {
+      "path": "skills/openmontage/meta/capability-extension.md"
+    },
+    {
+      "path": "skills/openmontage/meta/checkpoint-protocol.md"
+    },
+    {
+      "path": "skills/openmontage/meta/creative-intake.md"
+    },
+    {
+      "path": "skills/openmontage/meta/onboarding.md"
+    },
+    {
+      "path": "skills/openmontage/meta/reviewer.md"
+    },
+    {
+      "path": "skills/openmontage/meta/skill-creator.md"
+    },
+    {
+      "path": "skills/openmontage/meta/video-reference-analyst.md"
+    },
+    {
+      "path": "skills/openmontage/meta/voice-performance-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/animation/asset-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/animation/compose-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/animation/edit-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/animation/executive-producer.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/animation/idea-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/animation/proposal-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/animation/publish-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/animation/research-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/animation/scene-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/animation/script-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/avatar-spokesperson/asset-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/avatar-spokesperson/compose-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/avatar-spokesperson/edit-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/avatar-spokesperson/executive-producer.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/avatar-spokesperson/idea-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/avatar-spokesperson/publish-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/avatar-spokesperson/scene-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/avatar-spokesperson/script-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/character-animation/asset-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/character-animation/character-design-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/character-animation/compose-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/character-animation/edit-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/character-animation/executive-producer.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/character-animation/proposal-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/character-animation/publish-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/character-animation/research-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/character-animation/rig-plan-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/character-animation/scene-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/character-animation/script-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/cinematic/asset-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/cinematic/compose-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/cinematic/edit-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/cinematic/executive-producer.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/cinematic/idea-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/cinematic/proposal-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/cinematic/publish-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/cinematic/research-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/cinematic/scene-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/cinematic/script-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/clip-factory/asset-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/clip-factory/compose-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/clip-factory/edit-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/clip-factory/executive-producer.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/clip-factory/idea-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/clip-factory/publish-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/clip-factory/scene-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/clip-factory/script-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/documentary-montage/asset-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/documentary-montage/compose-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/documentary-montage/edit-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/documentary-montage/executive-producer.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/documentary-montage/idea-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/documentary-montage/scene-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/explainer/asset-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/explainer/compose-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/explainer/edit-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/explainer/executive-producer.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/explainer/idea-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/explainer/proposal-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/explainer/publish-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/explainer/research-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/explainer/scene-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/explainer/script-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/hybrid/asset-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/hybrid/compose-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/hybrid/edit-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/hybrid/executive-producer.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/hybrid/idea-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/hybrid/publish-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/hybrid/scene-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/hybrid/script-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/localization-dub/asset-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/localization-dub/compose-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/localization-dub/edit-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/localization-dub/executive-producer.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/localization-dub/idea-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/localization-dub/publish-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/localization-dub/scene-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/localization-dub/script-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/podcast-repurpose/asset-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/podcast-repurpose/compose-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/podcast-repurpose/edit-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/podcast-repurpose/executive-producer.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/podcast-repurpose/idea-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/podcast-repurpose/publish-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/podcast-repurpose/scene-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/podcast-repurpose/script-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/screen-demo/asset-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/screen-demo/compose-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/screen-demo/edit-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/screen-demo/executive-producer.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/screen-demo/idea-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/screen-demo/publish-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/screen-demo/scene-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/screen-demo/script-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/talking-head/asset-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/talking-head/compose-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/talking-head/edit-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/talking-head/executive-producer.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/talking-head/idea-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/talking-head/publish-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/talking-head/scene-director.md"
+    },
+    {
+      "path": "skills/openmontage/pipelines/talking-head/script-director.md"
     }
   ]
 }

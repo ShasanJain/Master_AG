@@ -12,22 +12,22 @@
       "source": "local",
       "sourceType": "local",
       "skillPath": "autonomous-agent-loop/autonomous-agent-loop_skill.md",
-      "computedHash": "1eff61adea980a34856b5192de004ed3f5b2275774cbe7486fe117e1d4a1c854",
-      "approved_at": "2026-06-24T17:44:05"
+      "computedHash": "15466951c0b7f3f65f213555666739bf7306eb18f7e611e432484d293483359c",
+      "approved_at": "2026-07-01T18:53:44"
     },
     "document-visualization-evaluator": {
       "source": "local",
       "sourceType": "local",
       "skillPath": "document-visualization-evaluator/document-visualization-evaluator_skill.md",
-      "computedHash": "af6aac6295d12afe1f52bb35ef0ae1d2dda1d3c6e9d245f0a13ecdb1f500f27f",
-      "approved_at": "2026-06-24T17:07:49"
+      "computedHash": "5d323407356e95df992863b1a8bc92d4e8bafba2704db16f966a97cdc31ad9c7",
+      "approved_at": "2026-07-01T18:54:05"
     },
     "html-to-video-orchestrator": {
       "source": "local",
       "sourceType": "local",
       "skillPath": "html-to-video-orchestrator/html-to-video-orchestrator_skill.md",
-      "computedHash": "ddabfaf001a691ca8b17dfe6aeb6a10ae116aa56720990f7cfc541afe570957e",
-      "approved_at": "2026-06-24T17:33:17"
+      "computedHash": "799469552476c08c98a54919e268c79c85080e5cedfed4a00a5ebccb6442eae5",
+      "approved_at": "2026-07-01T18:54:17"
     },
     "mysql": {
       "source": "planetscale/database-skills",

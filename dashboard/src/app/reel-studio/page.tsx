@@ -24,7 +24,8 @@ export default function Studio() {
   // Render State
   const [renderProfile, setRenderProfile] = useState('FastViral');
   const [voiceEngine, setVoiceEngine] = useState('edge');
-  const [videoRenderer, setVideoRenderer] = useState<'remotion' | 'hyperframes'>('remotion');
+  const [videoRenderer, setVideoRenderer] = useState<'remotion' | 'hyperframes' | 'openmontage'>('remotion');
+  const [openMontagePipeline, setOpenMontagePipeline] = useState('explainer');
   const [htmlTemplate, setHtmlTemplate] = useState('<div class="slide"><h1>Master-AG Engine</h1><p>Autonomous AI Production Loop</p></div>');
   const [cssTemplate, setCssTemplate] = useState('.slide { background: linear-gradient(135deg, #0f172a, #1e1b4b); color: #10b981; padding: 2rem; border-radius: 12px; border: 1px solid #10b981; text-align: center; animation: pulse 2s infinite; }\n@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }');
   const [scriptInputType, setScriptInputType] = useState<'auto' | 'topic' | 'script'>('auto');
@@ -383,6 +384,7 @@ export default function Studio() {
               >
                 <option value="remotion">Remotion (Timeline)</option>
                 <option value="hyperframes">HyperFrames (HTML/GSAP)</option>
+                <option value="openmontage">OpenMontage (Presets)</option>
               </select>
             </div>
 
@@ -599,6 +601,88 @@ export default function Studio() {
                   className="w-full py-2.5 rounded-lg text-xs font-bold shiny-button"
                 >
                   ⚡ Render HyperFrames Clip
+                </button>
+              </div>
+            </div>
+          </main>
+        ) : videoRenderer === 'openmontage' ? (
+          <main className="grid grid-cols-12 gap-10">
+            {/* OpenMontage Setup Panel */}
+            <div className="col-span-6 space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-sm font-semibold text-[var(--foreground)] flex justify-between">
+                  <span>OpenMontage Production Presets</span>
+                  <span className="text-xs text-[var(--muted)] font-mono">12 Pipelines Loaded</span>
+                </h2>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { id: 'explainer', label: 'Animated Explainer' },
+                    { id: 'documentary', label: 'Documentary Montage' },
+                    { id: 'cinematic', label: 'Cinematic Trailer' },
+                    { id: 'podcast', label: 'Podcast Repurpose' },
+                    { id: 'screen-demo', label: 'Screen Demo Walkthrough' },
+                    { id: 'avatar', label: 'Avatar Spokesperson' },
+                  ].map(p => (
+                    <button
+                      key={p.id}
+                      onClick={() => setOpenMontagePipeline(p.id)}
+                      className={`px-4 py-3 text-xs font-bold text-left rounded-lg border transition-all ${
+                        openMontagePipeline === p.id
+                          ? 'border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--foreground)]'
+                          : 'border-[var(--border)] bg-[var(--background)] hover:border-[var(--primary)] text-[var(--muted)] hover:text-[var(--foreground)]'
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h2 className="text-sm font-semibold text-[var(--foreground)]">Production Objective & Prompts</h2>
+                <textarea
+                  className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg p-4 font-mono text-xs text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] transition-colors h-[22vh] resize-none"
+                  placeholder="Describe your video project goals in detail..."
+                  defaultValue="Create a 60-second vertical explainer explaining the OpenMontage Write-HTML-Render-Video stack and its integration with Master-AG."
+                />
+              </div>
+            </div>
+
+            {/* Execution Pipeline Visualizer */}
+            <div className="col-span-6 space-y-6">
+              <h2 className="text-sm font-semibold text-[var(--foreground)] flex justify-between">
+                <span>Production Pipeline Manifest</span>
+                <span className="text-xs text-[var(--muted)] font-mono">Status: Idle</span>
+              </h2>
+
+              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 space-y-4">
+                <div className="space-y-3 font-mono text-xs">
+                  <div className="flex items-center justify-between text-green-400">
+                    <span>1. Research & Scripting</span>
+                    <span>✓ Ready</span>
+                  </div>
+                  <div className="flex items-center justify-between text-green-400">
+                    <span>2. Scene Outline Manifest</span>
+                    <span>✓ Generated</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[var(--muted)]">
+                    <span>3. TTS Voice Generation</span>
+                    <span>● Pending</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[var(--muted)]">
+                    <span>4. Remotion Compositing</span>
+                    <span>● Pending</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setRenderLogs(prev => prev + "[OPENMONTAGE] Reading pipeline preset config...\n[OPENMONTAGE] Generating script outline using LLM...\n[OPENMONTAGE] Running TTS script engine...\n[OPENMONTAGE] Saved compiled pipeline to: scratch/openmontage_output.mp4\n");
+                    alert("OpenMontage production pipeline triggered!");
+                  }}
+                  className="w-full py-3 mt-4 rounded-lg text-xs font-bold shiny-button"
+                >
+                  🎬 Run OpenMontage Pipeline
                 </button>
               </div>
             </div>

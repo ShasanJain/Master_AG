@@ -1,0 +1,181 @@
+{
+  "entries": [
+    {
+      "path": "skills/3d-websites"
+    },
+    {
+      "path": "skills/3d-websites-settings"
+    },
+    {
+      "path": "skills/autonomous-agent-loop"
+    },
+    {
+      "path": "skills/document-visualization-evaluator"
+    },
+    {
+      "path": "skills/ghost_cms"
+    },
+    {
+      "path": "skills/html-to-video-orchestrator"
+    },
+    {
+      "path": "skills/game-design/emotional-direction/game-design-emotional-canvas"
+    },
+    {
+      "path": "skills/game-design/emotional-direction/emotional-canvas-moodboard"
+    },
+    {
+      "path": "skills/game-design/planning-strategy/game-dev-first-steps"
+    },
+    {
+      "path": "skills/game-design/planning-strategy/game-dev-team-gap"
+    },
+    {
+      "path": "skills/game-design/planning-strategy/game-dev-budget-estimator"
+    },
+    {
+      "path": "skills/game-design/planning-strategy/game-dev-time-estimator"
+    },
+    {
+      "path": "skills/game-design/decision-frameworks/game-design-grow-design"
+    },
+    {
+      "path": "skills/game-design/decision-frameworks/game-design-goal-framing"
+    },
+    {
+      "path": "skills/game-design/decision-frameworks/game-design-option-generation"
+    },
+    {
+      "path": "skills/game-design/decision-frameworks/game-design-five-options"
+    },
+    {
+      "path": "skills/game-design/decision-frameworks/game-design-roadblock-reframing"
+    },
+    {
+      "path": "skills/game-design/decision-frameworks/game-design-ideal-outcome-backcasting"
+    },
+    {
+      "path": "skills/game-design/decision-frameworks/game-design-transformative-reuse"
+    },
+    {
+      "path": "skills/game-design/decision-frameworks/game-design-feature-prioritization"
+    },
+    {
+      "path": "skills/game-design/decision-frameworks/game-design-one-page-design-doc"
+    },
+    {
+      "path": "skills/game-design/decision-frameworks/game-design-one-thing-to-remove"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-player-motivation-audit"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-player-need-satisfaction-audit"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-bartle-archetype-audit"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-granular-player-motivation-audit"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-big-five-personality-audit"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-fantasy-extractor"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-player-persona-extractor"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-player-perspective-reframe"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-player-segment-perception-audit"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-player-values-mapper"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-thinking-fast-and-slow-audit"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-zeigarnik-effect-audit"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-peak-end-audit"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-smart-goal-audit"
+    },
+    {
+      "path": "skills/game-design/motivation-psychology/game-design-molyneux-lens"
+    },
+    {
+      "path": "skills/game-design/multiplayer-social/game-design-multiplayer-feature-audit"
+    },
+    {
+      "path": "skills/game-design/multiplayer-social/game-design-social-satisfaction-matrix"
+    },
+    {
+      "path": "skills/game-design/multiplayer-social/game-design-prosocial-session-chapters"
+    },
+    {
+      "path": "skills/game-design/multiplayer-social/game-design-leaderboard-audit"
+    },
+    {
+      "path": "skills/game-design/multiplayer-social/game-design-leaderboard-builder"
+    },
+    {
+      "path": "skills/game-design/prototyping-uncertainty/game-design-unknown-unknowns-prototyping"
+    },
+    {
+      "path": "skills/game-design/prototyping-uncertainty/game-design-prototype-intent-audit"
+    },
+    {
+      "path": "skills/game-design/prototyping-uncertainty/game-design-prototyping-companion"
+    },
+    {
+      "path": "skills/game-design/behavior-adoption/game-design-fogg-behavior-audit"
+    },
+    {
+      "path": "skills/game-design/behavior-adoption/game-design-friction-journey-audit"
+    },
+    {
+      "path": "skills/game-design/behavior-adoption/game-design-ftue-hero-journey-audit"
+    },
+    {
+      "path": "skills/game-design/behavior-adoption/game-design-goal-density-and-immediacy-audit"
+    },
+    {
+      "path": "skills/game-design/behavior-adoption/game-design-premium-pass-audit"
+    },
+    {
+      "path": "skills/game-design/randomness-fairness/game-design-perceived-randomness-audit"
+    },
+    {
+      "path": "skills/game-design/randomness-fairness/game-design-attribution-audit"
+    },
+    {
+      "path": "skills/game-design/randomness-fairness/game-design-flow-audit"
+    },
+    {
+      "path": "skills/game-design/randomness-fairness/game-design-fairness-frustration-audit"
+    },
+    {
+      "path": "skills/game-design/audits-general/design-red-team-audit"
+    },
+    {
+      "path": "skills/game-design/audits-general/game-design-kpi-coverage-audit"
+    },
+    {
+      "path": "skills/game-design/audits-general/game-design-novelty-spectrum-audit"
+    },
+    {
+      "path": "skills/game-design/audits-general/game-design-pitch-deck-audit"
+    },
+    {
+      "path": "skills/game-design/software-management/software-team-conflict-patterns"
+    }
+  ]
+}

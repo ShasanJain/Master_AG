@@ -38,7 +38,19 @@ def generate_tts_bark(text: str, audio_path: str):
         print("[Brain TTS] WARNING: Bark is not installed (pip install git+https://github.com/suno-ai/bark.git). Falling back to edge-tts.")
         generate_tts_edge(text, audio_path)
 
-def generate_tts_and_timing(text: str, output_dir: str, engine: str = "edge"):
+def generate_tts_kittentts(text: str, audio_path: str, voice: str = "Jasper", speed: float = 1.0):
+    print(f"[Brain TTS] Generating voice via KittenTTS (Offline ONNX) voice={voice} speed={speed}...")
+    try:
+        from kittentts import KittenTTS
+        import soundfile as sf
+        model = KittenTTS("KittenML/kitten-tts-mini-0.8")
+        audio = model.generate(text, voice=voice, speed=speed)
+        sf.write(audio_path, audio, 24000)
+    except Exception as e:
+        print(f"[Brain TTS] WARNING: KittenTTS failed: {str(e)}. Falling back to edge-tts.")
+        generate_tts_edge(text, audio_path)
+
+def generate_tts_and_timing(text: str, output_dir: str, engine: str = "edge", voice: str = "Jasper", speed: float = 1.0):
     start_time = time.time()
     print(f"[Brain TTS] Initializing audio generation pipeline with engine: {engine}")
     
@@ -50,6 +62,8 @@ def generate_tts_and_timing(text: str, output_dir: str, engine: str = "edge"):
         generate_tts_piper(text, audio_path)
     elif engine == "bark":
         generate_tts_bark(text, audio_path)
+    elif engine == "kittentts":
+        generate_tts_kittentts(text, audio_path, voice=voice, speed=speed)
     else:
         generate_tts_edge(text, audio_path)
         
@@ -100,7 +114,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate TTS and Whisper word-level timings.")
     parser.add_argument("--text", type=str, default=None, help="Text to synthesize and time.")
     parser.add_argument("--file", type=str, default=None, help="File containing the text.")
-    parser.add_argument("--engine", type=str, choices=["edge", "piper", "bark"], default="edge", help="TTS Engine to use.")
+    parser.add_argument("--engine", type=str, choices=["edge", "piper", "bark", "kittentts"], default="edge", help="TTS Engine to use.")
+    parser.add_argument("--voice", type=str, default="Jasper", help="KittenTTS voice to use.")
+    parser.add_argument("--speed", type=float, default=1.0, help="KittenTTS speech speed.")
     parser.add_argument("--outdir", type=str, default="./scratch", help="Output directory for audio and json.")
     
     args = parser.parse_args()
@@ -115,4 +131,4 @@ if __name__ == "__main__":
         sys.exit(1)
         
     os.makedirs(args.outdir, exist_ok=True)
-    generate_tts_and_timing(input_text, args.outdir, engine=args.engine)
+    generate_tts_and_timing(input_text, args.outdir, engine=args.engine, voice=args.voice, speed=args.speed)

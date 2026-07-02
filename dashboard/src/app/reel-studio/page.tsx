@@ -24,6 +24,8 @@ export default function Studio() {
   // Render State
   const [renderProfile, setRenderProfile] = useState('FastViral');
   const [voiceEngine, setVoiceEngine] = useState('edge');
+  const [ttsVoice, setTtsVoice] = useState('Jasper');
+  const [ttsSpeed, setTtsSpeed] = useState(1.0);
   const [scriptInputType, setScriptInputType] = useState<'auto' | 'topic' | 'script'>('auto');
   const [topicInput, setTopicInput] = useState('');
   const [scriptInput, setScriptInput] = useState('');
@@ -141,7 +143,12 @@ export default function Studio() {
     setIsGeneratingVoice(true);
     setRenderLogs(`Initiating voice generation using ${voiceEngine}...\n`);
     try {
-      const body: Record<string, string> = { engine: voiceEngine, mode: scriptInputType };
+      const body: Record<string, any> = { 
+        engine: voiceEngine, 
+        mode: scriptInputType,
+        voice: ttsVoice,
+        speed: ttsSpeed
+      };
       if (scriptInputType === 'auto' && selectedViralTopic) body.viralTopic = selectedViralTopic;
       if (scriptInputType === 'topic' && topicInput) body.topic = topicInput;
       if (scriptInputType === 'script' && scriptInput) body.script = scriptInput;
@@ -350,18 +357,49 @@ export default function Studio() {
           
           <div className="flex gap-6 items-center relative">
             
-             <div className="flex flex-col gap-1.5 border-l border-[var(--border)] pl-6">
-              <label className="text-xs text-[var(--muted)] font-medium uppercase">Engine</label>
-              <select 
-                value={voiceEngine} 
-                onChange={e => setVoiceEngine(e.target.value)}
-                className="bg-[var(--surface)] border border-[var(--border)] rounded-md px-3 py-1.5 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] cursor-pointer"
-              >
-                <option value="edge" className="bg-[var(--surface)] text-[var(--foreground)]">Edge TTS</option>
-                <option value="piper" className="bg-[var(--surface)] text-[var(--foreground)]">Piper (CPU)</option>
-                <option value="bark" className="bg-[var(--surface)] text-[var(--foreground)]">Bark (GPU)</option>
-              </select>
-            </div>
+              <div className="flex flex-col gap-1.5 border-l border-[var(--border)] pl-6">
+               <label className="text-xs text-[var(--muted)] font-medium uppercase">Engine</label>
+               <select 
+                 value={voiceEngine} 
+                 onChange={e => setVoiceEngine(e.target.value)}
+                 className="bg-[var(--surface)] border border-[var(--border)] rounded-md px-3 py-1.5 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] cursor-pointer"
+               >
+                 <option value="edge" className="bg-[var(--surface)] text-[var(--foreground)]">Edge TTS</option>
+                 <option value="piper" className="bg-[var(--surface)] text-[var(--foreground)]">Piper (CPU)</option>
+                 <option value="bark" className="bg-[var(--surface)] text-[var(--foreground)]">Bark (GPU)</option>
+                 <option value="kittentts" className="bg-[var(--surface)] text-[var(--foreground)]">Kitten TTS (Offline)</option>
+               </select>
+             </div>
+
+             {voiceEngine === 'kittentts' && (
+               <>
+                 <div className="flex flex-col gap-1.5 border-l border-[var(--border)] pl-6">
+                   <label className="text-xs text-[var(--muted)] font-medium uppercase">Kitten Voice</label>
+                   <select 
+                     value={ttsVoice} 
+                     onChange={e => setTtsVoice(e.target.value)}
+                     className="bg-[var(--surface)] border border-[var(--border)] rounded-md px-3 py-1.5 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] cursor-pointer"
+                   >
+                     {['Bella', 'Jasper', 'Luna', 'Bruno', 'Rosie', 'Hugo', 'Kiki', 'Leo'].map(v => (
+                       <option key={v} value={v} className="bg-[var(--surface)] text-[var(--foreground)]">{v}</option>
+                     ))}
+                   </select>
+                 </div>
+
+                 <div className="flex flex-col gap-1.5 border-l border-[var(--border)] pl-6">
+                   <label className="text-xs text-[var(--muted)] font-medium uppercase">Speed ({ttsSpeed.toFixed(1)}x)</label>
+                   <input 
+                     type="range" 
+                     min="0.5" 
+                     max="2.0" 
+                     step="0.1" 
+                     value={ttsSpeed} 
+                     onChange={e => setTtsSpeed(parseFloat(e.target.value))}
+                     className="w-24 h-1 bg-[var(--border)] rounded-lg appearance-none cursor-pointer mt-2.5"
+                   />
+                 </div>
+               </>
+             )}
             
             <button 
               onClick={handleGenerateVoice}

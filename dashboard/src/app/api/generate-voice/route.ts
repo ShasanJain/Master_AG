@@ -4,7 +4,7 @@ import path from 'path';
 
 export async function POST(request: Request) {
   try {
-    const { engine, mode, topic, viralTopic, script } = await request.json();
+    const { engine, mode, topic, viralTopic, script, voice, speed } = await request.json();
     
     const cwd = path.join(process.cwd(), '..');
     
@@ -26,7 +26,9 @@ export async function POST(request: Request) {
     }
     // else: auto with no selection - script_generator falls back to scraping itself
     
-    const cmd = `${scriptGenCmd} && python ops/broll_fetcher.py --topic "${brollTopic}" && python execution/video_brain_tts.py --file ./scratch/viral_script.txt --engine ${engine || 'edge'} && python execution/video_brain_semantic.py --timings ./scratch/timings.json --outdir ./scratch`;
+    const ttsVoice = voice || 'Jasper';
+    const ttsSpeed = speed || 1.0;
+    const cmd = `${scriptGenCmd} && python ops/broll_fetcher.py --topic "${brollTopic}" && python execution/video_brain_tts.py --file ./scratch/viral_script.txt --engine ${engine || 'edge'} --voice "${ttsVoice}" --speed ${ttsSpeed} && python execution/video_brain_semantic.py --timings ./scratch/timings.json --outdir ./scratch`;
     
     return new Promise<Response>((resolve) => {
       exec(cmd, { cwd }, (error, stdout, stderr) => {

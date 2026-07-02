@@ -14,7 +14,7 @@ except ImportError as e:
     print(f"Error importing tradingagents: {e}")
     sys.exit(1)
 
-def run_simulation(ticker: str, provider: str, rounds: int, date_str: str):
+def run_simulation(ticker: str, provider: str, rounds: int, date_str: str, model: str = None):
     print(f"[Brain Quant] Initializing simulation graph...")
     print(f"[Brain Quant] Target Asset: {ticker} | Provider: {provider} | Max Rounds: {rounds}")
     
@@ -23,6 +23,11 @@ def run_simulation(ticker: str, provider: str, rounds: int, date_str: str):
     config["llm_provider"] = provider
     config["max_debate_rounds"] = rounds
     
+    if model:
+        config["deep_think_llm"] = model
+        config["quick_think_llm"] = model
+        print(f"[Brain Quant] Overriding config LLM models to use: {model}")
+        
     # Fallback to avoid missing API key errors on FRED if not set
     if not os.getenv("FRED_API_KEY"):
         config["macro_data"] = None
@@ -66,8 +71,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run Trading Agents Multi-Agent Swarm Backtest")
     parser.add_argument("--ticker", type=str, default="AAPL", help="Stock ticker to simulate.")
     parser.add_argument("--provider", type=str, default="ollama", help="LLM Provider to use.")
+    parser.add_argument("--model", type=str, default=None, help="Specific LLM model to run.")
     parser.add_argument("--rounds", type=int, default=2, help="Number of debate rounds.")
     parser.add_argument("--date", type=str, default=datetime.today().strftime('%Y-%m-%d'), help="Historical execution date.")
     
     args = parser.parse_args()
-    run_simulation(args.ticker, args.provider, args.rounds, args.date)
+    run_simulation(args.ticker, args.provider, args.rounds, args.date, args.model)

@@ -7,6 +7,7 @@ import { ShieldCheck, LineChart, MessageSquareCode, Settings, Play, RefreshCw, A
 export default function TradingAgentsPage() {
   const [ticker, setTicker] = useState('AAPL');
   const [llmProvider, setLlmProvider] = useState('ollama');
+  const [selectedModel, setSelectedModel] = useState('gemma4:latest');
   const [debateRounds, setDebateRounds] = useState(2);
   const [logs, setLogs] = useState('');
   const [isRunning, setIsRunning] = useState(false);
@@ -20,7 +21,12 @@ export default function TradingAgentsPage() {
       const res = await fetch('/api/trading-agents/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker, provider: llmProvider, rounds: debateRounds })
+        body: JSON.stringify({ 
+          ticker, 
+          provider: llmProvider, 
+          rounds: debateRounds,
+          model: llmProvider === 'ollama' ? selectedModel : undefined 
+        })
       });
       const data = await res.json();
       
@@ -84,11 +90,27 @@ export default function TradingAgentsPage() {
                   onChange={e => setLlmProvider(e.target.value)}
                   className="bg-[var(--background)] border border-[var(--border)] rounded-md px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] cursor-pointer font-mono"
                 >
-                  <option value="ollama">Ollama Local (Qwen / Llama)</option>
+                  <option value="ollama">Ollama Local Swarm</option>
                   <option value="gemini-free">Gemini Flash (Free tier)</option>
                   <option value="openai">OpenAI Endpoint</option>
                 </select>
               </div>
+
+              {llmProvider === 'ollama' && (
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs text-[var(--muted)] uppercase tracking-wider font-mono">Ollama Model</label>
+                  <select 
+                    value={selectedModel} 
+                    onChange={e => setSelectedModel(e.target.value)}
+                    className="bg-[var(--background)] border border-[var(--border)] rounded-md px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] cursor-pointer font-mono"
+                  >
+                    <option value="gemma4:latest">Gemma 4 (9.6 GB)</option>
+                    <option value="llama3.2:latest">Llama 3.2 (2.0 GB)</option>
+                    <option value="hermes3:latest">Hermes 3 (4.7 GB)</option>
+                    <option value="dolphin-llama3:latest">Dolphin Llama 3 (4.7 GB)</option>
+                  </select>
+                </div>
+              )}
 
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs text-[var(--muted)] uppercase tracking-wider font-mono">Debate Rounds ({debateRounds})</label>

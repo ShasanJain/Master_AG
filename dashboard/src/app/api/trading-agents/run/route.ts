@@ -5,10 +5,13 @@ import fs from 'fs';
 
 export async function POST(request: Request) {
   try {
-    const { ticker, provider, rounds } = await request.json();
+    const { ticker, provider, rounds, model } = await request.json();
     const cwd = path.join(process.cwd(), '..');
 
-    const cmd = `python execution/run_trading_agents.py --ticker ${ticker || 'AAPL'} --provider ${provider || 'ollama'} --rounds ${rounds || 2}`;
+    let cmd = `python execution/run_trading_agents.py --ticker ${ticker || 'AAPL'} --provider ${provider || 'ollama'} --rounds ${rounds || 2}`;
+    if (model) {
+      cmd += ` --model ${model}`;
+    }
 
     return new Promise<Response>((resolve) => {
       exec(cmd, { cwd }, (error, stdout, stderr) => {

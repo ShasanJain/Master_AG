@@ -4,6 +4,12 @@ import json
 import argparse
 from datetime import datetime
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 # Add the local directory to python path just in case
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

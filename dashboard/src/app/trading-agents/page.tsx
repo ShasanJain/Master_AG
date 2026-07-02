@@ -25,7 +25,7 @@ export default function TradingAgentsPage() {
           ticker, 
           provider: llmProvider, 
           rounds: debateRounds,
-          model: llmProvider === 'ollama' ? selectedModel : undefined 
+          model: llmProvider === 'ollama' ? selectedModel : '' 
         })
       });
       const data = await res.json();

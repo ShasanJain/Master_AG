@@ -112,14 +112,14 @@ export default function LayoutClientWrapper({ children }: LayoutClientWrapperPro
               </div>
 
               {showProfileMenu && (
-                <div className="absolute right-0 mt-3 w-64 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-[0_4px_20px_rgba(16,185,129,0.15)] z-50 p-4 space-y-4">
-                  <div className="border-b border-[var(--border)] pb-2">
-                    <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider block mb-1">User Session</span>
-                    <span className="text-xs font-bold text-[var(--foreground)]">Swayam Jain</span>
+                <div className="absolute right-0 mt-3 w-64 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.15)] z-50 p-4 space-y-4 text-slate-900 dark:text-slate-100">
+                  <div className="border-b border-slate-200 dark:border-slate-800 pb-2">
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">User Session</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-slate-100">Swayam Jain</span>
                   </div>
 
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider block mb-1">Workspace Filter</span>
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Workspace Filter</span>
                     {[
                       { id: null, label: 'All Modules' },
                       { id: 'command', label: 'Command Cockpit' },
@@ -132,8 +132,8 @@ export default function LayoutClientWrapper({ children }: LayoutClientWrapperPro
                         onClick={() => selectWorkspace(w.id)}
                         className={`w-full text-left px-2 py-1.5 rounded text-xs font-mono transition-colors flex items-center gap-2 ${
                           activeWorkspace === w.id
-                            ? 'bg-[var(--primary)]/10 text-[var(--primary)] font-bold'
-                            : 'hover:bg-[var(--background)] text-[var(--muted)] hover:text-[var(--foreground)]'
+                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold'
+                            : 'hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'
                         }`}
                       >
                         <Layers size={12} /> {w.label}
@@ -141,19 +141,19 @@ export default function LayoutClientWrapper({ children }: LayoutClientWrapperPro
                     ))}
                   </div>
 
-                  <div className="border-t border-[var(--border)] pt-2 flex flex-col gap-2">
+                  <div className="border-t border-slate-200 dark:border-slate-800 pt-2 flex flex-col gap-2">
                     <button
                       onClick={toggleTheme}
-                      className="w-full text-left px-2 py-1.5 rounded text-xs font-mono hover:bg-[var(--background)] text-[var(--muted)] hover:text-[var(--foreground)] transition-colors flex items-center justify-between"
+                      className="w-full text-left px-2 py-1.5 rounded text-xs font-mono hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors flex items-center justify-between"
                     >
                       <span className="flex items-center gap-2">
                         {isLight ? <Sun size={12} /> : <Moon size={12} />} Switch Theme
                       </span>
-                      <span className="text-[10px] uppercase font-bold text-[var(--primary)]">{isLight ? 'Light' : 'Dark'}</span>
+                      <span className="text-[10px] uppercase font-bold text-emerald-500">{isLight ? 'Light' : 'Dark'}</span>
                     </button>
 
                     <Link href="/settings" onClick={() => setShowProfileMenu(false)}>
-                      <div className="w-full text-left px-2 py-1.5 rounded text-xs font-mono hover:bg-[var(--background)] text-[var(--muted)] hover:text-[var(--foreground)] transition-colors flex items-center gap-2 cursor-pointer">
+                      <div className="w-full text-left px-2 py-1.5 rounded text-xs font-mono hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors flex items-center gap-2 cursor-pointer">
                         <Settings size={12} /> System Settings
                       </div>
                     </Link>

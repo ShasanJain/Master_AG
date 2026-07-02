@@ -11,7 +11,7 @@ import {
   Radio, Brain, Palette, Search, Globe, CalendarClock,
   MonitorPlay, Mic2, Clapperboard, Frame, Activity,
   ScrollText, Stethoscope, Cpu, Database, MessageSquare,
-  ChevronDown, ChevronRight, Pin, Star, Scale, Wand2
+  ChevronDown, ChevronRight, Pin, Star, Scale, Wand2, TrendingUp, Video
 } from "lucide-react";
 
 interface SidebarProps {
@@ -82,8 +82,10 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
     { label: "UI Master", href: "/ui-master", icon: <Palette className="w-4 h-4" />, colorClass: "group-hover:text-purple-400", key: "ui-master" },
     { label: "Audio Studio", href: "/audio-studio", icon: <Mic2 className="w-4 h-4" />, colorClass: "group-hover:text-pink-400", key: "audio" },
     { label: "Reel Studio", href: "/reel-studio", icon: <Clapperboard className="w-4 h-4" />, colorClass: "group-hover:text-orange-400", key: "reel" },
+    { label: "Video Gen", href: "/video-generator", icon: <Video className="w-4 h-4" />, colorClass: "group-hover:text-sky-400", key: "video-generator" },
     { label: "Canvas", href: "/open-design", icon: <Frame className="w-4 h-4" />, colorClass: "group-hover:text-sky-400", key: "canvas" },
     { label: "Skill Studio", href: "/skill-studio", icon: <Wand2 className="w-4 h-4" />, colorClass: "group-hover:text-violet-400", key: "skill-studio" },
+    { label: "Fincept Terminal", href: "/fincept", icon: <TrendingUp className="w-4 h-4" />, colorClass: "group-hover:text-amber-500", key: "fincept" },
   ];
 
   const pinnedItems = allPinableSkills.filter(item => pinnedSkills.includes(item.key));
@@ -223,6 +225,7 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
                 {renderNavItem("Scheduler", "/scheduler", <CalendarClock className="w-4 h-4" />, "group-hover:text-cyan-400", "scheduler")}
                 {renderNavItem("Council Room", "/incubator/council", <Scale className="w-4 h-4" />, "group-hover:text-purple-400", "council-room")}
                 {renderNavItem("Skill Armory", "/skills", <IconSkills className="w-4 h-4" />, "group-hover:text-amber-400")}
+                {renderNavItem("Fincept Terminal", "/fincept", <TrendingUp className="w-4 h-4" />, "group-hover:text-amber-500", "fincept")}
               </div>
             )}
           </>
@@ -237,6 +240,7 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
                 {renderNavItem("UI Master", "/ui-master", <Palette className="w-4 h-4" />, "group-hover:text-purple-400", "ui-master")}
                 {renderNavItem("Audio Studio", "/audio-studio", <Mic2 className="w-4 h-4" />, "group-hover:text-pink-400", "audio")}
                 {renderNavItem("Reel Studio", "/reel-studio", <Clapperboard className="w-4 h-4" />, "group-hover:text-orange-400", "reel")}
+                {renderNavItem("Video Gen", "/video-generator", <Video className="w-4 h-4" />, "group-hover:text-sky-400", "video-generator")}
                 {renderNavItem("Canvas", "/open-design", <Frame className="w-4 h-4" />, "group-hover:text-sky-400", "canvas")}
                 {renderNavItem("App Sandbox", "/incubator/sandbox", <Radio className="w-4 h-4" />, "group-hover:text-amber-400")}
               </div>

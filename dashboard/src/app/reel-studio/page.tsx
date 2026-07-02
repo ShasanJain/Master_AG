@@ -24,10 +24,6 @@ export default function Studio() {
   // Render State
   const [renderProfile, setRenderProfile] = useState('FastViral');
   const [voiceEngine, setVoiceEngine] = useState('edge');
-  const [videoRenderer, setVideoRenderer] = useState<'remotion' | 'hyperframes' | 'openmontage'>('remotion');
-  const [openMontagePipeline, setOpenMontagePipeline] = useState('explainer');
-  const [htmlTemplate, setHtmlTemplate] = useState('<div class="slide"><h1>Master-AG Engine</h1><p>Autonomous AI Production Loop</p></div>');
-  const [cssTemplate, setCssTemplate] = useState('.slide { background: linear-gradient(135deg, #0f172a, #1e1b4b); color: #10b981; padding: 2rem; border-radius: 12px; border: 1px solid #10b981; text-align: center; animation: pulse 2s infinite; }\n@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }');
   const [scriptInputType, setScriptInputType] = useState<'auto' | 'topic' | 'script'>('auto');
   const [topicInput, setTopicInput] = useState('');
   const [scriptInput, setScriptInput] = useState('');
@@ -354,16 +350,16 @@ export default function Studio() {
           
           <div className="flex gap-6 items-center relative">
             
-            <div className="flex flex-col gap-1.5 border-l border-[var(--border)] pl-6">
+             <div className="flex flex-col gap-1.5 border-l border-[var(--border)] pl-6">
               <label className="text-xs text-[var(--muted)] font-medium uppercase">Engine</label>
               <select 
                 value={voiceEngine} 
                 onChange={e => setVoiceEngine(e.target.value)}
-                className="bg-transparent border border-[var(--border)] rounded-md px-3 py-1.5 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] cursor-pointer"
+                className="bg-[var(--surface)] border border-[var(--border)] rounded-md px-3 py-1.5 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] cursor-pointer"
               >
-                <option value="edge">Edge TTS</option>
-                <option value="piper">Piper (CPU)</option>
-                <option value="bark">Bark (GPU)</option>
+                <option value="edge" className="bg-[var(--surface)] text-[var(--foreground)]">Edge TTS</option>
+                <option value="piper" className="bg-[var(--surface)] text-[var(--foreground)]">Piper (CPU)</option>
+                <option value="bark" className="bg-[var(--surface)] text-[var(--foreground)]">Bark (GPU)</option>
               </select>
             </div>
             
@@ -375,28 +371,17 @@ export default function Studio() {
               {isGeneratingVoice ? 'Generating...' : 'Regenerate Voice'}
             </button>
 
-            <div className="flex flex-col gap-1.5 border-l border-[var(--border)] pl-6">
-              <label className="text-xs text-[var(--muted)] font-medium uppercase">Renderer</label>
-              <select 
-                value={videoRenderer} 
-                onChange={e => setVideoRenderer(e.target.value as any)}
-                className="bg-transparent border border-[var(--border)] rounded-md px-3 py-1.5 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] cursor-pointer"
-              >
-                <option value="remotion">Remotion (Timeline)</option>
-                <option value="hyperframes">HyperFrames (HTML/GSAP)</option>
-                <option value="openmontage">OpenMontage (Presets)</option>
-              </select>
-            </div>
+
 
             <div className="flex flex-col gap-1.5 border-l border-[var(--border)] pl-6">
               <label className="text-xs text-[var(--muted)] font-medium uppercase">Profile</label>
               <select 
                 value={renderProfile} 
                 onChange={e => setRenderProfile(e.target.value)}
-                className="bg-transparent border border-[var(--border)] rounded-md px-3 py-1.5 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] cursor-pointer"
+                className="bg-[var(--surface)] border border-[var(--border)] rounded-md px-3 py-1.5 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] cursor-pointer"
               >
-                <option value="FastViral">FastViral</option>
-                <option value="CorporateClean">CorporateClean</option>
+                <option value="FastViral" className="bg-[var(--surface)] text-[var(--foreground)]">FastViral</option>
+                <option value="CorporateClean" className="bg-[var(--surface)] text-[var(--foreground)]">CorporateClean</option>
               </select>
             </div>
             
@@ -541,154 +526,7 @@ export default function Studio() {
           </div>
         )}
 
-        {videoRenderer === 'hyperframes' ? (
-          <main className="grid grid-cols-12 gap-10">
-            {/* HTML/CSS Code Editor */}
-            <div className="col-span-6 space-y-6">
-              <div className="space-y-2">
-                <h2 className="text-sm font-semibold text-[var(--foreground)] flex justify-between">
-                  <span>HTML Structure</span>
-                  <span className="text-xs text-[var(--muted)] font-mono">HyperFrames Engine</span>
-                </h2>
-                <textarea
-                  value={htmlTemplate}
-                  onChange={e => setHtmlTemplate(e.target.value)}
-                  className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg p-4 font-mono text-xs text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] transition-colors h-[28vh] resize-none"
-                  placeholder="<div class='slide'>...</div>"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <h2 className="text-sm font-semibold text-[var(--foreground)]">CSS & Animation Guidelines</h2>
-                <textarea
-                  value={cssTemplate}
-                  onChange={e => setCssTemplate(e.target.value)}
-                  className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg p-4 font-mono text-xs text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] transition-colors h-[28vh] resize-none"
-                  placeholder=".slide { ... }"
-                />
-              </div>
-            </div>
-
-            {/* Live Canvas Preview */}
-            <div className="col-span-6 space-y-6">
-              <h2 className="text-sm font-semibold text-[var(--foreground)] flex justify-between">
-                <span>Real-Time Browser Canvas</span>
-                <span className="text-xs text-green-400 font-mono">● Active</span>
-              </h2>
-
-              <div className="aspect-[9/16] w-full max-w-[320px] mx-auto rounded-xl border border-[var(--border)] bg-[var(--background)] overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.1)] relative flex items-center justify-center p-4">
-                <style dangerouslySetInnerHTML={{ __html: cssTemplate }} />
-                <div 
-                  className="w-full"
-                  dangerouslySetInnerHTML={{ __html: htmlTemplate }}
-                />
-              </div>
-
-              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 space-y-4">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-[var(--muted)] font-medium">Resolution</span>
-                  <span className="font-mono text-[var(--foreground)]">1080x1920 (Vertical)</span>
-                </div>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-[var(--muted)] font-medium">Rendering Target</span>
-                  <span className="font-mono text-[var(--foreground)]">Chrome BeginFrame API</span>
-                </div>
-                <button
-                  onClick={() => {
-                    setRenderLogs(prev => prev + "[HYPERFRAMES] Compiling HTML + CSS...\n[HYPERFRAMES] Initializing headless Chrome wrapper...\n[HYPERFRAMES] Rendering frame sequence at 60fps...\n[HYPERFRAMES] Composition completed successfully.\n[HYPERFRAMES] Saved output to: scratch/hyperframe_compiled.mp4\n");
-                    alert("HyperFrames composition rendered successfully!");
-                  }}
-                  className="w-full py-2.5 rounded-lg text-xs font-bold shiny-button"
-                >
-                  ⚡ Render HyperFrames Clip
-                </button>
-              </div>
-            </div>
-          </main>
-        ) : videoRenderer === 'openmontage' ? (
-          <main className="grid grid-cols-12 gap-10">
-            {/* OpenMontage Setup Panel */}
-            <div className="col-span-6 space-y-6">
-              <div className="space-y-2">
-                <h2 className="text-sm font-semibold text-[var(--foreground)] flex justify-between">
-                  <span>OpenMontage Production Presets</span>
-                  <span className="text-xs text-[var(--muted)] font-mono">12 Pipelines Loaded</span>
-                </h2>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { id: 'explainer', label: 'Animated Explainer' },
-                    { id: 'documentary', label: 'Documentary Montage' },
-                    { id: 'cinematic', label: 'Cinematic Trailer' },
-                    { id: 'podcast', label: 'Podcast Repurpose' },
-                    { id: 'screen-demo', label: 'Screen Demo Walkthrough' },
-                    { id: 'avatar', label: 'Avatar Spokesperson' },
-                  ].map(p => (
-                    <button
-                      key={p.id}
-                      onClick={() => setOpenMontagePipeline(p.id)}
-                      className={`px-4 py-3 text-xs font-bold text-left rounded-lg border transition-all ${
-                        openMontagePipeline === p.id
-                          ? 'border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--foreground)]'
-                          : 'border-[var(--border)] bg-[var(--background)] hover:border-[var(--primary)] text-[var(--muted)] hover:text-[var(--foreground)]'
-                      }`}
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <h2 className="text-sm font-semibold text-[var(--foreground)]">Production Objective & Prompts</h2>
-                <textarea
-                  className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg p-4 font-mono text-xs text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] transition-colors h-[22vh] resize-none"
-                  placeholder="Describe your video project goals in detail..."
-                  defaultValue="Create a 60-second vertical explainer explaining the OpenMontage Write-HTML-Render-Video stack and its integration with Master-AG."
-                />
-              </div>
-            </div>
-
-            {/* Execution Pipeline Visualizer */}
-            <div className="col-span-6 space-y-6">
-              <h2 className="text-sm font-semibold text-[var(--foreground)] flex justify-between">
-                <span>Production Pipeline Manifest</span>
-                <span className="text-xs text-[var(--muted)] font-mono">Status: Idle</span>
-              </h2>
-
-              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 space-y-4">
-                <div className="space-y-3 font-mono text-xs">
-                  <div className="flex items-center justify-between text-green-400">
-                    <span>1. Research & Scripting</span>
-                    <span>✓ Ready</span>
-                  </div>
-                  <div className="flex items-center justify-between text-green-400">
-                    <span>2. Scene Outline Manifest</span>
-                    <span>✓ Generated</span>
-                  </div>
-                  <div className="flex items-center justify-between text-[var(--muted)]">
-                    <span>3. TTS Voice Generation</span>
-                    <span>● Pending</span>
-                  </div>
-                  <div className="flex items-center justify-between text-[var(--muted)]">
-                    <span>4. Remotion Compositing</span>
-                    <span>● Pending</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => {
-                    setRenderLogs(prev => prev + "[OPENMONTAGE] Reading pipeline preset config...\n[OPENMONTAGE] Generating script outline using LLM...\n[OPENMONTAGE] Running TTS script engine...\n[OPENMONTAGE] Saved compiled pipeline to: scratch/openmontage_output.mp4\n");
-                    alert("OpenMontage production pipeline triggered!");
-                  }}
-                  className="w-full py-3 mt-4 rounded-lg text-xs font-bold shiny-button"
-                >
-                  🎬 Run OpenMontage Pipeline
-                </button>
-              </div>
-            </div>
-          </main>
-        ) : (
-          <main className="grid grid-cols-12 gap-10">
+        <main className="grid grid-cols-12 gap-10">
             
             {/* Structured Timeline Editor */}
             <div className="col-span-6 space-y-4">
@@ -871,7 +709,6 @@ export default function Studio() {
               </div>
             )}
           </main>
-        )}
       </div>
 
       {/* Editor Modal */}

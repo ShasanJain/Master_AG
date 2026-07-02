@@ -286,21 +286,17 @@ export default function Dashboard() {
                   </Link>
                 </motion.div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <SkillCard title="chat" desc="Neural conversation and thought exploration hub." category="NEURAL" status="OPTIMAL" href="/chat" />
-                  <SkillCard title="incubator" desc="Experimental core. Staging area for sovereign heuristics." category="CORE" status="ACTIVE" href="/incubator" />
-                  <SkillCard title="skill-studio" desc="Turn any workflow into a reusable agent skill. 6-phase guided builder powered by Gemini API." category="FORGE" status="OPTIMAL" href="/skill-studio" />
+                  <SkillCard title="incubator" desc="Staging area for sovereign heuristics and incubator proposals." category="CORE" status="ACTIVE" href="/incubator" />
+                  <SkillCard title="skill-studio" desc="Turn any workflow into a reusable agent skill." category="FORGE" status="OPTIMAL" href="/skill-studio" />
                   <SkillCard title="journalist" desc="Autonomous LLM orchestrator linked to Ghost CMS." category="CONTENT" status="OPTIMAL" href="/journalist" />
-
-                  {!isLoading && stats.topSkills.filter(s => !['chat', 'incubator', 'reel-studio'].includes(s)).slice(0, 3).map((skill, idx) => (
-                    <SkillCard 
-                      key={idx} 
-                      title={skill} 
-                      desc="Frequently deployed intelligence module from recent missions." 
-                      category="CORE" 
-                      status="OPTIMAL" 
-                    />
-                  ))}
+                  <SkillCard title="browser-bot" desc="Deploy local headless browser automation bots." category="AGENT" status="OPTIMAL" href="/browser-bot" />
+                  <SkillCard title="academic" desc="Traverse and download scientific literature." category="RESEARCH" status="OPTIMAL" href="/academic" />
+                  <SkillCard title="seo-analyzer" desc="Technical SEO discoverability audit dashboard." category="AUDIT" status="OPTIMAL" href="/seo-analyzer" />
+                  <SkillCard title="audio-studio" desc="Multi-engine TTS synthesis workspace." category="AUDIO" status="OPTIMAL" href="/audio-studio" />
+                  <SkillCard title="reel-studio" desc="Remotion, HyperFrames, and OpenMontage video production." category="VIDEO" status="OPTIMAL" href="/reel-studio" />
+                  <SkillCard title="fincept" desc="Real-time stock ticker and market overview." category="FINANCE" status="OPTIMAL" href="/fincept" />
                 </div>
                 <motion.div variants={item} className="mt-auto bg-[var(--background)] p-4 relative overflow-hidden group hover:border-[var(--primary)] transition-all border border-[var(--border)] rounded-sm space-y-3">
                   <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">

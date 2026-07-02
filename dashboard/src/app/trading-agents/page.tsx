@@ -12,28 +12,30 @@ export default function TradingAgentsPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [decision, setDecision] = useState<{ action: string; confidence: string; details: string } | null>(null);
 
-  const startSimulation = () => {
+  const startSimulation = async () => {
     setIsRunning(true);
     setDecision(null);
-    setLogs('[SIMULATOR] Connecting to Yahoo Finance data feeds...\n[SIMULATOR] Pulling historical pricing, financials, and indicators...\n');
-
-    setTimeout(() => {
-      setLogs(prev => prev + '[ANALYST] Technical Analyst: MACD crossover detected on daily charts. RSI neutral at 52.\n[ANALYST] Fundamentals Analyst: Solid P/E ratio relative to sector peers, free cash flow target met.\n[ANALYST] Sentiment Analyst: StockTwits sentiment bullish (+15%), Reddit chatter elevated on earnings predictions.\n');
-    }, 1500);
-
-    setTimeout(() => {
-      setLogs(prev => prev + '[DEBATE] Bullish Researcher: The technical support level at $180 holds firm. Recommending BUY.\n[DEBATE] Bearish Researcher: Macro interest rates remain highly volatile. Risk profile advises HOLD.\n[DEBATE] Commencing Agent Debate Round 1...\n[DEBATE] Consensus reached: Buy recommendation with high risk-adjustments.\n');
-    }, 3000);
-
-    setTimeout(() => {
-      setLogs(prev => prev + '[TRADER] Trader Agent: Proposing order size: 50 shares of ' + ticker + '.\n[PORTFOLIO] Portfolio Manager: Trade approved. Risk management bounds respected.\n[SIMULATOR] Simulation completed successfully.\n');
-      setDecision({
-        action: 'BUY',
-        confidence: '82%',
-        details: 'Consensus recommended BUY based on solid technical crossovers and positive earnings sentiment overrides.'
+    setLogs('[SIMULATOR] Launching Swarm simulation...\n');
+    try {
+      const res = await fetch('/api/trading-agents/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker, provider: llmProvider, rounds: debateRounds })
       });
-      setIsRunning(false);
-    }, 4500);
+      const data = await res.json();
+      
+      setLogs(data.logs || '[SIMULATOR] Simulation ended.');
+      if (data.decision) {
+        setDecision({
+          action: data.decision.action,
+          confidence: data.decision.confidence,
+          details: data.decision.details
+        });
+      }
+    } catch (err: any) {
+      setLogs(prev => prev + `[SIMULATOR] Error occurred: ${err.message || err}\n`);
+    }
+    setIsRunning(false);
   };
 
   return (

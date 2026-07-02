@@ -13,6 +13,8 @@ This document serves as the historical registry and journey tracker for all cust
 | **2026-07-02** | `trading-agents` | [TauricResearch/TradingAgents](https://github.com/TauricResearch/TradingAgents) | Quant Finance / Swarms | Synced | Multi-agent trading firm simulator running technical, fundamental, and sentiment consensus debates. |
 | **2026-07-02** | `hyperframes` | *Headless Chrome Canvas GSAP Render* | Studio Cockpit / Rendering | Active | Write HTML & CSS animations rendered frame-by-frame via headless Chrome's BeginFrame API. |
 | **2026-07-02** | `remotion` | [remotion-dev/remotion](https://github.com/remotion-dev/remotion) | Studio Cockpit / Rendering | Active | React-based video creation framework with visual timeline scrubbing. |
+| **2026-07-02** | `web-design-guidelines` | [vercel-labs/web-interface-guidelines](https://github.com/vercel-labs/web-interface-guidelines) | Quality Gate / Audit | Synced | Vercel design system, spacing, typography, and interactive UI accessibility standards. |
+| **2026-07-02** | `Life-Assistant` | *Sovereign Expo Mobile App* | Mobile / React Native | Archived | Offline React Native/Expo personal dashboard, calendar integrator, and task coordinator. |
 
 ## Referred Workspace Submodules & Target Agents
 

@@ -11,7 +11,7 @@ import {
   Radio, Brain, Palette, Search, Globe, CalendarClock,
   MonitorPlay, Mic2, Clapperboard, Frame, Activity,
   ScrollText, Stethoscope, Cpu, Database, MessageSquare,
-  ChevronDown, ChevronRight, Pin, Star, Scale, Wand2, TrendingUp, Video
+  ChevronDown, ChevronRight, Pin, Star, Scale, Wand2, TrendingUp, Video, ArrowRightLeft
 } from "lucide-react";
 
 interface SidebarProps {
@@ -86,6 +86,7 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
     { label: "Canvas", href: "/open-design", icon: <Frame className="w-4 h-4" />, colorClass: "group-hover:text-sky-400", key: "canvas" },
     { label: "Skill Studio", href: "/skill-studio", icon: <Wand2 className="w-4 h-4" />, colorClass: "group-hover:text-violet-400", key: "skill-studio" },
     { label: "Fincept Terminal", href: "/fincept", icon: <TrendingUp className="w-4 h-4" />, colorClass: "group-hover:text-amber-500", key: "fincept" },
+    { label: "Trading Agents", href: "/trading-agents", icon: <ArrowRightLeft className="w-4 h-4" />, colorClass: "group-hover:text-emerald-500", key: "trading-agents" },
   ];
 
   const pinnedItems = allPinableSkills.filter(item => pinnedSkills.includes(item.key));
@@ -257,6 +258,7 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
                 {renderNavItem("Telemetry", "/telemetry", <Activity className="w-4 h-4" />, "group-hover:text-emerald-400")}
                 {renderNavItem("Mission Logs", "/logs", <ScrollText className="w-4 h-4" />, "group-hover:text-blue-400")}
                 {renderNavItem("Diagnostics", "/diagnostics", <Stethoscope className="w-4 h-4" />, "group-hover:text-yellow-400")}
+                {renderNavItem("Trading Agents", "/trading-agents", <ArrowRightLeft className="w-4 h-4" />, "group-hover:text-emerald-500", "trading-agents")}
               </div>
             )}
           </>

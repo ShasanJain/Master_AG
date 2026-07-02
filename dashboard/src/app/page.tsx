@@ -297,6 +297,7 @@ export default function Dashboard() {
                   <SkillCard title="audio-studio" desc="Multi-engine TTS synthesis workspace." category="AUDIO" status="OPTIMAL" href="/audio-studio" />
                   <SkillCard title="reel-studio" desc="Remotion, HyperFrames, and OpenMontage video production." category="VIDEO" status="OPTIMAL" href="/reel-studio" />
                   <SkillCard title="fincept" desc="Real-time stock ticker and market overview." category="FINANCE" status="OPTIMAL" href="/fincept" />
+                  <SkillCard title="trading-agents" desc="Multi-agent quantitative market analysis and swarm debate." category="QUANT" status="OPTIMAL" href="/trading-agents" />
                 </div>
                 <motion.div variants={item} className="mt-auto bg-[var(--background)] p-4 relative overflow-hidden group hover:border-[var(--primary)] transition-all border border-[var(--border)] rounded-sm space-y-3">
                   <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">

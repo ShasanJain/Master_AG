@@ -1,4 +1,6 @@
 import os
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+
 import sys
 import json
 import argparse
@@ -16,11 +18,12 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 try:
     from tradingagents.default_config import DEFAULT_CONFIG
     from tradingagents.graph.trading_graph import TradingAgentsGraph
+    from langchain_core.callbacks import StdOutCallbackHandler
 except ImportError as e:
     print(f"Error importing tradingagents: {e}")
     sys.exit(1)
 
-def run_simulation(ticker: str, provider: str, rounds: int, date_str: str, model: str = None):
+def run_simulation(ticker: str, provider: str, rounds: int, date_str: str, model: str = None, analysts: str = "market,social,news,fundamentals"):
     print(f"[Brain Quant] Initializing simulation graph...")
     print(f"[Brain Quant] Target Asset: {ticker} | Provider: {provider} | Max Rounds: {rounds}")
     
@@ -41,7 +44,14 @@ def run_simulation(ticker: str, provider: str, rounds: int, date_str: str, model
 
     try:
         # Initialize graph
-        ta = TradingAgentsGraph(debug=True, config=config)
+        analysts_list = [a.strip().lower() for a in analysts.split(",") if a.strip()]
+        print(f"[Brain Quant] Running with active analysts: {analysts_list}")
+        ta = TradingAgentsGraph(
+            selected_analysts=tuple(analysts_list),
+            debug=True,
+            config=config,
+            callbacks=[StdOutCallbackHandler()]
+        )
         
         # Propagate the graph
         print(f"[Brain Quant] Propagating swarm graph for {ticker} on date {date_str}...")
@@ -50,9 +60,9 @@ def run_simulation(ticker: str, provider: str, rounds: int, date_str: str, model
         # Output decision to a temporary file for the dashboard API to read
         result = {
             "success": True,
-            "action": decision.get("action", "HOLD"),
-            "confidence": decision.get("confidence", "50%"),
-            "details": decision.get("reasoning", "Consensus reached holding the current position.")
+            "action": decision if isinstance(decision, str) else "HOLD",
+            "confidence": "80%" if decision in ("BUY", "SELL") else "50%",
+            "details": state.get("final_trade_decision", "Consensus reached.")
         }
         
         output_file = "./scratch/trading_agents_output.json"
@@ -80,6 +90,7 @@ if __name__ == "__main__":
     parser.add_argument("--model", type=str, default=None, help="Specific LLM model to run.")
     parser.add_argument("--rounds", type=int, default=2, help="Number of debate rounds.")
     parser.add_argument("--date", type=str, default=datetime.today().strftime('%Y-%m-%d'), help="Historical execution date.")
+    parser.add_argument("--analysts", type=str, default="market,social,news,fundamentals", help="Comma-separated list of active analysts.")
     
     args = parser.parse_args()
-    run_simulation(args.ticker, args.provider, args.rounds, args.date, args.model)
+    run_simulation(args.ticker, args.provider, args.rounds, args.date, args.model, args.analysts)

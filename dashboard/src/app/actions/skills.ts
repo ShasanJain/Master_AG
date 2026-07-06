@@ -64,7 +64,8 @@ export async function fetchSkills(): Promise<Skill[]> {
     { title: "browser-bot", status: "OPTIMAL", desc: "E2E playwright web automation and scraping console.", category: "COMMAND", href: "/browser-bot", metrics: { size: "Agent", modifiedAt: "Native", type: "Core Hub" } },
     { title: "app-sandbox", status: "OPTIMAL", desc: "Interactive staging environment for draft templates.", category: "STUDIO", href: "/incubator/sandbox", metrics: { size: "Sandbox", modifiedAt: "Native", type: "Core Hub" } },
     { title: "scheduler", status: "OPTIMAL", desc: "Autonomous task engine and cron loop schedule coordinator.", category: "COMMAND", href: "/scheduler", metrics: { size: "Loop", modifiedAt: "Native", type: "Core Hub" } },
-    { title: "council-room", status: "OPTIMAL", desc: "Karpathy war-room model. Auto-debate decision trade-offs.", category: "COMMAND", href: "/incubator/council", metrics: { size: "Room", modifiedAt: "Native", type: "Core Hub" } }
+    { title: "council-room", status: "OPTIMAL", desc: "Karpathy war-room model. Auto-debate decision trade-offs.", category: "COMMAND", href: "/incubator/council", metrics: { size: "Room", modifiedAt: "Native", type: "Core Hub" } },
+    { title: "fincept-terminal-integration", status: "ACTIVE", desc: "Options skew modelling, pricing metrics, and macroeconomic data loaders.", category: "CORE", href: "/fincept", metrics: { size: "Skill", modifiedAt: "Live", type: "Bridge" } }
   ];
   
   skills.push(...coreTools);

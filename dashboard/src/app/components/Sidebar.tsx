@@ -11,7 +11,7 @@ import {
   Radio, Brain, Palette, Search, Globe, CalendarClock,
   MonitorPlay, Mic2, Clapperboard, Frame, Activity,
   ScrollText, Stethoscope, Cpu, Database, MessageSquare,
-  ChevronDown, ChevronRight, Pin, Star, Scale, Wand2, TrendingUp, Video, ArrowRightLeft
+  ChevronDown, ChevronRight, Pin, Star, Scale, Wand2, TrendingUp, Video, ArrowRightLeft, BookOpen
 } from "lucide-react";
 
 interface SidebarProps {
@@ -87,6 +87,7 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
     { label: "Skill Studio", href: "/skill-studio", icon: <Wand2 className="w-4 h-4" />, colorClass: "group-hover:text-violet-400", key: "skill-studio" },
     { label: "Fincept Terminal", href: "/fincept", icon: <TrendingUp className="w-4 h-4" />, colorClass: "group-hover:text-amber-500", key: "fincept" },
     { label: "Trading Agents", href: "/trading-agents", icon: <ArrowRightLeft className="w-4 h-4" />, colorClass: "group-hover:text-emerald-500", key: "trading-agents" },
+    { label: "OpenWiki", href: "/openwiki", icon: <BookOpen className="w-4 h-4" />, colorClass: "group-hover:text-indigo-400", key: "openwiki" },
   ];
 
   const pinnedItems = allPinableSkills.filter(item => pinnedSkills.includes(item.key));
@@ -272,6 +273,7 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
               <div className="space-y-0.5">
                 {renderNavItem("Agent Brain", "/neural", <Cpu className="w-4 h-4" />, "group-hover:text-fuchsia-400")}
                 {renderNavItem("Memory", "/memory", <Database className="w-4 h-4" />, "group-hover:text-violet-400")}
+                {renderNavItem("OpenWiki", "/openwiki", <BookOpen className="w-4 h-4" />, "group-hover:text-indigo-400", "openwiki")}
                 {renderNavItem("Settings", "/settings", <IconSettings className="w-4 h-4" />, "group-hover:text-[var(--foreground)]")}
               </div>
             )}

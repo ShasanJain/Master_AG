@@ -1,0 +1,67 @@
+{
+  "audio_path": "./scratch\\narration.mp3",
+  "srt_path": "./scratch\\timings.srt",
+  "word_timings": [
+    {
+      "word": "Hello",
+      "start": 0.0,
+      "end": 0.78
+    },
+    {
+      "word": "world,",
+      "start": 0.78,
+      "end": 1.36
+    },
+    {
+      "word": "this",
+      "start": 1.9,
+      "end": 1.98
+    },
+    {
+      "word": "is",
+      "start": 1.98,
+      "end": 2.22
+    },
+    {
+      "word": "a",
+      "start": 2.22,
+      "end": 2.32
+    },
+    {
+      "word": "test",
+      "start": 2.32,
+      "end": 2.54
+    },
+    {
+      "word": "of",
+      "start": 2.54,
+      "end": 2.8
+    },
+    {
+      "word": "kitten",
+      "start": 2.8,
+      "end": 3.22
+    },
+    {
+      "word": "TTS",
+      "start": 3.22,
+      "end": 4.02
+    },
+    {
+      "word": "Edge",
+      "start": 4.02,
+      "end": 4.32
+    },
+    {
+      "word": "Voice",
+      "start": 4.32,
+      "end": 4.58
+    },
+    {
+      "word": "Generation.",
+      "start": 4.58,
+      "end": 5.1
+    }
+  ],
+  "total_duration": 5.1
+}

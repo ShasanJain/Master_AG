@@ -1,0 +1,11 @@
+{
+  "branchName": "ralph/feature-name",
+  "userStories": [
+    {
+      "id": "STORY-1",
+      "title": "Fix UnicodeEncodeError in execution/browser_capture.py by replacing the emoji \\U0001f3ac with '[PLAYBACK]' in the print statement.",
+      "priority": 1,
+      "passes": false
+    }
+  ]
+}

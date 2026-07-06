@@ -17,6 +17,7 @@ export default function TradingAgentsPage() {
     setIsRunning(true);
     setDecision(null);
     setLogs('[SIMULATOR] Launching Swarm simulation...\n');
+    
     try {
       const res = await fetch('/api/trading-agents/run', {
         method: 'POST',
@@ -28,18 +29,50 @@ export default function TradingAgentsPage() {
           model: llmProvider === 'ollama' ? selectedModel : '' 
         })
       });
-      const data = await res.json();
-      
-      setLogs(data.logs || '[SIMULATOR] Simulation ended.');
-      if (data.decision) {
-        setDecision({
-          action: data.decision.action,
-          confidence: data.decision.confidence,
-          details: data.decision.details
-        });
+      const startData = await res.json();
+      if (!startData.success) {
+        setLogs(prev => prev + `[SIMULATOR] Launch failed: ${startData.error}\n`);
+        setIsRunning(false);
+        return;
       }
+
+      // Poll the logs endpoint
+      const pollInterval = setInterval(async () => {
+        try {
+          const logRes = await fetch('/api/trading-agents/logs');
+          const data = await logRes.json();
+          if (data.success) {
+            setLogs(data.logs || '[SIMULATOR] Running...');
+            if (data.status === 'completed') {
+              clearInterval(pollInterval);
+              setIsRunning(false);
+              if (data.decision) {
+                setDecision(data.decision);
+              }
+            } else if (data.status === 'error') {
+              clearInterval(pollInterval);
+              setIsRunning(false);
+              setLogs(prev => prev + '\n[SIMULATOR] Swarm execution failed with an error.');
+            }
+          }
+        } catch (pollErr: any) {
+          console.error('Error polling simulation logs:', pollErr);
+        }
+      }, 1000);
+
     } catch (err: any) {
       setLogs(prev => prev + `[SIMULATOR] Error occurred: ${err.message || err}\n`);
+      setIsRunning(false);
+    }
+  };
+
+  const stopSimulation = async () => {
+    setLogs(prev => prev + '\n[SIMULATOR] Sending abort command to agent swarm...\n');
+    try {
+      await fetch('/api/trading-agents/stop', { method: 'POST' });
+      setLogs(prev => prev + '[SIMULATOR] Swarm execution aborted.\n');
+    } catch (err: any) {
+      setLogs(prev => prev + `[SIMULATOR] Stop failed: ${err.message}\n`);
     }
     setIsRunning(false);
   };
@@ -122,13 +155,21 @@ export default function TradingAgentsPage() {
                 />
               </div>
 
-              <button
-                onClick={startSimulation}
-                disabled={isRunning}
-                className="w-full py-3 rounded-lg text-xs font-bold shiny-button flex items-center justify-center gap-2 mt-4"
-              >
-                <Play size={12} /> {isRunning ? 'Running Simulation...' : 'Launch Simulation Swarm'}
-              </button>
+              {!isRunning ? (
+                <button
+                  onClick={startSimulation}
+                  className="w-full py-3 rounded-lg text-xs font-bold shiny-button flex items-center justify-center gap-2 mt-4"
+                >
+                  <Play size={12} /> Launch Simulation Swarm
+                </button>
+              ) : (
+                <button
+                  onClick={stopSimulation}
+                  className="w-full py-3 rounded-lg text-xs font-bold bg-red-650 hover:bg-red-700 border border-red-500 hover:border-red-400 text-white transition-colors flex items-center justify-center gap-2 mt-4"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-450 animate-ping"></span> Stop Swarm Swarm
+                </button>
+              )}
             </section>
           </div>
 

@@ -15,6 +15,7 @@ This document serves as the historical registry and journey tracker for all cust
 | **2026-07-02** | `remotion` | [remotion-dev/remotion](https://github.com/remotion-dev/remotion) | Studio Cockpit / Rendering | Active | React-based video creation framework with visual timeline scrubbing. |
 | **2026-07-02** | `web-design-guidelines` | [vercel-labs/web-interface-guidelines](https://github.com/vercel-labs/web-interface-guidelines) | Quality Gate / Audit | Synced | Vercel design system, spacing, typography, and interactive UI accessibility standards. |
 | **2026-07-02** | `Life-Assistant` | *Sovereign Expo Mobile App* | Mobile / React Native | Archived | Offline React Native/Expo personal dashboard, calendar integrator, and task coordinator. |
+| **2026-07-06** | `openwiki` | [langchain-ai/openwiki](https://github.com/langchain-ai/openwiki) | Code Intelligence / Docs | Synced | Agent-optimized documentation compiler, sidebar config manager, and automated markdown wiki builder. |
 
 ## Referred Workspace Submodules & Target Agents
 

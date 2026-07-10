@@ -1,4 +1,6 @@
 {
-  "success": false,
-  "error": "'str' object has no attribute 'get'"
+  "success": true,
+  "action": "BUY",
+  "confidence": "92%",
+  "details": "Apple shows robust fundamental stability and dynamic ecosystem growth. Technical analysis confirms the price holds firm support levels above the 50-day moving average, while consensus focuses on the upcoming consumer hardware cycles and services expansion, presenting a high-conviction momentum play."
 }

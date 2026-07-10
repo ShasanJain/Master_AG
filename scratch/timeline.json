@@ -1,0 +1,34 @@
+{
+  "segments": [
+    {
+      "type": "video",
+      "clip_path": "C:\\Users\\swaya\\OneDrive\\Desktop\\Master_AG\\assets\\broll\\abstract_new.mp4",
+      "start": 0,
+      "end": 5
+    },
+    {
+      "type": "image",
+      "clip_path": "C:\\Users\\swaya\\OneDrive\\Desktop\\Master_AG\\assets\\broll\\TSLA_product.png",
+      "start": 5,
+      "end": 12
+    },
+    {
+      "type": "video",
+      "clip_path": "C:\\Users\\swaya\\OneDrive\\Desktop\\Master_AG\\assets\\broll\\abstract_new.mp4",
+      "start": 12,
+      "end": 18
+    },
+    {
+      "type": "image",
+      "clip_path": "C:\\Users\\swaya\\OneDrive\\Desktop\\Master_AG\\assets\\broll\\TSLA_chart.png",
+      "start": 18,
+      "end": 25
+    },
+    {
+      "type": "video",
+      "clip_path": "C:\\Users\\swaya\\OneDrive\\Desktop\\Master_AG\\assets\\broll\\abstract_new.mp4",
+      "start": 25,
+      "end": 35
+    }
+  ]
+}

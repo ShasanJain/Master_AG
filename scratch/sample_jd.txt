@@ -1,0 +1,13 @@
+Job Title: Junior Frontend Engineer
+Company: Jack Media Swarm
+Role Overview:
+We are looking for a Junior Frontend Engineer to build web templates and media overlays. 
+Responsibilities:
+- Support building React component layouts and video composites using Remotion.
+- Maintain UI theme configs and branding assets.
+- Integrate voice narration outputs with front-end visual widgets.
+- Clean up workspace build pipelines and run formatting tests.
+Requirements:
+- Basic knowledge of JavaScript/TypeScript and React.
+- Exposure to Node.js environments.
+- Experience setting up environment configurations like TIKTOK_API_KEY and EDGETTS_VOICE.

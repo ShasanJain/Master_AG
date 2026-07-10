@@ -8,10 +8,11 @@ import whisper
 import srt
 import datetime
 
-def generate_tts_edge(text: str, audio_path: str):
-    print("[Brain TTS] Generating voice via edge-tts...")
+def generate_tts_edge(text: str, audio_path: str, voice: str = "en-US-AndrewNeural"):
+    print(f"[Brain TTS] Generating voice via edge-tts voice={voice}...")
     clean_text = text.replace('"', '\\"')
-    subprocess.run(["edge-tts", "--text", text, "--write-media", audio_path], check=True)
+    subprocess.run(["edge-tts", "--text", text, "--write-media", audio_path, "--voice", voice], check=True)
+
 
 def generate_tts_piper(text: str, audio_path: str):
     print("[Brain TTS] Generating voice via Piper (Offline CPU)...")
@@ -48,7 +49,8 @@ def generate_tts_kittentts(text: str, audio_path: str, voice: str = "Jasper", sp
         sf.write(audio_path, audio, 24000)
     except Exception as e:
         print(f"[Brain TTS] WARNING: KittenTTS failed: {str(e)}. Falling back to edge-tts.")
-        generate_tts_edge(text, audio_path)
+        generate_tts_edge(text, audio_path, voice=voice)
+
 
 def generate_tts_and_timing(text: str, output_dir: str, engine: str = "edge", voice: str = "Jasper", speed: float = 1.0):
     start_time = time.time()
@@ -65,7 +67,8 @@ def generate_tts_and_timing(text: str, output_dir: str, engine: str = "edge", vo
     elif engine == "kittentts":
         generate_tts_kittentts(text, audio_path, voice=voice, speed=speed)
     else:
-        generate_tts_edge(text, audio_path)
+        generate_tts_edge(text, audio_path, voice=voice)
+
         
     print(f"[Brain TTS] Saved audio to {audio_path}")
         

@@ -26,6 +26,7 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
     studio: false,
     monitor: false,
     configure: false,
+    miscellaneous: false,
   });
 
   const [activeWorkspace, setActiveWorkspace] = useState<string | null>(null);
@@ -88,6 +89,7 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
     { label: "Fincept Terminal", href: "/fincept", icon: <TrendingUp className="w-4 h-4" />, colorClass: "group-hover:text-amber-500", key: "fincept" },
     { label: "Trading Agents", href: "/trading-agents", icon: <ArrowRightLeft className="w-4 h-4" />, colorClass: "group-hover:text-emerald-500", key: "trading-agents" },
     { label: "OpenWiki", href: "/openwiki", icon: <BookOpen className="w-4 h-4" />, colorClass: "group-hover:text-indigo-400", key: "openwiki" },
+    { label: "VillageOS", href: "/villageos", icon: <Cpu className="w-4 h-4" />, colorClass: "group-hover:text-cyan-400", key: "villageos" },
   ];
 
   const pinnedItems = allPinableSkills.filter(item => pinnedSkills.includes(item.key));
@@ -172,7 +174,7 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
         >
           All Modules
         </button>
-        {['command', 'studio', 'monitor', 'configure'].map((ws) => (
+        {['command', 'studio', 'monitor', 'configure', 'miscellaneous'].map((ws) => (
           <button 
             key={ws}
             onClick={() => selectWorkspace(ws)}
@@ -275,6 +277,18 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
                 {renderNavItem("Memory", "/memory", <Database className="w-4 h-4" />, "group-hover:text-violet-400")}
                 {renderNavItem("OpenWiki", "/openwiki", <BookOpen className="w-4 h-4" />, "group-hover:text-indigo-400", "openwiki")}
                 {renderNavItem("Settings", "/settings", <IconSettings className="w-4 h-4" />, "group-hover:text-[var(--foreground)]")}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ── MISCELLANEOUS ── */}
+        {(activeWorkspace === null || activeWorkspace === 'miscellaneous') && (
+          <>
+            {renderSectionHeader("Miscellaneous", "miscellaneous")}
+            {!collapsed.miscellaneous && (
+              <div className="space-y-0.5">
+                {renderNavItem("VillageOS", "/villageos", <Cpu className="w-4 h-4" />, "group-hover:text-cyan-400", "villageos")}
               </div>
             )}
           </>

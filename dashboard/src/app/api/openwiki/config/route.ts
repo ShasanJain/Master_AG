@@ -28,7 +28,7 @@ export async function GET() {
       const lines = content.split('\n');
       for (const line of lines) {
         const trimmed = line.trim();
-        if (trimmed && !trimmed.startswith('#') && trimmed.includes('=')) {
+        if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
           const index = trimmed.indexOf('=');
           const k = trimmed.substring(0, index).trim();
           const v = trimmed.substring(index + 1).trim();
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       const lines = content.split('\n');
       for (const line of lines) {
         const trimmed = line.trim();
-        if (trimmed && !trimmed.startswith('#') && trimmed.includes('=')) {
+        if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
           const index = trimmed.indexOf('=');
           const k = trimmed.substring(0, index).trim();
           const v = trimmed.substring(index + 1).trim();

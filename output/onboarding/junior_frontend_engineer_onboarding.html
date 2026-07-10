@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Onboarding Guide: Junior Frontend Engineer at Jack Media Swarm</title>
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            margin: 0;
+            padding: 40px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #161b22;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            border: 1px solid #30363d;
+        }
+        h1 {
+            color: #58a6ff;
+            border-bottom: 2px solid #30363d;
+            padding-bottom: 15px;
+            font-size: 2.2rem;
+        }
+        h2 {
+            color: #f0883e;
+            margin-top: 30px;
+            border-bottom: 1px solid #21262d;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #ff7b72;
+        }
+        ul, ol {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        code {
+            background: #21262d;
+            color: #ff7b72;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        pre {
+            background: #0d1117;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            border: 1px solid #30363d;
+        }
+        pre code {
+            background: none;
+            color: #79c0ff;
+            padding: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #30363d;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #21262d;
+            color: #58a6ff;
+        }
+        a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .divider {
+            height: 1px;
+            background-color: #30363d;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 Onboarding Guide: Junior Frontend Engineer at Jack Media Swarm</h1>
+        <p>Welcome to <strong>Jack Media Swarm</strong>! This document maps the tools, repositories, configurations, and schedules you need to start operating immediately.</p>
+        
+        <div class="divider"></div>
+        
+        <h2>🎯 1. Core Responsibilities & Operations</h2>
+        <ul>
+    <li><strong>Support building React component layouts and video composites:</strong> You will manage user interface components and visual overlay frames rendered via Remotion.</li>
+<li><strong>Maintain UI theme configs and branding assets:</strong> Update corporate styles, variables, colors, and layout presets.</li>
+<li><strong>Integrate voice narration outputs with front-end visual widgets:</strong> Bridge synthesized TTS audio outputs with browser canvas timelines.</li>
+<li><strong>Clean up workspace build pipelines and run formatting tests:</strong> Enforce coding quality standard checks before deployment.</li>
+
+        </ul>
+        
+        <div class="divider"></div>
+        
+        <h2>🛠️ 2. Tooling, Script References & Workspace Access</h2>
+    
+        <h3>📂 <a href="file:///c:/Users/swaya/OneDrive/Desktop/Master_AG/remotion">React Remotion (remotion)</a></h3>
+        <p><strong>Description:</strong> React-based video creation framework with visual timeline scrubbing.</p>
+        <p><strong>Execution Reference Commands:</strong></p>
+        <pre><code>npm run build
+npx remotion preview
+</code></pre>
+        
+        <h3>📂 <a href="file:///c:/Users/swaya/OneDrive/Desktop/Master_AG/design-system">Design Presets (design-system)</a></h3>
+        <p><strong>Description:</strong> Shared design system configuration file containing branding styles.</p>
+        <p><strong>Execution Reference Commands:</strong></p>
+        <pre><code>python execution/test_design_system.py
+</code></pre>
+        
+        <div class="divider"></div>
+        
+        <h2>🔑 3. Configuration & Environment Variables</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Variable Key</th>
+                    <th>Purpose & Integration</th>
+                </tr>
+            </thead>
+            <tbody>
+    <tr><td><code>EDGETTS_VOICE</code></td><td>Standard neural voice key used in narration overlays.</td></tr>
+<tr><td><code>TIKTOK_API_KEY</code></td><td>Publishing token for automated short posts.</td></tr>
+
+            </tbody>
+        </table>
+        
+        <div class="divider"></div>
+        
+        <h2>📅 4. The First 30 Days Roadmap</h2>
+    <h3>🗓️ Days 1-5: UI Workspace Setup</h3><ul><li>[ ] Clone repository and install node packages in dashboard.</li><li>[ ] Run diagnostics test: python execution/run_diagnostics.py.</li><li>[ ] Verify Remotion compiler previews locally.</li></ul>
+<h3>🗓️ Days 6-15: Overlay Development</h3><ul><li>[ ] Design a custom video frame template in dashboard workspace.</li><li>[ ] Verify that text overlays align cleanly in vertical previews.</li></ul>
+<h3>🗓️ Days 16-30: Component Integration</h3><ul><li>[ ] Expose audio synthesis controls in Next.js frontend panels.</li><li>[ ] Verify page builds with zero typescript errors.</li></ul>
+
+        <div class="divider"></div>
+        
+        <h2>📈 5. Quality Gates & Success Standards</h2>
+        <ol>
+            <li><strong>Directives Check:</strong> Ensure your execution results align with the standard operating procedures under <a href="file:///c:/Users/swaya/OneDrive/Desktop/Master_AG/directives">directives/</a>.</li>
+            <li><strong>Lint & Verify:</strong> Run syntax audits: <code>npm run lint</code> or <code>pytest</code> locally depending on the module stack.</li>
+            <li><strong>Git Branch Rule:</strong> Never commit directly to the <code>main</code> branch. Create a new branch prefixed with your role (e.g. <code>feature/backend-opt</code>).</li>
+        </ol>
+        
+        <div class="divider"></div>
+        
+        <h2>☎️ 6. Support Contacts & HR Policies</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Contact Persona</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Direct Line / Slack</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+                <tr>
+                    <td><strong>Team Lead / Manager</strong></td>
+                    <td>Sarah Jenkins</td>
+                    <td>s.jenkins@jackmediaswarm.com</td>
+                    <td>+1 (555) 019-2834 / <code>@SarahJ</code></td>
+                </tr>
+                <tr>
+                    <td><strong>HR Operations</strong></td>
+                    <td>David Vance</td>
+                    <td>d.vance@jackmediaswarm.com</td>
+                    <td>+1 (555) 014-9988 / <code>@DavidV</code></td>
+                </tr>
+                <tr>
+                    <td><strong>IT Helpdesk Support</strong></td>
+                    <td>Tech Support Team</td>
+                    <td>support@jackmediaswarm.com</td>
+                    <td>Slack: <code>#helpdesk-support</code></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>📜 Corporate Documentation & Handbooks</h3>
+        <ul>
+            <li><a href="file:///c:/Users/swaya/OneDrive/Desktop/Master_AG/docs/hr/policies.md">Corporate HR Policies Guide</a></li>
+            <li><a href="file:///c:/Users/swaya/OneDrive/Desktop/Master_AG/docs/hr/security_handbook.md">Workspace Security Handbook</a></li>
+        </ul>
+    </div>
+</body>
+</html>
+    

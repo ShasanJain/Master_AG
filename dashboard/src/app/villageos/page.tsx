@@ -769,6 +769,104 @@ export default function VillageOSDashboard() {
     return () => clearInterval(timer);
   }, []);
 
+  // Background sync polling for Chrome Extension updates
+  useEffect(() => {
+    const syncInterval = setInterval(async () => {
+      try {
+        const res = await fetch('/api/villageos/sync');
+        const json = await res.json();
+        if (json.success && json.data) {
+          const d = json.data;
+
+          // Apply account currencies
+          if (d.gold !== undefined) setGold(d.gold);
+          if (d.silver !== undefined) setSilver(d.silver);
+
+          // Apply village update
+          setVillages(prev => prev.map(v => {
+            // Find by matching name or coordinate
+            const isMatch = (d.coords && v.coords === d.coords) || (d.villageName && v.name === d.villageName);
+            if (!isMatch) return v;
+
+            let updatedB = v.buildings ? [...v.buildings] : [];
+            if (d.buildings && d.buildings.length) {
+              d.buildings.forEach((newB: any) => {
+                const idx = updatedB.findIndex(b => b.slot === newB.slot);
+                if (idx !== -1) {
+                  updatedB[idx].current = newB.level;
+                  if (newB.name) updatedB[idx].name = newB.name;
+                } else if (newB.slot) {
+                  updatedB.push({
+                    id: updatedB.length + 1,
+                    slot: newB.slot,
+                    name: newB.name || 'Structure',
+                    current: newB.level,
+                    target: 10,
+                    priority: 3,
+                    category: newB.category || 'urban'
+                  });
+                }
+              });
+            }
+
+            return {
+              ...v,
+              name: d.villageName || v.name,
+              coords: d.coords || v.coords,
+              resources: {
+                ...v.resources,
+                wood: d.resources.wood ?? v.resources.wood,
+                clay: d.resources.clay ?? v.resources.clay,
+                iron: d.resources.iron ?? v.resources.iron,
+                crop: d.resources.crop ?? v.resources.crop,
+                woodProd: d.resources.woodProd ?? v.resources.woodProd,
+                clayProd: d.resources.clayProd ?? v.resources.clayProd,
+                ironProd: d.resources.ironProd ?? v.resources.ironProd,
+                cropProd: d.resources.cropProd ?? v.resources.cropProd,
+              },
+              buildings: updatedB
+            };
+          }));
+
+          // Apply hero update
+          if (d.hero && Object.keys(d.hero).length) {
+            setHero(prev => ({
+              ...prev,
+              name: d.hero.name || prev.name,
+              level: d.hero.level ?? prev.level,
+              hp: d.hero.health ?? prev.hp,
+              strength: d.hero.fightingStrength ?? prev.strength,
+              xp: d.hero.experience ?? prev.xp,
+              bagWood: d.bagWood ?? prev.bagWood,
+              bagClay: d.bagClay ?? prev.bagClay,
+              bagIron: d.bagIron ?? prev.bagIron,
+              bagCrop: d.bagCrop ?? prev.bagCrop,
+            }));
+          }
+
+          // Apply consumables
+          if (d.consumables && Object.keys(d.consumables).length) {
+            setConsumables(prev => ({
+              ointments: d.consumables.ointments ?? prev.ointments,
+              scrolls: d.consumables.scrolls ?? prev.scrolls,
+              cages: d.consumables.cages ?? prev.cages,
+              wisdomBooks: d.consumables.booksOfWisdom ?? prev.wisdomBooks,
+              artwork: d.consumables.artwork ?? prev.artwork,
+              buckets: d.consumables.buckets ?? prev.buckets,
+            }));
+          }
+
+          setStatusMsg(`SUCCESS: Instantly synced "${d.villageName || 'Active Village'}" via Browser Extension.`);
+        }
+      } catch (err) {
+        // Suppress polling network errors
+      }
+    }, 1500);
+
+    return () => clearInterval(syncInterval);
+  }, [activeVillageId]);
+
+
   // Settings State
   const [settings, setSettings] = useState({
     accountName: "Swayam",

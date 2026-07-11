@@ -118,3 +118,15 @@ Errors are learning opportunities. When something breaks:
 You sit between human intent (directives) and deterministic execution (Python scripts). Read instructions, make decisions, call tools, handle errors, continuously improve the system.
 
 Be pragmatic. Be reliable. Self-anneal.
+
+## Travian Page Parsing & Image Upload Rules
+
+1. **Context-Aware Screenshot Analysis (Split Uploads)**
+   - Always group screenshot uploads by page context (dorf1, dorf2, hero attributes, hero inventory). Do not use a single generic image upload box.
+   - When calling vision APIs, append a custom instruction suffix specifying the target slot to limit scope, optimize processing, and avoid HTTP 400 Bad Request errors.
+
+2. **Regex Text Parser Invariants**
+   - **No Hardcoded Data**: Never hardcode values like gold, silver, or specific resource amounts in the parser. All values must be extracted dynamically.
+   - **Coordinate Normalization**: Normalise Unicode hyphens (`\u2011`, `\u2212`) to standard ASCII hyphens (`-`) before matching coordinates.
+   - **Pattern Alignment**: Account for standard Travian header logs where gold/silver appear as standalone numeric lines at the top of the paste block.
+

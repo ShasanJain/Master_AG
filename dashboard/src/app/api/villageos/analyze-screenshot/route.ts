@@ -110,6 +110,7 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const imageFile = formData.get('image') as File | null;
+    const targetSlot = formData.get('targetSlot') as string | null;
 
     if (!imageFile) {
       return NextResponse.json({ error: 'No image provided' }, { status: 400 });
@@ -117,13 +118,28 @@ export async function POST(request: Request) {
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: 'GEMINI_API_KEY not configured' }, { status: 500 });
+      return NextResponse.json({ 
+        error: 'Gemini API key is not configured in your .env file.', 
+        details: 'To use AI Vision, please set GEMINI_API_KEY. Alternatively, copy-paste raw text from the Travian page below and click "Parse Text & Auto-Fill" — it is 100% local, fast, and does not require an API key.' 
+      }, { status: 500 });
     }
 
     // Convert image to base64
     const arrayBuffer = await imageFile.arrayBuffer();
     const base64 = Buffer.from(arrayBuffer).toString('base64');
     const mimeType = imageFile.type || 'image/png';
+
+    // Tailor instructions based on the user's selected screenshot slot
+    let targetInstructions = '';
+    if (targetSlot === 'dorf1') {
+      targetInstructions = '\n[TARGET SCREEN: RESOURCE FIELDS / dorf1.php]\nFocus heavily on extracting current wood, clay, iron, crop stocks (Reserves), the warehouse/granary capacities, production rates per hour, gold/silver values, coordinates, and village name.';
+    } else if (targetSlot === 'dorf2') {
+      targetInstructions = '\n[TARGET SCREEN: VILLAGE CENTER / dorf2.php]\nFocus heavily on extracting building names and their current levels (e.g. Main Building Level 10, Warehouse Level 8, Barracks Level 5).';
+    } else if (targetSlot === 'heroAttrs') {
+      targetInstructions = '\n[TARGET SCREEN: HERO ATTRIBUTES]\nFocus heavily on extracting the hero name, level, health percentage, experience, fighting strength, and equipped items in slots (helmet, weapon/rightHand, shield/leftHand, armour/body, shoes/boots).';
+    } else if (targetSlot === 'heroInv') {
+      targetInstructions = '\n[TARGET SCREEN: HERO INVENTORY / CONSUMABLES]\nFocus heavily on extracting quantities of ointments, cages, scrolls, booksOfWisdom, artwork, buckets, and resources in the hero bag (bagWood, bagClay, bagIron, bagCrop).';
+    }
 
     // Call Gemini Vision API
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
@@ -132,7 +148,7 @@ export async function POST(request: Request) {
       contents: [
         {
           parts: [
-            { text: SYSTEM_PROMPT },
+            { text: SYSTEM_PROMPT + targetInstructions },
             {
               inline_data: {
                 mime_type: mimeType,
@@ -157,7 +173,10 @@ export async function POST(request: Request) {
 
     if (!geminiRes.ok) {
       const errText = await geminiRes.text();
-      return NextResponse.json({ error: `Gemini API error: ${geminiRes.status}`, details: errText }, { status: 500 });
+      return NextResponse.json({ 
+        error: `Gemini API returned error code ${geminiRes.status}`, 
+        details: 'The AI service is currently unavailable or rate-limited. You can copy-paste raw text from the page instead and click "Parse Text & Auto-Fill" for instant parsing.' 
+      }, { status: 500 });
     }
 
     const geminiData = await geminiRes.json();
@@ -169,7 +188,7 @@ export async function POST(request: Request) {
     
     if (!jsonMatch) {
       return NextResponse.json({ 
-        error: 'Could not extract JSON from Gemini response',
+        error: 'Could not extract structured data from response',
         rawText 
       }, { status: 422 });
     }
@@ -179,6 +198,9 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     console.error('[VillageOS Screenshot Analyser]', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Screenshot processing failed.', 
+      details: error.message || 'Unknown network error. Use the raw text parser below for guaranteed local parsing.' 
+    }, { status: 500 });
   }
 }

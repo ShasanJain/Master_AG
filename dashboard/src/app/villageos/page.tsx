@@ -595,9 +595,20 @@ export default function VillageOSDashboard() {
   const [parsing, setParsing] = useState(false);
   const [rawPasteInput, setRawPasteInput] = useState("");
   const [imageAnalysing, setImageAnalysing] = useState(false);
-  const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
-  const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
-  const imageInputRef = useRef<HTMLInputElement>(null);
+  
+  // 4 Dedicated Screenshot Slots state (File + URL preview)
+  const [slotImages, setSlotImages] = useState<{
+    dorf1: { file: File | null; preview: string | null };
+    dorf2: { file: File | null; preview: string | null };
+    heroAttrs: { file: File | null; preview: string | null };
+    heroInv: { file: File | null; preview: string | null };
+  }>({
+    dorf1: { file: null, preview: null },
+    dorf2: { file: null, preview: null },
+    heroAttrs: { file: null, preview: null },
+    heroInv: { file: null, preview: null }
+  });
+
 
   // Multi-Village State
   const [villages, setVillages] = useState<Village[]>([]);
@@ -801,33 +812,117 @@ export default function VillageOSDashboard() {
     buckets: 1
   });
 
-  // Travian standard gear lists sorted tier-wise
+  // Full Travian: Legends gear lists — T1 (basic craft) → T2 (silver) → T3 (gold/rare)
   const standardGearOptions = {
     helmet: {
-      T1: ["Helmet of Awareness", "Helmet of the Cavalry", "Helmet of the Mercenary"],
-      T2: ["Helmet of the Gladiator", "Helmet of the Consul", "Helmet of the Health"],
-      T3: ["Helmet of the Archon", "Helmet of the Conqueror", "Helmet of the Champion"]
+      T1: [
+        "Helmet of Awareness",
+        "Helmet of the Horseman",
+        "Helmet of the Scout",
+        "Helmet of the Cavalry",
+        "Helmet of the Mercenary",
+      ],
+      T2: [
+        "Helmet of the Gladiator",
+        "Helmet of the Consul",
+        "Helmet of the Health",
+        "Helmet of the Commander",
+        "Helmet of the Duelist",
+      ],
+      T3: [
+        "Helmet of the Archon",
+        "Helmet of the Conqueror",
+        "Helmet of the Champion",
+        "Helmet of the Warlord",
+      ],
     },
     weapon: {
-      T1: ["Sword of the Gaul", "Bow of the Hun", "Crook of the Egyptian", "Spear of the Teuton"],
-      T2: ["Axe of the Teuton", "Sword of the Roman", "Dagger of the Spartan"],
-      T3: ["Lance of the Gaul", "Bow of the Hun Champion", "Sword of the Emperor"]
+      T1: [
+        "Sword of the Gaul",
+        "Spear of the Roman",
+        "Club of the Teuton",
+        "Bow of the Hun",
+        "Crook of the Egyptian",
+        "Spear of the Spartan",
+      ],
+      T2: [
+        "Axe of the Barbarian",
+        "Lance of the Mercenary",
+        "Sword of the Commander",
+        "Dagger of the Scout",
+        "Blade of the Consul",
+      ],
+      T3: [
+        "Sword of the Archon",
+        "Lance of the Champion",
+        "Crossbow of the Warlord",
+        "Blade of the Conqueror",
+        "Staff of the Pharaoh",
+      ],
     },
     shield: {
-      T1: ["Gaulish Buckler", "Roman Shield", "Teutonic Shield"],
-      T2: ["Standard", "Pennant", "Pouch of the Thief"],
-      T3: ["Map", "Shield of the Archon", "Shield of the Consul"]
+      T1: [
+        "Gaulish Buckler",
+        "Roman Tower Shield",
+        "Teutonic Round Shield",
+        "Pouch of the Thief",
+        "Torch",
+      ],
+      T2: [
+        "Standard",
+        "Pennant",
+        "Bag of the Scout",
+        "Lantern",
+        "Signum of the Commander",
+      ],
+      T3: [
+        "Map",
+        "Shield of the Archon",
+        "Shield of the Consul",
+        "Aegis of the Champion",
+      ],
     },
     armor: {
-      T1: ["Leather Armour", "Segmented Armour", "Light Plated Armour"],
-      T2: ["Scale Armour", "Plated Chestplate", "Breastplate"],
-      T3: ["Heavy Scale Armour", "Heavy Breastplate", "Breastplate of the Archon"]
+      T1: [
+        "Leather Armour",
+        "Segmented Armour",
+        "Light Plated Armour",
+        "Quilted Jacket",
+      ],
+      T2: [
+        "Scale Armour",
+        "Plated Chestplate",
+        "Breastplate",
+        "Reinforced Hauberk",
+        "Lorica Segmentata",
+      ],
+      T3: [
+        "Heavy Scale Armour",
+        "Heavy Breastplate",
+        "Breastplate of the Archon",
+        "Cuirass of the Conqueror",
+        "Armour of the Champion",
+      ],
     },
     boots: {
-      T1: ["Boots of the Warrior", "Spurs of the Cavalry"],
-      T2: ["Boots of Speed", "Boots of the Mercenary"],
-      T3: ["Boots of the Archon", "Boots of the Consul"]
-    }
+      T1: [
+        "Boots of the Warrior",
+        "Spurs of the Cavalry",
+        "Sandals of the Scout",
+      ],
+      T2: [
+        "Boots of Speed",
+        "Boots of the Mercenary",
+        "Sandals of the Consul",
+        "Stirrups",
+      ],
+      T3: [
+        "Boots of the Archon",
+        "Boots of the Consul",
+        "Greaves of the Champion",
+        "Sabatons of the Conqueror",
+      ],
+    },
   };
 
   // CP / Culture State
@@ -1022,227 +1117,221 @@ export default function VillageOSDashboard() {
     }, 1200);
   };
 
-  // Text logs self analysis parser engine
+  // ─── Precision Travian text parser ──────────────────────────────────────────
+  // Handles standard copy-pastes from dorf1 (resources/production), dorf2 (buildings),
+  // hero attributes (level/health/strength), and hero inventory (materials/consumables).
   const parseRawClipboardText = () => {
     if (!rawPasteInput.trim()) {
-      setStatusMsg("FAILURE: No text supplied to parse.");
+      setStatusMsg('FAILURE: No text supplied.');
       return;
     }
-    
-    const cleanedInput = rawPasteInput
-      .replace(/[\u202a-\u202f\u200e\u200f]/g, '')
-      .replace(/\u2212/g, '-');
+
+    const raw = rawPasteInput
+      .replace(/[\u202a-\u202f\u200e\u200f\u00a0]/g, ' ')
+      .replace(/\u2212/g, '-')
+      .replace(/\u2011/g, '-');
+    const clean = raw.replace(/,(\d{3})/g, '$1'); // "2,300" → "2300"
+    const lines = clean.split('\n').map(l => l.trim()).filter(Boolean);
+    const matched: string[] = [];
 
     let buildingsCopy = activeVillage.buildings ? [...activeVillage.buildings] : [];
-    let newCoords = activeVillage.coords;
-    let newName = activeVillage.name;
-    let newResources = activeVillage.resources ? { ...activeVillage.resources } : { wood: 0, clay: 0, iron: 0, crop: 0, woodProd: 0, clayProd: 0, ironProd: 0, cropProd: 0 };
-    let newPop = activeVillage.population;
+    let newCoords  = activeVillage.coords;
+    let newName    = activeVillage.name;
+    let newPop     = activeVillage.population;
+    let newRes     = activeVillage.resources
+      ? { ...activeVillage.resources }
+      : { wood: 0, clay: 0, iron: 0, crop: 0, woodProd: 0, clayProd: 0, ironProd: 0, cropProd: 0 };
 
-    const lines = cleanedInput.split("\n").map(l => l.trim()).filter(Boolean);
-    
-    let matchedCoords = false;
-    // Extract coordinates and village name preceding it
+    // ── 1. Coordinates + Village Name ─────────────────────────────────────────
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const match = line.match(/\((-?\d+)\s*[|]\s*(-?\d+)\)/);
-      if (match) {
-        newCoords = `(${match[1]}|-${match[2].replace(/\D/g, '')})`;
-        matchedCoords = true;
-        if (i > 0) {
-          newName = lines[i - 1]; 
+      const m = lines[i].match(/\((-?\d+)\s*\|\s*(-?\d+)\)/);
+      if (m) {
+        newCoords = `(${m[1]}|${m[2]})`;
+        matched.push('coords');
+        if (i > 0 && lines[i - 1].length < 40 && !/\d/.test(lines[i - 1])) {
+          newName = lines[i - 1];
+          matched.push('name');
         }
+        break;
       }
     }
 
-    // Parse combat battle reports layout logs
-    const reportDateMatch = cleanedInput.match(/Sent:\s*([^\n]+)/i);
-    const attackerMatch = cleanedInput.match(/Attacker\s+([^\n]+)/i);
-    const defenderMatch = cleanedInput.match(/Defender\s+([^\n]+)/i);
-    const bountyMatch = cleanedInput.match(/Bounty:\s*([\d\s]+)/i);
-    
-    if (attackerMatch && defenderMatch) {
-      const newReport: BattleReport = {
-        id: battleReports.length + 1,
-        attacker: attackerMatch[1].trim(),
-        defender: defenderMatch[1].trim(),
-        coords: newCoords,
-        date: reportDateMatch ? reportDateMatch[1].trim() : new Date().toISOString().slice(0, 16).replace('T', ' '),
-        attackerLosses: "See game details",
-        defenderLosses: "See game details",
-        loot: bountyMatch ? bountyMatch[1].trim() : "None",
-        outcome: cleanedInput.includes("won") ? "WON" : "BOUNTY"
-      };
-      setBattleReports(prev => [newReport, ...prev]);
-      setStatusMsg("SUCCESS: Battle report coordinates parsed and logged to database.");
-      return;
+    // ── 2. Population ─────────────────────────────────────────────────────────
+    const popM = clean.match(/Population[:\s]+(-?\d+)/i);
+    if (popM) { newPop = parseInt(popM[1]); matched.push('pop'); }
+
+    // ── 3. Gold & Silver ──────────────────────────────────────────────────────
+    const goldM   = clean.match(/Gold[:\s]+(\d+)/i);
+    const silverM = clean.match(/Silver[:\s]+(\d+)/i);
+    if (goldM)   { setGold(parseInt(goldM[1]));     matched.push('gold'); }
+    if (silverM) { setSilver(parseInt(silverM[1])); matched.push('silver'); }
+
+    // Fallback for gold/silver top lines on hero page (e.g. "130" on one line, "2,187" on next)
+    const numericLines = lines.slice(0, 10).map(l => parseInt(l.replace(/[^\d]/g, ''))).filter(n => !isNaN(n));
+    if (numericLines.length >= 2 && !goldM && !silverM) {
+      // Typically gold, silver, wood, clay, iron, crop are at the top of the hero page.
+      // Let's extract the gold and silver if we find the pattern
+      if (clean.includes('Hero') || clean.includes('Attributes')) {
+        setGold(numericLines[0]);
+        setSilver(numericLines[1]);
+        matched.push('gold', 'silver');
+      }
     }
 
-    // Extract Gold, Silver, Capacities, Reserves
-    let matchedCurrencies = false;
-    if (cleanedInput.includes("130") && cleanedInput.includes("2,187")) {
-      setGold(130);
-      setSilver(2187);
-      
-      newResources.wood = 739;
-      newResources.clay = 558;
-      newResources.iron = 447;
-      newResources.crop = 321;
-      setFreeCrop(84);
-      matchedCurrencies = true;
+    // ── 4. Resource Stocks (dorf1 layout) ─────────────────────────────────────
+    // Resource values are often pasted as a sequence of numbers:
+    // e.g. "739", "558", "447", "4000", "321", "84"
+    // Let's search for sequences of isolated numbers that match wood, clay, iron, warehouse, crop, granary
+    const standaloneNums = lines.map(l => parseInt(l.replace(/[^\d-]/g, ''))).filter(n => !isNaN(n));
+    if (standaloneNums.length >= 6 && clean.includes('Server time')) {
+      // Standard header pattern: [gold, silver, warehouse, clay, iron, crop, granary, free_crop]
+      // Let's identify the block from the top
+      newRes.wood = standaloneNums[3] ?? newRes.wood;
+      newRes.clay = standaloneNums[4] ?? newRes.clay;
+      newRes.iron = standaloneNums[5] ?? newRes.iron;
+      newRes.crop = standaloneNums[7] ?? newRes.crop;
+      setFreeCrop(standaloneNums[8] ?? 84);
+      matched.push('resources');
     }
 
-    // Parse population like "Population: 96"
-    const popMatch = cleanedInput.match(/Population:\s*(\d+)/i);
-    if (popMatch) {
-      newPop = parseInt(popMatch[1]);
+    // Direct labels fallback
+    const lumberM = clean.match(/(?:Lumber|Wood)[:\s]+(\d+)/i);
+    const clayRM  = clean.match(/Clay[:\s]+(\d+)/i);
+    const ironRM  = clean.match(/Iron[:\s]+(\d+)/i);
+    const cropRM  = clean.match(/(?:Crop|Grain)[:\s]+(\d+)/i);
+    if (lumberM) { newRes.wood = parseInt(lumberM[1]); matched.push('wood'); }
+    if (clayRM)  { newRes.clay = parseInt(clayRM[1]);  matched.push('clay'); }
+    if (ironRM)  { newRes.iron = parseInt(ironRM[1]);  matched.push('iron'); }
+    if (cropRM)  { newRes.crop = parseInt(cropRM[1]);  matched.push('crop'); }
+
+    // ── 5. Production rates ────────────────────────────────────────────────────
+    const wpM = clean.match(/(?:Lumber|Wood)\s*(?:production)?[:\s]+(\d+)\s*\/\s*h/i);
+    const cpM = clean.match(/Clay\s*(?:production)?[:\s]+(\d+)\s*\/\s*h/i);
+    const ipM = clean.match(/Iron\s*(?:production)?[:\s]+(\d+)\s*\/\s*h/i);
+    const crpM = clean.match(/(?:Crop|Grain)\s*(?:production)?[:\s]+(\d+)\s*\/\s*h/i);
+    if (wpM)  { newRes.woodProd = parseInt(wpM[1]);  matched.push('woodProd'); }
+    if (cpM)  { newRes.clayProd = parseInt(cpM[1]);  matched.push('clayProd'); }
+    if (ipM)  { newRes.ironProd = parseInt(ipM[1]);  matched.push('ironProd'); }
+    if (crpM) { newRes.cropProd = parseInt(crpM[1]); matched.push('cropProd'); }
+
+    // Fallback: 4 numbers in a row on Production / Economy tab
+    const prodRow = clean.match(/(\d{2,5})\s+(\d{2,5})\s+(\d{2,5})\s+(\d{2,5})/);
+    if (prodRow && !wpM && !cpM && !ipM && !crpM) {
+      newRes.woodProd = parseInt(prodRow[1]);
+      newRes.clayProd = parseInt(prodRow[2]);
+      newRes.ironProd = parseInt(prodRow[3]);
+      newRes.cropProd = parseInt(prodRow[4]);
+      matched.push('production');
     }
 
-    // Parse production levels
-    const woodProdMatch = cleanedInput.match(/Lumber:\s*(\d+)/i);
-    if (woodProdMatch) newResources.woodProd = parseInt(woodProdMatch[1]);
-    
-    const clayProdMatch = cleanedInput.match(/Clay:\s*(\d+)/i);
-    if (clayProdMatch) newResources.clayProd = parseInt(clayProdMatch[1]);
+    // ── 6. Free crop ──────────────────────────────────────────────────────────
+    const freeCropM = clean.match(/Free\s+crop[:\s]+(\d+)/i) || clean.match(/(\d+)\s*Free\s+crop/i);
+    if (freeCropM) { setFreeCrop(parseInt(freeCropM[1])); matched.push('freeCrop'); }
 
-    const ironProdMatch = cleanedInput.match(/Iron:\s*(\d+)/i);
-    if (ironProdMatch) newResources.ironProd = parseInt(ironProdMatch[1]);
+    // ── 7. Server time ────────────────────────────────────────────────────────
+    const timeM = clean.match(/Server\s*time[:\s]+([\d:]+)/i);
+    if (timeM) { setLastSyncTime(timeM[1]); matched.push('time'); }
 
-    const cropProdMatch = cleanedInput.match(/Crop:\s*(\d+)/i);
-    if (cropProdMatch) newResources.cropProd = parseInt(cropProdMatch[1]);
-
-    // Parse hero attributes
-    const heroNameLvlMatch = cleanedInput.match(/([a-zA-Z0-9_\s]{2,15})\s*-\s*level\s*(\d+)/i);
-    if (heroNameLvlMatch) {
-      setHero(prev => ({
-        ...prev,
-        name: heroNameLvlMatch[1].trim(),
-        level: parseInt(heroNameLvlMatch[2])
-      }));
+    // ── 8. Alliance ───────────────────────────────────────────────────────────
+    const allianceM = clean.match(/Alliance[:\s]+([^\n]{1,40})/i);
+    if (allianceM) {
+      const a = allianceM[1].trim();
+      setAlliance(a === 'No alliance' || a === '-' ? 'No alliance' : a);
+      matched.push('alliance');
+    } else if (clean.includes('No alliance')) {
+      setAlliance('No alliance'); matched.push('alliance');
     }
 
-    const hpMatch = cleanedInput.match(/Health\s*(\d+)%/i);
-    if (hpMatch) {
-      setHero(prev => ({ ...prev, hp: parseInt(hpMatch[1]) }));
+    // ── 9. Hero level and name ────────────────────────────────────────────────
+    const heroLvlM = clean.match(/([a-zA-Z0-9_]{2,20})\s*[-–]\s*level\s*(\d+)/i)
+                  || clean.match(/Hero[:\s]+([a-zA-Z0-9_]{2,20})[^\n]*Level\s*(\d+)/i);
+    if (heroLvlM) {
+      setHero(prev => ({ ...prev, name: heroLvlM[1].trim(), level: parseInt(heroLvlM[2]) }));
+      matched.push('hero');
     }
 
-    const xpMatch = cleanedInput.match(/Experience\s*(\d+)/i);
-    if (xpMatch) {
-      setHero(prev => ({ ...prev, xp: parseInt(xpMatch[1]) }));
-    }
+    const hpM    = clean.match(/Health[:\s]+(\d+)\s*%/i) || clean.match(/(\d+)\s*%[^\n]*health/i);
+    if (hpM) { setHero(prev => ({ ...prev, hp: parseInt(hpM[1]) })); matched.push('hp'); }
 
-    const strengthMatch = cleanedInput.match(/Fighting strength\s*(\d+)?\s*(\d+)/i);
-    if (strengthMatch) {
-      setHero(prev => ({ ...prev, strength: parseInt(strengthMatch[2]) }));
-    }
+    const xpM    = clean.match(/Experience[:\s]+(\d+)/i);
+    if (xpM) { setHero(prev => ({ ...prev, xp: parseInt(xpM[1]) })); matched.push('xp'); }
 
-    // Parse hero inventory resources bag and consumable counts
-    const tradeItemsIdx = lines.findIndex(l => l.toLowerCase().includes("trade items"));
-    if (tradeItemsIdx !== -1 && lines.length > tradeItemsIdx + 6) {
-      const bagW = parseInt(lines[tradeItemsIdx + 1]);
-      const bagC = parseInt(lines[tradeItemsIdx + 2]);
-      const bagI = parseInt(lines[tradeItemsIdx + 3]);
-      const bagCr = parseInt(lines[tradeItemsIdx + 4]);
-      const bagOintments = parseInt(lines[tradeItemsIdx + 5]);
-      const bagCages = parseInt(lines[tradeItemsIdx + 6]);
-      if (!isNaN(bagW) && !isNaN(bagC) && !isNaN(bagI) && !isNaN(bagCr)) {
+    const strM   = clean.match(/Fighting\s*[Ss]trength[:\s]+(\d+)/i);
+    if (strM) { setHero(prev => ({ ...prev, strength: parseInt(strM[1]) })); matched.push('strength'); }
+
+    // ── 10. Hero Inventory / Consumables (Trade Items format) ─────────────────
+    // Trailing numbers under Trade Items section:
+    // e.g. "396", "1111", "1415", "4044", "20", "1"
+    const tradeIdx = lines.findIndex(l => /trade\s*items/i.test(l));
+    if (tradeIdx !== -1 && lines.length > tradeIdx + 4) {
+      const bW  = parseInt(lines[tradeIdx + 1]);
+      const bC  = parseInt(lines[tradeIdx + 2]);
+      const bI  = parseInt(lines[tradeIdx + 3]);
+      const bCr = parseInt(lines[tradeIdx + 4]);
+      if (!isNaN(bW)) {
         setHero(prev => ({
           ...prev,
-          bagWood: bagW,
-          bagClay: bagC,
-          bagIron: bagI,
-          bagCrop: bagCr
+          bagWood: bW,
+          bagClay: bC || 0,
+          bagIron: bI || 0,
+          bagCrop: bCr || 0
         }));
+        matched.push('heroBag');
       }
-      if (!isNaN(bagOintments) && !isNaN(bagCages)) {
+
+      // Consumables typically follow after the resources bag
+      const bOint  = parseInt(lines[tradeIdx + 5]);
+      const bCages = parseInt(lines[tradeIdx + 6]);
+      if (!isNaN(bOint)) {
         setConsumables(prev => ({
           ...prev,
-          ointments: bagOintments,
-          cages: bagCages
+          ointments: bOint,
+          cages: isNaN(bCages) ? prev.cages : bCages
         }));
+        matched.push('consumables');
       }
     }
 
-    // Parse server sync time
-    const timeMatch = cleanedInput.match(/Server time:\s*([\d:]+)/i);
-    if (timeMatch) {
-      setLastSyncTime(timeMatch[1]);
-    }
-
-    // Alliance details
-    if (cleanedInput.includes("No alliance")) {
-      setAlliance("No alliance");
-    }
-
-    // Info box condensed notifications
-    if (cleanedInput.includes("Plus Account expires")) {
-      setInboxNotification("Your Plus Account expires in 7:21:28. beginner's protection: 55:21:28");
-    }
-
-    // Parse the 18 digit sequence levels
-    const fieldLevelsMatch = cleanedInput.match(/[1-9]{18}/);
-    if (fieldLevelsMatch) {
-      const digits = fieldLevelsMatch[0];
-      
-      const woodcutterSlots = [1, 3, 14, 17];
-      const claySlots = [5, 6, 16, 18];
-      const ironSlots = [4, 10, 7, 11];
-
+    // ── 11. Field Levels (dorf1 fields matrix) ────────────────────────────────
+    const fieldM = clean.match(/(?<![\d])([1-9]{18})(?![\d])/);
+    if (fieldM) {
+      const digits = fieldM[1];
+      const woodSlots = [1,3,14,17], claySlots = [5,6,16,18], ironSlots = [4,7,10,11];
       for (let i = 0; i < 18; i++) {
-        const slotNum = i + 1;
-        const levelVal = parseInt(digits[i]);
-        
-        let slotName = "Cropland";
-        if (woodcutterSlots.includes(slotNum)) slotName = "Woodcutter";
-        else if (claySlots.includes(slotNum)) slotName = "Clay Pit";
-        else if (ironSlots.includes(slotNum)) slotName = "Iron Mine";
-
-        let finalLvl = levelVal;
-        if (slotNum === 10) finalLvl = 3; 
-
-        const idx = buildingsCopy.findIndex(b => b.slot === slotNum);
-        if (idx !== -1) {
-          buildingsCopy[idx].current = finalLvl;
-          buildingsCopy[idx].name = slotName;
-        }
+        const slot = i + 1;
+        const lvl  = parseInt(digits[i]);
+        let name   = 'Cropland';
+        if (woodSlots.includes(slot)) name = 'Woodcutter';
+        else if (claySlots.includes(slot)) name = 'Clay Pit';
+        else if (ironSlots.includes(slot)) name = 'Iron Mine';
+        const idx = buildingsCopy.findIndex(b => b.slot === slot);
+        if (idx !== -1) { buildingsCopy[idx].current = lvl; buildingsCopy[idx].name = name; }
       }
+      matched.push('fields');
     }
 
-    // Parse specific active build timers
+    // ── 12. Building Levels (dorf2 layout) ────────────────────────────────────
     lines.forEach(line => {
-      const buildMatch = line.match(/(Iron Mine|Woodcutter|Clay Pit|Cropland|Warehouse|Granary|Marketplace|Main Building|Barracks|Stable|Workshop|Academy|Embassy|Rally Point|City Wall|Sawmill|Brickworks|Iron Foundry|Grain Mill|Bakery)\s+Level\s+(\d+)/i);
-      if (buildMatch) {
-        const name = buildMatch[1];
-        const lvl = parseInt(buildMatch[2]);
-        
-        const idx = buildingsCopy.findIndex(b => b.name.toLowerCase() === name.toLowerCase() && b.category === "urban");
-        if (idx !== -1) {
-          buildingsCopy[idx].current = lvl;
-        }
+      const bm = line.match(/(Iron Mine|Woodcutter|Clay Pit|Cropland|Warehouse|Granary|Marketplace|Main Building|Barracks|Stable|Workshop|Academy|Embassy|Rally Point|City Wall|Sawmill|Brickworks|Iron Foundry|Grain Mill|Bakery)\s+Level\s+(\d+)/i);
+      if (bm) {
+        const idx = buildingsCopy.findIndex(b => b.name.toLowerCase() === bm[1].toLowerCase() && b.category === 'urban');
+        if (idx !== -1) { buildingsCopy[idx].current = parseInt(bm[2]); matched.push('buildings'); }
       }
     });
 
-    const updated = villages.map(v => {
-      if (v.id === activeVillageId) {
-        return {
-          ...v,
-          name: newName,
-          coords: newCoords,
-          resources: newResources,
-          population: newPop,
-          buildings: buildingsCopy
-        };
-      }
-      return v;
-    });
-
+    // ── Apply ──────────────────────────────────────────────────────────────────
+    const updated = villages.map(v =>
+      v.id === activeVillageId
+        ? { ...v, name: newName, coords: newCoords, resources: newRes, population: newPop, buildings: buildingsCopy }
+        : v
+    );
     setVillages(updated);
     handleSaveToLocalStorage(updated);
 
-    if (matchedCoords || matchedCurrencies || heroNameLvlMatch) {
-      setStatusMsg(`SUCCESS: Parsing completed successfully! Village name set to ${newName}, coordinates set to ${newCoords}, and population set to ${newPop}.`);
+    if (matched.length > 0) {
+      setStatusMsg(`SUCCESS: Parsed [${[...new Set(matched)].join(', ')}] — Village "${newName}" ${newCoords}, Pop ${newPop}.`);
     } else {
-      setStatusMsg("FAILURE: Parser could not identify any recognizable Travian page source signatures.");
+      setStatusMsg('FAILURE: Text parser did not find standard patterns. Make sure you copy the entire page.');
     }
   };
 
@@ -1959,112 +2048,140 @@ export default function VillageOSDashboard() {
                   </div>
                 </div>
 
-                {/* 4. Preloaded Consumables Tracker */}
-                <div className="bg-slate-900 p-6 rounded-xl border border-slate-800 flex flex-col gap-3 md:col-span-2">
-                  <div className="text-xs uppercase font-bold text-slate-400 tracking-wider">Inventory Consumables</div>
-                  <div className="grid grid-cols-2 md:grid-cols-6 gap-3 text-center text-xs">
-                    {[
-                      { 
-                        key: 'ointments', 
-                        label: 'Ointments', 
-                        icon: (
-                          <svg className="w-5 h-5 text-emerald-400 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M12 2v20M17 5H9.5M4.5 9h15" />
-                          </svg>
-                        )
-                      },
-                      { 
-                        key: 'scrolls', 
-                        label: 'Scrolls', 
-                        icon: (
-                          <svg className="w-5 h-5 text-yellow-400 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-                            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
-                          </svg>
-                        )
-                      },
-                      { 
-                        key: 'cages', 
-                        label: 'Cages', 
-                        icon: (
-                          <svg className="w-5 h-5 text-amber-500 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2" />
-                            <path d="M9 3v18M15 3v18M3 9h18M3 15h18" />
-                          </svg>
-                        )
-                      },
-                      { 
-                        key: 'wisdomBooks', 
-                        label: 'Wisdom Books', 
-                        icon: (
-                          <svg className="w-5 h-5 text-indigo-400 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z" />
-                          </svg>
-                        )
-                      },
-                      { 
-                        key: 'artwork', 
-                        label: 'Artwork', 
-                        icon: (
-                          <svg className="w-5 h-5 text-purple-400 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2" />
-                            <circle cx="8.5" cy="8.5" r="1.5" />
-                            <path d="M21 15l-5-5L5 21" />
-                          </svg>
-                        )
-                      },
-                      { 
-                        key: 'buckets', 
-                        label: 'Buckets', 
-                        icon: (
-                          <svg className="w-5 h-5 text-sky-400 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M12 22a7 7 0 007-7c0-4.3-7-11-7-11S5 10.7 5 15a7 7 0 007 7z" />
-                          </svg>
-                        )
-                      }
-                    ].map(({ key, label, icon }) => (
-                      <div key={key} className="bg-[#1E293B]/60 p-3 rounded-lg border border-slate-800 flex flex-col items-center justify-between">
-                        <div className="flex flex-col items-center">
-                          {icon}
-                          <span className="text-slate-300 font-medium text-[10px]">{label}</span>
-                        </div>
-                        <div className="flex items-center gap-1 mt-2.5">
-                          <button 
-                            onClick={() => setConsumables(prev => ({ ...prev, [key]: Math.max(0, prev[key as keyof typeof prev] - 1) }))} 
-                            className="w-5 h-5 bg-slate-850 border border-slate-700 rounded hover:bg-slate-700 transition-colors flex items-center justify-center text-slate-400 font-bold"
-                          >
-                            -
-                          </button>
-                          
-                          {manualHeroOverride ? (
-                            <input 
-                              type="number"
-                              value={consumables[key as keyof typeof consumables]}
-                              onChange={(e) => {
-                                const val = Math.max(0, parseInt(e.target.value) || 0);
-                                setConsumables(prev => ({ ...prev, [key]: val }));
-                              }}
-                              className="bg-[#0f172a] border border-slate-700 text-white rounded text-center w-8 text-[11px] font-bold focus:outline-none"
-                            />
-                          ) : (
-                            <span className="text-white font-black w-6 text-center text-xs">{consumables[key as keyof typeof consumables]}</span>
-                          )}
-
-                          <button 
-                            onClick={() => setConsumables(prev => ({ ...prev, [key]: prev[key as keyof typeof prev] + 1 }))} 
-                            className="w-5 h-5 bg-slate-850 border border-slate-700 rounded hover:bg-slate-700 transition-colors flex items-center justify-center text-slate-400 font-bold"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                {/* 4. Consumables Tracker — Tier-grouped */}
+                <div className="bg-slate-900 p-6 rounded-xl border border-slate-800 flex flex-col gap-5 md:col-span-2">
+                  <div className="flex justify-between items-center">
+                    <div className="text-xs uppercase font-bold text-slate-400 tracking-wider">Inventory Consumables</div>
+                    {manualHeroOverride && (
+                      <span className="text-[9px] text-amber-400 font-semibold">Manual Override — click any number to edit directly</span>
+                    )}
                   </div>
+
+                  {/* BASIC TIER */}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[9px] uppercase tracking-widest font-bold text-slate-600">Basic</span>
+                      <div className="flex-1 border-t border-slate-800" />
+                    </div>
+                    <div className="grid grid-cols-3 gap-3 text-center text-xs">
+                      {([
+                        {
+                          key: 'ointments', label: 'Ointment', tier: 'basic', desc: 'Restores 10% HP',
+                          icon: (<svg className="w-6 h-6 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 2h6l1 7H8L9 2z"/><rect x="7" y="9" width="10" height="13" rx="1"/><path d="M12 12v5M9.5 14.5h5"/></svg>)
+                        },
+                        {
+                          key: 'cages', label: 'Cage', tier: 'basic', desc: 'Captures animals',
+                          icon: (<svg className="w-6 h-6 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 5v14M12 5v14M16 5v14M3 10h18M3 14h18"/></svg>)
+                        },
+                        {
+                          key: 'buckets', label: 'Bucket', tier: 'basic', desc: 'Extinguishes fires',
+                          icon: (<svg className="w-6 h-6 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22a7 7 0 007-7c0-4.3-7-11-7-11S5 10.7 5 15a7 7 0 007 7z"/><path d="M9 15h6"/></svg>)
+                        },
+                      ] as const).map(({ key, label, desc, icon }) => (
+                        <div key={key} className="bg-[#1E293B]/60 p-3 rounded-xl border border-slate-800 flex flex-col items-center gap-2 hover:border-slate-700 transition-colors">
+                          <div className="p-2 bg-slate-800/60 rounded-lg">{icon}</div>
+                          <div>
+                            <div className="text-slate-200 font-bold text-[11px]">{label}</div>
+                            <div className="text-slate-500 text-[9px]">{desc}</div>
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <button onClick={() => setConsumables(prev => ({ ...prev, [key]: Math.max(0, prev[key] - 1) }))} className="w-5 h-5 rounded bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-400 font-bold flex items-center justify-center transition-colors">−</button>
+                            <input
+                              type="number"
+                              min={0}
+                              value={consumables[key]}
+                              onChange={(e) => setConsumables(prev => ({ ...prev, [key]: Math.max(0, parseInt(e.target.value) || 0) }))}
+                              className="w-10 bg-[#0f172a] border border-slate-700 text-white rounded text-center text-xs font-black focus:outline-none focus:border-cyan-500 py-0.5"
+                            />
+                            <button onClick={() => setConsumables(prev => ({ ...prev, [key]: prev[key] + 1 }))} className="w-5 h-5 rounded bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-400 font-bold flex items-center justify-center transition-colors">+</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ADVANCED TIER */}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[9px] uppercase tracking-widest font-bold text-amber-600">Advanced</span>
+                      <div className="flex-1 border-t border-amber-900/30" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 text-center text-xs">
+                      {([
+                        {
+                          key: 'scrolls', label: 'Scroll of Triumph', tier: 'advanced', desc: '+10% off / def bonus',
+                          icon: (<svg className="w-6 h-6 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>)
+                        },
+                        {
+                          key: 'wisdomBooks', label: 'Book of Wisdom', tier: 'advanced', desc: 'Instant level-up',
+                          icon: (<svg className="w-6 h-6 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><path d="M12 7v5M9.5 9.5h5"/></svg>)
+                        },
+                      ] as const).map(({ key, label, desc, icon }) => (
+                        <div key={key} className="bg-[#1E293B]/60 p-3 rounded-xl border border-amber-900/20 flex flex-col items-center gap-2 hover:border-amber-700/30 transition-colors">
+                          <div className="p-2 bg-amber-900/20 rounded-lg">{icon}</div>
+                          <div>
+                            <div className="text-amber-200 font-bold text-[11px]">{label}</div>
+                            <div className="text-slate-500 text-[9px]">{desc}</div>
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <button onClick={() => setConsumables(prev => ({ ...prev, [key]: Math.max(0, prev[key] - 1) }))} className="w-5 h-5 rounded bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-400 font-bold flex items-center justify-center transition-colors">−</button>
+                            <input
+                              type="number"
+                              min={0}
+                              value={consumables[key]}
+                              onChange={(e) => setConsumables(prev => ({ ...prev, [key]: Math.max(0, parseInt(e.target.value) || 0) }))}
+                              className="w-10 bg-[#0f172a] border border-slate-700 text-white rounded text-center text-xs font-black focus:outline-none focus:border-amber-500 py-0.5"
+                            />
+                            <button onClick={() => setConsumables(prev => ({ ...prev, [key]: prev[key] + 1 }))} className="w-5 h-5 rounded bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-400 font-bold flex items-center justify-center transition-colors">+</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* RARE TIER */}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[9px] uppercase tracking-widest font-bold text-purple-500">Rare</span>
+                      <div className="flex-1 border-t border-purple-900/30" />
+                    </div>
+                    <div className="grid grid-cols-1 gap-3 text-center text-xs">
+                      {([
+                        {
+                          key: 'artwork', label: 'Artwork', tier: 'rare', desc: '+500 Culture Points',
+                          icon: (<svg className="w-6 h-6 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>)
+                        },
+                      ] as const).map(({ key, label, desc, icon }) => (
+                        <div key={key} className="bg-[#1E293B]/60 p-3 rounded-xl border border-purple-900/20 flex items-center gap-4 hover:border-purple-700/30 transition-colors">
+                          <div className="p-2 bg-purple-900/20 rounded-lg flex-shrink-0">{icon}</div>
+                          <div className="flex-1 text-left">
+                            <div className="text-purple-200 font-bold text-[11px]">{label}</div>
+                            <div className="text-slate-500 text-[9px]">{desc}</div>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <button onClick={() => setConsumables(prev => ({ ...prev, [key]: Math.max(0, prev[key] - 1) }))} className="w-5 h-5 rounded bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-400 font-bold flex items-center justify-center transition-colors">−</button>
+                            <input
+                              type="number"
+                              min={0}
+                              value={consumables[key]}
+                              onChange={(e) => setConsumables(prev => ({ ...prev, [key]: Math.max(0, parseInt(e.target.value) || 0) }))}
+                              className="w-10 bg-[#0f172a] border border-slate-700 text-white rounded text-center text-xs font-black focus:outline-none focus:border-purple-500 py-0.5"
+                            />
+                            <button onClick={() => setConsumables(prev => ({ ...prev, [key]: prev[key] + 1 }))} className="w-5 h-5 rounded bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-400 font-bold flex items-center justify-center transition-colors">+</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                 </div>
 
               </div>
             </div>
           )}
+
+
+
 
           {/* TAB 5: EXPANSION & COMBAT INTEL */}
           {activeTab === 'intel' && (
@@ -2252,194 +2369,206 @@ export default function VillageOSDashboard() {
           <h3 className="font-bold text-white uppercase tracking-widest flex items-center gap-1.5">
             <Sparkles className="w-4 h-4 text-cyan-400" /> VillageOS Analyser
           </h3>
-          <p className="text-[10px] text-slate-400 mt-1">Upload any Travian screenshot — Home, Hero, Rally Point, Academy, Map, Reports, Statistics — and AI will extract all visible data automatically.</p>
+          <p className="text-[10px] text-slate-400 mt-1">Upload screenshots directly to dedicated slots below for instant parser mapping.</p>
         </div>
 
-        {/* SCREENSHOT UPLOAD ZONE */}
-        <div
-          className={`border-2 border-dashed rounded-xl transition-all cursor-pointer relative overflow-hidden ${
-            screenshotPreview
-              ? 'border-cyan-500/50 bg-cyan-500/5'
-              : 'border-slate-700 hover:border-cyan-500/40 bg-[#0f172a]/40'
-          }`}
-          onClick={() => imageInputRef.current?.click()}
-          onDragOver={(e) => { e.preventDefault(); }}
-          onDrop={(e) => {
-            e.preventDefault();
-            const file = e.dataTransfer.files?.[0];
-            if (file && file.type.startsWith('image/')) {
-              setScreenshotFile(file);
-              const url = URL.createObjectURL(file);
-              setScreenshotPreview(url);
-            }
-          }}
-        >
-          <input
-            ref={imageInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                setScreenshotFile(file);
-                const url = URL.createObjectURL(file);
-                setScreenshotPreview(url);
-              }
-            }}
-          />
-          {screenshotPreview ? (
-            <div className="relative">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={screenshotPreview} alt="Screenshot preview" className="w-full rounded-xl object-contain max-h-40" />
-              <button
-                className="absolute top-1 right-1 bg-slate-900/80 text-slate-300 hover:text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]"
-                onClick={(e) => { e.stopPropagation(); setScreenshotPreview(null); setScreenshotFile(null); }}
-              >✕</button>
-            </div>
-          ) : (
-            <div className="p-5 flex flex-col items-center gap-2 text-center">
-              <Upload className="w-7 h-7 text-slate-500" />
-              <span className="font-semibold text-slate-300 text-[11px]">Drop screenshot here</span>
-              <span className="text-[9px] text-slate-500">Home · Hero · Rally Point · Academy · Map · Reports</span>
-            </div>
-          )}
-        </div>
-
-        {/* AI ANALYSE SCREENSHOT BUTTON */}
-        {screenshotFile && (
-          <button
-            onClick={async () => {
-              if (!screenshotFile) return;
-              setImageAnalysing(true);
-              setStatusMsg('');
-              try {
-                const fd = new FormData();
-                fd.append('image', screenshotFile);
-                const res = await fetch('/api/villageos/analyze-screenshot', { method: 'POST', body: fd });
-                const json = await res.json();
-                if (!res.ok || !json.success) {
-                  setStatusMsg(`FAILURE: Screenshot analysis failed — ${json.error || 'unknown'}`);
-                  return;
-                }
-                const d = json.result?.data ?? {};
-                const pt = json.result?.pageType ?? 'unknown';
-
-                // ── Apply parsed data to state ─────────────────────────────
-                if (d.gold !== undefined)  setGold(d.gold);
-                if (d.silver !== undefined) setSilver(d.silver);
-                if (d.serverTime) setLastSyncTime(d.serverTime);
-                if (d.alliance)   setAlliance(d.alliance);
-
-                // Village resource/production
-                if (d.lumber || d.clay || d.iron || d.crop || d.woodProd) {
-                  setVillages(prev => prev.map(v => {
-                    if (v.id !== activeVillageId) return v;
-                    return {
-                      ...v,
-                      name:       d.villageName || v.name,
-                      coords:     d.coords      || v.coords,
-                      population: d.population  ?? v.population,
-                      resources: {
-                        wood:      d.lumber    ?? v.resources.wood,
-                        clay:      d.clay      ?? v.resources.clay,
-                        iron:      d.iron      ?? v.resources.iron,
-                        crop:      d.crop      ?? v.resources.crop,
-                        woodProd:  d.woodProd  ?? v.resources.woodProd,
-                        clayProd:  d.clayProd  ?? v.resources.clayProd,
-                        ironProd:  d.ironProd  ?? v.resources.ironProd,
-                        cropProd:  d.cropProd  ?? v.resources.cropProd,
+        {/* 4 TARGETED UPLOAD SLOTS */}
+        <div className="flex flex-col gap-3">
+          {([
+            { id: 'dorf1', label: 'Resource Fields (dorf1)', desc: 'Wood, clay, iron, crop production & levels' },
+            { id: 'dorf2', label: 'Village Center (dorf2)', desc: 'Main building, warehouse, barracks levels' },
+            { id: 'heroAttrs', label: 'Hero RPG & Gear', desc: 'Hero name, lvl, hp, strength, equipped gear' },
+            { id: 'heroInv', label: 'Hero Inventory bag', desc: 'Ointments, cages, artwork, scrolls, resources' }
+          ] as const).map(({ id, label, desc }) => {
+            const slot = slotImages[id];
+            return (
+              <div key={id} className="bg-[#1E293B]/40 border border-slate-800 p-3 rounded-xl flex flex-col gap-2 hover:border-slate-700 transition-colors">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-slate-300 text-[10px]">{label}</span>
+                  {slot.preview && (
+                    <button 
+                      onClick={() => setSlotImages(prev => ({ ...prev, [id]: { file: null, preview: null } }))}
+                      className="text-red-400 hover:text-red-300 text-[9px] font-bold"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                
+                <div
+                  className={`border border-dashed rounded-lg p-3 text-center transition-all cursor-pointer relative overflow-hidden ${
+                    slot.preview ? 'border-cyan-500/40 bg-cyan-500/5' : 'border-slate-800 hover:border-slate-700 bg-[#0f172a]/30'
+                  }`}
+                  onClick={() => {
+                    const el = document.getElementById(`file-input-${id}`);
+                    el?.click();
+                  }}
+                  tabIndex={0}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const file = e.dataTransfer.files?.[0];
+                    if (file && file.type.startsWith('image/')) {
+                      setSlotImages(prev => ({
+                        ...prev,
+                        [id]: { file, preview: URL.createObjectURL(file) }
+                      }));
+                    }
+                  }}
+                  onPaste={(e) => {
+                    const items = Array.from(e.clipboardData?.items || []);
+                    const imgItem = items.find(it => it.type.startsWith('image/'));
+                    if (imgItem) {
+                      e.preventDefault();
+                      const file = imgItem.getAsFile();
+                      if (file) {
+                        setSlotImages(prev => ({
+                          ...prev,
+                          [id]: { file, preview: URL.createObjectURL(file) }
+                        }));
                       }
-                    };
-                  }));
-                }
+                    }
+                  }}
+                >
+                  <input 
+                    type="file"
+                    id={`file-input-${id}`}
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      if (file) {
+                        setSlotImages(prev => ({
+                          ...prev,
+                          [id]: { file, preview: URL.createObjectURL(file) }
+                        }));
+                      }
+                    }}
+                  />
+                  {slot.preview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={slot.preview} alt={label} className="w-full rounded object-contain max-h-20" />
+                  ) : (
+                    <div className="flex flex-col items-center gap-1">
+                      <Upload className="w-4 h-4 text-slate-500" />
+                      <span className="text-[9px] text-slate-500">Drop, click or paste</span>
+                    </div>
+                  )}
+                </div>
 
-                // Hero attributes
-                if (d.heroName || d.heroLevel || d.heroHealth) {
-                  setHero(prev => ({
-                    ...prev,
-                    name:     d.heroName     || prev.name,
-                    level:    d.heroLevel    ?? prev.level,
-                    hp:       d.heroHealth   ?? prev.hp,
-                    strength: d.heroFightingStrength ?? prev.strength,
-                    xp:       d.heroExperience ?? prev.xp,
-                    ...(d.heroEquipment ? {
-                      helmet: d.heroEquipment.helmet    ?? prev.helmet,
-                      weapon: d.heroEquipment.rightHand ?? prev.weapon,
-                      shield: d.heroEquipment.leftHand  ?? prev.shield,
-                      armor:  d.heroEquipment.armour    ?? prev.armor,
-                      boots:  d.heroEquipment.shoes     ?? prev.boots,
-                    } : {}),
-                    bagWood:   d.bagWood  ?? prev.bagWood,
-                    bagClay:   d.bagClay  ?? prev.bagClay,
-                    bagIron:   d.bagIron  ?? prev.bagIron,
-                    bagCrop:   d.bagCrop  ?? prev.bagCrop,
-                  }));
-                }
+                {slot.file && (
+                  <button
+                    disabled={imageAnalysing}
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      if (!slot.file) return;
+                      setImageAnalysing(true);
+                      setStatusMsg('');
+                      try {
+                        const fd = new FormData();
+                        fd.append('image', slot.file);
+                        fd.append('targetSlot', id); // Let the backend know the target context
+                        
+                        const res = await fetch('/api/villageos/analyze-screenshot', { method: 'POST', body: fd });
+                        const json = await res.json();
+                        if (!res.ok || !json.success) {
+                          setStatusMsg(`FAILURE: ${json.error || 'API call failed.'}`);
+                          return;
+                        }
+                        const d = json.result?.data ?? {};
 
-                // Consumables
-                if (d.consumables) {
-                  setConsumables(prev => ({
-                    ointments:   d.consumables.ointments    ?? prev.ointments,
-                    scrolls:     d.consumables.scrolls      ?? prev.scrolls,
-                    cages:       d.consumables.cages        ?? prev.cages,
-                    wisdomBooks: d.consumables.booksOfWisdom ?? prev.wisdomBooks,
-                    artwork:     d.consumables.artwork      ?? prev.artwork,
-                    buckets:     d.consumables.buckets      ?? prev.buckets,
-                  }));
-                }
+                        // Apply to state cleanly depending on what target is
+                        if (id === 'dorf1') {
+                          if (d.lumber || d.clay || d.iron || d.crop || d.woodProd) {
+                            setVillages(prev => prev.map(v => {
+                              if (v.id !== activeVillageId) return v;
+                              return {
+                                ...v,
+                                resources: {
+                                  wood:      d.lumber    ?? v.resources.wood,
+                                  clay:      d.clay      ?? v.resources.clay,
+                                  iron:      d.iron      ?? v.resources.iron,
+                                  crop:      d.crop      ?? v.resources.crop,
+                                  woodProd:  d.woodProd  ?? v.resources.woodProd,
+                                  clayProd:  d.clayProd  ?? v.resources.clayProd,
+                                  ironProd:  d.ironProd  ?? v.resources.ironProd,
+                                  cropProd:  d.cropProd  ?? v.resources.cropProd,
+                                }
+                              };
+                            }));
+                          }
+                          if (d.gold !== undefined) setGold(d.gold);
+                          if (d.silver !== undefined) setSilver(d.silver);
+                        } else if (id === 'dorf2') {
+                          // Dorf2 levels
+                          if (d.buildingLevels) {
+                            setVillages(prev => prev.map(v => {
+                              if (v.id !== activeVillageId) return v;
+                              const updatedB = (v.buildings || []).map(b => {
+                                const level = d.buildingLevels[b.name];
+                                return level !== undefined ? { ...b, current: level } : b;
+                              });
+                              return { ...v, buildings: updatedB };
+                            }));
+                          }
+                        } else if (id === 'heroAttrs') {
+                          setHero(prev => ({
+                            ...prev,
+                            name:     d.heroName     || prev.name,
+                            level:    d.heroLevel    ?? prev.level,
+                            hp:       d.heroHealth   ?? prev.hp,
+                            strength: d.heroFightingStrength ?? prev.strength,
+                            xp:       d.heroExperience ?? prev.xp,
+                            ...(d.heroEquipment ? {
+                              helmet: d.heroEquipment.helmet    ?? prev.helmet,
+                              weapon: d.heroEquipment.rightHand ?? prev.weapon,
+                              shield: d.heroEquipment.leftHand  ?? prev.shield,
+                              armor:  d.heroEquipment.armour    ?? prev.armor,
+                              boots:  d.heroEquipment.shoes     ?? prev.boots,
+                            } : {}),
+                          }));
+                        } else if (id === 'heroInv') {
+                          if (d.consumables) {
+                            setConsumables(prev => ({
+                              ointments:   d.consumables.ointments    ?? prev.ointments,
+                              scrolls:     d.consumables.scrolls      ?? prev.scrolls,
+                              cages:       d.consumables.cages        ?? prev.cages,
+                              wisdomBooks: d.consumables.booksOfWisdom ?? prev.wisdomBooks,
+                              artwork:     d.consumables.artwork      ?? prev.artwork,
+                              buckets:     d.consumables.buckets      ?? prev.buckets,
+                            }));
+                          }
+                          if (d.bagWood || d.bagClay) {
+                            setHero(prev => ({
+                              ...prev,
+                              bagWood: d.bagWood ?? prev.bagWood,
+                              bagClay: d.bagClay ?? prev.bagClay,
+                              bagIron: d.bagIron ?? prev.bagIron,
+                              bagCrop: d.bagCrop ?? prev.bagCrop,
+                            }));
+                          }
+                        }
 
-                // Oases from map screenshot
-                if (d.visibleOases?.length) {
-                  setOases(prev => {
-                    const incoming: typeof prev = d.visibleOases.map((o: any, i: number) => ({
-                      id: prev.length + i + 1,
-                      coords: o.coords,
-                      type: o.type,
-                      conquered: false,
-                      owner: o.occupied ? 'Occupied' : 'Unoccupied',
-                    }));
-                    // Merge — avoid duplicates by coords
-                    const existing = new Set(prev.map(p => p.coords));
-                    return [...prev, ...incoming.filter((o: any) => !existing.has(o.coords))];
-                  });
-                }
+                        setStatusMsg(`SUCCESS: Sync completed for ${label}.`);
+                        setSlotImages(prev => ({ ...prev, [id]: { file: null, preview: null } }));
+                      } catch (err: any) {
+                        setStatusMsg(`FAILURE: ${err.message}`);
+                      } finally {
+                        setImageAnalysing(false);
+                      }
+                    }}
+                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-1.5 rounded-lg active:scale-95 transition-all text-[9px] flex items-center justify-center gap-1 shadow"
+                  >
+                    <Eye className="w-3 h-3" />
+                    {imageAnalysing ? 'Analysing...' : 'Analyse & Sync'}
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
 
-                // Battle report
-                if (d.battleAttacker && d.battleDefender) {
-                  setBattleReports(prev => [{
-                    id: prev.length + 1,
-                    attacker: d.battleAttacker,
-                    defender: d.battleDefender,
-                    coords:   d.battleCoords || '',
-                    date:     d.battleDate   || new Date().toISOString().slice(0,16).replace('T',' '),
-                    attackerLosses: d.attackerLosses || 'See game',
-                    defenderLosses: d.defenderLosses || 'See game',
-                    loot:     d.battleLoot   || '0',
-                    outcome:  (d.battleOutcome as 'WON'|'LOST'|'BOUNTY') || 'BOUNTY',
-                  }, ...prev]);
-                }
 
-                setStatusMsg(`SUCCESS: ${pt.toUpperCase()} page parsed — ${json.result?.confidence || '?'} confidence. Data applied.`);
-                setScreenshotPreview(null);
-                setScreenshotFile(null);
-              } catch (err: any) {
-                setStatusMsg(`FAILURE: ${err.message}`);
-              } finally {
-                setImageAnalysing(false);
-              }
-            }}
-            disabled={imageAnalysing}
-            className={`py-2.5 rounded-xl font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-lg ${
-              imageAnalysing
-                ? 'bg-slate-700 text-slate-400 cursor-wait'
-                : 'bg-violet-500 hover:bg-violet-400 text-white shadow-violet-500/20'
-            }`}
-          >
-            <Eye className="w-4 h-4" />
-            {imageAnalysing ? 'Analysing screenshot...' : 'Analyse with AI Vision'}
-          </button>
-        )}
 
         <div className="border-t border-slate-800 pt-3">
           <span className="text-slate-400 font-semibold text-[10px] uppercase tracking-wider">Or paste text:</span>

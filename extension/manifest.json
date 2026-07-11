@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "VillageOS Sync Engine",
+  "version": "1.0.0",
+  "description": "Extracts and synchronizes Travian Legends game data to your local VillageOS Dashboard.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*.travian.com/*",
+    "http://localhost:3000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.travian.com/*",
+        "*://*.travian.ae/*",
+        "*://*.travian.de/*",
+        "*://*.travian.net/*",
+        "*://*.travian.org/*",
+        "*://*/*.travian.com/*"
+      ],
+      "js": ["content.js"]
+    }
+  ]
+}

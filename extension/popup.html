@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 280px;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #0F172A;
+      color: #F1F5F9;
+      border: 1px solid #1E293B;
+    }
+    .container {
+      padding: 16px;
+      display: flex;
+      flex-col gap: 12px;
+      flex-direction: column;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #1E293B;
+      padding-bottom: 8px;
+    }
+    .title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #22D3EE;
+    }
+    .subtitle {
+      font-size: 9px;
+      color: #94A3B8;
+      margin-top: 1px;
+    }
+    .status-card {
+      background-color: #1E293B;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+    }
+    .status-label {
+      color: #94A3B8;
+    }
+    .status-value {
+      font-weight: bold;
+    }
+    .btn {
+      background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+    .btn:active {
+      transform: scale(0.98);
+    }
+    .footer {
+      font-size: 9px;
+      text-align: center;
+      color: #475569;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <div class="title">VillageOS Sync</div>
+        <div class="subtitle">AUTOMATED CONTEXT SYNC ENGINE</div>
+      </div>
+    </div>
+
+    <div class="status-card">
+      <div class="status-row">
+        <span class="status-label">Active Village:</span>
+        <span id="village-val" class="status-value">-</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Coords:</span>
+        <span id="coords-val" class="status-value">-</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Dashboard API:</span>
+        <span id="api-val" class="status-value" style="color: #10B981;">Online</span>
+      </div>
+    </div>
+
+    <button id="sync-btn" class="btn">
+      <span>Sync Live Page Data</span>
+    </button>
+
+    <div id="msg" style="font-size: 10px; text-align: center; font-weight: bold; min-height: 14px;"></div>
+    
+    <div class="footer">
+      Powered by Antigravity IDE • version 1.0.0
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

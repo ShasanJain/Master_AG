@@ -47,6 +47,39 @@ export default function SkillsClient({ initialSkills }: { initialSkills: Skill[]
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [modalState, setModalState] = useState<'IDLE' | 'INITIALIZING' | 'SUCCESS' | 'SOURCE'>('IDLE');
   const [isSyncing, setIsSyncing] = useState(false);
+
+  // Git Skill Import State
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [importUrl, setImportUrl] = useState('');
+  const [importSkillName, setImportSkillName] = useState('');
+  const [importStatus, setImportStatus] = useState<'IDLE' | 'LOADING' | 'SUCCESS' | 'ERROR'>('IDLE');
+  const [importMessage, setImportMessage] = useState('');
+  const [importResult, setImportResult] = useState<any>(null);
+
+  const handleGitImport = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!importUrl) return;
+    setImportStatus('LOADING');
+    setImportMessage('Cloning repository, running audit, elevating to 100/100...');
+
+    try {
+      const res = await fetch('/api/skills/import-git', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: importUrl, name: importSkillName.trim() || undefined })
+      });
+      const data = await res.json();
+      if (!res.ok || data.status === 'error') {
+        throw new Error(data.message || data.error || 'Failed to import skill');
+      }
+      setImportStatus('SUCCESS');
+      setImportResult(data);
+      router.refresh();
+    } catch (err: any) {
+      setImportStatus('ERROR');
+      setImportMessage(err.message || 'Import failed');
+    }
+  };
   const [browserDeployableOnly, setBrowserDeployableOnly] = useState(false);
   
   // Compact state (tiles minimized) starts as TRUE
@@ -223,13 +256,24 @@ export default function SkillsClient({ initialSkills }: { initialSkills: Skill[]
               })}
             </div>
           </div>
-          <button 
-            onClick={handleSync}
-            disabled={isSyncing}
-            className={`px-8 py-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all border shrink-0 ${isSyncing ? 'shiny-button active cursor-wait opacity-80' : 'bg-[var(--surface)] border-[var(--border)] hover:border-[var(--primary)] text-[var(--foreground)] shadow-lg'}`}
-          >
-            {isSyncing ? 'Syncing Vault...' : 'Sync Vault'}
-          </button>
+          <div className="flex items-center gap-3 shrink-0">
+            <button 
+              onClick={() => { setIsImportModalOpen(true); setImportStatus('IDLE'); setImportMessage(''); setImportResult(null); }}
+              className="px-6 py-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all border bg-emerald-500/10 border-emerald-500/30 hover:border-emerald-500 text-emerald-400 hover:bg-emerald-500/20 shadow-lg flex items-center gap-2 cursor-pointer"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              Import Git Skill
+            </button>
+            <button 
+              onClick={handleSync}
+              disabled={isSyncing}
+              className={`px-8 py-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all border ${isSyncing ? 'shiny-button active cursor-wait opacity-80' : 'bg-[var(--surface)] border-[var(--border)] hover:border-[var(--primary)] text-[var(--foreground)] shadow-lg'}`}
+            >
+              {isSyncing ? 'Syncing Vault...' : 'Sync Vault'}
+            </button>
+          </div>
         </section>
 
         {/* Floating Filter Ribbon (Container Margins + Iconography) */}
@@ -439,6 +483,116 @@ export default function SkillsClient({ initialSkills }: { initialSkills: Skill[]
             </div>
           </div>
         )}
+
+        {/* Git Skill Importer Modal */}
+        {isImportModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 max-w-xl w-full shadow-2xl relative space-y-6">
+              <button 
+                onClick={() => setIsImportModalOpen(false)}
+                className="absolute top-6 right-6 text-[var(--faint)] hover:text-[var(--foreground)] text-sm font-bold uppercase tracking-widest"
+              >
+                ✕ Close
+              </button>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-lg text-[10px] font-bold uppercase tracking-widest">
+                    100/100 AUDIT STANDARD
+                  </span>
+                  <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Git Pipeline</span>
+                </div>
+                <h3 className="text-3xl font-bold tracking-tight text-[var(--foreground)]">Import External Skill</h3>
+                <p className="text-xs text-[var(--muted)] leading-relaxed">
+                  Drop any GitHub repository or skill tree URL. The automated engine clones, audits completeness, elevates formatting to the 100/100 standard, auto-embeds into vector memory, and locks the hash.
+                </p>
+              </div>
+
+              {importStatus === 'SUCCESS' && importResult ? (
+                <div className="space-y-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">✓</span>
+                    <div>
+                      <h4 className="text-sm font-bold text-emerald-400 uppercase tracking-widest">Import & Elevation Successful</h4>
+                      <p className="text-xs text-[var(--muted)]">{importResult.repo}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2 pt-3 border-t border-emerald-500/20">
+                    {importResult.skills?.map((s: any, idx: number) => (
+                      <div key={idx} className="flex items-center justify-between text-xs font-mono bg-[var(--background)] p-3 rounded-xl border border-[var(--border)]">
+                        <span className="font-bold text-[var(--foreground)]">{s.name}</span>
+                        <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded text-[10px] font-bold">
+                          {s.score}/100 AUDIT PASS
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-[var(--muted)]">
+                    Skill registered in skills/, injected into openmemory.db, and baseline locked in skills-lock.json.
+                  </p>
+                  <button
+                    onClick={() => { setIsImportModalOpen(false); router.refresh(); }}
+                    className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-black font-bold uppercase tracking-widest text-xs rounded-xl transition-all"
+                  >
+                    Complete & Refresh Armory
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleGitImport} className="space-y-5">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-[var(--faint)] uppercase tracking-widest">
+                      GitHub Repository or Subfolder URL
+                    </label>
+                    <input 
+                      type="url" 
+                      required
+                      placeholder="https://github.com/owner/repo or .../tree/main/path"
+                      value={importUrl}
+                      onChange={(e) => setImportUrl(e.target.value)}
+                      disabled={importStatus === 'LOADING'}
+                      className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl px-4 py-3 text-xs font-mono text-[var(--foreground)] outline-none focus:border-[var(--primary)] transition-all"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-[var(--faint)] uppercase tracking-widest">
+                      Custom Skill Name Override (Optional)
+                    </label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. custom-scraper"
+                      value={importSkillName}
+                      onChange={(e) => setImportSkillName(e.target.value)}
+                      disabled={importStatus === 'LOADING'}
+                      className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl px-4 py-3 text-xs font-mono text-[var(--foreground)] outline-none focus:border-[var(--primary)] transition-all"
+                    />
+                  </div>
+
+                  {importStatus === 'ERROR' && (
+                    <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-xs text-red-400 font-mono">
+                      {importMessage}
+                    </div>
+                  )}
+
+                  {importStatus === 'LOADING' ? (
+                    <div className="py-4 flex flex-col items-center justify-center gap-3 text-center">
+                      <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-xs font-mono text-[var(--muted)] animate-pulse">{importMessage}</span>
+                    </div>
+                  ) : (
+                    <button
+                      type="submit"
+                      className="w-full py-4 bg-[var(--foreground)] text-[var(--background)] hover:opacity-90 font-bold uppercase tracking-widest text-xs rounded-xl transition-all shadow-xl cursor-pointer"
+                    >
+                      Import & Elevate to 100/100
+                    </button>
+                  )}
+                </form>
+              )}
+            </div>
+          </div>
+        )}
+
       </div>
     </>
   );

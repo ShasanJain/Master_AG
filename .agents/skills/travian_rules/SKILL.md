@@ -54,3 +54,33 @@ This skill provides the permanent logic and structure for parsing, calculation, 
 ## 6. Parsing Strategy (OCR & Clipboard Text)
 - **Strict Headers**: The top lines of a copy-paste usually contain Gold, Silver, and Resource stocks in sequence.
 - **Inventory/Trade Items**: Resource counts under "Trade items" represent the resources inside the Hero's bag, followed immediately by consumable counts.
+
+## 7. x_world map.sql — Tile Type Codes (VERIFIED from live server ts31.x3.international.travian.com)
+
+### Travian Legends x3/x5 (ts*.x3.international.travian.com — speed servers)
+Auto-detected when NO negative tile types exist in map.sql.
+Classification requires BOTH `type` AND `flag` (col 13 = TRUE/FALSE):
+
+| type | flag | Layout |
+|------|------|--------|
+| 1 | TRUE | **9-Cropper (3,3,3,9)** ← verified (63\|-29) |
+| 1 | FALSE | Standard variant |
+| 2 | * | Clay/wood-heavy standard |
+| 3 | * | Natar standard village |
+| 5 | * | **Natar 9-Cropper** (always crop Natar tile) |
+| 6 | **TRUE** | **15-Cropper (1,1,1,15)** ← verified (60\|-31) |
+| 6 | FALSE | Standard village variant (NOT a cropper) |
+| 7 | * | Standard variant |
+
+- Full row schema: `(id, x, y, type, kingdom_id, 'name', player_id, 'player', pop, 'alliance', extra_int, NULL, TRUE/FALSE, NULL, NULL, NULL)`
+- **No negative oasis types** — oasis data is not in map.sql on speed servers. Oasis score = N/A.
+- `player="Natars"` with `pop=0` = unconquered Natar tile (valid settle target).
+
+### Travian Legends Classic (com/arabics/international non-speed servers)
+Auto-detected when negative tile types ARE found in map.sql.
+| Type | Meaning |
+|------|---------|
+| 9 | 9-Cropper |
+| 12 | 15-Cropper variant |
+| 15 | 15-Cropper |
+| < 0 | Oasis tile (see OASIS_BONUS map in find_croppers.py) |

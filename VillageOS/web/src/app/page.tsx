@@ -48,6 +48,7 @@ interface Village {
   };
   buildings: BuildingItem[];
   plannerQueue: QueueItem[];
+  cpProd?: number;
 }
 
 interface OasisItem {
@@ -668,6 +669,7 @@ export default function VillageOSDashboard() {
         isCapital: true,
         population: 89,
         resources: { wood: 83, clay: 88, iron: 71, crop: 54, woodProd: 420, clayProd: 480, ironProd: 320, cropProd: 120 },
+        cpProd: 120,
         buildings: [
           { id: 1, category: "resource", slot: 1, name: "Woodcutter", current: 3, target: 10, priority: 5 },
           { id: 2, category: "resource", slot: 2, name: "Cropland", current: 2, target: 10, priority: 5 },
@@ -1030,6 +1032,23 @@ export default function VillageOSDashboard() {
     cpPerDay: 120
   });
 
+  const [activeCelebrations, setActiveCelebrations] = useState<{
+    [villageId: number]: {
+      type: 'small' | 'great';
+      endTime: number;
+    }
+  }>({});
+
+  const [targetSlot, setTargetSlot] = useState(2);
+
+  const [cropperServer, setCropperServer] = useState("ts31.x3.international.travian.com");
+  const [cropperX, setCropperX] = useState<number | "">("");
+  const [cropperY, setCropperY] = useState<number | "">("");
+  const [cropperRadius, setCropperRadius] = useState(40);
+  const [cropperType, setCropperType] = useState("both");
+  const [cropperResults, setCropperResults] = useState<any[]>([]);
+  const [cropperScanning, setCropperScanning] = useState(false);
+
   // Build queue selectors
   const [newBuildName, setNewBuildName] = useState("Woodcutter");
   const [newBuildLvl, setNewBuildLvl] = useState(1);
@@ -1057,12 +1076,100 @@ export default function VillageOSDashboard() {
         { id: 2, category: "resource" as const, slot: 2, name: "Clay Pit", current: 1, target: 10, priority: 5 },
         { id: 3, category: "urban" as const, slot: 19, name: "Main Building", current: 1, target: 5, priority: 4 }
       ],
-      plannerQueue: []
+      plannerQueue: [],
+      cpProd: 2
     };
     const updated = [...villages, newVil];
     setVillages(updated);
     setActiveVillageId(newId);
     handleSaveToLocalStorage(updated);
+  };
+
+  // CP Slots & Calculations
+  const CP_SLOTS = [
+    { slot: 2, cp: 2000 },
+    { slot: 3, cp: 8000 },
+    { slot: 4, cp: 20000 },
+    { slot: 5, cp: 39000 },
+    { slot: 6, cp: 65000 },
+    { slot: 7, cp: 99000 },
+    { slot: 8, cp: 141000 },
+    { slot: 9, cp: 191000 },
+    { slot: 10, cp: 251000 },
+    { slot: 11, cp: 321000 },
+    { slot: 12, cp: 401000 },
+  ];
+
+  const totalCpProdPerDay = villages.reduce((acc, v) => acc + (v.cpProd || 120), 0);
+
+  const handleTriggerCelebration = (vilId: number, type: 'small' | 'great') => {
+    const vil = villages.find(v => v.id === vilId);
+    if (!vil) return;
+
+    const townHall = vil.buildings?.find(b => b.name === "Town Hall");
+    const thLevel = townHall ? townHall.current : 1;
+
+    const baseCooldown = type === 'small' ? 24 : 72;
+    const speed = settings.serverSpeed || 3;
+    const cooldownHours = (baseCooldown / speed) * Math.pow(0.96, thLevel - 1);
+
+    const endTime = Date.now() + cooldownHours * 60 * 60 * 1000;
+    const cpAward = type === 'small' ? 500 : 2000;
+
+    setCulture(prev => ({
+      ...prev,
+      currentCp: prev.currentCp + cpAward
+    }));
+
+    setActiveCelebrations(prev => ({
+      ...prev,
+      [vilId]: { type, endTime }
+    }));
+
+    setStatusMsg(`Started ${type} celebration in ${vil.name}. +${cpAward} CP added!`);
+    setTimeout(() => setStatusMsg(""), 4000);
+  };
+
+  const parseCoords = (coordStr: string) => {
+    const match = coordStr.match(/\((-?\d+)\s*[|]\s*(-?\d+)\)/);
+    if (match) {
+      return { x: parseInt(match[1]), y: parseInt(match[2]) };
+    }
+    return { x: 0, y: 0 };
+  };
+
+  const handleScanCroppers = async () => {
+    const activeCoords = parseCoords(activeVillage.coords);
+    const xVal = cropperX === "" ? activeCoords.x : cropperX;
+    const yVal = cropperY === "" ? activeCoords.y : cropperY;
+
+    setCropperScanning(true);
+    setStatusMsg("Downloading map and identifying croppers...");
+    try {
+      const response = await fetch('/api/villageos/find-croppers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          server: cropperServer,
+          x: xVal,
+          y: yVal,
+          radius: cropperRadius,
+          type: cropperType
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setCropperResults(data.croppers || []);
+        setStatusMsg(`Scan complete: Found ${data.croppers?.length || 0} cropper(s).`);
+      } else {
+        setStatusMsg(`Scan failed: ${data.error}`);
+      }
+    } catch (e: any) {
+      setStatusMsg(`Scan error: ${e.message}`);
+    } finally {
+      setCropperScanning(false);
+      setTimeout(() => setStatusMsg(""), 4000);
+    }
   };
 
   const currentSlotBuilding = activeVillage.buildings?.find(b => b.slot === selectedSlot);
@@ -1242,15 +1349,19 @@ export default function VillageOSDashboard() {
 
     // ── 1. Coordinates + Village Name ─────────────────────────────────────────
     for (let i = 0; i < lines.length; i++) {
-      const m = lines[i].match(/\((-?\d+)\s*\|\s*(-?\d+)\)/);
+      const m = lines[i].match(/(?:\(|\[)?\s*(-?\d{1,3})\s*(?:\||\/|,)\s*(-?\d{1,3})\s*(?:\)|\])?/);
       if (m) {
-        newCoords = `(${m[1]}|${m[2]})`;
-        matched.push('coords');
-        if (i > 0 && lines[i - 1].length < 40 && !/\d/.test(lines[i - 1])) {
-          newName = lines[i - 1];
-          matched.push('name');
+        const x = parseInt(m[1]);
+        const y = parseInt(m[2]);
+        if (x >= -400 && x <= 400 && y >= -400 && y <= 400) {
+          newCoords = `(${x}|${y})`;
+          matched.push('coords');
+          if (i > 0 && lines[i - 1].length < 40 && !/\d/.test(lines[i - 1])) {
+            newName = lines[i - 1];
+            matched.push('name');
+          }
+          break;
         }
-        break;
       }
     }
 
@@ -1267,8 +1378,6 @@ export default function VillageOSDashboard() {
     // Fallback for gold/silver top lines on hero page (e.g. "130" on one line, "2,187" on next)
     const numericLines = lines.slice(0, 10).map(l => parseInt(l.replace(/[^\d]/g, ''))).filter(n => !isNaN(n));
     if (numericLines.length >= 2 && !goldM && !silverM) {
-      // Typically gold, silver, wood, clay, iron, crop are at the top of the hero page.
-      // Let's extract the gold and silver if we find the pattern
       if (clean.includes('Hero') || clean.includes('Attributes')) {
         setGold(numericLines[0]);
         setSilver(numericLines[1]);
@@ -1277,13 +1386,8 @@ export default function VillageOSDashboard() {
     }
 
     // ── 4. Resource Stocks (dorf1 layout) ─────────────────────────────────────
-    // Resource values are often pasted as a sequence of numbers:
-    // e.g. "739", "558", "447", "4000", "321", "84"
-    // Let's search for sequences of isolated numbers that match wood, clay, iron, warehouse, crop, granary
     const standaloneNums = lines.map(l => parseInt(l.replace(/[^\d-]/g, ''))).filter(n => !isNaN(n));
     if (standaloneNums.length >= 6 && clean.includes('Server time')) {
-      // Standard header pattern: [gold, silver, warehouse, clay, iron, crop, granary, free_crop]
-      // Let's identify the block from the top
       newRes.wood = standaloneNums[3] ?? newRes.wood;
       newRes.clay = standaloneNums[4] ?? newRes.clay;
       newRes.iron = standaloneNums[5] ?? newRes.iron;
@@ -1293,27 +1397,27 @@ export default function VillageOSDashboard() {
     }
 
     // Direct labels fallback
-    const lumberM = clean.match(/(?:Lumber|Wood)[:\s]+(\d+)/i);
-    const clayRM  = clean.match(/Clay[:\s]+(\d+)/i);
-    const ironRM  = clean.match(/Iron[:\s]+(\d+)/i);
-    const cropRM  = clean.match(/(?:Crop|Grain)[:\s]+(\d+)/i);
+    const lumberM = clean.match(/(?:Lumber|Wood)[:\s]+(\d+)(?:\/\d+)?/i);
+    const clayRM  = clean.match(/Clay[:\s]+(\d+)(?:\/\d+)?/i);
+    const ironRM  = clean.match(/Iron[:\s]+(\d+)(?:\/\d+)?/i);
+    const cropRM  = clean.match(/(?:Crop|Grain)[:\s]+(\d+)(?:\/\d+)?/i);
     if (lumberM) { newRes.wood = parseInt(lumberM[1]); matched.push('wood'); }
     if (clayRM)  { newRes.clay = parseInt(clayRM[1]);  matched.push('clay'); }
     if (ironRM)  { newRes.iron = parseInt(ironRM[1]);  matched.push('iron'); }
     if (cropRM)  { newRes.crop = parseInt(cropRM[1]);  matched.push('crop'); }
 
     // ── 5. Production rates ────────────────────────────────────────────────────
-    const wpM = clean.match(/(?:Lumber|Wood)\s*(?:production)?[:\s]+(\d+)\s*\/\s*h/i);
-    const cpM = clean.match(/Clay\s*(?:production)?[:\s]+(\d+)\s*\/\s*h/i);
-    const ipM = clean.match(/Iron\s*(?:production)?[:\s]+(\d+)\s*\/\s*h/i);
-    const crpM = clean.match(/(?:Crop|Grain)\s*(?:production)?[:\s]+(\d+)\s*\/\s*h/i);
+    const wpM = clean.match(/(?:Lumber|Wood)\s*(?:production)?[:\s]+([+-]?\d+)\s*\/\s*h/i);
+    const cpM = clean.match(/Clay\s*(?:production)?[:\s]+([+-]?\d+)\s*\/\s*h/i);
+    const ipM = clean.match(/Iron\s*(?:production)?[:\s]+([+-]?\d+)\s*\/\s*h/i);
+    const crpM = clean.match(/(?:Crop|Grain)\s*(?:production)?[:\s]+([+-]?\d+)\s*\/\s*h/i);
     if (wpM)  { newRes.woodProd = parseInt(wpM[1]);  matched.push('woodProd'); }
     if (cpM)  { newRes.clayProd = parseInt(cpM[1]);  matched.push('clayProd'); }
     if (ipM)  { newRes.ironProd = parseInt(ipM[1]);  matched.push('ironProd'); }
     if (crpM) { newRes.cropProd = parseInt(crpM[1]); matched.push('cropProd'); }
 
     // Fallback: 4 numbers in a row on Production / Economy tab
-    const prodRow = clean.match(/(\d{2,5})\s+(\d{2,5})\s+(\d{2,5})\s+(\d{2,5})/);
+    const prodRow = clean.match(/([+-]?\d{2,5})\s+([+-]?\d{2,5})\s+([+-]?\d{2,5})\s+([+-]?\d{2,5})/);
     if (prodRow && !wpM && !cpM && !ipM && !crpM) {
       newRes.woodProd = parseInt(prodRow[1]);
       newRes.clayProd = parseInt(prodRow[2]);
@@ -1358,8 +1462,6 @@ export default function VillageOSDashboard() {
     if (strM) { setHero(prev => ({ ...prev, strength: parseInt(strM[1]) })); matched.push('strength'); }
 
     // ── 10. Hero Inventory / Consumables (Trade Items format) ─────────────────
-    // Trailing numbers under Trade Items section:
-    // e.g. "396", "1111", "1415", "4044", "20", "1"
     const tradeIdx = lines.findIndex(l => /trade\s*items/i.test(l));
     if (tradeIdx !== -1 && lines.length > tradeIdx + 4) {
       const bW  = parseInt(lines[tradeIdx + 1]);
@@ -1377,7 +1479,6 @@ export default function VillageOSDashboard() {
         matched.push('heroBag');
       }
 
-      // Consumables typically follow after the resources bag
       const bOint  = parseInt(lines[tradeIdx + 5]);
       const bCages = parseInt(lines[tradeIdx + 6]);
       if (!isNaN(bOint)) {
@@ -2294,6 +2395,164 @@ export default function VillageOSDashboard() {
                 <div className="text-[10px] text-slate-500 italic">All distance measurements are calculated in fields dynamically from these coordinates.</div>
               </div>
 
+              {/* CP & EXPANSION CALCULATOR */}
+              <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl flex flex-col gap-6">
+                <div className="border-b border-slate-850 pb-3 flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-amber-400" />
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-100">Culture Points & Expansion Planner</h3>
+                      <p className="text-[10px] text-slate-400">Calculate settlement ETAs and schedule Town Hall celebrations</p>
+                    </div>
+                  </div>
+                  <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded text-xs font-black">
+                    +{totalCpProdPerDay} CP/day
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* METRICS & ETA */}
+                  <div className="bg-slate-950 p-4 rounded-lg border border-slate-850 flex flex-col gap-4">
+                    <h4 className="text-xs uppercase font-extrabold tracking-widest text-slate-400">Status & ETA</h4>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400 text-xs">Current Account CP:</span>
+                        <input
+                          type="number"
+                          value={culture.currentCp}
+                          onChange={(e) => setCulture(prev => ({ ...prev, currentCp: Math.max(0, parseInt(e.target.value) || 0) }))}
+                          className="w-24 bg-slate-900 border border-slate-700 text-white rounded text-center text-xs font-bold focus:outline-none focus:border-cyan-500 py-1"
+                        />
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400 text-xs">Target Slot:</span>
+                        <select
+                          value={targetSlot}
+                          onChange={(e) => {
+                            const slotNum = parseInt(e.target.value);
+                            setTargetSlot(slotNum);
+                            const found = CP_SLOTS.find(s => s.slot === slotNum);
+                            if (found) {
+                              setCulture(prev => ({ ...prev, goalCp: found.cp }));
+                            }
+                          }}
+                          className="w-24 bg-slate-900 border border-slate-700 text-white rounded text-center text-xs font-bold focus:outline-none focus:border-cyan-500 py-1"
+                        >
+                          {CP_SLOTS.map(s => (
+                            <option key={s.slot} value={s.slot}>Slot {s.slot} ({s.cp.toLocaleString()} CP)</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-slate-850 pt-3 mt-1">
+                      <div className="text-[10px] text-slate-500 uppercase font-black">ETA to Next Slot</div>
+                      <div className={`text-lg font-black mt-1 ${culture.currentCp >= culture.goalCp ? 'text-emerald-400 animate-pulse' : 'text-yellow-400'}`}>
+                        {culture.currentCp >= culture.goalCp 
+                          ? "Sufficient CP - Settle Now!" 
+                          : totalCpProdPerDay === 0 
+                            ? "Infinite (No CP production)" 
+                            : `${Math.floor(Math.max(0, culture.goalCp - culture.currentCp) / totalCpProdPerDay)}d ${Math.ceil((Math.max(0, culture.goalCp - culture.currentCp) % totalCpProdPerDay * 24) / totalCpProdPerDay)}h`
+                        }
+                      </div>
+                      {culture.currentCp < culture.goalCp && (
+                        <div className="text-[10px] text-slate-400 mt-1">
+                          {(culture.goalCp - culture.currentCp).toLocaleString()} CP remaining
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* VILLAGE CP PRODUCTION */}
+                  <div className="bg-slate-950 p-4 rounded-lg border border-slate-850 flex flex-col gap-3">
+                    <h4 className="text-xs uppercase font-extrabold tracking-widest text-slate-400">Village CP Outputs</h4>
+                    <div className="flex flex-col gap-2 max-h-[140px] overflow-y-auto pr-1">
+                      {villages.map(v => (
+                        <div key={v.id} className="flex justify-between items-center gap-2 text-xs border-b border-slate-850 pb-1.5 last:border-0 last:pb-0">
+                          <span className="text-slate-300 font-semibold truncate max-w-[100px]">{v.name}</span>
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="number"
+                              min={0}
+                              value={v.cpProd ?? 120}
+                              onChange={(e) => {
+                                const val = Math.max(0, parseInt(e.target.value) || 0);
+                                setVillages(prev => prev.map(item => item.id === v.id ? { ...item, cpProd: val } : item));
+                              }}
+                              className="w-14 bg-slate-900 border border-slate-700 text-white rounded text-center text-xs font-bold focus:outline-none focus:border-cyan-500 py-0.5"
+                            />
+                            <span className="text-slate-500 text-[10px]">CP/d</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* TOWN HALL CELEBRATIONS */}
+                  <div className="bg-slate-950 p-4 rounded-lg border border-slate-850 flex flex-col gap-3">
+                    <h4 className="text-xs uppercase font-extrabold tracking-widest text-slate-400">Town Hall Celebrations</h4>
+                    <div className="flex flex-col gap-2.5">
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[10px] text-slate-500 uppercase font-bold">Select Village</label>
+                        <select
+                          id="celebration-village-select"
+                          className="w-full bg-slate-900 border border-slate-700 text-white rounded text-xs font-bold focus:outline-none focus:border-cyan-500 py-1"
+                        >
+                          {villages.map(v => {
+                            const th = v.buildings?.find(b => b.name === "Town Hall");
+                            return (
+                              <option key={v.id} value={v.id}>
+                                {v.name} (TH Lvl {th?.current ?? 0})
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 mt-1">
+                        <button
+                          onClick={() => {
+                            const select = document.getElementById("celebration-village-select") as HTMLSelectElement;
+                            if (select) handleTriggerCelebration(parseInt(select.value), 'small');
+                          }}
+                          className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black py-1.5 rounded transition-colors text-center"
+                        >
+                          Small (+500 CP)
+                        </button>
+                        <button
+                          onClick={() => {
+                            const select = document.getElementById("celebration-village-select") as HTMLSelectElement;
+                            if (select) handleTriggerCelebration(parseInt(select.value), 'great');
+                          }}
+                          className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-black py-1.5 rounded transition-colors text-center"
+                        >
+                          Great (+2k CP)
+                        </button>
+                      </div>
+
+                      {/* Celebration Status/Cooldown Tracker */}
+                      <div className="text-[10px] text-slate-400 mt-1 max-h-[60px] overflow-y-auto">
+                        {Object.entries(activeCelebrations).map(([vilId, cel]) => {
+                          const v = villages.find(vil => vil.id === parseInt(vilId));
+                          if (!v) return null;
+                          const timeRemaining = Math.max(0, cel.endTime - Date.now());
+                          const hours = Math.floor(timeRemaining / (60 * 60 * 1000));
+                          const mins = Math.floor((timeRemaining % (60 * 60 * 1000)) / (60 * 1000));
+                          return (
+                            <div key={vilId} className="flex justify-between items-center text-slate-400 border-b border-slate-900 pb-1 last:border-0">
+                              <span>{v.name} ({cel.type})</span>
+                              <span className="font-mono text-cyan-400 font-bold">
+                                {timeRemaining > 0 ? `${hours}h ${mins}m remaining` : "Finished"}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Oasis Tracker */}
               <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl flex flex-col gap-4">
                 <div className="flex justify-between items-center border-b border-slate-800 pb-2">
@@ -2350,7 +2609,185 @@ export default function VillageOSDashboard() {
                 </div>
               </div>
 
-              {/* Potential Settlements Finder */}
+              {/* CROPPER FINDER & MAP PLANNER */}
+              <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl flex flex-col gap-6">
+                <div className="border-b border-slate-850 pb-3 flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <Compass className="w-5 h-5 text-cyan-400" />
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-100">Optimal Cropper Finder (x_world database)</h3>
+                      <p className="text-[10px] text-slate-400">Scans live Travian server database for 9c and 15c villages ranked by oasis quality</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end bg-slate-950 p-4 rounded-lg border border-slate-850">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] text-slate-500 uppercase font-extrabold">Server Address</label>
+                    <input
+                      type="text"
+                      value={cropperServer}
+                      onChange={(e) => setCropperServer(e.target.value)}
+                      placeholder="e.g. ts31.x3.international.travian.com"
+                      className="bg-slate-900 border border-slate-700 text-white rounded text-xs font-semibold focus:outline-none focus:border-cyan-500 p-2"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] text-slate-500 uppercase font-extrabold">Center X</label>
+                    <input
+                      type="number"
+                      value={cropperX}
+                      onChange={(e) => setCropperX(e.target.value === "" ? "" : parseInt(e.target.value))}
+                      placeholder={`${parseCoords(activeVillage.coords).x}`}
+                      className="bg-slate-900 border border-slate-700 text-white rounded text-xs font-semibold focus:outline-none focus:border-cyan-500 p-2"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] text-slate-500 uppercase font-extrabold">Center Y</label>
+                    <input
+                      type="number"
+                      value={cropperY}
+                      onChange={(e) => setCropperY(e.target.value === "" ? "" : parseInt(e.target.value))}
+                      placeholder={`${parseCoords(activeVillage.coords).y}`}
+                      className="bg-slate-900 border border-slate-700 text-white rounded text-xs font-semibold focus:outline-none focus:border-cyan-500 p-2"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] text-slate-500 uppercase font-extrabold">Radius ({cropperRadius}t)</label>
+                    <input
+                      type="range"
+                      min={10}
+                      max={100}
+                      value={cropperRadius}
+                      onChange={(e) => setCropperRadius(parseInt(e.target.value))}
+                      className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400 my-3"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] text-slate-500 uppercase font-extrabold">Cropper Type</label>
+                    <select
+                      value={cropperType}
+                      onChange={(e) => setCropperType(e.target.value)}
+                      className="bg-slate-900 border border-slate-700 text-white rounded text-xs font-semibold focus:outline-none focus:border-cyan-500 p-2"
+                    >
+                      <option value="both">Both (9c & 15c)</option>
+                      <option value="15c">15-Cropper (15c) Only</option>
+                      <option value="9c">9-Cropper (9c) Only</option>
+                      <option value="natars">Natar Villages Only</option>
+                      <option value="ww">World Wonders (WW) Only</option>
+                      <option value="all">All Specialties (9c, 15c, Natar, WW)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleScanCroppers}
+                    disabled={cropperScanning}
+                    className={`bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-black px-6 py-2.5 rounded transition-all flex items-center gap-1.5 ${cropperScanning ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    {cropperScanning ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Scanning map.sql...
+                      </>
+                    ) : (
+                      <>
+                        <Compass className="w-3.5 h-3.5 animate-pulse" /> Find Optimal Croppers
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {cropperResults.length > 0 && (
+                  <div className="overflow-x-auto border border-slate-850 rounded-lg">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="border-b border-slate-800 bg-slate-950 text-slate-400 font-bold">
+                          <th className="py-2.5 px-3">Rank</th>
+                          <th>Type</th>
+                          <th>Coords</th>
+                          <th>Distance</th>
+                          <th>Oasis Score ▾</th>
+                          <th>Status</th>
+                          <th>Player/Pop</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {cropperResults.slice(0, 15).map((item, idx) => (
+                          <tr key={idx} className="border-b border-slate-800/40 hover:bg-slate-800/20">
+                            <td className="py-2.5 px-3 text-slate-400 font-mono">#{idx + 1}</td>
+                            <td>
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                item.label === '15c' 
+                                  ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' 
+                                  : item.label === '9c'
+                                    ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+                                    : item.label === 'WW'
+                                      ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                                      : 'bg-slate-500/10 text-slate-400 border border-slate-500/20'
+                              }`}>
+                                {item.label}
+                              </span>
+                            </td>
+                            <td className="font-mono text-cyan-400 font-bold">{item.coords}</td>
+                            <td className="font-mono text-slate-300 font-semibold">{item.distance_from_you.toFixed(1)}t</td>
+                            <td>
+                              <span className={`font-black font-mono ${
+                                !item.has_oases ? 'text-slate-500' : 'text-emerald-400'
+                              }`}>
+                                {!item.has_oases ? 'N/A' : `+${item.oasis_score}%`}
+                              </span>
+                            </td>
+                            <td>
+                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-black ${!item.occupied ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
+                                {!item.occupied ? 'FREE' : 'TAKEN'}
+                              </span>
+                            </td>
+                            <td className="text-slate-400 truncate max-w-[120px]">
+                              {item.occupied ? `${item.player} (pop:${item.population})` : 'Natars / Unclaimed'}
+                            </td>
+                            <td>
+                              <button
+                                onClick={() => {
+                                  const exists = settlements.some(s => s.coords === item.coords);
+                                  if (!exists) {
+                                    setSettlements(prev => [...prev, {
+                                      id: prev.length + 1,
+                                      coords: item.coords,
+                                      type: item.label === '15c' ? '15-Cropper (15c)' : '9-Cropper (9c)',
+                                      status: item.occupied ? 'Occupied' : 'Unoccupied'
+                                    }]);
+                                    setStatusMsg(`Targeted ${item.coords} for expansion!`);
+                                    setTimeout(() => setStatusMsg(""), 4000);
+                                  } else {
+                                    setStatusMsg("Already in expansion planner!");
+                                    setTimeout(() => setStatusMsg(""), 4000);
+                                  }
+                                }}
+                                className="text-cyan-500 hover:text-cyan-400 font-bold hover:underline"
+                              >
+                                Target
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {cropperResults.length > 15 && (
+                      <div className="bg-slate-950 p-2.5 text-center text-[10px] text-slate-500 border-t border-slate-850">
+                        Showing top 15 of {cropperResults.length} croppers.
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Potential Expansion Settlements */}
               <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl flex flex-col gap-4">
                 <div className="flex justify-between items-center border-b border-slate-800 pb-2">
                   <h3 className="text-xs uppercase font-bold tracking-widest text-slate-300">Potential Expansion Settlements</h3>

@@ -5,6 +5,20 @@ metadata:
   tags: remotion, video, react, animation, composition
 ---
 
+# Remotion Video Engineering: React Programmatic Animation Engine
+
+Remotion enables deterministic, programmatic video generation using React components, TypeScript, and modern web standards. By converting declarative JSX elements and mathematical frame interpolations into pixel-perfect MP4 videos, it bridges web engineering and motion design without relying on nondeterministic CSS transitions.
+
+## ⚙️ Execution SOP
+
+Follow this step-by-step procedure to build, animate, and render Remotion compositions:
+
+- **Step 1: Scaffold or Validate Composition Root**: Initialize project via `npx create-video@latest --yes --blank --no-tailwind my-video` or register Root component with `<Composition />` definitions containing explicit `durationInFrames`, `fps`, `width`, and `height`.
+- **Step 2: Asset Placement & Resolution**: Store all static assets (images, audio, video clips, fonts) strictly in the `public/` directory and resolve paths exclusively via `staticFile("asset-name.ext")`.
+- **Step 3: Programmatic Animation Binding**: Drive all element motion and opacity via `useCurrentFrame()`, `useVideoConfig()`, and `interpolate()` mathematical mappings. Never use CSS transitions or CSS keyframe animations.
+- **Step 4: Media Element Synchronization**: Embed video and audio clips using `@remotion/media` (`<Video />`, `<Audio />`) and wrap multi-track sequences inside `<Series>` or `<Sequence>` with precise `from` and `durationInFrames`.
+- **Step 5: Preview & Deterministic Render Gate**: Test real-time timeline scrubbing with `@remotion/player` and validate final production build using `npx remotion render` with zero console warnings.
+
 ## When to use
 
 Use this skills whenever you are dealing with Remotion code to obtain the domain-specific knowledge.

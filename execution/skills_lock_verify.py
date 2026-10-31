@@ -22,7 +22,9 @@ BASE_DIR  = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 LOCK_PATH = os.path.join(BASE_DIR, "skills-lock.json")
 
 SKILL_SEARCH_ROOTS = [
+    os.path.join(os.environ.get("USERPROFILE", ""), ".claude", "skills"),
     os.path.join(os.environ.get("USERPROFILE", ""), ".gemini", "skills"),
+    os.path.join(BASE_DIR, ".claude", "skills"),
     os.path.join(BASE_DIR, "skills"),
     os.path.join(BASE_DIR, ".agent", "skills"),
 ]

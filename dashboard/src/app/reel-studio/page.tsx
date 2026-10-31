@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { Play, Pause, Square, Wand2, Upload, FileAudio, Video, Search, Type, Image as ImageIcon, Download, Settings, Trash2, Edit3, Flame, PenTool } from 'lucide-react';
 
+import PremiumGate from '../components/PremiumGate';
+
 interface Segment {
   text: string;
   start: number;
@@ -14,7 +16,7 @@ interface Timeline {
   segments: Segment[];
 }
 
-export default function Studio() {
+function StudioContent() {
   const [timeline, setTimeline] = useState<Timeline | null>(null);
   const [selectedSegmentIdx, setSelectedSegmentIdx] = useState<number | null>(null);
   const [assets, setAssets] = useState<string[]>([]);
@@ -832,5 +834,13 @@ export default function Studio() {
       )}
     </div>
     </>
+  );
+}
+
+export default function Studio() {
+  return (
+    <PremiumGate moduleName="Reel Studio">
+      <StudioContent />
+    </PremiumGate>
   );
 }

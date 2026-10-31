@@ -1,78 +1,84 @@
-# Master-AG: Industrialized Agentic Engine (Jack-05)
+# Master-AG: Industrialized Agentic Engine (Jack)
 
-High-performance, domain-centric AI workstation for automated production, quant finance backtesting, and full-stack software engineering. 
+Jack is a high-performance, domain-centric AI workstation and decision engine optimized for automated media production, quant finance debate simulations, local codebase intelligence, and MMORTS game planning.
 
 ---
 
 ## 🏗️ Architecture & Core Domains
 
-The workspace is organized into functional submodules and directories to minimize cognitive load, maximize retrieval speed, and establish deterministic execution:
+The workspace structure partitions operational domains to maintain cognitive isolation, quick lookup speeds, and zero-error execution paths:
 
-- **`production/`**: Media Engines (React Remotion scripting, OpenMontage clip assembly, Edge-TTS).
-- **`intelligence/`**: Memory vaults, vector indexers, and LLM council wrappers.
-- **`engineering/`**: Multi-stack development workspaces, sandbox executors, and testing frameworks.
-- **`ops/`**: Cloud orchestration, SEO auditors, and automated workflows.
-- **`design/`**: Branding, UI/UX presets, and design tokens.
-- **`security/`**: Attack tree analyzers, web injection tests, and AD threat models.
-
----
-
-## 🕹️ The Cockpit Dashboard
-
-Jack comes equipped with an interactive Next.js dashboard workspace to coordinate runs, monitor live console logs, and review generated assets:
-
-- 📊 **Trading Agents Swarm:** Select tickers, debate rounds, and LLM backends to backtest quant debate firms.
-- 📝 **OpenWiki Workspace:** Configure LLM providers, set prompt guides, compile codebase context, and view markdown wikis.
-- 🎙️ **Audio & Reel Studio:** Render voiceovers using Edge-TTS or ONNX, generate visual scripts, and compile shorts.
-- 💡 **Ideas Lab (Incubator):** Self-anneal workflows, debate design pillars, and run LLM council verification.
-- 🧠 **Memory & Brain Map:** Synchronize neural nodes and audit the global skills registry.
+- **`dashboard/`**: Next.js (TypeScript) local command center running on `http://localhost:3000`.
+- **`VillageOS/`**: MMORTS Travian optimizer containing the calculations layer, OCR screenshot parsers, and AppScript endpoints.
+- **`production/`**: Automated narration and video synthesis pipelines (Remotion canvas, Edge-TTS, OpenMontage clip compilers).
+- **`execution/`**: Deterministic Python backends handling map scraping, vector math, and quantitative simulations.
+- **`extension/`**: Chrome browser extension for live overlay helpers and sandbox interactions.
+- **`directives/`**: Standard Operating Procedures (SOPs) managing agent actions.
+- **`skills/`**: Sovereign task-oriented skill modules and behavior parameters.
 
 ---
 
-## ⚡ Skills & Capabilities Registry
+## 🕹️ Interactive Dashboard Features
 
-Jack leverages high-density sovereign modules to execute domain-specific tasks. The historical log and GitHub reference sheet can be found at **[SKILLS-JOURNEY.md](file:///c:/Users/swaya/OneDrive/Desktop/Master_AG/SKILLS-JOURNEY.md)**.
+Jack's Next.js dashboard integrates core workstation engines into a unified local interface:
 
-### Primary Capabilites Map:
-| Date | Module / Tool | Category | Key Capabilities |
-| :--- | :--- | :--- | :--- |
-| `2026-07-06` | **OpenWiki** | Code Intelligence / Docs | Compiles agent-optimized codebase documentation; writes `AGENTS.md` and `CLAUDE.md` context overrides. |
-| `2026-07-02` | **Trading Agents** | Quant Swarms / Finance | Multi-agent financial consensus simulator running market, fundamental, news, and sentiment analyst nodes. |
-| `2026-07-02` | **KittenTTS** | Local Audio / Synthesis | High-fidelity offline ONNX-compiled text-to-speech engine with speed and pitch controls. |
-| `2026-07-02` | **Remotion & Hyperframes** | Video Assembly / Canvas | React-based video creation framework combined with headless Chrome Canvas frame-by-frame renders. |
-| `2026-06-30` | **OpenMontage** | Media Pipelines | Video-generation script runner mapping automated outline structures, narration, and background assets. |
-| `2026-06-29` | **Game Design** | Frameworks / Psychology | 61 structured guidelines outlining behavioral motivators, core loops, and design mechanics. |
-| `2026-07-01` | **repo-analyzer** | Workspace Audit | Scans and generates Overview and Detailed repository audit markdown profiles. |
+### 1. 📊 Quant Trading Swarms
+- Simulates analyst debates (market, fundamental, sentiment, news) to backtest stock ticker consensus.
+- Evaluates multi-agent debate structures and logs live metrics.
+
+### 2. 📝 OpenWiki Documentation
+- Interrogates codebase directory structures and compiles agent-optimized markdown documentation.
+- Automatically synchronizes memory overrides (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`).
+
+### 3. 🎙️ Audio & Reel Studio
+- Renders text scripts to offline high-fidelity voice narration using local ONNX or cloud APIs.
+- Chains script generation to timeline video compilers for quick short-form reels.
+
+### 4. 🏰 VillageOS (MMORTS Optimizer)
+- **Screenshot AI Parser**: Vision-based container splits inputs (`dorf1`, `dorf2`, `heroAttrs`, `heroInv`) to extract building queues, resources, and inventory.
+- **CP & Expansion Planner**: Computes slot milestones and Town Hall celebration cooldown counters based on speed variables:
+  $$\text{Cooldown Hours} = \frac{\text{Base Cooldown}}{\text{Server Speed}} \times 0.96^{(\text{TH Level} - 1)}$$
+- **Oasis & Cropper Finder**: Connects with live `x_world` databases via `find_croppers.py` to identify unoccupied 9c/15c tiles ranked by surrounding crop bonuses.
 
 ---
 
-## 🚀 How to Fully Utilise Jack
+## ⚡ Setup & Prerequisites
 
-To achieve peak productivity and unlock all capabilities, ensure the following local tools are installed and configured:
+To run Jack's full automation toolkit locally, ensure the following applications are configured:
 
-### 1. Ollama (Local AI Orchestration)
-Many modules (e.g. Trading Agents, local OpenWiki runs) support local LLMs to avoid paid API costs.
-- **Install:** Download and install [Ollama](https://ollama.com).
-- **Run local models:**
+### 1. Local LLM Host (Ollama)
+Required to run offline consensus debates, code compilation, and council audits.
+- Install [Ollama](https://ollama.com).
+- Download model weight dependencies:
   ```bash
   ollama pull gemma4:latest
   ollama pull llama3.2:latest
   ```
-- **Port mapping:** Ensure Ollama runs locally on `http://localhost:11434/v1` (configured inside `.env`).
 
-### 2. Node.js & Package Managers
-- Required to run the Next.js Dashboard and local compilers.
-- Ensure **Node.js >= 20** is installed.
-- The dashboard is powered by `npm` (run `npm run dev` to start).
-- Submodules like `openwiki` run via local `pnpm` or `npm install` packages.
+### 2. Python Environment & UV
+- Core backends run on Python 3.10+.
+- Manage local dependency isolation and package lockfiles using [uv](https://github.com/astral-sh/uv).
 
-### 3. Python Environment & UV
-- Most core execution scripts run on Python.
-- Install [uv](https://github.com/astral-sh/uv) to manage workspace environments and dependency locking securely.
+### 3. Node.js & Playwright
+- Runs the web portal and integration test suite (requires Node >= 20).
+- Run dev server:
+  ```bash
+  cmd.exe /c npm run dev
+  ``` (in `dashboard`)
+- Run Playwright E2E UI verification checks:
+  ```bash
+  cmd.exe /c npx playwright test
+  ```
 
-### 4. Media & Assembly Tools
-- For video generation (`/clip`) and transcription, ensure **FFmpeg** is added to the system PATH.
-- Edge-TTS is used for high-fidelity multi-lingual voice generation in scripts.
+---
+
+## 🛠️ Workspace Refinement Roadmap
+
+To keep Jack operating with peak efficiency, we adhere to the following refinement roadmap:
+
+1. **E2E UI Test Coverage Expansion**: Integrate Playwright specs for Trading Agent debate prompts and OpenWiki configuration saves.
+2. **Vision API Boundary Optimization**: Scaffolding local crop boundary helper scripts to trim images before cloud Vision ingestion.
+3. **Dirty Submodule Cleanup**: Clean up dirty git states across subprojects (e.g. `ComfyUI`, `FinSwipe`) and retire outdated patch files (`_patch_*.py`).
 
 ---
 

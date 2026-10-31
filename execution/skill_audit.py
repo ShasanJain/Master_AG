@@ -4,9 +4,15 @@ import re
 import json
 
 def get_skills_dir():
-    global_dir = os.path.abspath(os.path.expanduser("~/.gemini/skills"))
-    local_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "skills"))
-    return global_dir if os.path.exists(global_dir) else local_dir
+    for candidate in [
+        os.path.abspath(os.path.expanduser("~/.claude/skills")),
+        os.path.abspath(os.path.expanduser("~/.gemini/skills")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".claude", "skills")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "skills"))
+    ]:
+        if os.path.exists(candidate):
+            return candidate
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "skills"))
 
 def audit_skill_content(content):
     score = 0

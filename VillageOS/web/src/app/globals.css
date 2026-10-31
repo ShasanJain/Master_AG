@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #020617;
+  --foreground: #F8FAFC;
+  --primary: #22C55E;
+  --primary-glow: rgba(34, 197, 94, 0.3);
+  --accent: #22C55E;
+  --surface: #0F172A;
+  --border: #1E293B;
+  --grid-line: rgba(255, 255, 255, 0.05);
+  --glass: blur(10px);
+  --sidebar-bg: #0F172A;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --faint: rgba(248, 250, 252, 0.1);
+  --muted: rgba(248, 250, 252, 0.5);
+  --status-emerald: #22C55E;
+  --status-emerald-bg: rgba(34, 197, 94, 0.1);
+  --status-blue: #38BDF8;
+  --status-blue-bg: rgba(56, 189, 248, 0.1);
+  --status-rose: #F43F5E;
+  --status-rose-bg: rgba(244, 63, 94, 0.1);
+  --graph-bg: #020617;
+}
+
+@theme {
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  transition: background-color 0.4s ease, color 0.4s ease;
+  overflow-x: hidden;
+  position: relative;
+  scrollbar-gutter: stable;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.glass-card {
+  background: var(--surface);
+  backdrop-filter: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: var(--primary);
+  background: var(--surface);
+  box-shadow: 0 10px 40px -10px var(--primary-glow);
+}
+
+.industrial-grid {
+  background-image: 
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.neon-text {
+  text-shadow: 0 0 8px var(--primary-glow);
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--faint);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  backdrop-filter: blur(4px);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}

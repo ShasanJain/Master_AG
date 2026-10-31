@@ -11,7 +11,7 @@ import {
   Radio, Brain, Palette, Search, Globe, CalendarClock,
   MonitorPlay, Mic2, Clapperboard, Frame, Activity,
   ScrollText, Stethoscope, Cpu, Database, MessageSquare,
-  ChevronDown, ChevronRight, Pin, Star, Scale, Wand2, TrendingUp, Video, ArrowRightLeft, BookOpen
+  ChevronDown, ChevronRight, Pin, Star, Scale, Wand2, TrendingUp, Video, ArrowRightLeft, BookOpen, CreditCard
 } from "lucide-react";
 
 interface SidebarProps {
@@ -30,6 +30,7 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
   });
 
   const [activeWorkspace, setActiveWorkspace] = useState<string | null>(null);
+  const [subscriptionTier, setSubscriptionTier] = useState<string>('free');
 
   // Load collapse and workspace state from localStorage on mount
   useEffect(() => {
@@ -42,9 +43,29 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
       if (storedWs) {
         setActiveWorkspace(storedWs);
       }
+      const storedTier = localStorage.getItem('jack-subscription-tier');
+      if (storedTier) {
+        setSubscriptionTier(storedTier);
+      }
     } catch (e) {
       console.error(e);
     }
+
+    const checkTier = () => {
+      try {
+        const storedTier = localStorage.getItem('jack-subscription-tier');
+        setSubscriptionTier(storedTier || 'free');
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    window.addEventListener('storage', checkTier);
+    window.addEventListener('jack-tier-updated', checkTier);
+    return () => {
+      window.removeEventListener('storage', checkTier);
+      window.removeEventListener('jack-tier-updated', checkTier);
+    };
   }, []);
 
   const selectWorkspace = (ws: string | null) => {
@@ -88,8 +109,7 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
     { label: "Skill Studio", href: "/skill-studio", icon: <Wand2 className="w-4 h-4" />, colorClass: "group-hover:text-violet-400", key: "skill-studio" },
     { label: "Fincept Terminal", href: "/fincept", icon: <TrendingUp className="w-4 h-4" />, colorClass: "group-hover:text-amber-500", key: "fincept" },
     { label: "Trading Agents", href: "/trading-agents", icon: <ArrowRightLeft className="w-4 h-4" />, colorClass: "group-hover:text-emerald-500", key: "trading-agents" },
-    { label: "OpenWiki", href: "/openwiki", icon: <BookOpen className="w-4 h-4" />, colorClass: "group-hover:text-indigo-400", key: "openwiki" },
-    { label: "VillageOS", href: "/villageos", icon: <Cpu className="w-4 h-4" />, colorClass: "group-hover:text-cyan-400", key: "villageos" },
+    { label: "OpenWiki", href: "/openwiki", icon: <BookOpen className="w-4 h-4" />, colorClass: "group-hover:text-indigo-400", key: "openwiki" }
   ];
 
   const pinnedItems = allPinableSkills.filter(item => pinnedSkills.includes(item.key));
@@ -276,23 +296,14 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
                 {renderNavItem("Agent Brain", "/neural", <Cpu className="w-4 h-4" />, "group-hover:text-fuchsia-400")}
                 {renderNavItem("Memory", "/memory", <Database className="w-4 h-4" />, "group-hover:text-violet-400")}
                 {renderNavItem("OpenWiki", "/openwiki", <BookOpen className="w-4 h-4" />, "group-hover:text-indigo-400", "openwiki")}
+                {renderNavItem("Billing & Pricing", "/billing", <CreditCard className="w-4 h-4" />, "group-hover:text-indigo-400")}
                 {renderNavItem("Settings", "/settings", <IconSettings className="w-4 h-4" />, "group-hover:text-[var(--foreground)]")}
               </div>
             )}
           </>
         )}
 
-        {/* ── MISCELLANEOUS ── */}
-        {(activeWorkspace === null || activeWorkspace === 'miscellaneous') && (
-          <>
-            {renderSectionHeader("Miscellaneous", "miscellaneous")}
-            {!collapsed.miscellaneous && (
-              <div className="space-y-0.5">
-                {renderNavItem("VillageOS", "/villageos", <Cpu className="w-4 h-4" />, "group-hover:text-cyan-400", "villageos")}
-              </div>
-            )}
-          </>
-        )}
+
       </nav>
 
       {/* Persistent Neural Link */}
@@ -304,9 +315,9 @@ export default function Sidebar({ pinnedSkills = [], togglePin }: SidebarProps) 
         <div className="glass-card p-3 bg-[var(--surface)]">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-widest">Engine Status</span>
-            <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse" />
+            <span className="text-[9px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-widest">{subscriptionTier}</span>
           </div>
-          <StatusBadge status="OPTIMAL" className="w-full justify-center py-0.5" />
+          <StatusBadge status={subscriptionTier === 'free' ? 'ACTIVE' : 'PLATINUM-DENSITY'} label={subscriptionTier === 'free' ? 'FREE TIER' : `${subscriptionTier.toUpperCase()} LICENSE`} className="w-full justify-center py-0.5" />
         </div>
       </div>
     </aside>

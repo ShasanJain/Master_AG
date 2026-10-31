@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { StatusBadge } from '../components/StatusBadge';
+import PremiumGate from '../components/PremiumGate';
 
-export default function AudioStudio() {
+function AudioStudioContent() {
   const [inputFile, setInputFile] = useState('');
   const [volume, setVolume] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -239,5 +240,13 @@ export default function AudioStudio() {
       </div>
     </div>
     </>
+  );
+}
+
+export default function AudioStudio() {
+  return (
+    <PremiumGate moduleName="Audio Studio">
+      <AudioStudioContent />
+    </PremiumGate>
   );
 }

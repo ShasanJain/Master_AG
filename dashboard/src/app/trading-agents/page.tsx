@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { ShieldCheck, LineChart, MessageSquareCode, Settings, Play, RefreshCw, Activity, ArrowRightLeft } from 'lucide-react';
+import PremiumGate from '../components/PremiumGate';
 
-export default function TradingAgentsPage() {
+function TradingAgentsContent() {
   const [ticker, setTicker] = useState('AAPL');
   const [llmProvider, setLlmProvider] = useState('ollama');
   const [selectedModel, setSelectedModel] = useState('gemma4:latest');
@@ -209,5 +210,13 @@ export default function TradingAgentsPage() {
         </main>
       </div>
     </>
+  );
+}
+
+export default function TradingAgentsPage() {
+  return (
+    <PremiumGate moduleName="Trading Agents">
+      <TradingAgentsContent />
+    </PremiumGate>
   );
 }

@@ -37,9 +37,11 @@ interface SeoResult {
   ssl: { is_ssl: boolean; redirect_chain: string[] };
 }
 
+import PremiumGate from '../components/PremiumGate';
+
 type Tab = 'overview' | 'technical' | 'content' | 'theme' | 'action';
 
-export default function SeoAnalyzer() {
+function SeoAnalyzerContent() {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SeoResult | null>(null);
@@ -646,5 +648,13 @@ export default function SeoAnalyzer() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function SeoAnalyzer() {
+  return (
+    <PremiumGate moduleName="SEO Analyzer">
+      <SeoAnalyzerContent />
+    </PremiumGate>
   );
 }

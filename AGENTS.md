@@ -130,3 +130,14 @@ Be pragmatic. Be reliable. Self-anneal.
    - **Coordinate Normalization**: Normalise Unicode hyphens (`\u2011`, `\u2212`) to standard ASCII hyphens (`-`) before matching coordinates.
    - **Pattern Alignment**: Account for standard Travian header logs where gold/silver appear as standalone numeric lines at the top of the paste block.
 
+## Playwright E2E Testing & Windows Execution Rules
+
+1. **Avoid Strict Mode Locator Violations**
+   - Playwright text queries matching multiple elements will fail. Always scope text locators using specific element types (e.g. `locator('h3:has-text("Name")')`) or append `.first()` to resolve uniqueness.
+
+2. **Prefer Substring Matching for Selectors**
+   - Avoid exact-match quotes (e.g., `text="Title"`) if dynamic context or badges might append to headers. Use substring matching (e.g. `text=Title`) instead.
+
+3. **Windows Shell Workarounds**
+   - If running standard global scripts (like `npm` or `npx`) on Windows PowerShell triggers execution policy errors, execute them using `cmd.exe /c` (e.g. `cmd.exe /c npm run build`).
+

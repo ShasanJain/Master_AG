@@ -18,3 +18,11 @@ graphify-out/
 
 # Cloned libraries
 tradingagents/
+
+# Node & Next.js builds
+.next/
+node_modules/
+test-results/
+.claude/
+openwiki/
+openwiki

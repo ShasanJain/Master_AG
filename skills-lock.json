@@ -32,15 +32,15 @@
     "mysql": {
       "source": "planetscale/database-skills",
       "sourceType": "github",
-      "computedHash": "c2d19ca229d770cc423cbb276789bee3ccc48e66780fdf71fcceefde5ad9574c",
-      "approved_at": "2026-06-20T12:47:26"
+      "computedHash": "aafb76292c59009ecbf1e6593a41196b62fb09a4080dc39367d04281cf8f19f0",
+      "approved_at": "2026-10-31T12:42:39"
     },
     "oracle-dba": {
       "source": "acedergren/agentic-tools",
       "sourceType": "github",
       "skillPath": "skills/oracle-dba/SKILL.md",
-      "computedHash": "3d0ba963047d395f4f90cce373cb1533f14ddecf0077c4dda137cab5abc6e3aa",
-      "approved_at": "2026-06-20T12:47:31"
+      "computedHash": "324e1048bcacd7db68e7c5627e2e717e371f6b2307bb1238678aef0f270e56fe",
+      "approved_at": "2026-10-31T12:42:48"
     },
     "performing-security-code-review": {
       "source": "aaaaqwq/claude-code-skills",

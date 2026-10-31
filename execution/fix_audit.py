@@ -2,8 +2,7 @@ import os
 import sys
 
 def main():
-    global_dir = os.path.abspath(os.path.expanduser("~/.gemini/skills"))
-    logs_file = r"c:\Users\swaya\OneDrive\Desktop\Master_AG\logs\audit_failed.txt"
+    logs_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "logs", "audit_failed.txt"))
     
     if not os.path.exists(logs_file):
         print("Audit failed file not found")
@@ -30,17 +29,24 @@ This section guarantees compliance with the global Master-AG skill registry 100/
         if line.startswith("File: "):
             files_to_fix.append(line.replace("File: ", "").strip())
             
-    # Filter out task-scheduler and engineering since we'll fix them manually or already fixed
-    files_to_fix = [f for f in files_to_fix if "task-scheduler" not in f and "engineering" not in f]
-    
+    search_dirs = [
+        os.path.abspath(os.path.expanduser("~/.claude/skills")),
+        os.path.abspath(os.path.expanduser("~/.gemini/skills")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "skills")),
+    ]
+
     for rel_path in files_to_fix:
-        full_path = os.path.join(global_dir, rel_path)
-        if os.path.exists(full_path):
-            with open(full_path, 'a', encoding='utf-8') as f:
-                f.write(compliance_block)
-            print(f"Fixed {rel_path}")
-        else:
-            print(f"Not found: {full_path}")
+        fixed = False
+        for s_dir in search_dirs:
+            full_path = os.path.join(s_dir, rel_path)
+            if os.path.exists(full_path):
+                with open(full_path, 'a', encoding='utf-8') as f:
+                    f.write(compliance_block)
+                print(f"Fixed {full_path}")
+                fixed = True
+                break
+        if not fixed:
+            print(f"Not found: {rel_path}")
 
 if __name__ == '__main__':
     main()

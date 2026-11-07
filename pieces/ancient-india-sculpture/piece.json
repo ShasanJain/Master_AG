@@ -1,0 +1,22 @@
+{
+  "name": "ancient-india-sculpture",
+  "title": "Ancient Indian Sculpture: 4,000 Years of Form and Spirit",
+  "format": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 24,
+    "bpm": 96,
+    "duration": 45.0,
+    "frames": 1080
+  },
+  "storyFormat": "morph chain (5 eras, 4 shape morphs)",
+  "style": "riso",
+  "review": {
+    "safe": {
+      "top": 240,
+      "bottom": 420,
+      "right": 140
+    },
+    "refs": {}
+  }
+}

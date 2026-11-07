@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ancient Indian Sculpture: 4,000 Years of Form and Spirit</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1a1614; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  ANCIENT INDIAN SCULPTURE — 9:16 Vertical, 45.0s @ 96 BPM, 24fps.
+//  A procedural Risograph journey through 4,000 years of sculptural mastery:
+//  1. Indus Bronze (2500 BCE) -> 2. Mauryan Lions (250 BCE) ->
+//  3. Gupta Buddha (500 CE) -> 4. Elephanta Trimurti (750 CE) ->
+//  5. Chola Nataraja (1100 CE).
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 96, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 45.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const PRINTF = '"Arial Black", "Helvetica Neue", "Franklin Gothic Heavy", Impact, sans-serif';
+const SERIF = 'Georgia, "Times New Roman", serif';
+const CX = 540, CY = 960;
+
+const ERA_LIST = [
+  [0,  9,  () => sceneIndus()],
+  [9,  18, () => sceneMaurya()],
+  [18, 27, () => sceneGupta()],
+  [27, 36, () => sceneElephanta()],
+  [36, 45, () => sceneChola()]
+];
+
+const SHOTS = [
+  ['indus',     0,  0.0,  9.0, 'Indus Bronze: Dancing Girl of Mohenjo-daro (2500 BCE)'],
+  ['maurya',    1,  9.0, 18.0, 'Mauryan Polish: Sarnath Lion Capital & Dharma Chakra (250 BCE)'],
+  ['gupta',     2, 18.0, 27.0, 'Gupta Transcendence: Sarnath Preaching Buddha (500 CE)'],
+  ['elephanta', 3, 27.0, 36.0, 'Colossal Basalt: Elephanta Trimurti Sadashiva (750 CE)'],
+  ['chola',     4, 36.0, 45.0, 'Cosmic Rhythm: Chola Bronze Nataraja (1100 CE)']
+];
+
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [9.0, 18.0, 27.0, 36.0],
+  cues: {
+    indusBangles: 4.5,
+    mauryaChakra: 13.5,
+    guptaHalo: 22.5,
+    elephantaFaces: 31.5,
+    cholaFire: 40.5
+  },
+  acts: [
+    { name: '1 Indus',     role: 'origin',    t0:  0.0, t1:  9.0 },
+    { name: '2 Maurya',    role: 'monument',  t0:  9.0, t1: 18.0 },
+    { name: '3 Gupta',     role: 'serenity',  t0: 18.0, t1: 27.0 },
+    { name: '4 Elephanta', role: 'colossus',  t0: 27.0, t1: 36.0 },
+    { name: '5 Chola',     role: 'crescendo', t0: 36.0, t1: 45.0 }
+  ],
+  board: [
+    { t:  4.5, title: 'The bronze arm bangles gleam in terracotta sand', sound: 'earthen plucks, low drone', next: 'bangles morph into the Ashoka Chakra' },
+    { t: 13.5, title: 'The 24-spoke wheel turns under mirror-polished lions', sound: 'brass bells, royal chime', next: 'chakra morphs into the lotus halo' },
+    { t: 22.5, title: 'The meditating Buddha turns the wheel of sacred law', sound: 'singing bowl harmonic, serene pad', next: 'halo deepens into dark basalt' },
+    { t: 31.5, title: 'Three colossal faces of Shiva emerge from basalt cave', sound: 'deep cavern rumble, chisel strike', next: 'cave torch becomes the ring of fire' },
+    { t: 40.5, title: 'Shiva Nataraja dances within the cosmic ring of fire', sound: 'pulsing damaru rattle, cymbal sweep', next: 'loops back to origin' }
+  ],
+  narration: []
+};
+window.TIMELINE = TIMELINE;

@@ -38,7 +38,7 @@
   const bellTimes = [9.5, 11.0, 12.5, 14.0, 15.5, 17.0];
   const bellPitches = ['A4', 'D5', 'Fs5', 'A5', 'Fs5', 'D5'];
   bellTimes.forEach((t, i) => {
-    chime(t, nz(bellPitches[i]), 0.18, 1.2);
+    chime(t, [nz(bellPitches[i])], 0.18, 0.0);
   });
   to = 's';
   // Rotating wheel whoosh
@@ -63,7 +63,7 @@
   });
   to = 's';
   // Serene breathing drone swell
-  sub(21.0, 24.0, 73.42, 0.035, { att: 0.8, rel: 0.8 });
+  sub(21.0, 0.4);
   // Morph 2 Transition (26.0 -> 27.0s)
   sweep(26.0, 27.05, 0.035, 250, 1800, 0.0);
 
@@ -72,7 +72,7 @@
   // -------------------------------------------------------------------
   to = 'm';
   // Deep monolithic cavern bass
-  sub(27.0, 36.0, 55.0, 0.055, { att: 1.0, rel: 1.0 }); // Low A1 rumble
+  sub(27.0, 0.5); // Low rumble
   pad(27.0, 36.0, ['D2', 'F2', 'A2', 'D3'], 0.05, { type: 'sawtooth', cut: 500, att: 1.0, rel: 1.0, send: 0.7 }); // Somber minor resonance
 
   to = 's';
@@ -113,3 +113,4 @@
   // Ring of fire cymbal shimmer & final gong
   sweep(43.0, 44.8, 0.04, 800, 5000, 0.0);
   pluck(44.0, nz('D2'), 0.4, 0.0, 3.5, 3800, 0.9);
+

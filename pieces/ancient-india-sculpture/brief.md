@@ -32,3 +32,4 @@ A procedural, 45-second visual essay in three-ink Risograph print (Teal, Fluores
    - Imperial Chola lost-wax bronze (*panchaloha*).
    - Depicts the *Ananda Tandava* (Cosmic Dance of Bliss) within a flaming circle (*prabhamandala*). Four arms balance creation (*damaru* drum) and destruction (*agni* flame), offering protection (*abhaya*) and liberation (*gaja-hasta*), while subduing ignorance (*Apasmara*).
    - Reference: Government Museum, Chennai; Sivaramamurti, C. *Nataraja in Art, Thought and Literature* (1974).
+

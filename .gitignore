@@ -26,3 +26,10 @@ test-results/
 .claude/
 openwiki/
 openwiki
+
+# Video render caches
+**/frames/
+**/renders/
+*.mp4
+*.png
+

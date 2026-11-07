@@ -9,3 +9,4 @@
   - Era 2 (18.0s - 27.0s): Gupta Meditative Stone (Sarnath Buddha)
   - Era 3 (27.0s - 36.0s): Post-Gupta Basalt Colossus (Elephanta Trimurti)
   - Era 4 (36.0s - 45.0s): Chola Lost-Wax Bronze (Nataraja)
+

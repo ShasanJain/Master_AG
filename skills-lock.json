@@ -1,6 +1,13 @@
 {
   "version": 1,
   "skills": {
+    "animate": {
+      "source": "cth9191/animate",
+      "sourceType": "github",
+      "skillPath": "skills/animate/SKILL.md",
+      "computedHash": "58876da1af957ac977132b693e5052adfbd047eada9f22dc8db6f93e3984abe7",
+      "approved_at": "2026-11-07T15:50:00"
+    },
     "agent-performance-engineer": {
       "source": "tony363/superclaude",
       "sourceType": "github",

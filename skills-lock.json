@@ -29,6 +29,13 @@
       "computedHash": "799469552476c08c98a54919e268c79c85080e5cedfed4a00a5ebccb6442eae5",
       "approved_at": "2026-07-01T18:54:17"
     },
+    "morning-dev-routine": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": "skills/morning-dev-routine/SKILL.md",
+      "computedHash": "f5ee5e49dfa4f3e13dd1d4707a6ab33cadf6a38c3858b5ee9b277869045d0159",
+      "approved_at": "2026-11-07T14:43:00"
+    },
     "mysql": {
       "source": "planetscale/database-skills",
       "sourceType": "github",

@@ -88,41 +88,46 @@ flowchart LR
 ```
 
 ### 1. Project Scaffolding
-Create a piece directory under `pieces/<name>/`:
+Scaffold a piece with the unified CLI:
 ```bash
-# Example piece structure
-pieces/demo-explainer/
+node skills/animate/tools/new.mjs pieces/<name> --style cut-paper --duration 50 --title "Piece Title"
+```
+This generates the full directory and validates immediate compilation:
+```
+pieces/<name>/
 ├── piece.json       # Metadata, selected style, dimensions, and FPS
 ├── brief.md         # Narrative premise, research facts, and core visual metaphor
+├── LOG.md           # Engineering log and change tracking
+├── voice/           # Voiceover directory (script.json and takes)
 └── src/
-    ├── head.html    # Custom styles or canvas wrapper
-    ├── scenes.js    # Scene drawing definitions (era-01, era-02, era-03)
+    ├── head.html    # Timeline, acts, safe areas, canvas
+    ├── scenes.js    # Scene drawing definitions
     ├── bridges.js   # Morph bridges between scenes
     └── score.js     # Procedural synthesizer notes and BPM timing
 ```
 
-### 2. Configuration (`piece.json`)
-```json
-{
-  "name": "demo-explainer",
-  "style": "cut-paper",
-  "width": 1080,
-  "height": 1920,
-  "fps": 30,
-  "duration": 25.0
-}
+### 2. Neural Voiceover & Karaoke Timing
+Generate studio-grade neural voice takes directly from `script.json` and time words via local Whisper:
+```bash
+node skills/animate/tools/tts.mjs pieces/<name> --voice en-US-ChristopherNeural --rate +6%
 ```
+- Automatically generates 48kHz mono takes via Edge-TTS.
+- Extracts millisecond-accurate word boundaries using dual Whisper fallback (`faster-whisper` -> `openai-whisper` -> heuristic).
+- Assembles `voice/voice.wav` and `voice.json`.
 
 ### 3. Assembly & Verification
 ```bash
 # 1. Compile into single standalone index.html
-node skills/animate/tools/build.mjs pieces/demo-explainer
+node skills/animate/tools/build.mjs pieces/<name>
 
 # 2. Render test still frames at 2.5s, 8.0s, and 15.0s
-node skills/animate/tools/still.mjs pieces/demo-explainer 2.5,8.0,15.0 preview.png
+node skills/animate/tools/still.mjs pieces/<name> 2.5,8.0,15.0 preview.png
 
-# 3. Export final video
-node skills/animate/tools/export.mjs pieces/demo-explainer output.mp4
+# 3. Export broadcast master, kinetic karaoke subtitles, and auto-sync to dashboard
+node skills/animate/tools/export.mjs pieces/<name>
+
+# 4. Rapid audio / caption re-mix without re-rendering frames
+node skills/animate/tools/export.mjs pieces/<name> --skip-frames
 ```
 
 ---

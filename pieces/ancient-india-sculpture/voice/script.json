@@ -1,0 +1,48 @@
+{
+  "lead": 0.5,
+  "tail": 1.11,
+  "lines": [
+    {
+      "id": "intro",
+      "file": "intro.mp3",
+      "text": "For four thousand years, the sculptors of ancient India carved the divine into bronze and stone.",
+      "after": 1.42
+    },
+    {
+      "id": "indus",
+      "file": "indus.mp3",
+      "text": "At Mohenjo-daro, a bronze dancing girl stands in graceful defiance, adorned in twenty-two bangles.",
+      "after": 0.88
+    },
+    {
+      "id": "maurya",
+      "file": "maurya.mp3",
+      "text": "At Sarnath, Emperor Ashoka crowns polished sandstone pillars with four lions and the turning wheel of law.",
+      "after": 0.79
+    },
+    {
+      "id": "gupta",
+      "file": "gupta.mp3",
+      "text": "In the Gupta classical age, stone dissolves into meditation, radiating sublime peace and serenity.",
+      "after": 1.13
+    },
+    {
+      "id": "elephanta",
+      "file": "elephanta.mp3",
+      "text": "Inside the rock-cut caves of Elephanta, three colossal faces of Shiva gaze across eternity.",
+      "after": 1.74
+    },
+    {
+      "id": "chola",
+      "file": "chola.mp3",
+      "text": "Under the Cholas, Nataraja leaps into the ring of fire, dancing the cosmos into creation and release.",
+      "after": 1.07
+    },
+    {
+      "id": "outro",
+      "file": "outro.mp3",
+      "text": "From sacred terracotta to immortal bronze, ancient India carved the eternal spirit into form.",
+      "after": 1.11
+    }
+  ]
+}

@@ -101,7 +101,7 @@ fs.mkdirSync(FR, { recursive: true });
 for (const n of fs.readdirSync(FR)) { const m = /^f(\d+)\.png$/.exec(n); if (m && Number(m[1]) >= meta.frames) fs.unlinkSync(path.join(FR, n)); }
 if (BLUR > 1 && !(await first.evaluate(() => typeof STYLE === 'object' && STYLE.ones))) console.warn(`warning: --blur ${BLUR} does nothing for a style on 2s (STYLE.ones is false): every sub-frame is the same drawing`);
 
-if (!onlyAudio) {
+if (!onlyAudio && !flag('skip-frames')) {
   const pages = [first];
   for (let i = 1; i < workers; i++) pages.push(await openPage());
   const queue = []; for (let i = from; i <= to; i++) queue.push(i);
@@ -184,16 +184,71 @@ if (!flag('no-mux') && !onlyAudio && full) {
     const ts = (s) => { const ms = Math.round(s * 1000), h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, sec = Math.floor(ms / 1000) % 60; return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')},${String(ms % 1000).padStart(3, '0')}`; };
     const srt = meta.narration.map((n, i) => `${i + 1}\n${ts(n.t0)} --> ${ts(n.t1)}\n${n.text}\n`).join('\n');
     fs.writeFileSync(path.join(RENDERS, 'narration.srt'), srt);
+
+    const tsAss = (s) => { const cs = Math.round(s * 100), h = Math.floor(cs / 360000), m = Math.floor(cs / 6000) % 60, sec = Math.floor(cs / 100) % 60; return `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}.${String(cs % 100).padStart(2, '0')}`; };
+    const voiceJsonFile = path.join(ROOT, 'voice.json');
+    let useAss = false;
+    if (fs.existsSync(voiceJsonFile)) {
+      try {
+        const vj = JSON.parse(fs.readFileSync(voiceJsonFile, 'utf8'));
+        if (vj.lines && vj.lines.some((l) => l.words && l.words.length)) {
+          let ass = `[Script Info]\nScriptType: v4.00+\nPlayResX: ${meta.width}\nPlayResY: ${meta.height}\n\n`;
+          ass += `[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n`;
+          const vertical = meta.height > meta.width;
+          const fontSize = Math.round(meta.height * 0.034);
+          const marginV = Math.round(meta.height * (vertical ? 0.22 : 0.08));
+          ass += `Style: Karaoke,Arial Black,${fontSize},&H00FFFFFF,&H0000D7FF,&H00151515,&H80000000,1,0,0,0,100,100,0,0,1,5,2,2,40,40,${marginV},1\n\n`;
+          ass += `[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n`;
+          for (const line of vj.lines) {
+            let lineText = '';
+            let prevT = line.t0;
+            for (const w of line.words || []) {
+              const gapCs = Math.max(0, Math.round((w.t0 - prevT) * 100));
+              const durCs = Math.max(5, Math.round((w.t1 - w.t0) * 100));
+              if (gapCs > 0) lineText += `{\\k${gapCs}} `;
+              lineText += `{\\k${durCs}}${w.w} `;
+              prevT = w.t1;
+            }
+            ass += `Dialogue: 0,${tsAss(line.t0)},${tsAss(line.t1)},Karaoke,,0,0,0,,${lineText.trim()}\n`;
+          }
+          fs.writeFileSync(path.join(RENDERS, 'narration.ass'), ass);
+          useAss = true;
+        }
+      } catch (e) { useAss = false; }
+    }
+
     // libass scales subtitle units to PlayResY=288, so margins/sizes are in 288ths of the frame height
     const unit = meta.height / 288, vertical = meta.height > meta.width;
     const marginV = Math.round((vertical ? 470 : 70) / unit), fontSize = Math.round((vertical ? 64 : 46) / unit);
     const style = `Fontname=${process.platform === 'win32' ? 'Consolas' : process.platform === 'darwin' ? 'Menlo' : 'DejaVu Sans Mono'},Fontsize=${fontSize},PrimaryColour=&H00FFFFFF,BackColour=&H99000000,BorderStyle=3,Outline=6,Shadow=0,Alignment=2,MarginV=${marginV}`;
+    const subFilter = useAss ? 'subtitles=narration.ass' : `subtitles=narration.srt:force_style='${style}'`;
     const r2 = spawnSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', 'final.mp4',
-      '-vf', `subtitles=narration.srt:force_style='${style}'`, '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p', '-c:a', 'copy', 'final-captions.mp4'],
+      '-vf', subFilter, '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p', '-c:a', 'copy', 'final-captions.mp4'],
     { cwd: RENDERS, stdio: 'inherit' });
     if (r2.status !== 0) { console.error('caption burn failed'); process.exit(1); }
-    console.log('wrote', path.join(RENDERS, 'final-captions.mp4'), '(narration preview)');
+    console.log('wrote', path.join(RENDERS, 'final-captions.mp4'), `(burned ${useAss ? 'kinetic karaoke .ass' : '.srt'} captions)`);
   }
+
+  // dashboard auto-sync hook
+  try {
+    const pieceName = path.basename(ROOT);
+    const targets = [
+      path.resolve(ROOT, '..', '..', 'dashboard', 'public', 'pieces', pieceName),
+      path.resolve('C:/Users/swaya/OneDrive/Desktop/Master_AG_Core/dashboard/public/pieces', pieceName)
+    ];
+    for (const t of targets) {
+      if (fs.existsSync(path.dirname(t))) {
+        fs.mkdirSync(t, { recursive: true });
+        for (const f of ['final.mp4', 'final-captions.mp4', 'narration.srt', 'narration.ass']) {
+          const src = path.join(RENDERS, f);
+          if (fs.existsSync(src)) fs.copyFileSync(src, path.join(t, f));
+        }
+        const htmlSrc = path.join(ROOT, 'index.html');
+        if (fs.existsSync(htmlSrc)) fs.copyFileSync(htmlSrc, path.join(t, 'index.html'));
+        console.log(`dashboard sync: copied to ${t}`);
+      }
+    }
+  } catch (e) { /* ignore dashboard copy error */ }
 }
 // --only-audio: swap the new score into the existing master without re-rendering frames
 if (onlyAudio && !flag('no-mux') && fs.existsSync(path.join(RENDERS, `final${SUFFIX}.mp4`))) {

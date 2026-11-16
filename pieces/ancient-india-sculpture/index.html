@@ -28,6 +28,7 @@ const NFRAMES = Math.round(DURATION * FPS);
 const LOOP_T = NFRAMES / FPS;
 const SAFE = { top: 240, bottom: 420, right: 140 };
 const PRINTF = '"Arial Black", "Helvetica Neue", "Franklin Gothic Heavy", Impact, sans-serif';
+const HAND = '"Ink Free", "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive';
 const SERIF = 'Georgia, "Times New Roman", serif';
 const CX = 540, CY = 960;
 
@@ -608,892 +609,662 @@ function drawAsset(name, x, y, w, h, o = {}) {
   ctx.restore(); return true;
 }
 // =====================================================================
-//  styles/riso/kit.js — a three-ink risograph print. Nothing is painted; everything is printed.
-//  A frame is a sheet of cream paper run through three spot-ink plates (teal, fluorescent pink, yellow).
-//  A plate only says how much ink goes where (a grey tone 0..1); its screen turns the tone into dots at
-//  the plate's own angle; the inks multiply. No black ink: darks are all three inks overprinted.
-//  Built on kit/core.js (RNG, clamp, lerp, dist, resample, wobble, pathLen, arcPts, ellipsePts, TAU, DEG,
-//  ctx, W, H, B, TT, E0, DEFER, SPARK_AT, ev, popS). Needs from the piece head: PRINTF (font stack), CX.
-//
-//  The flow inside a scene (any ctx: renderEra swaps the global ctx to an offscreen layer):
-//    beginSheet()                         paper into the sheet buffer (or beginSheet(box) = print over what ctx shows)
-//    beginLayer(pitch, { T, box, full, auto })   three grey plates + a mask; T = { s, x, y } illustration transform
-//      fill(path, tones, o) / line(P, tones, o) / type(str, x, y, size, tones, o) / rim(...) / risoHero(...)
-//    printLayer()                         screen each plate, multiply the inks, blend into the sheet by the mask
-//    endSheet()                           put the sheet into ctx (a box sheet puts only its box)
-//  The current ctx transform (the renderer's camera) is composed into every layer, so the screen
-//  belongs to the illustration: it pans and scales with it and never swims under it.
+//  styles/cut-paper/kit.js — the cut-paper look: torn-edge cutouts with drop shadows, paper grain, crayon, patterns;
+//  faces with moods; THE SPARK (a hero: an orange starburst with a face; idle bob, blinks, ray sway);
+//  people, hands, props (clock, cat, mug, plant, books), paper tags (year tag, caption strip).
+//  Needs from the piece head: HAND (font stack), CX (caption centre x). Built on kit/core.js (time helpers live there).
+//  handText(..., { frac }) writes text on. STYLE (at the end) is what the renderer (kit/morph.js) calls.
 // =====================================================================
-const PRINT = typeof PRINTF !== 'undefined' ? PRINTF : '"Arial Black", "Helvetica Neue", Impact, "DejaVu Sans", sans-serif';
-
-// ---------------------------------------------------------------------
-//  THE PAPER. Warm cream (241.5, 235.5, 226.5), std ~1.2: almost flat. There is no white anywhere;
-//  "white" is paper showing through a knockout. Faint curly fibres and specks only. Static, so cached.
-// ---------------------------------------------------------------------
-const PAPER = [241.5, 235.5, 226.5];
-let PAPER_PIX = null;
-function paperPixels() {
-  if (PAPER_PIX) return PAPER_PIX;
-  const c = document.createElement('canvas'); c.width = W; c.height = H;
-  const g = c.getContext('2d', { willReadFrequently: true }), R = RNG('paper'), k = (W * H) / (1080 * 1080);
-  g.fillStyle = `rgb(${PAPER.map(Math.round).join(',')})`; g.fillRect(0, 0, W, H);
-  for (let i = 0; i < 70 * k; i++) {            // mottle: soft, about one level either way
-    const x = R.r(0, W), y = R.r(0, H), r = R.r(60, 160), gr = g.createRadialGradient(x, y, 0, x, y, r);
-    gr.addColorStop(0, R.f() < 0.5 ? 'rgba(252,248,240,0.012)' : 'rgba(205,195,180,0.012)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
-    g.fillStyle = gr; g.fillRect(x - r, y - r, 2 * r, 2 * r);
-  }
-  g.lineCap = 'round';
-  for (let i = 0; i < 240 * k; i++) {           // fibres: short curly hairs a shade darker than the sheet
-    let x = R.r(0, W), y = R.r(0, H), a = R.r(0, TAU); const L = R.r(9, 24), bend = R.n(0.35);
-    g.strokeStyle = `rgba(160,150,135,${R.r(0.1, 0.22)})`; g.lineWidth = R.r(0.7, 1.2);
-    g.beginPath(); g.moveTo(x, y);
-    for (let j = 0; j < 6; j++) { a += bend; x += Math.cos(a) * L / 6; y += Math.sin(a) * L / 6; g.lineTo(x, y); }
-    g.stroke();
-  }
-  for (let i = 0; i < 300 * k; i++) { g.fillStyle = `rgba(130,120,110,${R.r(0.1, 0.25)})`; g.fillRect(R.r(0, W), R.r(0, H), R.r(0.8, 1.6), R.r(0.8, 1.6)); }
-  return (PAPER_PIX = g.getImageData(0, 0, W, H).data);
-}
-
-// ---------------------------------------------------------------------
-//  THE INKS. Three spot inks; every other colour is an overprint (multiply):
-//  coral = pink+yellow, green = teal+yellow, ink-blue = teal+pink, olive-black = all three.
-// ---------------------------------------------------------------------
-const INKS = { teal: [54, 137, 171], pink: [220, 68, 160], yellow: [238, 222, 30] };
-const INK_NAMES = ['teal', 'pink', 'yellow'];
-const ABSORB = INK_NAMES.map((n) => INKS[n].map((v, c) => 1 - v / PAPER[c]));   // paper * (1 - cov*absorb)
-const MIX = {
-  dark: { teal: 1, pink: 1, yellow: 1 }, coral: { pink: 1, yellow: 1 }, green: { teal: 1, yellow: 1 },
-  blue: { teal: 1, pink: 1 }, teal: { teal: 1 }, pink: { pink: 1 }, yellow: { yellow: 1 }, paper: {},
-  orange: { pink: 0.55, yellow: 1 }, peach: { pink: 0.3, yellow: 0.45 }, sky: { teal: 0.45, pink: 0.12 },
-  lilac: { teal: 0.35, pink: 0.4 }, olive: { teal: 0.55, pink: 0.35, yellow: 1 }, rust: { teal: 0.3, pink: 0.9, yellow: 1 },
+// =====================================================================
+const PAL = {
+  ink: '#2a1d18', paper: '#fbf6ea', cream: '#f3ead6', navy: '#26315f', night: '#141c40',
+  wood: '#c08048', woodD: '#97582b', woodL: '#dba26a', tweed: '#7a6650', lamp: '#2f7a5c', mustard: '#d9a441',
+  orange: '#ec7a4f', orangeD: '#c4542e', yellow: '#f6cf55', teal: '#3f9f9a', mint: '#a9d9c6', pink: '#f3a3bf', pinkL: '#f8c3d4',
+  sky: '#cfe2ee', snow: '#f6fafc', ice: '#a9c8dc', purple: '#8c7ad8', blue: '#4c6fb5', green: '#5aa05a', greenD: '#3d7c46',
+  skin1: '#efc19e', skin2: '#c68a62', skin3: '#8a5638', grey: '#8a8590', charcoal: '#4a4550', brick: '#b98576',
 };
-// the printed colour of a set of tones (what the screens average to), as [r, g, b]
-function inkRGB(t) {
-  const out = PAPER.slice();
-  INK_NAMES.forEach((n, k) => { const v = typeof t[n] === 'number' ? t[n] : 0; for (let c = 0; c < 3; c++) out[c] *= 1 - v * ABSORB[k][c]; });
-  return out;
+const HANDF = HAND;
+function handText(str, x, y, size, color, o = {}) {
+  ctx.save();
+  const R = RNG('ht', o.key ?? str, B);
+  ctx.translate(x + R.n(0.7), y + R.n(0.7)); ctx.rotate((o.rot ?? 0) + R.n(0.006));
+  ctx.font = `${o.weight ?? 400} ${size}px ${HANDF}`; ctx.fillStyle = color; ctx.textBaseline = 'alphabetic';
+  const w = ctx.measureText(str).width, frac = clamp(o.frac ?? 1);
+  if (frac <= 0) { ctx.restore(); return w; }
+  if (frac < 1) { ctx.beginPath(); ctx.rect(-4, -size * 1.2, w * frac + 4, size * 1.7); ctx.clip(); }
+  ctx.globalAlpha = o.al ?? 1; ctx.fillText(str, 0, 0);
+  ctx.restore();
+  return w;
 }
-// any CSS colour ('#rrggbb' or 'rgb(r,g,b)') -> the nearest plate tones on the 20-level grid (cached)
-const TONES_OF = new Map();
-function parseRGB(c) {
-  if (Array.isArray(c)) return c;
-  if (c[0] === '#') return [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
-  const m = c.match(/[\d.]+/g); return m ? m.slice(0, 3).map(Number) : PAPER.slice();
-}
-function tonesOf(c) {
-  const key = String(c); if (TONES_OF.has(key)) return TONES_OF.get(key);
-  const want = parseRGB(c); let best = null, bd = 1e18;
-  for (let a = 0; a <= 20; a++) for (let b = 0; b <= 20; b++) for (let y = 0; y <= 20; y++) {
-    const t = { teal: a / 20, pink: b / 20, yellow: y / 20 }, rgb = inkRGB(t);
-    const d = (rgb[0] - want[0]) ** 2 + (rgb[1] - want[1]) ** 2 + (rgb[2] - want[2]) ** 2;
-    if (d < bd) { bd = d; best = t; }
-  }
-  TONES_OF.set(key, best); return best;
-}
-const rgbHex = (rgb) => '#' + rgb.map((v) => Math.round(clamp(v, 0, 255)).toString(16).padStart(2, '0')).join('');
-
-// ---------------------------------------------------------------------
-//  THE SCREENS. Each plate is screened at its own angle (teal 15, pink 75, yellow 45) so overlaps
-//  moire like real print. Tone is quantized to 20 levels: up to 50% a dot of radius cell*sqrt(tone/pi),
-//  above 50% the solid with paper holes of the same law on the cell corners.
-//  The pitch belongs to the illustration and scales with it: ~7px for a small vignette,
-//  ~10-12px for a full-frame world, ~17px for a coarse far field. One layer = one pitch.
-// ---------------------------------------------------------------------
-const ANGLE = { teal: 15, pink: 75, yellow: 45 };
-const LEVELS = 20;
-const DOT_R = Array.from({ length: LEVELS + 1 }, (_, l) => (l * 2 <= LEVELS ? Math.sqrt(l / LEVELS / Math.PI) : Math.sqrt((1 - l / LEVELS) / Math.PI)));
-const PITCH = { fine: 7, world: 10.8, field: 17.5 };
-
-// ---------------------------------------------------------------------
-//  THE PLATES. A layer = three grey plates + a mask. Fills knock every plate back to paper and set their
-//  own tones; lines overprint (lighten). Each plate sits off register (pink +4,-3; yellow -3,+4 against
-//  the teal key) with +-0.3px jitter per boil variant (B % 3): coral and yellow fringes along darks.
-//  Wear: single-plate dropouts (~0.6% of pixels per variant) make darks sparkle with coloured specks.
-// ---------------------------------------------------------------------
-const REG = { teal: [0, 0], pink: [4, -3], yellow: [-3, 4] };
-const PLATE = {};
-let RL = null, OUT = null, SHEET_BOX = null;
-const gray = (v) => { const u = Math.round(clamp(v) * 255); return `rgb(${u},${u},${u})`; };
-function plates() {
-  if (PLATE.mask) return PLATE;
-  for (const n of [...INK_NAMES, 'mask']) { const c = document.createElement('canvas'); c.width = W; c.height = H; PLATE[n] = { c, g: c.getContext('2d', { willReadFrequently: true }) }; }
-  return PLATE;
-}
-const clipBox = (b) => {   // [x0, y0, x1, y1] or a bbox() object -> integer device box inside the frame
-  if (!Array.isArray(b)) b = [b.x0, b.y0, b.x1, b.y1];
-  return [Math.max(0, Math.floor(b[0])), Math.max(0, Math.floor(b[1])), Math.min(W, Math.ceil(b[2])), Math.min(H, Math.ceil(b[3]))];
-};
-// a sheet: fresh paper, or (box) the pixels ctx already shows inside box, to print over them
-function beginSheet(box) {
-  if (!OUT) OUT = new ImageData(W, H);
-  if (!box) { OUT.data.set(paperPixels()); SHEET_BOX = null; return; }
-  const b = clipBox(box); SHEET_BOX = b; if (b[2] <= b[0] || b[3] <= b[1]) return;
-  const m = ctx.getTransform(); ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-  const src = ctx.getImageData(b[0], b[1], b[2] - b[0], b[3] - b[1]).data, w4 = (b[2] - b[0]) * 4;
-  for (let y = b[1]; y < b[3]; y++) OUT.data.set(src.subarray((y - b[1]) * w4, (y - b[1] + 1) * w4), (y * W + b[0]) * 4);
-  ctx.restore(); ctx.setTransform(m);
-}
-function endSheet() {
-  const m = ctx.getTransform(); ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-  if (!SHEET_BOX) ctx.putImageData(OUT, 0, 0);
-  else { const b = SHEET_BOX; if (b[2] > b[0] && b[3] > b[1]) ctx.putImageData(OUT, 0, 0, b[0], b[1], b[2] - b[0], b[3] - b[1]); }
-  ctx.restore(); ctx.setTransform(m); SHEET_BOX = null;
-}
-// a layer. pitch in illustration px. o.T = { s, x, y } (illustration -> world), composed with the ctx camera;
-// o.box = [x0, y0, x1, y1] in illustration coords (default: the whole frame); o.full = mask the whole box;
-// o.auto = the mask is "wherever any plate has ink" (line-only layers; paper knockouts do nothing there);
-// o.shapes = every fill and line also adds itself to the mask (props, tags, a hero printed over anything); T.rot rotates
-function beginLayer(pitch = PITCH.world, o = {}) {
-  const P = plates(), J = RNG('reg', B % 3), m = ctx.getTransform(), T0 = o.T || { s: 1, x: 0, y: 0 };
-  const T = { s: m.a * T0.s, x: m.e + m.a * T0.x, y: m.f + m.a * T0.y };
-  const cr = Math.cos(T0.rot || 0), sr = Math.sin(T0.rot || 0), dv = (x, y) => [T.x + T.s * (x * cr - y * sr), T.y + T.s * (x * sr + y * cr)];
-  let b = [0, 0, W, H];
-  if (o.box) { const bb = bbox([dv(o.box[0], o.box[1]), dv(o.box[2], o.box[1]), dv(o.box[2], o.box[3]), dv(o.box[0], o.box[3])], 8); b = [bb.x0, bb.y0, bb.x1, bb.y1]; }
-  b = clipBox(b);
-  if (SHEET_BOX) b = [Math.max(b[0], SHEET_BOX[0]), Math.max(b[1], SHEET_BOX[1]), Math.min(b[2], SHEET_BOX[2]), Math.min(b[3], SHEET_BOX[3])];
-  for (const n of [...INK_NAMES, 'mask']) {
-    const g = P[n].g; g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
-    g.fillStyle = '#000'; g.fillRect(b[0], b[1], Math.max(0, b[2] - b[0]), Math.max(0, b[3] - b[1]));
-    const off = n === 'mask' ? [0, 0] : [REG[n][0] + J.n(0.3), REG[n][1] + J.n(0.3)];
-    const ca = Math.cos(T0.rot || 0) * T.s, sa = Math.sin(T0.rot || 0) * T.s;
-    g.setTransform(ca, sa, -sa, ca, T.x + off[0], T.y + off[1]);
-  }
-  RL = { T, pitch, box: b, auto: !!o.auto, shapes: !!o.shapes, clips: 0 };
-  if (o.full) maskFill((g) => g.rect(-1e5, -1e5, 2e5, 2e5));
-  return RL;
-}
-const tonePaint = (tone, g) => (typeof tone === 'function' ? tone(g) : gray(tone));
-// fill(path, tones): a knockout fill (unlisted plates -> 0 = paper); o.over: only raise the listed plates
-// (lighten); o.mask: also add the shape to the layer mask (shapes printed outside a full-frame layer)
-function fill(path, tones = {}, o = {}) {
-  for (const n of INK_NAMES) {
-    if (o.over && tones[n] == null) continue;
-    const g = PLATE[n].g;
-    g.globalCompositeOperation = o.over ? 'lighten' : 'source-over';
-    g.fillStyle = tonePaint(tones[n] ?? 0, g); g.beginPath(); path(g); g.fill(o.rule || 'nonzero');
-    g.globalCompositeOperation = 'source-over';
-  }
-  if (o.mask || RL.shapes) maskFill(path, o.rule);
-}
-function maskFill(path, rule) { const g = PLATE.mask.g; g.fillStyle = '#fff'; g.beginPath(); path(g); g.fill(rule || 'nonzero'); }
-// clip every plate (and the mask) to a path until unclip(); nests
-function clipTo(path) { for (const n of [...INK_NAMES, 'mask']) { const g = PLATE[n].g; g.save(); g.beginPath(); path(g); g.clip(); } RL.clips++; }
-function unclip() { if (!RL.clips) return; for (const n of [...INK_NAMES, 'mask']) PLATE[n].g.restore(); RL.clips--; }
-// grey gradients for tones, in illustration coordinates: stops [[pos, tone], ...]
-const lin = (x0, y0, x1, y1, stops) => (g) => { const gr = g.createLinearGradient(x0, y0, x1, y1); for (const [p, v] of stops) gr.addColorStop(p, gray(v)); return gr; };
-const rad = (x, y, r0, r1, stops) => (g) => { const gr = g.createRadialGradient(x, y, r0, x, y, r1); for (const [p, v] of stops) gr.addColorStop(p, gray(v)); return gr; };
-// path builders (each returns g => path)
-const circ = (x, y, r) => (g) => g.arc(x, y, Math.max(0, r), 0, TAU);
-const ell = (x, y, rx, ry, rot = 0) => (g) => g.ellipse(x, y, Math.max(0, rx), Math.max(0, ry), rot, 0, TAU);
-const poly = (P) => (g) => { g.moveTo(P[0][0], P[0][1]); for (let i = 1; i < P.length; i++) g.lineTo(P[i][0], P[i][1]); g.closePath(); };
-const curvy = (P) => (g) => {   // closed quadratic smoothing through the midpoints
-  const n = P.length; g.moveTo((P[n - 1][0] + P[0][0]) / 2, (P[n - 1][1] + P[0][1]) / 2);
-  for (let i = 0; i < n; i++) { const p = P[i], q = P[(i + 1) % n]; g.quadraticCurveTo(p[0], p[1], (p[0] + q[0]) / 2, (p[1] + q[1]) / 2); }
-  g.closePath();
-};
-const rect = (x, y, w, h) => (g) => g.rect(x, y, w, h);
-const rrect = (x, y, w, h, r) => (g) => { r = Math.min(r, w / 2, h / 2); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
-// a hand-cut outline: P wobbled on the boil (key), smoothed
-const hand = (P, key, amt = 1.4, step = 6) => curvy(wobble(P, true, amt, key, step));
-const boxPts = (x, y, w, h) => resample([[x, y], [x + w, y], [x + w, y + h], [x, y + h]], true, 24);
-
-// ---------------------------------------------------------------------
-//  WEAR AND THE PRINT PASS
-// ---------------------------------------------------------------------
-const DROP = [];
-function dropouts(V) {   // static per boil variant: ~0.6% of pixels lose one plate (1-2px specks)
-  if (DROP[V]) return DROP[V];
-  const a = new Uint8Array(W * H), R = RNG('drop', V), n = Math.round(W * H * 0.006);
-  for (let i = 0; i < n; i++) {
-    const x = R.i(0, W - 3), y = R.i(0, H - 3), bit = 1 << R.i(0, 2), s = R.f() < 0.25 ? 2 : 1;
-    for (let dy = 0; dy < s; dy++) for (let dx = 0; dx < s; dx++) a[(y + dy) * W + x + dx] |= bit;
-  }
-  return (DROP[V] = a);
-}
-// print the current layer into the sheet: screen each plate, multiply the inks, blend by the mask
-function printLayer() {
-  while (RL.clips) unclip();
-  const { T, pitch, box: [x0, y0, x1, y1], auto } = RL, w = x1 - x0, h = y1 - y0;
-  if (w <= 0 || h <= 0) return;
-  const pl0 = PLATE.teal.g.getImageData(x0, y0, w, h).data, pl1 = PLATE.pink.g.getImageData(x0, y0, w, h).data, pl2 = PLATE.yellow.g.getImageData(x0, y0, w, h).data;
-  const m = auto ? null : PLATE.mask.g.getImageData(x0, y0, w, h).data;
-  const pp = paperPixels(), out = OUT.data, drop = dropouts(B % 3), p = pitch * T.s;
-  const c0 = Math.cos(ANGLE.teal * DEG) / p, s0 = Math.sin(ANGLE.teal * DEG) / p;
-  const c1 = Math.cos(ANGLE.pink * DEG) / p, s1 = Math.sin(ANGLE.pink * DEG) / p;
-  const c2 = Math.cos(ANGLE.yellow * DEG) / p, s2 = Math.sin(ANGLE.yellow * DEG) / p;
-  const [a00, a01, a02] = ABSORB[0], [a10, a11, a12] = ABSORB[1], [a20, a21, a22] = ABSORB[2];
-  const LV = LEVEL_OF, DR = DOT_R;
-  // coverage of one screen cell at level l, cell coords (u, v): a dot up to 50%, paper holes above
-  const cov = (l, u, v) => {
-    if (l >= LEVELS) return 1;
-    const fu = u - Math.floor(u) - 0.5, fv = v - Math.floor(v) - 0.5;
-    let c;
-    if (l * 2 <= LEVELS) c = (DR[l] - Math.sqrt(fu * fu + fv * fv)) * p + 0.5;
-    else { const gu = 0.5 - Math.abs(fu), gv = 0.5 - Math.abs(fv); c = (Math.sqrt(gu * gu + gv * gv) - DR[l]) * p + 0.5; }
-    return c < 0 ? 0 : c > 1 ? 1 : c;
-  };
-  for (let y = 0; y < h; y++) {
-    const Y = y0 + y, dy = Y - T.y, dx0 = x0 - T.x, row = Y * W;
-    let u0 = dx0 * c0 + dy * s0, v0 = dy * c0 - dx0 * s0, u1 = dx0 * c1 + dy * s1, v1 = dy * c1 - dx0 * s1, u2 = dx0 * c2 + dy * s2, v2 = dy * c2 - dx0 * s2;
-    for (let x = 0, i4 = y * w * 4; x < w; x++, i4 += 4, u0 += c0, v0 -= s0, u1 += c1, v1 -= s1, u2 += c2, v2 -= s2) {
-      const t0 = pl0[i4], t1 = pl1[i4], t2 = pl2[i4];
-      const mk = m ? m[i4] : (t0 | t1 | t2) > 6 ? 255 : 0;
-      if (mk === 0) continue;
-      const X = x0 + x, o = (row + X) * 4, dr = drop[row + X];
-      let r = pp[o], gg = pp[o + 1], b = pp[o + 2];
-      if (t0 >= 7 && !(dr & 1)) { const k = cov(LV[t0], u0, v0); r *= 1 - k * a00; gg *= 1 - k * a01; b *= 1 - k * a02; }
-      if (t1 >= 7 && !(dr & 2)) { const k = cov(LV[t1], u1, v1); r *= 1 - k * a10; gg *= 1 - k * a11; b *= 1 - k * a12; }
-      if (t2 >= 7 && !(dr & 4)) { const k = cov(LV[t2], u2, v2); r *= 1 - k * a20; gg *= 1 - k * a21; b *= 1 - k * a22; }
-      if (mk === 255) { out[o] = r; out[o + 1] = gg; out[o + 2] = b; }
-      else { const a = mk / 255; out[o] += (r - out[o]) * a; out[o + 1] += (gg - out[o + 1]) * a; out[o + 2] += (b - out[o + 2]) * a; }
-    }
-  }
-}
-const LEVEL_OF = Uint8Array.from({ length: 256 }, (_, v) => Math.round((v * LEVELS) / 255));
-// sugar: one layer printed by fn
-function printed(pitch, o, fn) { beginLayer(pitch, o); fn(); printLayer(); }
-// a few hundred tiny single-ink specks knocked into a large dark (wear you can see)
-function specks(x0, y0, x1, y1, n, key) {
-  const R = RNG('speck', key);
-  for (let i = 0; i < n; i++) fill(circ(R.r(x0, x1), R.r(y0, y1), R.r(1, 2.4)), [{ pink: 1 }, { yellow: 1 }, { teal: 1 }][i % 3]);
-}
-
-// ---------------------------------------------------------------------
-//  THE LINE. resample -> wobble (on the boil) -> a tapered ribbon with pressure -> printed through plates.
-//  Lines overprint (lighten the listed plates) unless o.knock (the other plates go to paper along the stroke).
-//  rough ~0.15 = a brush line; 0.55 = the dry-brush rim of every circle.
-// ---------------------------------------------------------------------
-function ribbon(P, o = {}) {
-  const closed = !!o.closed, key = o.key ?? 'rib';
-  const Q = o.amt === 0 ? resample(P, closed, o.step ?? 5) : wobble(P, closed, o.amt ?? 1.4, key, o.step ?? 5);
-  const n = Q.length, total = pathLen(closed ? [...Q, Q[0]] : Q) || 1, R = RNG('press', key, B % 3);
-  const f1 = R.r(0.02, 0.05), f2 = R.r(0.12, 0.3), p1 = R.r(0, TAU), p2 = R.r(0, TAU), rough = o.rough ?? 0.15, w = o.w ?? 4;
-  const L = [], Rt = []; let s = 0;
-  for (let i = 0; i < n; i++) {
-    const a = Q[closed ? (i - 1 + n) % n : Math.max(0, i - 1)], c = Q[closed ? (i + 1) % n : Math.min(n - 1, i + 1)];
-    let nx = a[1] - c[1], ny = c[0] - a[0]; const l = Math.hypot(nx, ny) || 1; nx /= l; ny /= l;
-    if (i) s += dist(Q[i - 1], Q[i]);
-    const t = s / total, tp = o.taper ? Math.max(0, Math.min(1, t / o.taper, (1 - t) / o.taper)) ** 0.7 : 1;
-    const hw = Math.max(0, (w / 2) * tp * (1 + rough * (0.6 * Math.sin(s * f1 + p1) + 0.4 * Math.sin(s * f2 + p2))));
-    L.push([Q[i][0] + nx * hw, Q[i][1] + ny * hw]); Rt.push([Q[i][0] - nx * hw, Q[i][1] - ny * hw]);
-  }
-  return closed ? { outer: L, inner: Rt } : [...L, ...Rt.reverse()];
-}
-function line(P, tones, o = {}) {
-  if (o.frac != null && o.frac < 1) {   // write-on
-    if (o.frac <= 0) return;
-    P = subPath(o.closed ? [...P, P[0]] : P, o.frac); o = { ...o, closed: false };
-  }
-  const rb = ribbon(P, o), path = o.closed ? (g) => { poly(rb.outer)(g); poly(rb.inner)(g); } : poly(rb);
-  fill(path, tones, { over: !o.knock, mask: o.mask, rule: o.closed ? 'evenodd' : 'nonzero' });
-}
-function ringPts(cx, cy, r, n = 0) { const k = n || Math.max(24, Math.round(r / 5)); return Array.from({ length: k }, (_, i) => [cx + Math.cos((i / k) * TAU) * r, cy + Math.sin((i / k) * TAU) * r]); }
-// the dry-brush rim round any closed outline: a rough ribbon plus a thinner pass that does not agree with it
-function rimLine(P, key, o = {}) {
-  const tones = o.tones || { teal: 1 }, w = o.w ?? 9;
-  line(P, tones, { closed: true, w, rough: o.rough ?? 0.55, amt: o.amt ?? 2.2, key, mask: o.mask, knock: o.knock });
-  if (o.double === false) return;
-  const Q = resample(P, true, 8), R = RNG('rim2', key, B % 3), n = Q.length, i0 = R.i(0, n - 1), span = Math.floor(n * R.r(0.2, 0.4));
-  const S = Array.from({ length: span }, (_, i) => Q[(i0 + i) % n]).map(([x, y]) => [x + R.n(1) + 3, y + 3]);
-  if (S.length > 2) line(S, tones, { w: w * 0.35, taper: 0.3, amt: 1.2, key: key + '2', mask: o.mask });
-}
-function rim(cx, cy, r, key, o = {}) { rimLine(ringPts(cx, cy, r), key, o); }
-
-// ---------------------------------------------------------------------
-//  TYPE. Letters are printed too: solid ink (no screen at tone 1), so misregistration shows as fringes.
-//  type(str, x, y, size, tones, o): o.knock (default true: the letters knock out what is under them),
-//  o.frac (write-on, left to right), o.align ('left' | 'center'), o.weight, o.key
-// ---------------------------------------------------------------------
-function typeW(str, size, weight = 900) { ctx.save(); ctx.font = `${weight} ${size}px ${PRINT}`; const w = ctx.measureText(str).width; ctx.restore(); return w; }
-function type(str, x, y, size, tones, o = {}) {
-  const frac = clamp(o.frac ?? 1); if (frac <= 0) return;
-  const R = RNG('type', o.key ?? str, B % 3), font = `${o.weight ?? 900} ${size}px ${PRINT}`;
-  const w = typeW(str, size, o.weight ?? 900), x0 = o.align === 'center' ? x - w / 2 : x;
-  const knock = o.knock !== false, jx = R.n(0.7), jy = R.n(0.7), rot = R.n(0.004);
-  const each = (g, paint) => {
-    g.save(); g.translate(x0 + jx, y + jy); g.rotate(rot);
-    if (frac < 1) { g.beginPath(); g.rect(-4, -size * 1.2, w * frac + 4, size * 1.7); g.clip(); }
-    g.font = font; g.textBaseline = 'alphabetic'; g.textAlign = 'left'; paint(g); g.restore();
-  };
-  for (const n of INK_NAMES) {
-    if (!knock && tones[n] == null) continue;
-    const g = PLATE[n].g; g.globalCompositeOperation = knock ? 'source-over' : 'lighten';
-    each(g, (gg) => { gg.fillStyle = gray(tones[n] ?? 0); gg.fillText(str, 0, 0); });
-    g.globalCompositeOperation = 'source-over';
-  }
-  if (RL.shapes || o.mask) each(PLATE.mask.g, (gg) => { gg.fillStyle = '#fff'; gg.fillText(str, 0, 0); });
-}
-
-// ---------------------------------------------------------------------
-//  THE HERO: a printed bean in ink-blue (teal + pink, so it carries its own pink/teal fringes), paper eyes
-//  with olive-black pupils, pink cheeks, a green sprout on top. Draws inside the current layer.
-//  o: key, mood ('smile' | 'happy' | 'wow'), arms [left, right] angles (0 = down, PI = straight up),
-//  look [dx, dy] (-1..1), hop (px up), shadow (false to skip), hold (fn(hx, hy) drawn between the raised hands)
-// ---------------------------------------------------------------------
-const HERO_TONES = MIX.blue;
-function risoHero(x, y, r, o = {}) {
-  const key = o.key ?? 'hero', hop = o.hop ?? 0;
-  if (o.shadow !== false) fill(ell(x, y + r * 1.32, r * 0.8 * (1 - hop / (r * 6)), r * 0.16), { teal: 0.35, pink: 0.3 });
-  y += -hop + Math.sin(TT * TAU * 0.9 + key.length) * r * 0.035;      // idle bob
-  if (RL) SPARK_AT = [RL.T.x + RL.T.s * x, RL.T.y + RL.T.s * y];
-  const legY = y + r * 0.85;
-  for (const s of [-1, 1]) {
-    line([[x + s * r * 0.3, legY - r * 0.1], [x + s * r * 0.34, y + r * 1.28]], HERO_TONES, { w: r * 0.14, amt: 0.6, key: key + 'leg' + s, knock: true });
-    fill(ell(x + s * r * 0.42, y + r * 1.3, r * 0.17, r * 0.08), HERO_TONES);
-  }
-  const arms = o.arms ?? [0.35, 0.35], hands = [];
-  for (const [i, s] of [[0, -1], [1, 1]]) {
-    const a = arms[i], sx = x + s * r * 0.62, sy = y + r * 0.1, L = r * 0.75;
-    const hx = sx + s * Math.sin(a) * L, hy = sy + Math.cos(a) * L;
-    line([[sx, sy], [lerp(sx, hx, 0.5) + s * r * 0.06, lerp(sy, hy, 0.5)], [hx, hy]], HERO_TONES, { w: r * 0.13, amt: 0.5, key: key + 'arm' + s, knock: true });
-    fill(circ(hx, hy, r * 0.11), HERO_TONES); hands.push([hx, hy]);
-  }
-  // sprout
-  line([[x, y - r * 0.95], [x + r * 0.04, y - r * 1.2], [x + r * 0.12, y - r * 1.34]], MIX.green, { w: r * 0.06, amt: 0.4, key: key + 'stem', knock: true });
-  fill(ell(x + r * 0.26, y - r * 1.36, r * 0.17, r * 0.08, -0.4), MIX.green);
-  // body
-  const P = wobble(ellipsePts(x, y, r * 0.78, r, 0, 40), true, Math.max(0.6, r * 0.012), key, 6);
-  fill(curvy(P), HERO_TONES);
-  fill(ell(x, y + r * 0.42, r * 0.44, r * 0.36), { teal: 0.55, pink: 0.35 });              // belly: a lighter tint knocked in
-  // face
-  const lk = o.look ?? [0, 0], ey = y - r * 0.25, blink = (B + key.length * 7) % 41 < 2;
-  for (const s of [-1, 1]) {
-    const ex = x + s * r * 0.3;
-    if (blink) { line([[ex - r * 0.14, ey], [ex + r * 0.14, ey]], MIX.dark, { w: r * 0.05, amt: 0.3, key: key + 'bl' + s, knock: true }); continue; }
-    fill(ell(ex, ey, r * 0.17, r * (o.mood === 'wow' ? 0.25 : 0.22)), {});
-    fill(circ(ex + lk[0] * r * 0.06, ey + lk[1] * r * 0.08, r * 0.085), MIX.dark);
-    fill(circ(ex + lk[0] * r * 0.06 - r * 0.03, ey + lk[1] * r * 0.08 - r * 0.035, r * 0.025), {});
-    fill(circ(x + s * r * 0.5, y + r * 0.02, r * 0.09), { pink: 1 });
-  }
-  const my = y + r * 0.08;
-  if (o.mood === 'wow') { fill(ell(x, my + r * 0.04, r * 0.08, r * 0.1), {}); fill(ell(x, my + r * 0.07, r * 0.05, r * 0.05), { pink: 1 }); }
-  else line(arcPts(x, my - r * (o.mood === 'happy' ? 0.1 : 0.04), r * (o.mood === 'happy' ? 0.16 : 0.1), Math.PI * 0.15, Math.PI * 0.85, 10), {}, { w: r * 0.05, amt: 0.3, key: key + 'm', knock: true });
-  if (o.hold) o.hold((hands[0][0] + hands[1][0]) / 2, Math.min(hands[0][1], hands[1][1]));
+function handW(str, size, weight = 400) { ctx.save(); ctx.font = `${weight} ${size}px ${HANDF}`; const w = ctx.measureText(str).width; ctx.restore(); return w; }
+const dot = (x, y, r, c = PAL.ink) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); };
+function capsulePts(x1, y1, x2, y2, w, n = 8) {
+  const a = Math.atan2(y2 - y1, x2 - x1), r = w / 2, P = [];
+  for (let i = 0; i <= n; i++) { const t = a - Math.PI / 2 + Math.PI * i / n; P.push([x2 + Math.cos(t) * r, y2 + Math.sin(t) * r]); }
+  for (let i = 0; i <= n; i++) { const t = a + Math.PI / 2 + Math.PI * i / n; P.push([x1 + Math.cos(t) * r, y1 + Math.sin(t) * r]); }
   return P;
 }
-const heroOutline = (x, y, r) => ellipsePts(x, y, r * 0.78, r, 0, 96);
-
-// ---------------------------------------------------------------------
-//  CAPTIONS: printed tags, drawn after the camera (DEFER) as a small sheet over what the frame shows.
-//  printTag: a yellow slip on a screened pink block, ink-blue letters. printCard: a paper card with a teal rim.
-// ---------------------------------------------------------------------
-function printTag(str, x, y, size, o = {}) {
-  const s = o.s ?? 1; if (s <= 0.01) return;
-  const w = typeW(str, size) + size * 0.9, h = size * 1.5, rot = o.rot ?? -0.04, reach = (w / 2 + 40) * s;
-  beginSheet([x - reach, y - reach, x + reach, y + reach]);
-  printed(PITCH.fine, { T: { s, x, y, rot }, shapes: true }, () => {
-    fill(hand(boxPts(-w / 2 + 12, -h / 2 + 14, w, h), 'tagsh' + str, 1.2), { pink: 0.75 });
-    fill(hand(boxPts(-w / 2, -h / 2, w, h), 'tag' + str, 1.2), o.tones ?? { yellow: 1 });
-    type(str, -w / 2 + size * 0.45, size * 0.36, size, MIX.blue, { key: 'tagt' + str, frac: o.frac });
-  });
-  endSheet();
+function rot(P, cx, cy, a) { const c = Math.cos(a), s = Math.sin(a); return P.map(([x, y]) => [cx + (x - cx) * c - (y - cy) * s, cy + (x - cx) * s + (y - cy) * c]); }
+function torn(Q, key, amt) {
+  if (!amt) return Q;
+  const R = RNG('torn', key), n = Q.length;
+  return Q.map((p, i) => { const a = Q[(i + 1) % n], b = Q[(i - 1 + n) % n]; const nx = a[1] - b[1], ny = b[0] - a[0], l = Math.hypot(nx, ny) || 1, j = R.n(amt); return [p[0] + nx / l * j, p[1] + ny / l * j]; });
 }
-function printCard(str, x, y, size, o = {}) {
-  const s = o.s ?? 1; if (s <= 0.01) return;
-  const w = typeW(str, size) + size * 1.0, h = size * 1.6, rot = o.rot ?? 0.012, reach = (w / 2 + 40) * s;
-  beginSheet([x - reach, y - reach, x + reach, y + reach]);
-  printed(PITCH.fine, { T: { s, x, y, rot }, shapes: true }, () => {
-    const P = boxPts(-w / 2, -h / 2, w, h);
-    fill(hand(P, 'card' + str, 1.2), {});
-    rimLine(P, 'cardr' + str, { w: 6, amt: 1.2, rough: 0.45 });
-    type(str, -w / 2 + size * 0.5, size * 0.36, size, o.tones ?? MIX.blue, { key: 'cardt' + str, frac: o.frac });
-  });
-  endSheet();
+function grainIn(bb, key, k = 1) {
+  const area = (bb.x1 - bb.x0) * (bb.y1 - bb.y0), n = Math.min(4500, Math.floor(area / 170 * k));
+  stipple(bb, { key: key + 'g1', c: 'rgba(255,255,255,0.30)', n, s: 1.5, jit: 0.3 });
+  stipple(bb, { key: key + 'g2', c: 'rgba(50,30,15,0.10)', n, s: 1.5, jit: 0.3 });
+  pencil(bb, { key: key + 'fb', c: '#ffffff', al: 0.10, per: 700, len: 28, w: 1, a: -0.35, max: 1500 });
 }
-const defer = (f) => { if (DEFER) DEFER.push(f); else f(); };
-const risoTag = (str) => defer(() => printTag(str, 70 + (typeW(str, 72) + 65) / 2, 330, 72, { s: popS(E0 + 0.2) }));
-const risoCaption = (str) => defer(() => printCard(str, CX, 1440, 50, { s: popS(E0 + 0.3), frac: ev(E0 + 0.45, 0.6) }));
+// a paper cutout. o: key, tear, amt, shadow, sb/sx/sy, pat(bb), crayon (colour), grain (density), shade, line
+function cut(P, fill, o = {}) {
+  const key = o.key ?? 'cut';
+  const Q = torn(wobble(P, true, o.amt ?? 0.9, key, 5), key, o.tear ?? 1.3);
+  ctx.save();
+  if (o.shadow !== false) { ctx.shadowColor = o.shc ?? 'rgba(35,20,10,0.30)'; ctx.shadowBlur = o.sb ?? 12; ctx.shadowOffsetX = o.sx ?? 3; ctx.shadowOffsetY = o.sy ?? 7; }
+  trace(Q, true); ctx.fillStyle = fill; ctx.fill();
+  ctx.restore();
+  ctx.save(); trace(Q, true); ctx.clip(); const bb = bbox(Q, 2);
+  if (o.pat) o.pat(bb);
+  if (o.crayon) pencil(bb, { key: key + 'cr', c: o.crayon, al: o.crAl ?? 0.4, per: o.crPer ?? 45, len: o.crLen ?? 20, a: o.crA ?? -0.9, w: 1.7, max: 5000 });
+  if (o.grain !== false) grainIn(bb, key, o.grain ?? 1);
+  if (o.shade !== false) { const g = ctx.createLinearGradient(bb.x0, bb.y0, bb.x0, bb.y1); g.addColorStop(0, 'rgba(255,255,255,0.10)'); g.addColorStop(1, 'rgba(30,15,5,0.13)'); ctx.fillStyle = g; ctx.fillRect(bb.x0, bb.y0, bb.x1 - bb.x0, bb.y1 - bb.y0); }
+  ctx.restore();
+  if (o.line) { ctx.strokeStyle = o.line; ctx.lineWidth = o.lw ?? 3; ctx.lineJoin = 'round'; trace(Q, true); ctx.stroke(); }
+  return Q;
+}
+const rect = (x, y, w, h, r = 4) => rrectPts(x, y, w, h, r);
+const pat = {
+  stripes: (c, w, gap, a = 0) => (bb) => {
+    ctx.save(); const cx = (bb.x0 + bb.x1) / 2, cy = (bb.y0 + bb.y1) / 2, R = Math.hypot(bb.x1 - bb.x0, bb.y1 - bb.y0) / 2 + 10;
+    ctx.translate(cx, cy); ctx.rotate(a); ctx.fillStyle = c; for (let x = -R; x < R; x += gap) ctx.fillRect(x, -R, w, 2 * R); ctx.restore();
+  },
+  dots: (c, r, gap) => (bb) => { ctx.fillStyle = c; ctx.beginPath(); let row = 0; for (let y = bb.y0; y < bb.y1 + gap; y += gap, row++) for (let x = bb.x0 + (row % 2) * gap / 2; x < bb.x1 + gap; x += gap) { ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, TAU); } ctx.fill(); },
+  gingham: (c, w) => (bb) => { pat.stripes(c, w, w * 2, 0)(bb); pat.stripes(c, w, w * 2, Math.PI / 2)(bb); },
+  lines: (c, gap, y0 = 0) => (bb) => { ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); for (let y = bb.y0 + y0; y < bb.y1; y += gap) { ctx.moveTo(bb.x0, y); ctx.lineTo(bb.x1, y); } ctx.stroke(); },
+  grainWood: (c) => (bb) => { const R = RNG('wg', bb.x0, bb.y0); ctx.strokeStyle = c; ctx.lineWidth = 2.2; ctx.beginPath(); for (let y = bb.y0; y < bb.y1; y += R.r(14, 30)) { ctx.moveTo(bb.x0, y); for (let x = bb.x0; x <= bb.x1; x += 40) ctx.lineTo(x, y + Math.sin(x * 0.01 + y) * 4); } ctx.stroke(); },
+};
+// ---- faces: smile, happy (eyes closed, open mouth), wow, sad, focus
+function face(x, y, s, mood = 'smile') {
+  const I = PAL.ink;
+  const eye = (ex) => {
+    if (mood === 'happy') { ink(arcPts(ex, y + 5 * s, 8 * s, Math.PI * 1.15, Math.PI * 1.85, 8), { w: 3.6 * s, color: I, amt: 0.2, key: 'fe' + ex + mood }); return; }
+    if (mood === 'focus') { ink([[ex - 7 * s, y], [ex + 7 * s, y]], { w: 3.6 * s, color: I, amt: 0.2, key: 'ff' + ex }); return; }
+    dot(ex, y, (mood === 'wow' ? 7.5 : 6) * s, I); dot(ex + 2 * s, y - 2.4 * s, 2 * s, '#fff');
+  };
+  eye(x - 16 * s); eye(x + 16 * s);
+  ctx.fillStyle = 'rgba(240,110,120,0.45)'; ctx.beginPath(); ctx.ellipse(x - 27 * s, y + 11 * s, 7 * s, 4.5 * s, 0, 0, TAU); ctx.ellipse(x + 27 * s, y + 11 * s, 7 * s, 4.5 * s, 0, 0, TAU); ctx.fill();
+  if (mood === 'sad') {
+    ink([[x - 24 * s, y - 13 * s], [x - 10 * s, y - 9 * s]], { w: 3 * s, color: I, amt: 0.2, key: 'fbl' }); ink([[x + 24 * s, y - 13 * s], [x + 10 * s, y - 9 * s]], { w: 3 * s, color: I, amt: 0.2, key: 'fbr' });
+    ink(arcPts(x, y + 22 * s, 8 * s, Math.PI * 1.2, Math.PI * 1.8, 8), { w: 3.2 * s, color: I, amt: 0.2, key: 'fms' });
+  } else if (mood === 'wow') { ctx.fillStyle = I; ctx.beginPath(); ctx.ellipse(x, y + 16 * s, 5 * s, 7 * s, 0, 0, TAU); ctx.fill(); }
+  else if (mood === 'happy') {
+    ctx.fillStyle = I; ctx.beginPath(); ctx.arc(x, y + 10 * s, 10 * s, 0, Math.PI); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#e8707a'; ctx.beginPath(); ctx.ellipse(x, y + 16 * s, 5.5 * s, 3 * s, 0, 0, TAU); ctx.fill();
+  } else ink(arcPts(x, y + 8 * s, 8 * s, Math.PI * 0.2, Math.PI * 0.8, 8), { w: 3.2 * s, color: I, amt: 0.2, key: 'fm' + mood });
+}
+// ---- THE SPARK: the machine's mind. rays grow in number with the eras (5 in 1950 ... 12 in 2025)
+function spark(x, y, r, o = {}) {
+  const sc = o.s ?? 1; if (sc <= 0.01) return; r *= sc;
+  const key = o.key ?? 'spk', ph = key.length * 1.7;
+  y += Math.sin(TT * TAU * 0.9 + ph) * r * 0.035;                       // idle bob
+  let mood = o.mood ?? 'smile';
+  if (mood !== 'happy' && mood !== 'focus' && (B + Math.round(ph * 5)) % 37 < 2) mood = 'focus';   // a blink
+  SPARK_AT = toScreen(x, y);
+  const n = o.rays ?? 9, r0 = (o.rot ?? -Math.PI / 2) + Math.sin(TT * 2.1 + ph) * 0.05, RR = RNG('rays', key);
+  for (let i = 0; i < n; i++) {
+    const a = r0 + i / n * TAU + RR.n(0.05), L = r * (0.92 + RR.f() * 0.16);
+    cut(capsulePts(x + Math.cos(a) * r * 0.25, y + Math.sin(a) * r * 0.25, x + Math.cos(a) * L, y + Math.sin(a) * L, r * 0.36), PAL.orange, { key: key + 'r' + i, crayon: PAL.orangeD, crAl: 0.4, crPer: 30, sb: 6, sy: 4, tear: 0.7, grain: 0.6 });
+  }
+  cut(ellipsePts(x, y, r * 0.52, r * 0.5, 0, 30), PAL.orange, { key: key + 'b', crayon: PAL.orangeD, crAl: 0.3, crPer: 30, shadow: false, tear: 0.5, grain: 0.6 });
+  face(x, y + r * 0.04, r / 64, mood);
+}
+// ---- people: a bust, shoulders at (x, y)
+function person(x, y, s, o = {}) {
+  const key = o.key ?? 'ps', skin = o.skin ?? PAL.skin2, hair = o.hair ?? '#2b211d';
+  cut(rect(x - 125 * s, y, 250 * s, 330 * s, 80 * s), o.shirt ?? PAL.blue, { key: key + 't', pat: o.shirtPat });
+  cut(rect(x - 24 * s, y - 46 * s, 48 * s, 66 * s, 12 * s), skin, { key: key + 'n', shadow: false });
+  cut(ellipsePts(x - 74 * s, y - 112 * s, 14 * s, 20 * s, 0, 14), skin, { key: key + 'el' });
+  cut(ellipsePts(x + 74 * s, y - 112 * s, 14 * s, 20 * s, 0, 14), skin, { key: key + 'er' });
+  cut(ellipsePts(x, y - 116 * s, 76 * s, 86 * s, 0, 30), skin, { key: key + 'h' });
+  if (o.beard) cut([[x - 74 * s, y - 120 * s], [x - 70 * s, y - 60 * s], [x - 30 * s, y - 32 * s], [x + 30 * s, y - 32 * s], [x + 70 * s, y - 60 * s], [x + 74 * s, y - 120 * s], [x + 50 * s, y - 80 * s], [x - 50 * s, y - 80 * s]], hair, { key: key + 'bd', shadow: false });
+  cut([[x - 80 * s, y - 120 * s], [x - 82 * s, y - 170 * s], [x - 40 * s, y - 214 * s], [x + 40 * s, y - 214 * s], [x + 84 * s, y - 168 * s], [x + 80 * s, y - 122 * s], [x + 60 * s, y - 160 * s], [x - 50 * s, y - 166 * s]], hair, { key: key + 'hr', sb: 4 });
+  face(x, y - 118 * s, s * 1.25, o.mood ?? 'smile');
+  if (o.glasses) { ctx.strokeStyle = PAL.ink; ctx.lineWidth = 4 * s; ctx.beginPath(); ctx.arc(x - 21 * s, y - 118 * s, 17 * s, 0, TAU); ctx.moveTo(x + 38 * s, y - 118 * s); ctx.arc(x + 21 * s, y - 118 * s, 17 * s, 0, TAU); ctx.moveTo(x - 4 * s, y - 120 * s); ctx.lineTo(x + 4 * s, y - 120 * s); ctx.stroke(); }
+}
+// a mitten hand with a sleeve, pointing along angle a from the sleeve end (x, y)
+function hand(x, y, s, a, skin, sleeve, o = {}) {
+  const c = Math.cos(a), si = Math.sin(a);
+  cut(capsulePts(x - c * 200 * s, y - si * 200 * s, x, y, 92 * s, 4), sleeve, { key: (o.key ?? 'hd') + 's', pat: o.sleevePat });
+  cut(ellipsePts(x + c * 40 * s, y + si * 40 * s, 46 * s, 36 * s, a, 22), skin, { key: (o.key ?? 'hd') + 'h' });
+  cut(ellipsePts(x + c * 36 * s - si * 34 * s, y + si * 36 * s + c * 34 * s, 22 * s, 13 * s, a + 0.5, 14), skin, { key: (o.key ?? 'hd') + 't', sb: 4 });
+}
+// ---- props
+function clock(x, y, r, h, m, key = 'ck') {
+  cut(ellipsePts(x, y, r, r, 0, 36), PAL.woodD, { key: key + 'o' });
+  cut(ellipsePts(x, y, r * 0.84, r * 0.84, 0, 36), PAL.paper, { key: key + 'i', shadow: false });
+  for (let i = 0; i < 12; i++) { const a = i / 12 * TAU; ink([[x + Math.cos(a) * r * 0.66, y + Math.sin(a) * r * 0.66], [x + Math.cos(a) * r * 0.76, y + Math.sin(a) * r * 0.76]], { w: 4, color: PAL.ink, amt: 0.2, key: key + 't' + i }); }
+  const ah = (h % 12 + m / 60) / 12 * TAU - Math.PI / 2, am = m / 60 * TAU - Math.PI / 2;
+  ink([[x, y], [x + Math.cos(ah) * r * 0.42, y + Math.sin(ah) * r * 0.42]], { w: 7, color: PAL.ink, amt: 0.3, key: key + 'h' });
+  ink([[x, y], [x + Math.cos(am) * r * 0.64, y + Math.sin(am) * r * 0.64]], { w: 5, color: PAL.ink, amt: 0.3, key: key + 'm' });
+  dot(x, y, 6);
+}
+function cat(x, y, s, c = PAL.charcoal, key = 'cat') {   // a sleeping loaf
+  cut(ellipsePts(x, y, 80 * s, 40 * s, 0, 30), c, { key: key + 'b' });
+  cut(capsulePts(x + 70 * s, y + 20 * s, x - 70 * s, y + 30 * s, 20 * s), c, { key: key + 't', sb: 4 });
+  cut([[x - 96 * s, y - 34 * s], [x - 88 * s, y - 72 * s], [x - 70 * s, y - 44 * s], [x - 46 * s, y - 72 * s], [x - 40 * s, y - 30 * s], [x - 50 * s, y + 6 * s], [x - 90 * s, y + 6 * s]], c, { key: key + 'h' });
+  ink(arcPts(x - 78 * s, y - 24 * s, 6 * s, 0.2, Math.PI - 0.2, 6), { w: 2.6, color: '#d8d0c4', amt: 0.2, key: key + 'e1' });
+  ink(arcPts(x - 58 * s, y - 24 * s, 6 * s, 0.2, Math.PI - 0.2, 6), { w: 2.6, color: '#d8d0c4', amt: 0.2, key: key + 'e2' });
+  const zf = mod(TT * 18, 36);
+  handText('z', x - 30 * s, y - (70 + zf) * s, 34 * s, 'rgba(255,255,255,0.8)', { key: key + 'z1' });
+  handText('z', x - 10 * s, y - (100 + zf) * s, 26 * s, 'rgba(255,255,255,0.6)', { key: key + 'z2' });
+}
+function mug(x, y, s, c, key = 'mug', steam = true) {
+  cut(ellipsePts(x + 46 * s, y + 30 * s, 22 * s, 26 * s, 0, 18), c, { key: key + 'hd', sb: 4 });
+  cut(ellipsePts(x + 46 * s, y + 30 * s, 10 * s, 14 * s, 0, 14), 'rgba(0,0,0,0.001)', { key: key + 'hh', shadow: false, grain: false, shade: false });
+  cut(rect(x - 44 * s, y, 88 * s, 96 * s, 14 * s), c, { key: key + 'b' });
+  if (steam) for (let i = 0; i < 3; i++) { const P = []; for (let k = 0; k <= 10; k++) P.push([x - 22 * s + i * 22 * s + Math.sin(k * 0.9 + i + TT * 4) * 9 * s, y - 14 * s - k * 9 * s]); ink(P, { w: 4 * s, color: 'rgba(255,255,255,0.75)', amt: 0.8, key: key + 'st' + i }); }
+}
+function plant(x, y, s, pot = PAL.blue, key = 'pl') {
+  const R = RNG('pl', key);
+  for (let i = 0; i < 7; i++) { const a = -Math.PI / 2 + R.n(0.9), L = R.r(90, 150) * s; cut(rot(ellipsePts(x + Math.cos(a) * L * 0.5, y - 40 * s + Math.sin(a) * L * 0.5, L * 0.5, 20 * s, 0, 16), x + Math.cos(a) * L * 0.5, y - 40 * s + Math.sin(a) * L * 0.5, a), i % 2 ? PAL.green : PAL.greenD, { key: key + 'l' + i, sb: 5 }); }
+  cut([[x - 56 * s, y - 40 * s], [x + 56 * s, y - 40 * s], [x + 42 * s, y + 60 * s], [x - 42 * s, y + 60 * s]], pot, { key: key + 'p', pat: pat.stripes('rgba(255,255,255,0.18)', 8, 26) });
+}
+function books(x, y, s, key = 'bk') {
+  const cols = [PAL.teal, PAL.pink, PAL.purple, PAL.yellow, PAL.blue, PAL.green], R = RNG('bk', key);
+  let yy = y;
+  for (let i = 0; i < 4; i++) { const w = R.r(150, 200) * s, h = R.r(30, 42) * s; cut(rect(x - w / 2 + R.n(10), yy - h, w, h, 4), cols[(i + key.length) % cols.length], { key: key + i, sb: 5, pat: pat.stripes('rgba(255,255,255,0.35)', 6, 1000) }); yy -= h; }
+}
+function sparkle(x, y, s, c = '#fff8dc') { ctx.fillStyle = c; ctx.beginPath(); ctx.moveTo(x, y - s); ctx.quadraticCurveTo(x, y, x + s, y); ctx.quadraticCurveTo(x, y, x, y + s); ctx.quadraticCurveTo(x, y, x - s, y); ctx.quadraticCurveTo(x, y, x, y - s); ctx.fill(); }
+function tag(str, x, y, size, o = {}) {   // a torn paper tag with handwriting
+  const w = handW(str, size) + size * 0.9, h = size * 1.45;
+  const ts = o.s ?? 1; if (ts <= 0.01) return;
+  ctx.save(); ctx.translate(x, y); ctx.rotate(o.rot ?? -0.03); ctx.scale(ts, ts);
+  cut(rect(-w / 2, -h / 2, w, h, 3), o.fill ?? PAL.paper, { key: 'tag' + str, tear: 1.6 });
+  if (o.tape !== false) cut(rect(-34, -h / 2 - 16, 68, 30, 2), 'rgba(240,230,190,0.75)', { key: 'tape' + str, shadow: false, grain: 0.3, shade: false });
+  handText(str, -w / 2 + size * 0.45, size * 0.36, size, o.color ?? PAL.ink, { key: 'tagt' + str, frac: o.frac });
+  ctx.restore();
+}
+// tag and caption sit inside the format's safe area (9:16: y 330 and 1440)
+const yearTag = (str) => { const f = () => tag(str, 70 + (handW(str, 80) + 72) / 2, SAFE.top + 90, 80, { rot: -0.04, s: popS(E0 + 0.2) }); if (DEFER) DEFER.push(f); else f(); };
+const capStrip = (str) => { const f = () => tag(str, CX, H - SAFE.bottom - 60, 50, { rot: 0.012, tape: false, frac: ev(E0 + 0.45, 0.6) }); if (DEFER) DEFER.push(f); else f(); };
 
 // =====================================================================
-//  STYLE — the renderer's hooks (kit/morph.js). Each one prints a small sheet over what ctx shows.
+//  STYLE — the hooks the renderer (kit/morph.js) calls. Every styles/<name>/kit.js defines one.
+//    paper            the blank sheet a morph happens on
+//    backdrop(c)      fill the frame with colour c (behind a morph window)
+//    window(P, key, src)  draw canvas src seen through outline P (screen coords): here a torn paper hole
+//    blob(P, c, key)  the morphing shape itself, outline P, colour c
+//    hero(x, y, r, o) the hero drawn by hero-to-hero bridges (SP(...) shapes); heroColor / heroPts for its outline
+//    post()           after every frame (grain, print pass, upscale ...)
+//    ones             true = motion on 1s (TT = every frame); default on 2s
 // =====================================================================
 const STYLE = {
-  name: 'riso',
-  paper: rgbHex(PAPER),
-  backdrop(c) {   // the frame as one flat plate tone (the nearest the three inks can print to c)
-    const t = tonesOf(c);
-    beginSheet();
-    if (t.teal + t.pink + t.yellow > 0) printed(PITCH.world, { full: true }, () => fill(rect(-10, -10, W + 20, H + 20), t));
-    endSheet();
-  },
-  window(P, key, src) {   // the world printed inside outline P, with a rough teal printed rim
-    const Q = wobble(P, true, 2, key, 9);
+  name: 'cut-paper',
+  paper: '#efe5cf',
+  backdrop(c) { cut(rect(-30, -30, W + 60, H + 60, 0), c, { key: 'backdrop', shadow: false, tear: 0, grain: 0.8, shade: false }); },
+  window(P, key, src) {   // the world seen through a hand-cut window: torn edge, paper rim, shadow
+    const Q = torn(wobble(P, true, 3, key, 9), key, 2.4);
+    ctx.save(); ctx.shadowColor = 'rgba(35,20,10,0.35)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 6; trace(Q, true); ctx.fillStyle = STYLE.paper; ctx.fill(); ctx.restore();
     ctx.save(); trace(Q, true); ctx.clip(); ctx.drawImage(src, 0, 0); ctx.restore();
-    if (!Q.some(([x, y]) => x > -20 && x < W + 20 && y > -20 && y < H + 20)) return;
-    beginSheet(bbox(Q, 24));
-    printed(PITCH.world, { auto: true }, () => rimLine(Q, key + 'rim', { w: 11, amt: 1.6 }));
-    endSheet();
+    ctx.save(); trace(Q, true); ctx.strokeStyle = '#fbf6ea'; ctx.lineWidth = 7; ctx.lineJoin = 'round'; ctx.stroke(); ctx.restore();
   },
-  blob(P, c, key) {   // the morphing shape: a flat screened fill and a dry-brush rim a step darker
-    const t = tonesOf(c), d = { teal: Math.min(1, t.teal * 1.6), pink: Math.min(1, t.pink + 0.4), yellow: Math.min(1, t.yellow + 0.3) };
-    beginSheet(bbox(P, 30));
-    printed(PITCH.world, { shapes: true }, () => { fill(hand(P, key, 1.2), t); rimLine(P, key + 'r', { tones: d, w: 10 }); });
-    endSheet();
-  },
-  hero(x, y, r, o = {}) {
-    const rr = r * 0.6; beginSheet([x - rr * 1.6, y - rr * 1.8, x + rr * 1.6, y + rr * 1.8]);
-    printed(PITCH.fine, { shapes: true }, () => risoHero(x, y, rr, { ...o, shadow: false, mood: o.mood ?? 'wow' }));
-    endSheet();
-  },
-  heroColor: rgbHex(inkRGB(HERO_TONES)),
-  heroPts: (x, y, r) => heroOutline(x, y, r * 0.6),
+  blob(P, c, key) { cut(P, c, { key, tear: 1.0, amt: 1.2 }); },
+  hero(x, y, r, o) { spark(x, y, r, o); },
+  heroColor: PAL.orange,
+  post() { grain({ n: 3000 }); },
 };
 // =====================================================================
-//  SCENES — Ancient Indian Sculpture (9:16 Vertical, Risograph)
-//  Every colour is printed plate tones { teal, pink, yellow }.
-//  All scenes use beginSheet(), printed(PITCH.*), and endSheet().
+//  SCENES — Ancient Indian Sculpture (Cut-Paper Collage Animation)
+//  Tactile torn-edge paper shapes with soft drop shadows, patterns,
+//  and paper tags across 4,000 years of sculptural form.
 // =====================================================================
-
-function drawHeaderRiso(eraTag, dateTag, titleTag, subTag, keyPrefix) {
-  // Top tag box
-  fill(hand(boxPts(CX - 220, 160, 440, 56), keyPrefix + '_tagbox', 1.0), { yellow: 0.85, pink: 0.35 });
-  type(eraTag + ' • ' + dateTag, CX, 200, 32, MIX.dark, { align: 'center', key: keyPrefix + '_t1', weight: 900 });
-  
-  // Title & Subtitle
-  type(titleTag, CX, 270, 44, MIX.blue, { align: 'center', key: keyPrefix + '_t2', weight: 900 });
-  type(subTag, CX, 318, 22, { teal: 0.75, pink: 0.4 }, { align: 'center', key: keyPrefix + '_t3', weight: 700 });
-}
 
 // ---------------------------------------------------------------------
 // ERA 0: INDUS BRONZE (2500 BCE) — Dancing Girl of Mohenjo-daro
 // ---------------------------------------------------------------------
 function sceneIndus() {
-  beginSheet();
   const t = seg(TT, 0.0, 9.0);
 
-  // 1. Far Field: Mohenjo-daro Terracotta Brick Wall
-  printed(PITCH.field, { full: true }, () => {
-    const R = RNG('indus_bricks');
-    for (let y = 140; y < 1820; y += 52) {
-      const shift = (Math.floor(y / 52) % 2) * 55;
-      for (let x = -60 + shift; x < W + 60; x += 115) {
-        if (R.f() > 0.15) {
-          fill(rect(x + 2, y + 2, 110, 48), { pink: 0.16 + R.f() * 0.08, yellow: 0.32 + R.f() * 0.12 });
-        }
-      }
-    }
-    // Atmospheric foundry glow behind crucible
-    fill(circ(CX, 1060, 420), { yellow: rad(CX, 1060, 180, 420, [[0, 0.65], [1, 0]]) }, { over: true });
+  // 1. Full-Bleed Terracotta Brick Wall (Torn Paper with pattern)
+  cut(rect(-30, -30, W + 60, H + 60, 0), PAL.wood, {
+    key: 'indus_wall', shadow: false, tear: 0,
+    pat: pat.stripes('rgba(255,240,210,0.12)', 20, 60, 0)
   });
 
-  // 2. The World: Figure, Crucible, and Glyphs
-  printed(PITCH.world, { shapes: true }, () => {
-    // Indus Seal Glyphs in background
-    fill(hand(boxPts(CX - 380, 420, 170, 170), 'seal1', 1.2), { teal: 0.18, yellow: 0.28 });
-    fill(hand(boxPts(CX + 210, 420, 170, 170), 'seal2', 1.2), { teal: 0.18, yellow: 0.28 });
-    type("INDUS", CX - 295, 515, 34, { teal: 0.6, pink: 0.3 }, { align: 'center', key: 'seal1_txt' });
-    type("SEAL", CX + 295, 515, 34, { teal: 0.6, pink: 0.3 }, { align: 'center', key: 'seal2_txt' });
-
-    // Crucible Foundry Pedestal
-    fill(ell(CX, 1680, 420, 120), { teal: 0.35, pink: 0.65, yellow: 0.85 });
-    type("LOST-WAX BRONZE FOUNDRY (CIRE PERDUE)", CX, 1720, 22, MIX.dark, { align: 'center', key: 'indus_sub' });
-
-    // The Dancing Girl Figure
-    const figX = CX;
-    const figY = 1040 + Math.sin(t * TAU * 0.5) * 8; // Gentle breathing bob
-    const bronzeBody = { teal: 0.6, pink: 0.75, yellow: 0.85 }; // Rich lustrous bronze
-    const bronzeShadow = MIX.dark;
-
-    // Torso (Tribhanga Contrapposto)
-    const torsoPts = [
-      [figX - 45, figY - 260], [figX + 55, figY - 250], [figX + 35, figY - 100],
-      [figX + 70, figY + 60],  [figX - 25, figY + 70],  [figX - 65, figY + 40],
-      [figX - 35, figY - 110]
-    ];
-    fill(hand(torsoPts, 'indus_torso', 1.1, 8), bronzeBody);
-
-    // Head, Chin & Hair Bun
-    fill(circ(figX + 10, figY - 330, 68), bronzeBody);
-    fill(ell(figX + 68, figY - 320, 48, 58, 0.2), bronzeShadow); // Heavy hair bun
-    fill(ell(figX - 8, figY - 335, 12, 16), { yellow: 0.95, pink: 0.15 }); // Cowrie shell eyes
-    line([[figX - 18, figY - 315], [figX + 5, figY - 315]], bronzeShadow, { w: 6, key: 'lips' });
-
-    // Right Leg (Bearing weight)
-    const rightLeg = [
-      [figX + 45, figY + 65], [figX + 55, figY + 280], [figX + 40, figY + 540],
-      [figX + 10, figY + 540], [figX + 25, figY + 280], [figX + 15, figY + 65]
-    ];
-    fill(hand(rightLeg, 'indus_rleg', 1.05, 8), bronzeBody);
-
-    // Left Leg (Bent gracefully at knee)
-    const leftLeg = [
-      [figX - 45, figY + 65], [figX - 95, figY + 290], [figX - 40, figY + 530],
-      [figX - 70, figY + 530], [figX - 125, figY + 290], [figX - 65, figY + 65]
-    ];
-    fill(hand(leftLeg, 'indus_lleg', 1.05, 8), bronzeBody);
-
-    // Right Arm resting on right hip
-    const rightArm = [
-      [figX + 55, figY - 250], [figX + 140, figY - 110], [figX + 75, figY + 55],
-      [figX + 60, figY + 45],  [figX + 115, figY - 100], [figX + 40, figY - 240]
-    ];
-    fill(hand(rightArm, 'indus_rarm', 1.05, 8), bronzeBody);
-    for (let b = 0; b < 4; b++) {
-      fill(rect(figX + 85 + b * 6, figY + 20 - b * 4, 8, 22), { yellow: 0.95, pink: 0.1 });
-    }
-
-    // Left Arm dangling forward, sleeved with 22 bangles
-    const leftArm = [
-      [figX - 45, figY - 260], [figX - 120, figY - 80], [figX - 85, figY + 140],
-      [figX - 65, figY + 130], [figX - 95, figY - 75],  [figX - 30, figY - 250]
-    ];
-    fill(hand(leftArm, 'indus_larm', 1.05, 8), bronzeBody);
-    for (let b = 0; b < 22; b++) {
-      const by = (figY - 220) + b * 15;
-      const bx = (figX - 55) - b * 1.5;
-      fill(ell(bx, by, 34, 14, -0.3), { yellow: 0.95, pink: 0.2 }, { over: true });
-      line([[bx - 28, by], [bx + 28, by]], bronzeShadow, { w: 4, key: 'bangle_' + b });
-    }
-
-    // Headers
-    drawHeaderRiso("ERA I", "c. 2500 BCE", "THE DANCING GIRL", "LOST-WAX BRONZE • MOHENJO-DARO", "indus");
+  // 2. Indus Valley Stone Base / Table
+  cut(rect(-30, 1580, W + 60, 400, 0), PAL.woodD, {
+    key: 'indus_floor', sy: -8, sb: 12,
+    pat: pat.grainWood('rgba(60,30,10,0.25)')
   });
-  endSheet();
+
+  // 3. Ancient Pictographic Seals on the Wall
+  cut(rect(100, 420, 180, 180, 8), PAL.cream, { key: 'seal_l', sy: 6, sb: 8 });
+  ink([[130, 490], [250, 490]], { w: 6, color: PAL.ink, key: 's1_a' });
+  ink([[190, 450], [190, 570]], { w: 6, color: PAL.ink, key: 's1_b' });
+  ink([[140, 550], [240, 520]], { w: 4, color: PAL.ink, key: 's1_c' });
+
+  cut(rect(W - 280, 420, 180, 180, 8), PAL.cream, { key: 'seal_r', sy: 6, sb: 8 });
+  cut(ellipsePts(W - 190, 510, 50, 50, 0, 24), PAL.mustard, { key: 'seal_r_disc', shadow: false });
+  ink([[W - 230, 510], [W - 150, 510]], { w: 6, color: PAL.ink, key: 's2_a' });
+
+  // 4. The Dancing Girl (Cut-Paper Bronze Silhouette)
+  const figX = CX;
+  const figY = 1040 + Math.sin(t * TAU * 0.5) * 8; // Gentle breathing bob
+  const bronze = PAL.woodD;
+  const bronzeL = PAL.mustard;
+
+  // Crucible Foundry Fire glow behind figure
+  cut(ellipsePts(figX, 1620, 360, 100, 0, 36), PAL.orange, {
+    key: 'foundry_glow', shadow: false, crayon: '#f6cf55'
+  });
+
+  // Torso (Contrapposto / Tribhanga posture)
+  const torsoPts = [
+    [figX - 45, figY - 260], [figX + 55, figY - 250], [figX + 35, figY - 100],
+    [figX + 75, figY + 60],  [figX - 25, figY + 70],  [figX - 65, figY + 40],
+    [figX - 35, figY - 110]
+  ];
+  cut(torsoPts, bronze, { key: 'indus_torso', tear: 1.2, sy: 8, sb: 12 });
+  // Bronze chest highlight
+  cut(ellipsePts(figX + 5, figY - 170, 35, 45, 0.1, 20), bronzeL, { key: 'indus_chest_hl', shadow: false });
+
+  // Head, Chin & Hair Bun
+  cut(ellipsePts(figX + 10, figY - 330, 68, 68, 0, 32), bronze, { key: 'indus_head', sy: 6, sb: 8 });
+  cut(ellipsePts(figX + 70, figY - 320, 52, 60, 0.2, 28), PAL.ink, { key: 'indus_bun', sy: 4, sb: 6 });
+  // Cowrie shell eye
+  cut(ellipsePts(figX - 8, figY - 335, 14, 18, 0, 16), PAL.paper, { key: 'indus_eye', shadow: false });
+  ink([[figX - 18, figY - 315], [figX + 6, figY - 315]], { w: 6, color: PAL.ink, key: 'indus_lips' });
+
+  // Right Leg (Bearing weight)
+  const rLegPts = [
+    [figX + 45, figY + 65], [figX + 55, figY + 280], [figX + 40, figY + 540],
+    [figX + 10, figY + 540], [figX + 25, figY + 280], [figX + 15, figY + 65]
+  ];
+  cut(rLegPts, bronze, { key: 'indus_rleg', sy: 6, sb: 8 });
+
+  // Left Leg (Bent gracefully at knee)
+  const lLegPts = [
+    [figX - 45, figY + 65], [figX - 95, figY + 290], [figX - 40, figY + 530],
+    [figX - 70, figY + 530], [figX - 125, figY + 290], [figX - 65, figY + 65]
+  ];
+  cut(lLegPts, bronze, { key: 'indus_lleg', sy: 6, sb: 8 });
+
+  // Right Arm: Resting firmly on right hip
+  const rArmPts = [
+    [figX + 55, figY - 250], [figX + 140, figY - 110], [figX + 75, figY + 55],
+    [figX + 60, figY + 45],  [figX + 115, figY - 100], [figX + 40, figY - 240]
+  ];
+  cut(rArmPts, bronze, { key: 'indus_rarm', sy: 6, sb: 8 });
+  for (let b = 0; b < 4; b++) {
+    cut(rect(figX + 85 + b * 6, figY + 20 - b * 4, 8, 22, 2), PAL.yellow, { key: 'r_amulet_' + b, shadow: false });
+  }
+
+  // Left Arm: Sleeved with 22 bangles from wrist to shoulder
+  const lArmPts = [
+    [figX - 45, figY - 260], [figX - 120, figY - 80], [figX - 85, figY + 140],
+    [figX - 65, figY + 130], [figX - 95, figY - 75],  [figX - 30, figY - 250]
+  ];
+  cut(lArmPts, bronze, { key: 'indus_larm', sy: 6, sb: 8 });
+  for (let b = 0; b < 22; b++) {
+    const by = (figY - 220) + b * 15;
+    const bx = (figX - 55) - b * 1.5;
+    cut(ellipsePts(bx, by, 32, 12, -0.3, 20), PAL.cream, { key: 'bangle_' + b, sy: 2, sb: 4 });
+  }
+
+  // Tags & Captions
+  yearTag('2500 BCE • Indus Valley');
+  capStrip('Mohenjo-daro Dancing Girl in Lost-Wax Bronze');
 }
 
 // ---------------------------------------------------------------------
 // ERA 1: MAURYA POLISH (250 BCE) — Sarnath Lion Capital
 // ---------------------------------------------------------------------
 function sceneMaurya() {
-  beginSheet();
   const t = seg(TT, 9.0, 18.0);
 
-  // 1. Far Field: Brahmi Script Inscription Background
-  printed(PITCH.field, { full: true }, () => {
-    fill(rect(-40, -40, W + 80, H + 80), {
-      yellow: lin(0, 0, 0, H, [[0, 0.45], [1, 0.7]]),
-      pink: lin(0, 0, 0, H, [[0, 0.15], [1, 0.3]])
+  // 1. Imperial Sandstone Wall with subtle vertical grain
+  cut(rect(-30, -30, W + 60, H + 60, 0), PAL.mustard, {
+    key: 'maurya_wall', shadow: false, tear: 0,
+    pat: pat.stripes('rgba(255,255,255,0.14)', 14, 50, 0.4)
+  });
+
+  // 2. Monolithic Column Shaft (Mirror-like Mauryan Polish)
+  cut(rect(CX - 150, 1260, 300, 600, 4), PAL.cream, {
+    key: 'maurya_shaft', sy: 8, sb: 14, crayon: '#d9a441'
+  });
+  // Specular high-gloss sheen streak
+  cut(rect(CX - 25, 1260, 50, 600, 0), '#ffffff', {
+    key: 'maurya_sheen', shadow: false, tear: 0
+  });
+
+  // 3. Inverted Bell Lotus Capital
+  const lotusBaseY = 1260;
+  for (let p = 0; p < 12; p++) {
+    const lx = (CX - 200) + p * 36;
+    const petalPts = [
+      [lx, lotusBaseY], [lx + 18, lotusBaseY - 110], [lx + 36, lotusBaseY],
+      [lx + 18, lotusBaseY + 20]
+    ];
+    cut(petalPts, PAL.yellow, { key: 'lotus_petal_' + p, sy: 6, sb: 8 });
+  }
+
+  // 4. Circular Drum Abacus with Animal Relieves
+  const abacusY = 1120;
+  cut(rect(CX - 270, abacusY - 60, 540, 85, 8), PAL.teal, {
+    key: 'abacus_drum', sy: 8, sb: 12
+  });
+  tag('HORSE • CHAKRA • BULL • LION', CX, abacusY + 40, 32, {
+    rot: 0, s: 1, key: 'abacus_tag'
+  });
+
+  // 5. Four Addorsed Asiatic Lions (Back-to-Back)
+  const lionY = 720;
+  // Left Lion Body
+  cut(ellipsePts(CX - 120, lionY + 50, 140, 140, 0, 32), PAL.cream, {
+    key: 'lion_body_l', sy: 8, sb: 12
+  });
+  // Right Lion Body
+  cut(ellipsePts(CX + 120, lionY + 50, 140, 140, 0, 32), PAL.cream, {
+    key: 'lion_body_r', sy: 8, sb: 12
+  });
+
+  // Stylized Curled Flame Manes
+  for (let a = 0; a < 26; a++) {
+    const ang = (a / 26) * TAU;
+    const mx = CX + Math.cos(ang) * 190;
+    const my = (lionY + 60) + Math.sin(ang) * 150;
+    cut(ellipsePts(mx, my, 22, 22, 0, 16), PAL.woodD, {
+      key: 'mane_curl_' + a, sy: 3, sb: 5
     });
-    // Radial glow behind the Chakra wheel
-    fill(circ(CX, 480, 420), { yellow: rad(CX, 480, 160, 420, [[0, 0.75], [1, 0]]) }, { over: true });
+  }
+
+  // Roaring Snouts
+  cut(ellipsePts(CX - 110, lionY + 110, 48, 48, 0, 20), PAL.woodD, { key: 'snout_l', sy: 4, sb: 6 });
+  cut(ellipsePts(CX + 110, lionY + 110, 48, 48, 0, 20), PAL.woodD, { key: 'snout_r', sy: 4, sb: 6 });
+  cut(rect(CX - 125, lionY + 100, 30, 16, 2), '#ffffff', { key: 'tooth_l', shadow: false });
+  cut(rect(CX + 95, lionY + 100, 30, 16, 2), '#ffffff', { key: 'tooth_r', shadow: false });
+
+  // 6. The Crown: 24-Spoke Rotating Ashoka Chakra Wheel
+  const rot = t * 0.4;
+  const chakraY = 480;
+  const cOuter = 190, cInner = 30;
+  // Outer Rim
+  cut(ellipsePts(CX, chakraY, cOuter + 14, cOuter + 14, 0, 40), PAL.blue, {
+    key: 'chakra_rim', sy: 8, sb: 14
   });
-
-  // 2. The World: Column Shaft, Inverted Lotus, Abacus & Roaring Lions
-  printed(PITCH.world, { shapes: true }, () => {
-    // Monolithic Column Shaft with high-gloss reflection streak
-    fill(rect(CX - 160, 1260, 320, 600), { yellow: 0.85, pink: 0.35, teal: 0.12 });
-    fill(rect(CX - 25, 1260, 50, 600), { yellow: 0.3, pink: 0.05 }); // Specular highlight
-
-    // Inverted Bell Lotus Capital
-    const lotusBaseY = 1260;
-    for (let p = 0; p < 14; p++) {
-      const lx = (CX - 220) + p * 34;
-      const petalPts = [
-        [lx, lotusBaseY], [lx + 17, lotusBaseY - 110], [lx + 34, lotusBaseY],
-        [lx + 17, lotusBaseY + 20]
-      ];
-      fill(hand(petalPts, 'lotus' + p, 1.05, 6), { yellow: 0.9, pink: 0.45 });
-    }
-
-    // Circular Abacus with animal reliefs
-    const abacusY = 1120;
-    fill(rect(CX - 280, abacusY - 60, 560, 90), { teal: 0.7, pink: 0.3, yellow: 0.4 });
-    type("HORSE • WHEEL • BULL • LION", CX, abacusY + 5, 26, { yellow: 0.95, pink: 0.2 }, { align: 'center', key: 'abacus_txt' });
-
-    // Four Addorsed Lions (Majestic Back-to-Back Asiatic Lions)
-    const lionY = 720;
-    const lionTones = { yellow: 0.92, pink: 0.4, teal: 0.08 };
-    const maneTones = MIX.dark;
-    
-    // Left & Right Lion Bodies
-    fill(circ(CX - 120, lionY + 50, 140), lionTones);
-    fill(circ(CX + 120, lionY + 50, 140), lionTones);
-
-    // Stylized Curled Flame Manes
-    for (let a = 0; a < 26; a++) {
-      const ang = (a / 26) * TAU;
-      const mx = CX + Math.cos(ang) * 190;
-      const my = (lionY + 60) + Math.sin(ang) * 150;
-      fill(circ(mx, my, 22), maneTones);
-    }
-
-    // Roaring Snouts
-    fill(circ(CX - 110, lionY + 110, 48), maneTones);
-    fill(circ(CX + 110, lionY + 110, 48), maneTones);
-
-    // 24-Spoke Rotating Ashoka Chakra Wheel
-    const rot = t * 0.4;
-    const chakraY = 480;
-    const cOuter = 190, cInner = 30;
-    fill(circ(CX, chakraY, cOuter + 14), { teal: 0.85, pink: 0.35, yellow: 0.2 });
-    fill(circ(CX, chakraY, cOuter - 10), {}); // Knockout
-    
-    // Spokes
-    for (let s = 0; s < 24; s++) {
-      const sa = (s / 24) * TAU + rot;
-      const x1 = CX + Math.cos(sa) * cInner;
-      const y1 = chakraY + Math.sin(sa) * cInner;
-      const x2 = CX + Math.cos(sa) * cOuter;
-      const y2 = chakraY + Math.sin(sa) * cOuter;
-      line([[x1, y1], [x2, y2]], { teal: 0.9, pink: 0.3, yellow: 0.2 }, { w: 6, key: 'spoke_' + s });
-    }
-    fill(circ(CX, chakraY, cInner), { teal: 0.9, pink: 0.4, yellow: 0.2 });
-
-    // Headers
-    drawHeaderRiso("ERA II", "c. 250 BCE", "THE ASHOKAN CAPITAL", "POLISHED CHUNAR SANDSTONE • SARNATH", "maurya");
+  cut(ellipsePts(CX, chakraY, cOuter - 10, cOuter - 10, 0, 36), PAL.mustard, {
+    key: 'chakra_inner_cut', shadow: false
   });
-  endSheet();
+  // Spokes
+  for (let s = 0; s < 24; s++) {
+    const sa = (s / 24) * TAU + rot;
+    const x1 = CX + Math.cos(sa) * cInner;
+    const y1 = chakraY + Math.sin(sa) * cInner;
+    const x2 = CX + Math.cos(sa) * cOuter;
+    const y2 = chakraY + Math.sin(sa) * cOuter;
+    ink([[x1, y1], [x2, y2]], { w: 6, color: PAL.blue, key: 'spoke_' + s });
+  }
+  // Central Hub
+  cut(ellipsePts(CX, chakraY, cInner + 6, cInner + 6, 0, 20), PAL.blue, { key: 'chakra_hub', sy: 4, sb: 6 });
+
+  // Tags & Captions
+  yearTag('250 BCE • Maurya Empire');
+  capStrip('Sarnath Lion Capital & 24-Spoke Dharma Chakra');
 }
 
 // ---------------------------------------------------------------------
 // ERA 2: GUPTA SERENITY (500 CE) — Sarnath Preaching Buddha
 // ---------------------------------------------------------------------
 function sceneGupta() {
-  beginSheet();
   const t = seg(TT, 18.0, 27.0);
 
-  // 1. Far Field: Concentric Mandala Resonance
-  printed(PITCH.field, { full: true }, () => {
-    fill(rect(-40, -40, W + 80, H + 80), {
-      yellow: lin(0, 0, 0, H, [[0, 0.3], [1, 0.55]]),
-      pink: lin(0, 0, 0, H, [[0, 0.1], [1, 0.25]]),
-      teal: lin(0, 0, 0, H, [[0, 0.08], [1, 0.18]])
-    });
-    fill(circ(CX, 780, 480), { yellow: rad(CX, 780, 200, 480, [[0, 0.7], [1, 0]]) }, { over: true });
+  // 1. Serene Temple Sanctuary Wall (Soft Mint Paper with Dots)
+  cut(rect(-30, -30, W + 60, H + 60, 0), PAL.mint, {
+    key: 'gupta_wall', shadow: false, tear: 0,
+    pat: pat.dots('rgba(255,255,255,0.22)', 6, 80)
   });
 
-  // 2. The World: Lotus Halo, Buddha in Padmasana & Deer Throne
-  printed(PITCH.world, { shapes: true }, () => {
-    // The Great Prabhamandala (Elaborate Lotus Halo)
-    const haloY = 780;
-    fill(curvy(lotusHaloPts(CX, haloY, 320, 24)), { yellow: 0.85, pink: 0.45, teal: 0.1 });
-    fill(circ(CX, haloY, 260), {}); // Paper knockout
-    fill(curvy(lotusHaloPts(CX, haloY, 240, 16)), { yellow: 0.7, pink: 0.3, teal: 0.15 });
-    fill(circ(CX, haloY, 190), {});
-
-    // Buddha Head & Ushnisha
-    const budTones = { yellow: 0.9, pink: 0.35, teal: 0.15 }; // Ivory Sandstone
-    fill(circ(CX, haloY, 95), budTones);
-    fill(circ(CX, haloY - 95, 38), MIX.dark); // Snail-curl Ushnisha topknot
-    // Contemplative Lotus Eyes & Smile
-    fill(ell(CX - 28, haloY + 8, 18, 8, 0.1), MIX.dark);
-    fill(ell(CX + 28, haloY + 8, 18, 8, -0.1), MIX.dark);
-    line([[CX - 18, haloY + 42], [CX + 18, haloY + 42]], MIX.dark, { w: 5, key: 'bud_lips' });
-    line([[CX - 90, haloY - 20], [CX - 95, haloY + 60]], MIX.dark, { w: 5, key: 'ear_l' });
-    line([[CX + 90, haloY - 20], [CX + 95, haloY + 60]], MIX.dark, { w: 5, key: 'ear_r' });
-
-    // Torso with Clinging Transparent Robe (Wet-look drapery)
-    const budY = 980;
-    const budTorso = [
-      [CX - 160, budY - 60], [CX + 160, budY - 60],
-      [CX + 110, budY + 220], [CX - 110, budY + 220]
-    ];
-    fill(hand(budTorso, 'bud_torso', 1.05, 8), budTones);
-    line([[CX - 150, budY - 50], [CX, budY + 180], [CX + 150, budY - 50]], { yellow: 0.5, pink: 0.2 }, { w: 6, key: 'robe_fold' });
-
-    // Dharmachakra Pravartana Mudra (Turning Wheel of Law)
-    fill(circ(CX, budY + 70, 52), { yellow: 0.95, pink: 0.5 });
-    line([[CX - 35, budY + 70], [CX + 35, budY + 70]], MIX.dark, { w: 6, key: 'mudra_h' });
-    line([[CX, budY + 35], [CX, budY + 105]], MIX.dark, { w: 6, key: 'mudra_v' });
-
-    // Crossed Legs (Padmasana Base)
-    const legsPts = [
-      [CX - 280, budY + 310], [CX + 280, budY + 310],
-      [CX + 220, budY + 420], [CX - 220, budY + 420]
-    ];
-    fill(hand(legsPts, 'bud_legs', 1.05, 8), budTones);
-    fill(ell(CX - 130, budY + 340, 38, 22), { pink: 0.7, yellow: 0.5 });
-    fill(ell(CX + 130, budY + 340, 38, 22), { pink: 0.7, yellow: 0.5 });
-
-    // Throne Base with Sarnath Deer & Wheel
-    const throneY = 1520;
-    fill(rect(CX - 320, throneY, 640, 160), { teal: 0.6, pink: 0.4, yellow: 0.5 });
-    type("DEER PARK • FIRST SERMON", CX, throneY + 75, 34, { yellow: 0.95, pink: 0.25 }, { align: 'center', key: 'throne_txt' });
-
-    // Headers
-    drawHeaderRiso("ERA III", "c. 500 CE", "PREACHING BUDDHA", "CLASSICAL GUPTA STONE • SARNATH", "gupta");
+  // 2. The Great Prabhamandala (Carved Lotus Halo)
+  const haloY = 780;
+  cut(lotusHaloPts(CX, haloY, 320, 24), PAL.yellow, {
+    key: 'halo_outer', sy: 12, sb: 18, crayon: '#ec7a4f'
   });
-  endSheet();
+  cut(ellipsePts(CX, haloY, 260, 260, 0, 36), PAL.cream, {
+    key: 'halo_inner_cream', shadow: false
+  });
+  cut(lotusHaloPts(CX, haloY, 240, 16), PAL.teal, {
+    key: 'halo_inner_lotus', sy: 6, sb: 10
+  });
+  cut(ellipsePts(CX, haloY, 190, 190, 0, 32), PAL.cream, {
+    key: 'halo_center_cream', shadow: false
+  });
+
+  // 3. Buddha Head & Ushnisha
+  const budY = 980;
+  const stone = PAL.cream;
+  cut(ellipsePts(CX, haloY, 95, 95, 0, 32), stone, { key: 'bud_head', sy: 6, sb: 10 });
+  cut(ellipsePts(CX, haloY - 95, 38, 38, 0, 24), PAL.ink, { key: 'bud_ushnisha', sy: 4, sb: 6 });
+  
+  // Meditative downcast lotus eyes & tranquil smile
+  cut(ellipsePts(CX - 28, haloY + 8, 18, 8, 0.1, 16), PAL.ink, { key: 'bud_eye_l', shadow: false });
+  cut(ellipsePts(CX + 28, haloY + 8, 18, 8, -0.1, 16), PAL.ink, { key: 'bud_eye_r', shadow: false });
+  ink([[CX - 18, haloY + 42], [CX + 18, haloY + 42]], { w: 5, color: PAL.ink, key: 'bud_mouth' });
+  ink([[CX - 90, haloY - 20], [CX - 95, haloY + 60]], { w: 5, color: PAL.ink, key: 'ear_l' });
+  ink([[CX + 90, haloY - 20], [CX + 95, haloY + 60]], { w: 5, color: PAL.ink, key: 'ear_r' });
+
+  // 4. Torso with Clinging Transparent Robe
+  const budTorso = [
+    [CX - 160, budY - 60], [CX + 160, budY - 60],
+    [CX + 110, budY + 220], [CX - 110, budY + 220]
+  ];
+  cut(budTorso, stone, { key: 'bud_torso', sy: 8, sb: 12 });
+  ink([[CX - 150, budY - 50], [CX, budY + 180], [CX + 150, budY - 50]], {
+    w: 5, color: PAL.mustard, key: 'robe_ripple'
+  });
+
+  // 5. Hands in Dharmachakra Pravartana Mudra
+  cut(ellipsePts(CX, budY + 70, 52, 52, 0, 24), PAL.yellow, { key: 'mudra_circle', sy: 4, sb: 6 });
+  ink([[CX - 35, budY + 70], [CX + 35, budY + 70]], { w: 6, color: PAL.ink, key: 'mudra_h' });
+  ink([[CX, budY + 35], [CX, budY + 105]], { w: 6, color: PAL.ink, key: 'mudra_v' });
+
+  // 6. Crossed Legs (Padmasana Base)
+  const legsPts = [
+    [CX - 280, budY + 310], [CX + 280, budY + 310],
+    [CX + 220, budY + 420], [CX - 220, budY + 420]
+  ];
+  cut(legsPts, stone, { key: 'bud_legs', sy: 8, sb: 12 });
+  cut(ellipsePts(CX - 130, budY + 340, 38, 22, 0, 16), PAL.pink, { key: 'sole_l', shadow: false });
+  cut(ellipsePts(CX + 130, budY + 340, 38, 22, 0, 16), PAL.pink, { key: 'sole_r', shadow: false });
+
+  // 7. Throne Base: Deer Park & Dharma Wheel
+  const throneY = 1520;
+  cut(rect(CX - 320, throneY, 640, 160, 6), PAL.teal, { key: 'throne_box', sy: 10, sb: 14 });
+  tag('DEER PARK • FIRST SERMON', CX, throneY + 110, 36, { rot: 0, s: 1, key: 'throne_tag' });
+
+  // Tags & Captions
+  yearTag('500 CE • Classical Gupta');
+  capStrip('Sarnath Preaching Buddha • Sacred Law');
 }
 
 // ---------------------------------------------------------------------
 // ERA 3: ELEPHANTA TRIMURTI (750 CE) — Colossal Basalt Rock-Cut
 // ---------------------------------------------------------------------
 function sceneElephanta() {
-  beginSheet();
   const t = seg(TT, 27.0, 36.0);
 
-  // 1. Far Field: Dark Basalt Rock Cavern Shadows
-  printed(PITCH.field, { full: true }, () => {
-    fill(rect(-40, -40, W + 80, H + 80), { teal: 0.55, pink: 0.45, yellow: 0.25 });
-    // Flickering torchlight glow
-    const torchPulse = 0.85 + 0.15 * Math.sin(t * TAU * 1.5);
-    fill(circ(CX, 920, 460 * torchPulse), { yellow: rad(CX, 920, 160, 460, [[0, 0.7], [1, 0]]) }, { over: true });
+  // 1. Dark Basalt Rock Cavern (Deep Navy Paper with shadows)
+  cut(rect(-30, -30, W + 60, H + 60, 0), PAL.night, {
+    key: 'cave_wall', shadow: false, tear: 0
   });
 
-  // 2. The World: Fluted Cavern Pillars & Three Heads of Shiva
-  printed(PITCH.world, { shapes: true }, () => {
-    // Massive Cave Pillars flanking the sanctuary
-    fill(rect(40, 220, 120, 1500), MIX.dark);
-    fill(rect(W - 160, 220, 120, 1500), MIX.dark);
-    fill(ell(100, 420, 85, 35), { teal: 0.8, pink: 0.6 });
-    fill(ell(W - 100, 420, 85, 35), { teal: 0.8, pink: 0.6 });
+  // 2. Fluted Rock Cavern Pillars flanking the sanctuary
+  cut(rect(40, 220, 120, 1500, 4), PAL.navy, { key: 'pillar_l', sy: 12, sb: 18 });
+  cut(rect(W - 160, 220, 120, 1500, 4), PAL.navy, { key: 'pillar_r', sy: 12, sb: 18 });
+  cut(ellipsePts(100, 420, 85, 35, 0, 20), PAL.charcoal, { key: 'cap_l', shadow: false });
+  cut(ellipsePts(W - 100, 420, 85, 35, 0, 20), PAL.charcoal, { key: 'cap_r', shadow: false });
 
-    // Broad Massive Basalt Shoulder Base
-    const colY = 980;
-    const basaltStone = { teal: 0.75, pink: 0.55, yellow: 0.3 };
-    const basaltShadow = MIX.dark;
-    fill(rect(CX - 380, colY + 120, 760, 480), basaltStone);
-
-    // Center Head: TATPURUSHA / MAHADEVA (Serene Creator)
-    fill(circ(CX, colY - 60, 175), basaltStone);
-    fill(rect(CX - 110, colY - 380, 220, 220), basaltShadow); // Jatamukuta crown
-    type("OM", CX, colY - 260, 56, { yellow: 0.95, pink: 0.4 }, { align: 'center', key: 'om_txt' });
-    fill(ell(CX - 42, colY - 50, 26, 12), basaltShadow);
-    fill(ell(CX + 42, colY - 50, 26, 12), basaltShadow);
-    line([[CX - 35, colY + 25], [CX + 35, colY + 25]], basaltShadow, { w: 6, key: 'shiva_lips' });
-    fill(ell(CX, colY + 140, 160, 42), { yellow: 0.85, pink: 0.45 }); // Beaded necklace
-
-    // Right Head: AGHORA / BHAIRAVA (Wrathful Destroyer)
-    fill(circ(CX - 220, colY - 20, 125), { teal: 0.85, pink: 0.6, yellow: 0.25 });
-    type("AGHORA", CX - 220, colY - 180, 26, { yellow: 0.9, pink: 0.5 }, { align: 'center', key: 'aghora_txt' });
-    line([[CX - 260, colY + 15], [CX - 190, colY + 25]], basaltShadow, { w: 6, key: 'mustache' });
-
-    // Left Head: VAMADEVA / UMA (Gentle Feminine Preserver)
-    fill(circ(CX + 220, colY - 20, 125), { yellow: 0.75, pink: 0.5, teal: 0.2 });
-    type("UMA", CX + 220, colY - 180, 26, { pink: 0.85, yellow: 0.9 }, { align: 'center', key: 'uma_txt' });
-    fill(circ(CX + 290, colY + 180, 45), { yellow: 0.85, pink: 0.5 }); // Lotus bud hand
-
-    // Headers
-    drawHeaderRiso("ERA IV", "c. 750 CE", "ELEPHANTA TRIMURTI", "MONOLITHIC BASALT ROCK-CUT • GHARAPURI", "elephanta");
+  // Flickering cave torchlight glow
+  const torchPulse = 0.85 + 0.15 * Math.sin(t * TAU * 1.5);
+  cut(ellipsePts(CX, 920, 460 * torchPulse, 460 * torchPulse, 0, 36), PAL.orange, {
+    key: 'torch_glow', shadow: false, crayon: '#f6cf55'
   });
-  endSheet();
+
+  // 3. The Colossal Three-Headed Shiva (Sadashiva)
+  const colY = 980;
+  const basalt = PAL.charcoal;
+  const basaltShadow = PAL.night;
+
+  // Massive Shoulder Block
+  cut(rect(CX - 380, colY + 120, 760, 480, 8), basalt, { key: 'trimurti_chest', sy: 12, sb: 16 });
+
+  // Center Head: TATPURUSHA / MAHADEVA (Serene Creator)
+  cut(ellipsePts(CX, colY - 60, 175, 175, 0, 36), basalt, { key: 'tatpurusha_face', sy: 8, sb: 12 });
+  cut(rect(CX - 110, colY - 380, 220, 220, 4), basaltShadow, { key: 'tatpurusha_crown', sy: 6, sb: 10 });
+  tag('OM', CX, colY - 230, 48, { rot: 0, s: 1, key: 'om_tag' });
+  
+  // Sublime facial features
+  cut(ellipsePts(CX - 42, colY - 50, 26, 12, 0, 16), basaltShadow, { key: 'shiva_eye_l', shadow: false });
+  cut(ellipsePts(CX + 42, colY - 50, 26, 12, 0, 16), basaltShadow, { key: 'shiva_eye_r', shadow: false });
+  ink([[CX - 35, colY + 25], [CX + 35, colY + 25]], { w: 6, color: PAL.cream, key: 'shiva_mouth' });
+  cut(ellipsePts(CX, colY + 140, 160, 42, 0, 24), PAL.mustard, { key: 'shiva_necklace', sy: 4, sb: 6 });
+
+  // Right Head: AGHORA / BHAIRAVA (Wrathful Destroyer)
+  cut(ellipsePts(CX - 220, colY - 20, 125, 125, 0, 28), PAL.navy, { key: 'aghora_face', sy: 8, sb: 12 });
+  tag('AGHORA', CX - 220, colY - 180, 26, { rot: -0.06, s: 1, key: 'aghora_tag' });
+  ink([[CX - 260, colY + 15], [CX - 190, colY + 25]], { w: 6, color: PAL.cream, key: 'aghora_mustache' });
+
+  // Left Head: VAMADEVA / UMA (Gentle Feminine Preserver)
+  cut(ellipsePts(CX + 220, colY - 20, 125, 125, 0, 28), PAL.wood, { key: 'uma_face', sy: 8, sb: 12 });
+  tag('UMA', CX + 220, colY - 180, 26, { rot: 0.06, s: 1, key: 'uma_tag' });
+  // Pink paper lotus blossom in hand
+  cut(ellipsePts(CX + 290, colY + 180, 45, 45, 0, 20), PAL.pink, { key: 'uma_lotus', sy: 4, sb: 6 });
+
+  // Tags & Captions
+  yearTag('750 CE • Post-Gupta');
+  capStrip('Elephanta Trimurti Sadashiva in Basalt');
 }
 
 // ---------------------------------------------------------------------
 // ERA 4: CHOLA BRONZE (1100 CE) — Shiva Nataraja Cosmic Dance
 // ---------------------------------------------------------------------
 function sceneChola() {
-  beginSheet();
   const t = seg(TT, 36.0, 45.0);
 
-  // 1. Far Field: Cosmic Radiant Rays
-  printed(PITCH.field, { full: true }, () => {
-    fill(rect(-40, -40, W + 80, H + 80), {
-      pink: lin(0, 0, 0, H, [[0, 0.4], [1, 0.75]]),
-      yellow: lin(0, 0, 0, H, [[0, 0.6], [1, 0.95]]),
-      teal: lin(0, 0, 0, H, [[0, 0.1], [1, 0.25]])
+  // 1. Deep Cosmic Navy Paper Wall with Radiant Paper Rays
+  cut(rect(-30, -30, W + 60, H + 60, 0), PAL.navy, {
+    key: 'chola_wall', shadow: false, tear: 0,
+    pat: pat.dots('rgba(255,230,180,0.14)', 4, 70)
+  });
+
+  const radAngle = t * TAU * 0.1;
+  for (let b = 0; b < 16; b++) {
+    const a = (b / 16) * TAU + radAngle;
+    const bx = CX + Math.cos(a) * 750;
+    const by = 960 + Math.sin(a) * 750;
+    ink([[CX, 960], [bx, by]], { w: 5, color: 'rgba(246,207,85,0.25)', key: 'cosmic_ray_' + b });
+  }
+
+  // 2. The Great Prabhamandala (Cosmic Ring of Fire / Tiruvasi)
+  const ringR = 430;
+  cut(ellipsePts(CX, 960, ringR + 25, ringR + 25, 0, 44), PAL.orange, {
+    key: 'fire_ring_outer', sy: 12, sb: 18, crayon: '#f6cf55'
+  });
+  cut(ellipsePts(CX, 960, ringR - 25, ringR - 25, 0, 40), PAL.navy, {
+    key: 'fire_ring_inner', shadow: false
+  });
+
+  // 32 Radiating Flame Tongues
+  for (let f = 0; f < 32; f++) {
+    const fa = (f / 32) * TAU;
+    const fx = CX + Math.cos(fa) * ringR;
+    const fy = 960 + Math.sin(fa) * ringR;
+    cut(ellipsePts(fx, fy, 22, 22, 0, 16), PAL.yellow, { key: 'flame_tongue_' + f, sy: 3, sb: 5 });
+  }
+
+  // 3. Lotus Pedestal Base (Pitham)
+  cut(rect(CX - 240, 1600, 480, 80, 6), PAL.wood, { key: 'pitham_box', sy: 8, sb: 12 });
+  cut(ellipsePts(CX, 1600, 240, 45, 0, 24), PAL.mustard, { key: 'pitham_top', shadow: false });
+
+  // 4. Apasmara (The Dwarf Demon of Ignorance)
+  cut(ellipsePts(CX - 15, 1560, 110, 38, 0, 20), PAL.charcoal, { key: 'apasmara_body', sy: 4, sb: 6 });
+  tag('APASMARA (IGNORANCE)', CX, 1650, 22, { rot: 0, s: 1, key: 'apasmara_tag' });
+
+  // 5. Shiva Nataraja (Panchaloha Bronze Cutout)
+  const natX = CX;
+  const natY = 960;
+  const bronze = PAL.mustard;
+
+  // Streaming Matted Hair (Jata)
+  for (let j = 0; j < 6; j++) {
+    const jy = (natY - 240) + j * 16;
+    ink([[natX - 340, jy + Math.sin(t * 8 + j) * 12], [natX + 340, jy - Math.sin(t * 8 + j) * 12]], {
+      w: 6, color: PAL.orange, key: 'chola_hair_' + j
     });
-    const radAngle = t * TAU * 0.1;
-    for (let b = 0; b < 16; b++) {
-      const a = (b / 16) * TAU + radAngle;
-      const bx = CX + Math.cos(a) * 750;
-      const by = 960 + Math.sin(a) * 750;
-      line([[CX, 960], [bx, by]], { pink: 0.35, yellow: 0.55 }, { w: 5, key: 'ray_' + b });
-    }
+  }
+
+  // Dancing Torso
+  const torsoPts = [
+    [natX - 55, natY - 220], [natX + 55, natY - 220],
+    [natX + 45, natY + 40],  [natX - 35, natY + 50]
+  ];
+  cut(torsoPts, bronze, { key: 'nat_torso', sy: 8, sb: 12 });
+
+  // Head, Crown & Face
+  cut(ellipsePts(natX, natY - 240, 58, 58, 0, 24), bronze, { key: 'nat_head', sy: 6, sb: 8 });
+  cut(rect(natX - 25, natY - 330, 50, 75, 4), PAL.woodD, { key: 'nat_crown', sy: 4, sb: 6 });
+  cut(ellipsePts(natX, natY - 245, 6, 12, 0, 12), PAL.orange, { key: 'third_eye', shadow: false });
+
+  // Four Divine Arms
+  // 1. Upper Right: Damaru Drum
+  ink([[natX + 45, natY - 180], [natX + 260, natY - 200]], { w: 8, color: PAL.woodD, key: 'arm_damaru' });
+  cut(ellipsePts(natX + 270, natY - 205, 30, 30, 0, 16), PAL.yellow, { key: 'damaru_drum', sy: 4, sb: 6 });
+  tag('DRUM', natX + 270, natY - 195, 20, { rot: 0, s: 1, key: 'drum_tag' });
+
+  // 2. Upper Left: Agni Flame
+  ink([[natX - 45, natY - 180], [natX - 260, natY - 200]], { w: 8, color: PAL.woodD, key: 'arm_agni' });
+  cut(ellipsePts(natX - 270, natY - 205, 30, 30, 0, 16), PAL.orange, { key: 'agni_flame', sy: 4, sb: 6 });
+  tag('FIRE', natX - 270, natY - 195, 20, { rot: 0, s: 1, key: 'fire_tag' });
+
+  // 3. Lower Right: Abhaya Mudra
+  ink([[natX + 40, natY - 120], [natX + 170, natY - 60]], { w: 8, color: PAL.woodD, key: 'arm_abhaya' });
+  cut(ellipsePts(natX + 175, natY - 55, 30, 30, 0, 16), bronze, { key: 'abhaya_hand', sy: 4, sb: 6 });
+
+  // 4. Lower Left: Gaja-hasta (Crossed arm pointing to raised foot)
+  ink([[natX - 40, natY - 120], [natX + 40, natY + 20], [natX - 110, natY + 110]], {
+    w: 8, color: PAL.woodD, key: 'arm_gaja'
   });
 
-  // 2. The World: Cosmic Ring of Fire (Tiruvasi) & Dancing Nataraja
-  printed(PITCH.world, { shapes: true }, () => {
-    const ringR = 430;
-    // Outer flame ring
-    fill(circ(CX, 960, ringR + 25), { pink: 0.85, yellow: 0.95 });
-    fill(circ(CX, 960, ringR - 25), {}); // Knockout
-    for (let f = 0; f < 32; f++) {
-      const fa = (f / 32) * TAU;
-      const fx = CX + Math.cos(fa) * ringR;
-      const fy = 960 + Math.sin(fa) * ringR;
-      fill(circ(fx, fy, 22), { pink: 0.95, yellow: 0.85 }, { over: true });
-    }
-
-    // Lotus Pedestal Base
-    fill(rect(CX - 240, 1600, 480, 80), { teal: 0.6, pink: 0.5, yellow: 0.8 });
-    fill(ell(CX, 1600, 240, 45), { yellow: 0.9, pink: 0.4 });
-
-    // Apasmara (Demon of Ignorance)
-    fill(ell(CX - 15, 1560, 110, 38), MIX.dark);
-    type("APASMARA (IGNORANCE)", CX, 1645, 20, MIX.dark, { align: 'center', key: 'apasmara_txt' });
-
-    // Shiva Nataraja Body (Panchaloha Bronze)
-    const natX = CX;
-    const natY = 960;
-    const cholaBronze = { teal: 0.35, pink: 0.85, yellow: 0.9 };
-    const bronzeLine = MIX.dark;
-
-    // Streaming Matted Hair (Jata)
-    for (let j = 0; j < 6; j++) {
-      const jy = (natY - 240) + j * 16;
-      line([[natX - 340, jy + Math.sin(t * 8 + j) * 12], [natX + 340, jy - Math.sin(t * 8 + j) * 12]], { pink: 0.7, yellow: 0.85 }, { w: 6, key: 'jata_' + j });
-    }
-
-    // Slender Dancing Torso
-    const torsoPts = [
-      [natX - 55, natY - 220], [natX + 55, natY - 220],
-      [natX + 45, natY + 40],  [natX - 35, natY + 50]
-    ];
-    fill(hand(torsoPts, 'nat_torso', 1.05, 8), cholaBronze);
-
-    // Crown & Face
-    fill(circ(natX, natY - 240, 58), cholaBronze);
-    fill(rect(natX - 25, natY - 330, 50, 75), bronzeLine);
-
-    // Four Divine Arms
-    // 1. Upper Right: Damaru Drum
-    line([[natX + 45, natY - 180], [natX + 260, natY - 200]], bronzeLine, { w: 8, key: 'arm_damaru' });
-    fill(circ(natX + 270, natY - 205, 30), { yellow: 0.95, pink: 0.5 });
-    type("DRUM", natX + 270, natY - 195, 20, MIX.coral, { align: 'center', key: 'drum_txt' });
-
-    // 2. Upper Left: Agni Flame
-    line([[natX - 45, natY - 180], [natX - 260, natY - 200]], bronzeLine, { w: 8, key: 'arm_agni' });
-    fill(circ(natX - 270, natY - 205, 30), { yellow: 0.95, pink: 0.6 });
-    type("FIRE", natX - 270, natY - 195, 20, MIX.coral, { align: 'center', key: 'fire_txt' });
-
-    // 3. Lower Right: Abhaya Mudra
-    line([[natX + 40, natY - 120], [natX + 170, natY - 60]], bronzeLine, { w: 8, key: 'arm_abhaya' });
-    fill(circ(natX + 175, natY - 55, 30), cholaBronze);
-
-    // 4. Lower Left: Gaja-hasta (Crossed arm pointing to raised foot)
-    line([[natX - 40, natY - 120], [natX + 40, natY + 20], [natX - 110, natY + 110]], bronzeLine, { w: 8, key: 'arm_gaja' });
-
-    // Right Leg planted on Apasmara
-    line([[natX + 20, natY + 45], [natX + 15, natY + 360], [natX - 5, natY + 540]], bronzeLine, { w: 10, key: 'leg_r' });
-    fill(ell(natX - 5, natY + 540, 24, 14), cholaBronze);
-
-    // Left Leg lifted dynamically across knee
-    line([[natX - 20, natY + 45], [natX - 140, natY + 180], [natX + 90, natY + 280]], bronzeLine, { w: 10, key: 'leg_l' });
-    fill(ell(natX + 90, natY + 280, 26, 15, 0.4), cholaBronze);
-
-    // Headers
-    drawHeaderRiso("ERA V", "c. 1100 CE", "SHIVA NATARAJA", "LOST-WAX CHOLA BRONZE • TAMIL NADU", "chola");
+  // Right Leg (Planted on Apasmara)
+  ink([[natX + 20, natY + 45], [natX + 15, natY + 360], [natX - 5, natY + 540]], {
+    w: 10, color: PAL.woodD, key: 'leg_r'
   });
-  endSheet();
+  cut(ellipsePts(natX - 5, natY + 540, 24, 14, 0, 16), bronze, { key: 'foot_r', shadow: false });
+
+  // Left Leg (Lifted dynamically in Ananda Tandava)
+  ink([[natX - 20, natY + 45], [natX - 140, natY + 180], [natX + 90, natY + 280]], {
+    w: 10, color: PAL.woodD, key: 'leg_l'
+  });
+  cut(ellipsePts(natX + 90, natY + 280, 26, 15, 0.4, 16), bronze, { key: 'foot_l', shadow: false });
+
+  // Tags & Captions
+  yearTag('1100 CE • Imperial Chola');
+  capStrip('Shiva Nataraja • The Cosmic Dance of Bliss');
 }
 // =====================================================================
-//  ERAS, CAMERAS, BRIDGES — Ancient Indian Sculpture
-//  Colours use inkRGB plate tones so all cross-fades remain within Risograph inks.
+//  ERAS, CAMERAS, BRIDGES — Ancient Indian Sculpture (Cut-Paper Style)
+//  ERA_BG: dominant wall color per era (morph fade to blank paper).
+//  BRIDGES: { tc, A: () => ({ P, c }), B: () => ({ P, c }) }
 // =====================================================================
 
-// Background tones per era:
-// 0. Indus: Terracotta Ochre (pink 0.45, yellow 0.85, teal 0.05)
-// 1. Maurya: Polished Sandstone Cream (yellow 0.65, pink 0.25, teal 0.1)
-// 2. Gupta: Sacred Lotus Ivory (yellow 0.4, pink 0.15, teal 0.12)
-// 3. Elephanta: Deep Basalt Shadow (teal 0.65, pink 0.5, yellow 0.35)
-// 4. Chola: Sacred Bronze Patina & Fire (teal 0.35, pink 0.65, yellow 0.9)
-const ERA_BG = [
-  rgbHex(inkRGB({ pink: 0.35, yellow: 0.75, teal: 0.05 })),
-  rgbHex(inkRGB({ yellow: 0.55, pink: 0.22, teal: 0.08 })),
-  rgbHex(inkRGB({ yellow: 0.35, pink: 0.15, teal: 0.15 })),
-  rgbHex(inkRGB({ teal: 0.55, pink: 0.45, yellow: 0.25 })),
-  rgbHex(inkRGB({ pink: 0.5, yellow: 0.8, teal: 0.2 }))
-];
+const ERA_BG = ['#c08048', '#d9a441', '#a9d9c6', '#141c40', '#26315f'];
 
 function pieceCam(era, t) {
-  // Gentle cinematic push/pull per era
-  if (era === 0) return push(t, 1.0, 7.5, { z: 1.06, p: [540, 960], to: [540, 920] });
-  if (era === 1) return push(t, 10.0, 16.5, { z: 1.08, p: [540, 960], to: [540, 900] });
+  if (era === 0) return push(t, 1.0, 7.5, { z: 1.05, p: [540, 960], to: [540, 920] });
+  if (era === 1) return push(t, 10.0, 16.5, { z: 1.06, p: [540, 960], to: [540, 900] });
   if (era === 2) return push(t, 19.0, 25.5, { z: 1.05, p: [540, 960], to: [540, 940] });
-  if (era === 3) return push(t, 28.0, 34.5, { z: 1.1, p: [540, 960], to: [540, 910] });
-  return push(t, 37.0, 43.5, { z: 1.12, p: [540, 960], to: [540, 960] });
-}
-
-// Geometric point generators for morph targets
-function circleShapePts(cx, cy, r, n = 64) {
-  const pts = [];
-  for (let i = 0; i < n; i++) {
-    const a = (i / n) * TAU;
-    pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
-  }
-  return pts;
+  if (era === 3) return push(t, 28.0, 34.5, { z: 1.08, p: [540, 960], to: [540, 910] });
+  return push(t, 37.0, 43.5, { z: 1.1, p: [540, 960], to: [540, 960] });
 }
 
 function chakraSpokePts(cx, cy, rOuter, rInner, spokes = 24) {
@@ -1530,53 +1301,29 @@ function flameRingPts(cx, cy, r, flames = 28) {
 }
 
 const BRIDGES = [
-  // Bridge 0 (t=9.0): Indus Arm Bangles -> Mauryan Ashoka Chakra
+  // Bridge 0 (t=9.0): Indus Bangles -> Mauryan 24-Spoke Chakra
   {
     tc: 9.0,
-    A: () => ({
-      P: circleShapePts(540, 960, 220),
-      c: rgbHex(inkRGB({ pink: 0.6, yellow: 0.8, teal: 0.2 }))
-    }),
-    B: () => ({
-      P: chakraSpokePts(540, 960, 230, 205, 24),
-      c: rgbHex(inkRGB({ teal: 0.9, pink: 0.3, yellow: 0.2 }))
-    })
+    A: () => ({ P: ellipsePts(540, 960, 220, 220, 0, 64), c: PAL.yellow }),
+    B: () => ({ P: chakraSpokePts(540, 960, 230, 205, 24), c: PAL.blue })
   },
   // Bridge 1 (t=18.0): Mauryan Chakra -> Gupta Lotus Halo (Prabhamandala)
   {
     tc: 18.0,
-    A: () => ({
-      P: chakraSpokePts(540, 780, 260, 230, 24),
-      c: rgbHex(inkRGB({ teal: 0.8, pink: 0.4, yellow: 0.3 }))
-    }),
-    B: () => ({
-      P: lotusHaloPts(540, 780, 270, 16),
-      c: rgbHex(inkRGB({ yellow: 0.9, pink: 0.5, teal: 0.1 }))
-    })
+    A: () => ({ P: chakraSpokePts(540, 780, 260, 230, 24), c: PAL.blue }),
+    B: () => ({ P: lotusHaloPts(540, 780, 270, 16), c: PAL.yellow })
   },
   // Bridge 2 (t=27.0): Gupta Lotus Halo -> Elephanta Rock Arch Cavern
   {
     tc: 27.0,
-    A: () => ({
-      P: lotusHaloPts(540, 780, 280, 16),
-      c: rgbHex(inkRGB({ yellow: 0.8, pink: 0.4, teal: 0.15 }))
-    }),
-    B: () => ({
-      P: circleShapePts(540, 840, 310),
-      c: rgbHex(inkRGB({ teal: 0.85, pink: 0.7, yellow: 0.4 }))
-    })
+    A: () => ({ P: lotusHaloPts(540, 780, 280, 16), c: PAL.yellow }),
+    B: () => ({ P: ellipsePts(540, 840, 310, 310, 0, 64), c: PAL.charcoal })
   },
   // Bridge 3 (t=36.0): Elephanta Rock Arch -> Chola Cosmic Ring of Fire (Tiruvasi)
   {
     tc: 36.0,
-    A: () => ({
-      P: circleShapePts(540, 840, 310),
-      c: rgbHex(inkRGB({ teal: 0.8, pink: 0.65, yellow: 0.3 }))
-    }),
-    B: () => ({
-      P: flameRingPts(540, 940, 360, 28),
-      c: rgbHex(inkRGB({ pink: 0.8, yellow: 0.95, teal: 0.15 }))
-    })
+    A: () => ({ P: ellipsePts(540, 840, 310, 310, 0, 64), c: PAL.charcoal }),
+    B: () => ({ P: flameRingPts(540, 960, 380, 28), c: PAL.orange })
   }
 ];
 

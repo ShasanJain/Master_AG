@@ -1,420 +1,437 @@
 // =====================================================================
-//  SCENES — Ancient Indian Sculpture (9:16 Vertical, Risograph)
-//  Every colour is printed plate tones { teal, pink, yellow }.
-//  All scenes use beginSheet(), printed(PITCH.*), and endSheet().
+//  SCENES — Ancient Indian Sculpture (Cut-Paper Collage Animation)
+//  Tactile torn-edge paper shapes with soft drop shadows, patterns,
+//  and paper tags across 4,000 years of sculptural form.
 // =====================================================================
-
-function drawHeaderRiso(eraTag, dateTag, titleTag, subTag, keyPrefix) {
-  // Top tag box
-  fill(hand(boxPts(CX - 220, 160, 440, 56), keyPrefix + '_tagbox', 1.0), { yellow: 0.85, pink: 0.35 });
-  type(eraTag + ' • ' + dateTag, CX, 200, 32, MIX.dark, { align: 'center', key: keyPrefix + '_t1', weight: 900 });
-  
-  // Title & Subtitle
-  type(titleTag, CX, 270, 44, MIX.blue, { align: 'center', key: keyPrefix + '_t2', weight: 900 });
-  type(subTag, CX, 318, 22, { teal: 0.75, pink: 0.4 }, { align: 'center', key: keyPrefix + '_t3', weight: 700 });
-}
 
 // ---------------------------------------------------------------------
 // ERA 0: INDUS BRONZE (2500 BCE) — Dancing Girl of Mohenjo-daro
 // ---------------------------------------------------------------------
 function sceneIndus() {
-  beginSheet();
   const t = seg(TT, 0.0, 9.0);
 
-  // 1. Far Field: Mohenjo-daro Terracotta Brick Wall
-  printed(PITCH.field, { full: true }, () => {
-    const R = RNG('indus_bricks');
-    for (let y = 140; y < 1820; y += 52) {
-      const shift = (Math.floor(y / 52) % 2) * 55;
-      for (let x = -60 + shift; x < W + 60; x += 115) {
-        if (R.f() > 0.15) {
-          fill(rect(x + 2, y + 2, 110, 48), { pink: 0.16 + R.f() * 0.08, yellow: 0.32 + R.f() * 0.12 });
-        }
-      }
-    }
-    // Atmospheric foundry glow behind crucible
-    fill(circ(CX, 1060, 420), { yellow: rad(CX, 1060, 180, 420, [[0, 0.65], [1, 0]]) }, { over: true });
+  // 1. Full-Bleed Terracotta Brick Wall (Torn Paper with pattern)
+  cut(rect(-30, -30, W + 60, H + 60, 0), PAL.wood, {
+    key: 'indus_wall', shadow: false, tear: 0,
+    pat: pat.stripes('rgba(255,240,210,0.12)', 20, 60, 0)
   });
 
-  // 2. The World: Figure, Crucible, and Glyphs
-  printed(PITCH.world, { shapes: true }, () => {
-    // Indus Seal Glyphs in background
-    fill(hand(boxPts(CX - 380, 420, 170, 170), 'seal1', 1.2), { teal: 0.18, yellow: 0.28 });
-    fill(hand(boxPts(CX + 210, 420, 170, 170), 'seal2', 1.2), { teal: 0.18, yellow: 0.28 });
-    type("INDUS", CX - 295, 515, 34, { teal: 0.6, pink: 0.3 }, { align: 'center', key: 'seal1_txt' });
-    type("SEAL", CX + 295, 515, 34, { teal: 0.6, pink: 0.3 }, { align: 'center', key: 'seal2_txt' });
-
-    // Crucible Foundry Pedestal
-    fill(ell(CX, 1680, 420, 120), { teal: 0.35, pink: 0.65, yellow: 0.85 });
-    type("LOST-WAX BRONZE FOUNDRY (CIRE PERDUE)", CX, 1720, 22, MIX.dark, { align: 'center', key: 'indus_sub' });
-
-    // The Dancing Girl Figure
-    const figX = CX;
-    const figY = 1040 + Math.sin(t * TAU * 0.5) * 8; // Gentle breathing bob
-    const bronzeBody = { teal: 0.6, pink: 0.75, yellow: 0.85 }; // Rich lustrous bronze
-    const bronzeShadow = MIX.dark;
-
-    // Torso (Tribhanga Contrapposto)
-    const torsoPts = [
-      [figX - 45, figY - 260], [figX + 55, figY - 250], [figX + 35, figY - 100],
-      [figX + 70, figY + 60],  [figX - 25, figY + 70],  [figX - 65, figY + 40],
-      [figX - 35, figY - 110]
-    ];
-    fill(hand(torsoPts, 'indus_torso', 1.1, 8), bronzeBody);
-
-    // Head, Chin & Hair Bun
-    fill(circ(figX + 10, figY - 330, 68), bronzeBody);
-    fill(ell(figX + 68, figY - 320, 48, 58, 0.2), bronzeShadow); // Heavy hair bun
-    fill(ell(figX - 8, figY - 335, 12, 16), { yellow: 0.95, pink: 0.15 }); // Cowrie shell eyes
-    line([[figX - 18, figY - 315], [figX + 5, figY - 315]], bronzeShadow, { w: 6, key: 'lips' });
-
-    // Right Leg (Bearing weight)
-    const rightLeg = [
-      [figX + 45, figY + 65], [figX + 55, figY + 280], [figX + 40, figY + 540],
-      [figX + 10, figY + 540], [figX + 25, figY + 280], [figX + 15, figY + 65]
-    ];
-    fill(hand(rightLeg, 'indus_rleg', 1.05, 8), bronzeBody);
-
-    // Left Leg (Bent gracefully at knee)
-    const leftLeg = [
-      [figX - 45, figY + 65], [figX - 95, figY + 290], [figX - 40, figY + 530],
-      [figX - 70, figY + 530], [figX - 125, figY + 290], [figX - 65, figY + 65]
-    ];
-    fill(hand(leftLeg, 'indus_lleg', 1.05, 8), bronzeBody);
-
-    // Right Arm resting on right hip
-    const rightArm = [
-      [figX + 55, figY - 250], [figX + 140, figY - 110], [figX + 75, figY + 55],
-      [figX + 60, figY + 45],  [figX + 115, figY - 100], [figX + 40, figY - 240]
-    ];
-    fill(hand(rightArm, 'indus_rarm', 1.05, 8), bronzeBody);
-    for (let b = 0; b < 4; b++) {
-      fill(rect(figX + 85 + b * 6, figY + 20 - b * 4, 8, 22), { yellow: 0.95, pink: 0.1 });
-    }
-
-    // Left Arm dangling forward, sleeved with 22 bangles
-    const leftArm = [
-      [figX - 45, figY - 260], [figX - 120, figY - 80], [figX - 85, figY + 140],
-      [figX - 65, figY + 130], [figX - 95, figY - 75],  [figX - 30, figY - 250]
-    ];
-    fill(hand(leftArm, 'indus_larm', 1.05, 8), bronzeBody);
-    for (let b = 0; b < 22; b++) {
-      const by = (figY - 220) + b * 15;
-      const bx = (figX - 55) - b * 1.5;
-      fill(ell(bx, by, 34, 14, -0.3), { yellow: 0.95, pink: 0.2 }, { over: true });
-      line([[bx - 28, by], [bx + 28, by]], bronzeShadow, { w: 4, key: 'bangle_' + b });
-    }
-
-    // Headers
-    drawHeaderRiso("ERA I", "c. 2500 BCE", "THE DANCING GIRL", "LOST-WAX BRONZE • MOHENJO-DARO", "indus");
+  // 2. Indus Valley Stone Base / Table
+  cut(rect(-30, 1580, W + 60, 400, 0), PAL.woodD, {
+    key: 'indus_floor', sy: -8, sb: 12,
+    pat: pat.grainWood('rgba(60,30,10,0.25)')
   });
-  endSheet();
+
+  // 3. Ancient Pictographic Seals on the Wall
+  cut(rect(100, 420, 180, 180, 8), PAL.cream, { key: 'seal_l', sy: 6, sb: 8 });
+  ink([[130, 490], [250, 490]], { w: 6, color: PAL.ink, key: 's1_a' });
+  ink([[190, 450], [190, 570]], { w: 6, color: PAL.ink, key: 's1_b' });
+  ink([[140, 550], [240, 520]], { w: 4, color: PAL.ink, key: 's1_c' });
+
+  cut(rect(W - 280, 420, 180, 180, 8), PAL.cream, { key: 'seal_r', sy: 6, sb: 8 });
+  cut(ellipsePts(W - 190, 510, 50, 50, 0, 24), PAL.mustard, { key: 'seal_r_disc', shadow: false });
+  ink([[W - 230, 510], [W - 150, 510]], { w: 6, color: PAL.ink, key: 's2_a' });
+
+  // 4. The Dancing Girl (Cut-Paper Bronze Silhouette)
+  const figX = CX;
+  const figY = 1040 + Math.sin(t * TAU * 0.5) * 8; // Gentle breathing bob
+  const bronze = PAL.woodD;
+  const bronzeL = PAL.mustard;
+
+  // Crucible Foundry Fire glow behind figure
+  cut(ellipsePts(figX, 1620, 360, 100, 0, 36), PAL.orange, {
+    key: 'foundry_glow', shadow: false, crayon: '#f6cf55'
+  });
+
+  // Torso (Contrapposto / Tribhanga posture)
+  const torsoPts = [
+    [figX - 45, figY - 260], [figX + 55, figY - 250], [figX + 35, figY - 100],
+    [figX + 75, figY + 60],  [figX - 25, figY + 70],  [figX - 65, figY + 40],
+    [figX - 35, figY - 110]
+  ];
+  cut(torsoPts, bronze, { key: 'indus_torso', tear: 1.2, sy: 8, sb: 12 });
+  // Bronze chest highlight
+  cut(ellipsePts(figX + 5, figY - 170, 35, 45, 0.1, 20), bronzeL, { key: 'indus_chest_hl', shadow: false });
+
+  // Head, Chin & Hair Bun
+  cut(ellipsePts(figX + 10, figY - 330, 68, 68, 0, 32), bronze, { key: 'indus_head', sy: 6, sb: 8 });
+  cut(ellipsePts(figX + 70, figY - 320, 52, 60, 0.2, 28), PAL.ink, { key: 'indus_bun', sy: 4, sb: 6 });
+  // Cowrie shell eye
+  cut(ellipsePts(figX - 8, figY - 335, 14, 18, 0, 16), PAL.paper, { key: 'indus_eye', shadow: false });
+  ink([[figX - 18, figY - 315], [figX + 6, figY - 315]], { w: 6, color: PAL.ink, key: 'indus_lips' });
+
+  // Right Leg (Bearing weight)
+  const rLegPts = [
+    [figX + 45, figY + 65], [figX + 55, figY + 280], [figX + 40, figY + 540],
+    [figX + 10, figY + 540], [figX + 25, figY + 280], [figX + 15, figY + 65]
+  ];
+  cut(rLegPts, bronze, { key: 'indus_rleg', sy: 6, sb: 8 });
+
+  // Left Leg (Bent gracefully at knee)
+  const lLegPts = [
+    [figX - 45, figY + 65], [figX - 95, figY + 290], [figX - 40, figY + 530],
+    [figX - 70, figY + 530], [figX - 125, figY + 290], [figX - 65, figY + 65]
+  ];
+  cut(lLegPts, bronze, { key: 'indus_lleg', sy: 6, sb: 8 });
+
+  // Right Arm: Resting firmly on right hip
+  const rArmPts = [
+    [figX + 55, figY - 250], [figX + 140, figY - 110], [figX + 75, figY + 55],
+    [figX + 60, figY + 45],  [figX + 115, figY - 100], [figX + 40, figY - 240]
+  ];
+  cut(rArmPts, bronze, { key: 'indus_rarm', sy: 6, sb: 8 });
+  for (let b = 0; b < 4; b++) {
+    cut(rect(figX + 85 + b * 6, figY + 20 - b * 4, 8, 22, 2), PAL.yellow, { key: 'r_amulet_' + b, shadow: false });
+  }
+
+  // Left Arm: Sleeved with 22 bangles from wrist to shoulder
+  const lArmPts = [
+    [figX - 45, figY - 260], [figX - 120, figY - 80], [figX - 85, figY + 140],
+    [figX - 65, figY + 130], [figX - 95, figY - 75],  [figX - 30, figY - 250]
+  ];
+  cut(lArmPts, bronze, { key: 'indus_larm', sy: 6, sb: 8 });
+  for (let b = 0; b < 22; b++) {
+    const by = (figY - 220) + b * 15;
+    const bx = (figX - 55) - b * 1.5;
+    cut(ellipsePts(bx, by, 32, 12, -0.3, 20), PAL.cream, { key: 'bangle_' + b, sy: 2, sb: 4 });
+  }
+
+  // Tags & Captions
+  yearTag('2500 BCE • Indus Valley');
+  capStrip('Mohenjo-daro Dancing Girl in Lost-Wax Bronze');
 }
 
 // ---------------------------------------------------------------------
 // ERA 1: MAURYA POLISH (250 BCE) — Sarnath Lion Capital
 // ---------------------------------------------------------------------
 function sceneMaurya() {
-  beginSheet();
   const t = seg(TT, 9.0, 18.0);
 
-  // 1. Far Field: Brahmi Script Inscription Background
-  printed(PITCH.field, { full: true }, () => {
-    fill(rect(-40, -40, W + 80, H + 80), {
-      yellow: lin(0, 0, 0, H, [[0, 0.45], [1, 0.7]]),
-      pink: lin(0, 0, 0, H, [[0, 0.15], [1, 0.3]])
+  // 1. Imperial Sandstone Wall with subtle vertical grain
+  cut(rect(-30, -30, W + 60, H + 60, 0), PAL.mustard, {
+    key: 'maurya_wall', shadow: false, tear: 0,
+    pat: pat.stripes('rgba(255,255,255,0.14)', 14, 50, 0.4)
+  });
+
+  // 2. Monolithic Column Shaft (Mirror-like Mauryan Polish)
+  cut(rect(CX - 150, 1260, 300, 600, 4), PAL.cream, {
+    key: 'maurya_shaft', sy: 8, sb: 14, crayon: '#d9a441'
+  });
+  // Specular high-gloss sheen streak
+  cut(rect(CX - 25, 1260, 50, 600, 0), '#ffffff', {
+    key: 'maurya_sheen', shadow: false, tear: 0
+  });
+
+  // 3. Inverted Bell Lotus Capital
+  const lotusBaseY = 1260;
+  for (let p = 0; p < 12; p++) {
+    const lx = (CX - 200) + p * 36;
+    const petalPts = [
+      [lx, lotusBaseY], [lx + 18, lotusBaseY - 110], [lx + 36, lotusBaseY],
+      [lx + 18, lotusBaseY + 20]
+    ];
+    cut(petalPts, PAL.yellow, { key: 'lotus_petal_' + p, sy: 6, sb: 8 });
+  }
+
+  // 4. Circular Drum Abacus with Animal Relieves
+  const abacusY = 1120;
+  cut(rect(CX - 270, abacusY - 60, 540, 85, 8), PAL.teal, {
+    key: 'abacus_drum', sy: 8, sb: 12
+  });
+  tag('HORSE • CHAKRA • BULL • LION', CX, abacusY + 40, 32, {
+    rot: 0, s: 1, key: 'abacus_tag'
+  });
+
+  // 5. Four Addorsed Asiatic Lions (Back-to-Back)
+  const lionY = 720;
+  // Left Lion Body
+  cut(ellipsePts(CX - 120, lionY + 50, 140, 140, 0, 32), PAL.cream, {
+    key: 'lion_body_l', sy: 8, sb: 12
+  });
+  // Right Lion Body
+  cut(ellipsePts(CX + 120, lionY + 50, 140, 140, 0, 32), PAL.cream, {
+    key: 'lion_body_r', sy: 8, sb: 12
+  });
+
+  // Stylized Curled Flame Manes
+  for (let a = 0; a < 26; a++) {
+    const ang = (a / 26) * TAU;
+    const mx = CX + Math.cos(ang) * 190;
+    const my = (lionY + 60) + Math.sin(ang) * 150;
+    cut(ellipsePts(mx, my, 22, 22, 0, 16), PAL.woodD, {
+      key: 'mane_curl_' + a, sy: 3, sb: 5
     });
-    // Radial glow behind the Chakra wheel
-    fill(circ(CX, 480, 420), { yellow: rad(CX, 480, 160, 420, [[0, 0.75], [1, 0]]) }, { over: true });
+  }
+
+  // Roaring Snouts
+  cut(ellipsePts(CX - 110, lionY + 110, 48, 48, 0, 20), PAL.woodD, { key: 'snout_l', sy: 4, sb: 6 });
+  cut(ellipsePts(CX + 110, lionY + 110, 48, 48, 0, 20), PAL.woodD, { key: 'snout_r', sy: 4, sb: 6 });
+  cut(rect(CX - 125, lionY + 100, 30, 16, 2), '#ffffff', { key: 'tooth_l', shadow: false });
+  cut(rect(CX + 95, lionY + 100, 30, 16, 2), '#ffffff', { key: 'tooth_r', shadow: false });
+
+  // 6. The Crown: 24-Spoke Rotating Ashoka Chakra Wheel
+  const rot = t * 0.4;
+  const chakraY = 480;
+  const cOuter = 190, cInner = 30;
+  // Outer Rim
+  cut(ellipsePts(CX, chakraY, cOuter + 14, cOuter + 14, 0, 40), PAL.blue, {
+    key: 'chakra_rim', sy: 8, sb: 14
   });
-
-  // 2. The World: Column Shaft, Inverted Lotus, Abacus & Roaring Lions
-  printed(PITCH.world, { shapes: true }, () => {
-    // Monolithic Column Shaft with high-gloss reflection streak
-    fill(rect(CX - 160, 1260, 320, 600), { yellow: 0.85, pink: 0.35, teal: 0.12 });
-    fill(rect(CX - 25, 1260, 50, 600), { yellow: 0.3, pink: 0.05 }); // Specular highlight
-
-    // Inverted Bell Lotus Capital
-    const lotusBaseY = 1260;
-    for (let p = 0; p < 14; p++) {
-      const lx = (CX - 220) + p * 34;
-      const petalPts = [
-        [lx, lotusBaseY], [lx + 17, lotusBaseY - 110], [lx + 34, lotusBaseY],
-        [lx + 17, lotusBaseY + 20]
-      ];
-      fill(hand(petalPts, 'lotus' + p, 1.05, 6), { yellow: 0.9, pink: 0.45 });
-    }
-
-    // Circular Abacus with animal reliefs
-    const abacusY = 1120;
-    fill(rect(CX - 280, abacusY - 60, 560, 90), { teal: 0.7, pink: 0.3, yellow: 0.4 });
-    type("HORSE • WHEEL • BULL • LION", CX, abacusY + 5, 26, { yellow: 0.95, pink: 0.2 }, { align: 'center', key: 'abacus_txt' });
-
-    // Four Addorsed Lions (Majestic Back-to-Back Asiatic Lions)
-    const lionY = 720;
-    const lionTones = { yellow: 0.92, pink: 0.4, teal: 0.08 };
-    const maneTones = MIX.dark;
-    
-    // Left & Right Lion Bodies
-    fill(circ(CX - 120, lionY + 50, 140), lionTones);
-    fill(circ(CX + 120, lionY + 50, 140), lionTones);
-
-    // Stylized Curled Flame Manes
-    for (let a = 0; a < 26; a++) {
-      const ang = (a / 26) * TAU;
-      const mx = CX + Math.cos(ang) * 190;
-      const my = (lionY + 60) + Math.sin(ang) * 150;
-      fill(circ(mx, my, 22), maneTones);
-    }
-
-    // Roaring Snouts
-    fill(circ(CX - 110, lionY + 110, 48), maneTones);
-    fill(circ(CX + 110, lionY + 110, 48), maneTones);
-
-    // 24-Spoke Rotating Ashoka Chakra Wheel
-    const rot = t * 0.4;
-    const chakraY = 480;
-    const cOuter = 190, cInner = 30;
-    fill(circ(CX, chakraY, cOuter + 14), { teal: 0.85, pink: 0.35, yellow: 0.2 });
-    fill(circ(CX, chakraY, cOuter - 10), {}); // Knockout
-    
-    // Spokes
-    for (let s = 0; s < 24; s++) {
-      const sa = (s / 24) * TAU + rot;
-      const x1 = CX + Math.cos(sa) * cInner;
-      const y1 = chakraY + Math.sin(sa) * cInner;
-      const x2 = CX + Math.cos(sa) * cOuter;
-      const y2 = chakraY + Math.sin(sa) * cOuter;
-      line([[x1, y1], [x2, y2]], { teal: 0.9, pink: 0.3, yellow: 0.2 }, { w: 6, key: 'spoke_' + s });
-    }
-    fill(circ(CX, chakraY, cInner), { teal: 0.9, pink: 0.4, yellow: 0.2 });
-
-    // Headers
-    drawHeaderRiso("ERA II", "c. 250 BCE", "THE ASHOKAN CAPITAL", "POLISHED CHUNAR SANDSTONE • SARNATH", "maurya");
+  cut(ellipsePts(CX, chakraY, cOuter - 10, cOuter - 10, 0, 36), PAL.mustard, {
+    key: 'chakra_inner_cut', shadow: false
   });
-  endSheet();
+  // Spokes
+  for (let s = 0; s < 24; s++) {
+    const sa = (s / 24) * TAU + rot;
+    const x1 = CX + Math.cos(sa) * cInner;
+    const y1 = chakraY + Math.sin(sa) * cInner;
+    const x2 = CX + Math.cos(sa) * cOuter;
+    const y2 = chakraY + Math.sin(sa) * cOuter;
+    ink([[x1, y1], [x2, y2]], { w: 6, color: PAL.blue, key: 'spoke_' + s });
+  }
+  // Central Hub
+  cut(ellipsePts(CX, chakraY, cInner + 6, cInner + 6, 0, 20), PAL.blue, { key: 'chakra_hub', sy: 4, sb: 6 });
+
+  // Tags & Captions
+  yearTag('250 BCE • Maurya Empire');
+  capStrip('Sarnath Lion Capital & 24-Spoke Dharma Chakra');
 }
 
 // ---------------------------------------------------------------------
 // ERA 2: GUPTA SERENITY (500 CE) — Sarnath Preaching Buddha
 // ---------------------------------------------------------------------
 function sceneGupta() {
-  beginSheet();
   const t = seg(TT, 18.0, 27.0);
 
-  // 1. Far Field: Concentric Mandala Resonance
-  printed(PITCH.field, { full: true }, () => {
-    fill(rect(-40, -40, W + 80, H + 80), {
-      yellow: lin(0, 0, 0, H, [[0, 0.3], [1, 0.55]]),
-      pink: lin(0, 0, 0, H, [[0, 0.1], [1, 0.25]]),
-      teal: lin(0, 0, 0, H, [[0, 0.08], [1, 0.18]])
-    });
-    fill(circ(CX, 780, 480), { yellow: rad(CX, 780, 200, 480, [[0, 0.7], [1, 0]]) }, { over: true });
+  // 1. Serene Temple Sanctuary Wall (Soft Mint Paper with Dots)
+  cut(rect(-30, -30, W + 60, H + 60, 0), PAL.mint, {
+    key: 'gupta_wall', shadow: false, tear: 0,
+    pat: pat.dots('rgba(255,255,255,0.22)', 6, 80)
   });
 
-  // 2. The World: Lotus Halo, Buddha in Padmasana & Deer Throne
-  printed(PITCH.world, { shapes: true }, () => {
-    // The Great Prabhamandala (Elaborate Lotus Halo)
-    const haloY = 780;
-    fill(curvy(lotusHaloPts(CX, haloY, 320, 24)), { yellow: 0.85, pink: 0.45, teal: 0.1 });
-    fill(circ(CX, haloY, 260), {}); // Paper knockout
-    fill(curvy(lotusHaloPts(CX, haloY, 240, 16)), { yellow: 0.7, pink: 0.3, teal: 0.15 });
-    fill(circ(CX, haloY, 190), {});
-
-    // Buddha Head & Ushnisha
-    const budTones = { yellow: 0.9, pink: 0.35, teal: 0.15 }; // Ivory Sandstone
-    fill(circ(CX, haloY, 95), budTones);
-    fill(circ(CX, haloY - 95, 38), MIX.dark); // Snail-curl Ushnisha topknot
-    // Contemplative Lotus Eyes & Smile
-    fill(ell(CX - 28, haloY + 8, 18, 8, 0.1), MIX.dark);
-    fill(ell(CX + 28, haloY + 8, 18, 8, -0.1), MIX.dark);
-    line([[CX - 18, haloY + 42], [CX + 18, haloY + 42]], MIX.dark, { w: 5, key: 'bud_lips' });
-    line([[CX - 90, haloY - 20], [CX - 95, haloY + 60]], MIX.dark, { w: 5, key: 'ear_l' });
-    line([[CX + 90, haloY - 20], [CX + 95, haloY + 60]], MIX.dark, { w: 5, key: 'ear_r' });
-
-    // Torso with Clinging Transparent Robe (Wet-look drapery)
-    const budY = 980;
-    const budTorso = [
-      [CX - 160, budY - 60], [CX + 160, budY - 60],
-      [CX + 110, budY + 220], [CX - 110, budY + 220]
-    ];
-    fill(hand(budTorso, 'bud_torso', 1.05, 8), budTones);
-    line([[CX - 150, budY - 50], [CX, budY + 180], [CX + 150, budY - 50]], { yellow: 0.5, pink: 0.2 }, { w: 6, key: 'robe_fold' });
-
-    // Dharmachakra Pravartana Mudra (Turning Wheel of Law)
-    fill(circ(CX, budY + 70, 52), { yellow: 0.95, pink: 0.5 });
-    line([[CX - 35, budY + 70], [CX + 35, budY + 70]], MIX.dark, { w: 6, key: 'mudra_h' });
-    line([[CX, budY + 35], [CX, budY + 105]], MIX.dark, { w: 6, key: 'mudra_v' });
-
-    // Crossed Legs (Padmasana Base)
-    const legsPts = [
-      [CX - 280, budY + 310], [CX + 280, budY + 310],
-      [CX + 220, budY + 420], [CX - 220, budY + 420]
-    ];
-    fill(hand(legsPts, 'bud_legs', 1.05, 8), budTones);
-    fill(ell(CX - 130, budY + 340, 38, 22), { pink: 0.7, yellow: 0.5 });
-    fill(ell(CX + 130, budY + 340, 38, 22), { pink: 0.7, yellow: 0.5 });
-
-    // Throne Base with Sarnath Deer & Wheel
-    const throneY = 1520;
-    fill(rect(CX - 320, throneY, 640, 160), { teal: 0.6, pink: 0.4, yellow: 0.5 });
-    type("DEER PARK • FIRST SERMON", CX, throneY + 75, 34, { yellow: 0.95, pink: 0.25 }, { align: 'center', key: 'throne_txt' });
-
-    // Headers
-    drawHeaderRiso("ERA III", "c. 500 CE", "PREACHING BUDDHA", "CLASSICAL GUPTA STONE • SARNATH", "gupta");
+  // 2. The Great Prabhamandala (Carved Lotus Halo)
+  const haloY = 780;
+  cut(lotusHaloPts(CX, haloY, 320, 24), PAL.yellow, {
+    key: 'halo_outer', sy: 12, sb: 18, crayon: '#ec7a4f'
   });
-  endSheet();
+  cut(ellipsePts(CX, haloY, 260, 260, 0, 36), PAL.cream, {
+    key: 'halo_inner_cream', shadow: false
+  });
+  cut(lotusHaloPts(CX, haloY, 240, 16), PAL.teal, {
+    key: 'halo_inner_lotus', sy: 6, sb: 10
+  });
+  cut(ellipsePts(CX, haloY, 190, 190, 0, 32), PAL.cream, {
+    key: 'halo_center_cream', shadow: false
+  });
+
+  // 3. Buddha Head & Ushnisha
+  const budY = 980;
+  const stone = PAL.cream;
+  cut(ellipsePts(CX, haloY, 95, 95, 0, 32), stone, { key: 'bud_head', sy: 6, sb: 10 });
+  cut(ellipsePts(CX, haloY - 95, 38, 38, 0, 24), PAL.ink, { key: 'bud_ushnisha', sy: 4, sb: 6 });
+  
+  // Meditative downcast lotus eyes & tranquil smile
+  cut(ellipsePts(CX - 28, haloY + 8, 18, 8, 0.1, 16), PAL.ink, { key: 'bud_eye_l', shadow: false });
+  cut(ellipsePts(CX + 28, haloY + 8, 18, 8, -0.1, 16), PAL.ink, { key: 'bud_eye_r', shadow: false });
+  ink([[CX - 18, haloY + 42], [CX + 18, haloY + 42]], { w: 5, color: PAL.ink, key: 'bud_mouth' });
+  ink([[CX - 90, haloY - 20], [CX - 95, haloY + 60]], { w: 5, color: PAL.ink, key: 'ear_l' });
+  ink([[CX + 90, haloY - 20], [CX + 95, haloY + 60]], { w: 5, color: PAL.ink, key: 'ear_r' });
+
+  // 4. Torso with Clinging Transparent Robe
+  const budTorso = [
+    [CX - 160, budY - 60], [CX + 160, budY - 60],
+    [CX + 110, budY + 220], [CX - 110, budY + 220]
+  ];
+  cut(budTorso, stone, { key: 'bud_torso', sy: 8, sb: 12 });
+  ink([[CX - 150, budY - 50], [CX, budY + 180], [CX + 150, budY - 50]], {
+    w: 5, color: PAL.mustard, key: 'robe_ripple'
+  });
+
+  // 5. Hands in Dharmachakra Pravartana Mudra
+  cut(ellipsePts(CX, budY + 70, 52, 52, 0, 24), PAL.yellow, { key: 'mudra_circle', sy: 4, sb: 6 });
+  ink([[CX - 35, budY + 70], [CX + 35, budY + 70]], { w: 6, color: PAL.ink, key: 'mudra_h' });
+  ink([[CX, budY + 35], [CX, budY + 105]], { w: 6, color: PAL.ink, key: 'mudra_v' });
+
+  // 6. Crossed Legs (Padmasana Base)
+  const legsPts = [
+    [CX - 280, budY + 310], [CX + 280, budY + 310],
+    [CX + 220, budY + 420], [CX - 220, budY + 420]
+  ];
+  cut(legsPts, stone, { key: 'bud_legs', sy: 8, sb: 12 });
+  cut(ellipsePts(CX - 130, budY + 340, 38, 22, 0, 16), PAL.pink, { key: 'sole_l', shadow: false });
+  cut(ellipsePts(CX + 130, budY + 340, 38, 22, 0, 16), PAL.pink, { key: 'sole_r', shadow: false });
+
+  // 7. Throne Base: Deer Park & Dharma Wheel
+  const throneY = 1520;
+  cut(rect(CX - 320, throneY, 640, 160, 6), PAL.teal, { key: 'throne_box', sy: 10, sb: 14 });
+  tag('DEER PARK • FIRST SERMON', CX, throneY + 110, 36, { rot: 0, s: 1, key: 'throne_tag' });
+
+  // Tags & Captions
+  yearTag('500 CE • Classical Gupta');
+  capStrip('Sarnath Preaching Buddha • Sacred Law');
 }
 
 // ---------------------------------------------------------------------
 // ERA 3: ELEPHANTA TRIMURTI (750 CE) — Colossal Basalt Rock-Cut
 // ---------------------------------------------------------------------
 function sceneElephanta() {
-  beginSheet();
   const t = seg(TT, 27.0, 36.0);
 
-  // 1. Far Field: Dark Basalt Rock Cavern Shadows
-  printed(PITCH.field, { full: true }, () => {
-    fill(rect(-40, -40, W + 80, H + 80), { teal: 0.55, pink: 0.45, yellow: 0.25 });
-    // Flickering torchlight glow
-    const torchPulse = 0.85 + 0.15 * Math.sin(t * TAU * 1.5);
-    fill(circ(CX, 920, 460 * torchPulse), { yellow: rad(CX, 920, 160, 460, [[0, 0.7], [1, 0]]) }, { over: true });
+  // 1. Dark Basalt Rock Cavern (Deep Navy Paper with shadows)
+  cut(rect(-30, -30, W + 60, H + 60, 0), PAL.night, {
+    key: 'cave_wall', shadow: false, tear: 0
   });
 
-  // 2. The World: Fluted Cavern Pillars & Three Heads of Shiva
-  printed(PITCH.world, { shapes: true }, () => {
-    // Massive Cave Pillars flanking the sanctuary
-    fill(rect(40, 220, 120, 1500), MIX.dark);
-    fill(rect(W - 160, 220, 120, 1500), MIX.dark);
-    fill(ell(100, 420, 85, 35), { teal: 0.8, pink: 0.6 });
-    fill(ell(W - 100, 420, 85, 35), { teal: 0.8, pink: 0.6 });
+  // 2. Fluted Rock Cavern Pillars flanking the sanctuary
+  cut(rect(40, 220, 120, 1500, 4), PAL.navy, { key: 'pillar_l', sy: 12, sb: 18 });
+  cut(rect(W - 160, 220, 120, 1500, 4), PAL.navy, { key: 'pillar_r', sy: 12, sb: 18 });
+  cut(ellipsePts(100, 420, 85, 35, 0, 20), PAL.charcoal, { key: 'cap_l', shadow: false });
+  cut(ellipsePts(W - 100, 420, 85, 35, 0, 20), PAL.charcoal, { key: 'cap_r', shadow: false });
 
-    // Broad Massive Basalt Shoulder Base
-    const colY = 980;
-    const basaltStone = { teal: 0.75, pink: 0.55, yellow: 0.3 };
-    const basaltShadow = MIX.dark;
-    fill(rect(CX - 380, colY + 120, 760, 480), basaltStone);
-
-    // Center Head: TATPURUSHA / MAHADEVA (Serene Creator)
-    fill(circ(CX, colY - 60, 175), basaltStone);
-    fill(rect(CX - 110, colY - 380, 220, 220), basaltShadow); // Jatamukuta crown
-    type("OM", CX, colY - 260, 56, { yellow: 0.95, pink: 0.4 }, { align: 'center', key: 'om_txt' });
-    fill(ell(CX - 42, colY - 50, 26, 12), basaltShadow);
-    fill(ell(CX + 42, colY - 50, 26, 12), basaltShadow);
-    line([[CX - 35, colY + 25], [CX + 35, colY + 25]], basaltShadow, { w: 6, key: 'shiva_lips' });
-    fill(ell(CX, colY + 140, 160, 42), { yellow: 0.85, pink: 0.45 }); // Beaded necklace
-
-    // Right Head: AGHORA / BHAIRAVA (Wrathful Destroyer)
-    fill(circ(CX - 220, colY - 20, 125), { teal: 0.85, pink: 0.6, yellow: 0.25 });
-    type("AGHORA", CX - 220, colY - 180, 26, { yellow: 0.9, pink: 0.5 }, { align: 'center', key: 'aghora_txt' });
-    line([[CX - 260, colY + 15], [CX - 190, colY + 25]], basaltShadow, { w: 6, key: 'mustache' });
-
-    // Left Head: VAMADEVA / UMA (Gentle Feminine Preserver)
-    fill(circ(CX + 220, colY - 20, 125), { yellow: 0.75, pink: 0.5, teal: 0.2 });
-    type("UMA", CX + 220, colY - 180, 26, { pink: 0.85, yellow: 0.9 }, { align: 'center', key: 'uma_txt' });
-    fill(circ(CX + 290, colY + 180, 45), { yellow: 0.85, pink: 0.5 }); // Lotus bud hand
-
-    // Headers
-    drawHeaderRiso("ERA IV", "c. 750 CE", "ELEPHANTA TRIMURTI", "MONOLITHIC BASALT ROCK-CUT • GHARAPURI", "elephanta");
+  // Flickering cave torchlight glow
+  const torchPulse = 0.85 + 0.15 * Math.sin(t * TAU * 1.5);
+  cut(ellipsePts(CX, 920, 460 * torchPulse, 460 * torchPulse, 0, 36), PAL.orange, {
+    key: 'torch_glow', shadow: false, crayon: '#f6cf55'
   });
-  endSheet();
+
+  // 3. The Colossal Three-Headed Shiva (Sadashiva)
+  const colY = 980;
+  const basalt = PAL.charcoal;
+  const basaltShadow = PAL.night;
+
+  // Massive Shoulder Block
+  cut(rect(CX - 380, colY + 120, 760, 480, 8), basalt, { key: 'trimurti_chest', sy: 12, sb: 16 });
+
+  // Center Head: TATPURUSHA / MAHADEVA (Serene Creator)
+  cut(ellipsePts(CX, colY - 60, 175, 175, 0, 36), basalt, { key: 'tatpurusha_face', sy: 8, sb: 12 });
+  cut(rect(CX - 110, colY - 380, 220, 220, 4), basaltShadow, { key: 'tatpurusha_crown', sy: 6, sb: 10 });
+  tag('OM', CX, colY - 230, 48, { rot: 0, s: 1, key: 'om_tag' });
+  
+  // Sublime facial features
+  cut(ellipsePts(CX - 42, colY - 50, 26, 12, 0, 16), basaltShadow, { key: 'shiva_eye_l', shadow: false });
+  cut(ellipsePts(CX + 42, colY - 50, 26, 12, 0, 16), basaltShadow, { key: 'shiva_eye_r', shadow: false });
+  ink([[CX - 35, colY + 25], [CX + 35, colY + 25]], { w: 6, color: PAL.cream, key: 'shiva_mouth' });
+  cut(ellipsePts(CX, colY + 140, 160, 42, 0, 24), PAL.mustard, { key: 'shiva_necklace', sy: 4, sb: 6 });
+
+  // Right Head: AGHORA / BHAIRAVA (Wrathful Destroyer)
+  cut(ellipsePts(CX - 220, colY - 20, 125, 125, 0, 28), PAL.navy, { key: 'aghora_face', sy: 8, sb: 12 });
+  tag('AGHORA', CX - 220, colY - 180, 26, { rot: -0.06, s: 1, key: 'aghora_tag' });
+  ink([[CX - 260, colY + 15], [CX - 190, colY + 25]], { w: 6, color: PAL.cream, key: 'aghora_mustache' });
+
+  // Left Head: VAMADEVA / UMA (Gentle Feminine Preserver)
+  cut(ellipsePts(CX + 220, colY - 20, 125, 125, 0, 28), PAL.wood, { key: 'uma_face', sy: 8, sb: 12 });
+  tag('UMA', CX + 220, colY - 180, 26, { rot: 0.06, s: 1, key: 'uma_tag' });
+  // Pink paper lotus blossom in hand
+  cut(ellipsePts(CX + 290, colY + 180, 45, 45, 0, 20), PAL.pink, { key: 'uma_lotus', sy: 4, sb: 6 });
+
+  // Tags & Captions
+  yearTag('750 CE • Post-Gupta');
+  capStrip('Elephanta Trimurti Sadashiva in Basalt');
 }
 
 // ---------------------------------------------------------------------
 // ERA 4: CHOLA BRONZE (1100 CE) — Shiva Nataraja Cosmic Dance
 // ---------------------------------------------------------------------
 function sceneChola() {
-  beginSheet();
   const t = seg(TT, 36.0, 45.0);
 
-  // 1. Far Field: Cosmic Radiant Rays
-  printed(PITCH.field, { full: true }, () => {
-    fill(rect(-40, -40, W + 80, H + 80), {
-      pink: lin(0, 0, 0, H, [[0, 0.4], [1, 0.75]]),
-      yellow: lin(0, 0, 0, H, [[0, 0.6], [1, 0.95]]),
-      teal: lin(0, 0, 0, H, [[0, 0.1], [1, 0.25]])
+  // 1. Deep Cosmic Navy Paper Wall with Radiant Paper Rays
+  cut(rect(-30, -30, W + 60, H + 60, 0), PAL.navy, {
+    key: 'chola_wall', shadow: false, tear: 0,
+    pat: pat.dots('rgba(255,230,180,0.14)', 4, 70)
+  });
+
+  const radAngle = t * TAU * 0.1;
+  for (let b = 0; b < 16; b++) {
+    const a = (b / 16) * TAU + radAngle;
+    const bx = CX + Math.cos(a) * 750;
+    const by = 960 + Math.sin(a) * 750;
+    ink([[CX, 960], [bx, by]], { w: 5, color: 'rgba(246,207,85,0.25)', key: 'cosmic_ray_' + b });
+  }
+
+  // 2. The Great Prabhamandala (Cosmic Ring of Fire / Tiruvasi)
+  const ringR = 430;
+  cut(ellipsePts(CX, 960, ringR + 25, ringR + 25, 0, 44), PAL.orange, {
+    key: 'fire_ring_outer', sy: 12, sb: 18, crayon: '#f6cf55'
+  });
+  cut(ellipsePts(CX, 960, ringR - 25, ringR - 25, 0, 40), PAL.navy, {
+    key: 'fire_ring_inner', shadow: false
+  });
+
+  // 32 Radiating Flame Tongues
+  for (let f = 0; f < 32; f++) {
+    const fa = (f / 32) * TAU;
+    const fx = CX + Math.cos(fa) * ringR;
+    const fy = 960 + Math.sin(fa) * ringR;
+    cut(ellipsePts(fx, fy, 22, 22, 0, 16), PAL.yellow, { key: 'flame_tongue_' + f, sy: 3, sb: 5 });
+  }
+
+  // 3. Lotus Pedestal Base (Pitham)
+  cut(rect(CX - 240, 1600, 480, 80, 6), PAL.wood, { key: 'pitham_box', sy: 8, sb: 12 });
+  cut(ellipsePts(CX, 1600, 240, 45, 0, 24), PAL.mustard, { key: 'pitham_top', shadow: false });
+
+  // 4. Apasmara (The Dwarf Demon of Ignorance)
+  cut(ellipsePts(CX - 15, 1560, 110, 38, 0, 20), PAL.charcoal, { key: 'apasmara_body', sy: 4, sb: 6 });
+  tag('APASMARA (IGNORANCE)', CX, 1650, 22, { rot: 0, s: 1, key: 'apasmara_tag' });
+
+  // 5. Shiva Nataraja (Panchaloha Bronze Cutout)
+  const natX = CX;
+  const natY = 960;
+  const bronze = PAL.mustard;
+
+  // Streaming Matted Hair (Jata)
+  for (let j = 0; j < 6; j++) {
+    const jy = (natY - 240) + j * 16;
+    ink([[natX - 340, jy + Math.sin(t * 8 + j) * 12], [natX + 340, jy - Math.sin(t * 8 + j) * 12]], {
+      w: 6, color: PAL.orange, key: 'chola_hair_' + j
     });
-    const radAngle = t * TAU * 0.1;
-    for (let b = 0; b < 16; b++) {
-      const a = (b / 16) * TAU + radAngle;
-      const bx = CX + Math.cos(a) * 750;
-      const by = 960 + Math.sin(a) * 750;
-      line([[CX, 960], [bx, by]], { pink: 0.35, yellow: 0.55 }, { w: 5, key: 'ray_' + b });
-    }
+  }
+
+  // Dancing Torso
+  const torsoPts = [
+    [natX - 55, natY - 220], [natX + 55, natY - 220],
+    [natX + 45, natY + 40],  [natX - 35, natY + 50]
+  ];
+  cut(torsoPts, bronze, { key: 'nat_torso', sy: 8, sb: 12 });
+
+  // Head, Crown & Face
+  cut(ellipsePts(natX, natY - 240, 58, 58, 0, 24), bronze, { key: 'nat_head', sy: 6, sb: 8 });
+  cut(rect(natX - 25, natY - 330, 50, 75, 4), PAL.woodD, { key: 'nat_crown', sy: 4, sb: 6 });
+  cut(ellipsePts(natX, natY - 245, 6, 12, 0, 12), PAL.orange, { key: 'third_eye', shadow: false });
+
+  // Four Divine Arms
+  // 1. Upper Right: Damaru Drum
+  ink([[natX + 45, natY - 180], [natX + 260, natY - 200]], { w: 8, color: PAL.woodD, key: 'arm_damaru' });
+  cut(ellipsePts(natX + 270, natY - 205, 30, 30, 0, 16), PAL.yellow, { key: 'damaru_drum', sy: 4, sb: 6 });
+  tag('DRUM', natX + 270, natY - 195, 20, { rot: 0, s: 1, key: 'drum_tag' });
+
+  // 2. Upper Left: Agni Flame
+  ink([[natX - 45, natY - 180], [natX - 260, natY - 200]], { w: 8, color: PAL.woodD, key: 'arm_agni' });
+  cut(ellipsePts(natX - 270, natY - 205, 30, 30, 0, 16), PAL.orange, { key: 'agni_flame', sy: 4, sb: 6 });
+  tag('FIRE', natX - 270, natY - 195, 20, { rot: 0, s: 1, key: 'fire_tag' });
+
+  // 3. Lower Right: Abhaya Mudra
+  ink([[natX + 40, natY - 120], [natX + 170, natY - 60]], { w: 8, color: PAL.woodD, key: 'arm_abhaya' });
+  cut(ellipsePts(natX + 175, natY - 55, 30, 30, 0, 16), bronze, { key: 'abhaya_hand', sy: 4, sb: 6 });
+
+  // 4. Lower Left: Gaja-hasta (Crossed arm pointing to raised foot)
+  ink([[natX - 40, natY - 120], [natX + 40, natY + 20], [natX - 110, natY + 110]], {
+    w: 8, color: PAL.woodD, key: 'arm_gaja'
   });
 
-  // 2. The World: Cosmic Ring of Fire (Tiruvasi) & Dancing Nataraja
-  printed(PITCH.world, { shapes: true }, () => {
-    const ringR = 430;
-    // Outer flame ring
-    fill(circ(CX, 960, ringR + 25), { pink: 0.85, yellow: 0.95 });
-    fill(circ(CX, 960, ringR - 25), {}); // Knockout
-    for (let f = 0; f < 32; f++) {
-      const fa = (f / 32) * TAU;
-      const fx = CX + Math.cos(fa) * ringR;
-      const fy = 960 + Math.sin(fa) * ringR;
-      fill(circ(fx, fy, 22), { pink: 0.95, yellow: 0.85 }, { over: true });
-    }
-
-    // Lotus Pedestal Base
-    fill(rect(CX - 240, 1600, 480, 80), { teal: 0.6, pink: 0.5, yellow: 0.8 });
-    fill(ell(CX, 1600, 240, 45), { yellow: 0.9, pink: 0.4 });
-
-    // Apasmara (Demon of Ignorance)
-    fill(ell(CX - 15, 1560, 110, 38), MIX.dark);
-    type("APASMARA (IGNORANCE)", CX, 1645, 20, MIX.dark, { align: 'center', key: 'apasmara_txt' });
-
-    // Shiva Nataraja Body (Panchaloha Bronze)
-    const natX = CX;
-    const natY = 960;
-    const cholaBronze = { teal: 0.35, pink: 0.85, yellow: 0.9 };
-    const bronzeLine = MIX.dark;
-
-    // Streaming Matted Hair (Jata)
-    for (let j = 0; j < 6; j++) {
-      const jy = (natY - 240) + j * 16;
-      line([[natX - 340, jy + Math.sin(t * 8 + j) * 12], [natX + 340, jy - Math.sin(t * 8 + j) * 12]], { pink: 0.7, yellow: 0.85 }, { w: 6, key: 'jata_' + j });
-    }
-
-    // Slender Dancing Torso
-    const torsoPts = [
-      [natX - 55, natY - 220], [natX + 55, natY - 220],
-      [natX + 45, natY + 40],  [natX - 35, natY + 50]
-    ];
-    fill(hand(torsoPts, 'nat_torso', 1.05, 8), cholaBronze);
-
-    // Crown & Face
-    fill(circ(natX, natY - 240, 58), cholaBronze);
-    fill(rect(natX - 25, natY - 330, 50, 75), bronzeLine);
-
-    // Four Divine Arms
-    // 1. Upper Right: Damaru Drum
-    line([[natX + 45, natY - 180], [natX + 260, natY - 200]], bronzeLine, { w: 8, key: 'arm_damaru' });
-    fill(circ(natX + 270, natY - 205, 30), { yellow: 0.95, pink: 0.5 });
-    type("DRUM", natX + 270, natY - 195, 20, MIX.coral, { align: 'center', key: 'drum_txt' });
-
-    // 2. Upper Left: Agni Flame
-    line([[natX - 45, natY - 180], [natX - 260, natY - 200]], bronzeLine, { w: 8, key: 'arm_agni' });
-    fill(circ(natX - 270, natY - 205, 30), { yellow: 0.95, pink: 0.6 });
-    type("FIRE", natX - 270, natY - 195, 20, MIX.coral, { align: 'center', key: 'fire_txt' });
-
-    // 3. Lower Right: Abhaya Mudra
-    line([[natX + 40, natY - 120], [natX + 170, natY - 60]], bronzeLine, { w: 8, key: 'arm_abhaya' });
-    fill(circ(natX + 175, natY - 55, 30), cholaBronze);
-
-    // 4. Lower Left: Gaja-hasta (Crossed arm pointing to raised foot)
-    line([[natX - 40, natY - 120], [natX + 40, natY + 20], [natX - 110, natY + 110]], bronzeLine, { w: 8, key: 'arm_gaja' });
-
-    // Right Leg planted on Apasmara
-    line([[natX + 20, natY + 45], [natX + 15, natY + 360], [natX - 5, natY + 540]], bronzeLine, { w: 10, key: 'leg_r' });
-    fill(ell(natX - 5, natY + 540, 24, 14), cholaBronze);
-
-    // Left Leg lifted dynamically across knee
-    line([[natX - 20, natY + 45], [natX - 140, natY + 180], [natX + 90, natY + 280]], bronzeLine, { w: 10, key: 'leg_l' });
-    fill(ell(natX + 90, natY + 280, 26, 15, 0.4), cholaBronze);
-
-    // Headers
-    drawHeaderRiso("ERA V", "c. 1100 CE", "SHIVA NATARAJA", "LOST-WAX CHOLA BRONZE • TAMIL NADU", "chola");
+  // Right Leg (Planted on Apasmara)
+  ink([[natX + 20, natY + 45], [natX + 15, natY + 360], [natX - 5, natY + 540]], {
+    w: 10, color: PAL.woodD, key: 'leg_r'
   });
-  endSheet();
+  cut(ellipsePts(natX - 5, natY + 540, 24, 14, 0, 16), bronze, { key: 'foot_r', shadow: false });
+
+  // Left Leg (Lifted dynamically in Ananda Tandava)
+  ink([[natX - 20, natY + 45], [natX - 140, natY + 180], [natX + 90, natY + 280]], {
+    w: 10, color: PAL.woodD, key: 'leg_l'
+  });
+  cut(ellipsePts(natX + 90, natY + 280, 26, 15, 0.4, 16), bronze, { key: 'foot_l', shadow: false });
+
+  // Tags & Captions
+  yearTag('1100 CE • Imperial Chola');
+  capStrip('Shiva Nataraja • The Cosmic Dance of Bliss');
 }

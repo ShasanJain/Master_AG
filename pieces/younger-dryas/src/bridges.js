@@ -15,13 +15,13 @@ const ERA_BG = [
 ];
 
 function pieceCam(era, t) {
-  if (era === 0) return push(t, 0.4, 6.6, { z: 1.05, p: [540, 960], to: [540, 940] });
-  if (era === 1) return push(t, 7.8, 13.8, { z: 1.08, p: [540, 960], to: [540, 900] });
-  if (era === 2) return push(t, 15.0, 21.0, { z: 1.06, p: [540, 960], to: [540, 930] });
-  if (era === 3) return push(t, 22.2, 28.2, { z: 1.07, p: [540, 960], to: [540, 950] });
-  if (era === 4) return push(t, 29.4, 35.4, { z: 1.05, p: [540, 960], to: [540, 920] });
-  if (era === 5) return push(t, 36.6, 42.6, { z: 1.06, p: [540, 960], to: [540, 940] });
-  return push(t, 43.8, 49.2, { z: 1.05, p: [540, 960], to: [540, 950] });
+  if (era === 0) return push(t, 0.4, 6.6, { z: 1.02, p: [540, 960], to: [540, 955] });
+  if (era === 1) return push(t, 7.8, 13.8, { z: 1.03, p: [540, 960], to: [540, 945] });
+  if (era === 2) return push(t, 15.0, 21.0, { z: 1.02, p: [540, 960], to: [540, 950] });
+  if (era === 3) return push(t, 22.2, 28.2, { z: 1.03, p: [540, 960], to: [540, 955] });
+  if (era === 4) return push(t, 29.4, 35.4, { z: 1.02, p: [540, 960], to: [540, 950] });
+  if (era === 5) return push(t, 36.6, 42.6, { z: 1.03, p: [540, 960], to: [540, 950] });
+  return push(t, 43.8, 49.2, { z: 1.02, p: [540, 960], to: [540, 955] });
 }
 
 function iceCrystalPts(cx, cy, r, points = 6) {

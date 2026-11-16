@@ -195,21 +195,46 @@ if (!flag('no-mux') && !onlyAudio && full) {
           let ass = `[Script Info]\nScriptType: v4.00+\nPlayResX: ${meta.width}\nPlayResY: ${meta.height}\n\n`;
           ass += `[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n`;
           const vertical = meta.height > meta.width;
-          const fontSize = Math.round(meta.height * 0.034);
-          const marginV = Math.round(meta.height * (vertical ? 0.22 : 0.08));
-          ass += `Style: Karaoke,Arial Black,${fontSize},&H00FFFFFF,&H0000D7FF,&H00151515,&H80000000,1,0,0,0,100,100,0,0,1,5,2,2,40,40,${marginV},1\n\n`;
+          const fontSize = Math.round(meta.height * (vertical ? 0.027 : 0.034));
+          const marginV = Math.round(meta.height * (vertical ? 0.285 : 0.08));
+          ass += `Style: Karaoke,Arial Black,${fontSize},&H00FFFFFF,&H0000D7FF,&H00151515,&H80000000,1,0,0,0,100,100,0,0,1,4,2,2,120,140,${marginV},1\n\n`;
           ass += `[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n`;
           for (const line of vj.lines) {
-            let lineText = '';
-            let prevT = line.t0;
-            for (const w of line.words || []) {
-              const gapCs = Math.max(0, Math.round((w.t0 - prevT) * 100));
-              const durCs = Math.max(5, Math.round((w.t1 - w.t0) * 100));
-              if (gapCs > 0) lineText += `{\\k${gapCs}} `;
-              lineText += `{\\k${durCs}}${w.w} `;
-              prevT = w.t1;
+            const words = line.words || [];
+            if (!words.length) {
+              ass += `Dialogue: 0,${tsAss(line.t0)},${tsAss(line.t1)},Karaoke,,0,0,0,,${line.text}\n`;
+              continue;
             }
-            ass += `Dialogue: 0,${tsAss(line.t0)},${tsAss(line.t1)},Karaoke,,0,0,0,,${lineText.trim()}\n`;
+            // Chunk words into short 2-4 word punchy kinetic phrases
+            const chunks = [];
+            let cur = [];
+            let len = 0;
+            for (const w of words) {
+              const wLen = (w.w || '').length;
+              if (cur.length >= 4 || (cur.length >= 2 && len + wLen > 20)) {
+                chunks.push(cur);
+                cur = [];
+                len = 0;
+              }
+              cur.push(w);
+              len += wLen + 1;
+            }
+            if (cur.length) chunks.push(cur);
+
+            for (const chunk of chunks) {
+              const cT0 = chunk[0].t0;
+              const cT1 = chunk[chunk.length - 1].t1;
+              let lineText = '';
+              let prevT = cT0;
+              for (const w of chunk) {
+                const gapCs = Math.max(0, Math.round((w.t0 - prevT) * 100));
+                const durCs = Math.max(5, Math.round((w.t1 - w.t0) * 100));
+                if (gapCs > 0) lineText += `{\\k${gapCs}} `;
+                lineText += `{\\k${durCs}}${w.w} `;
+                prevT = w.t1;
+              }
+              ass += `Dialogue: 0,${tsAss(cT0)},${tsAss(cT1)},Karaoke,,0,0,0,,${lineText.trim()}\n`;
+            }
           }
           fs.writeFileSync(path.join(RENDERS, 'narration.ass'), ass);
           useAss = true;

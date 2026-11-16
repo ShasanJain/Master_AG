@@ -5,9 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Younger Dryas: Earth's Lost Cataclysm</title>
 <style>
-  html, body { margin: 0; height: 100%; background: #0c1017; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #0c1017; overflow: hidden; }
   body { display: flex; align-items: center; justify-content: center; }
-  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+  canvas {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: min(100vw, calc(100vh * 9 / 16));
+    height: min(100vh, calc(100vw * 16 / 9));
+    aspect-ratio: 9 / 16;
+    display: block;
+    cursor: pointer;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  }
 </style>
 </head>
 <body>
@@ -15,7 +25,7 @@
 <script>
 "use strict";
 // ---- voice.json (tools/voice.mjs): the voice-over's lines and word times
-const VOICE = {"duration":50.007,"lead":0.5,"tail":0.73,"lines":[{"id":"intro","text":"Twelve thousand eight hundred years ago, Earth was thawing from the Ice Age. Suddenly, catastrophe struck.","t0":0.5,"t1":6.964,"words":[{"w":"Twelve","t0":0.5,"t1":0.939,"est":true},{"w":"thousand","t0":0.939,"t1":1.504,"est":true},{"w":"eight","t0":1.504,"t1":1.881,"est":true},{"w":"hundred","t0":1.881,"t1":2.383,"est":true},{"w":"years","t0":2.383,"t1":2.759,"est":true},{"w":"ago,","t0":2.759,"t1":3.01,"est":true},{"w":"Earth","t0":3.01,"t1":3.387,"est":true},{"w":"was","t0":3.387,"t1":3.638,"est":true},{"w":"thawing","t0":3.638,"t1":4.14,"est":true},{"w":"from","t0":4.14,"t1":4.454,"est":true},{"w":"the","t0":4.454,"t1":4.705,"est":true},{"w":"Ice","t0":4.705,"t1":4.956,"est":true},{"w":"Age.","t0":4.956,"t1":5.207,"est":true},{"w":"Suddenly,","t0":5.207,"t1":5.772,"est":true},{"w":"catastrophe","t0":5.772,"t1":6.525,"est":true},{"w":"struck.","t0":6.525,"t1":6.964,"est":true}]},{"id":"impact","text":"A fragmented comet detonated above the northern ice sheets, igniting continent-spanning firestorms.","t0":7.504,"t1":12.752,"words":[{"w":"A","t0":7.504,"t1":7.612,"est":true},{"w":"fragmented","t0":7.612,"t1":8.207,"est":true},{"w":"comet","t0":8.207,"t1":8.532,"est":true},{"w":"detonated","t0":8.532,"t1":9.073,"est":true},{"w":"above","t0":9.073,"t1":9.398,"est":true},{"w":"the","t0":9.398,"t1":9.614,"est":true},{"w":"northern","t0":9.614,"t1":10.101,"est":true},{"w":"ice","t0":10.101,"t1":10.317,"est":true},{"w":"sheets,","t0":10.317,"t1":10.696,"est":true},{"w":"igniting","t0":10.696,"t1":11.183,"est":true},{"w":"continent-spanning","t0":11.183,"t1":12.157,"est":true},{"w":"firestorms.","t0":12.157,"t1":12.752,"est":true}]},{"id":"blackmat","text":"Beneath a dark geological layer of cosmic soot and nanodiamonds, North America's giant mammoths vanished forever.","t0":14.702,"t1":20.766,"words":[{"w":"Beneath","t0":14.702,"t1":15.139,"est":true},{"w":"a","t0":15.139,"t1":15.248,"est":true},{"w":"dark","t0":15.248,"t1":15.521,"est":true},{"w":"geological","t0":15.521,"t1":16.122,"est":true},{"w":"layer","t0":16.122,"t1":16.45,"est":true},{"w":"of","t0":16.45,"t1":16.614,"est":true},{"w":"cosmic","t0":16.614,"t1":16.996,"est":true},{"w":"soot","t0":16.996,"t1":17.27,"est":true},{"w":"and","t0":17.27,"t1":17.488,"est":true},{"w":"nanodiamonds,","t0":17.488,"t1":18.198,"est":true},{"w":"North","t0":18.198,"t1":18.526,"est":true},{"w":"America's","t0":18.526,"t1":19.018,"est":true},{"w":"giant","t0":19.018,"t1":19.346,"est":true},{"w":"mammoths","t0":19.346,"t1":19.837,"est":true},{"w":"vanished","t0":19.837,"t1":20.329,"est":true},{"w":"forever.","t0":20.329,"t1":20.766,"est":true}]},{"id":"megaflood","text":"Collapsing ice dams unleashed catastrophic megafloods into the oceans, shutting down global heat circulation.","t0":21.896,"t1":27.903,"words":[{"w":"Collapsing","t0":21.896,"t1":22.508,"est":true},{"w":"ice","t0":22.508,"t1":22.73,"est":true},{"w":"dams","t0":22.73,"t1":23.008,"est":true},{"w":"unleashed","t0":23.008,"t1":23.565,"est":true},{"w":"catastrophic","t0":23.565,"t1":24.288,"est":true},{"w":"megafloods","t0":24.288,"t1":24.9,"est":true},{"w":"into","t0":24.9,"t1":25.178,"est":true},{"w":"the","t0":25.178,"t1":25.4,"est":true},{"w":"oceans,","t0":25.4,"t1":25.789,"est":true},{"w":"shutting","t0":25.789,"t1":26.29,"est":true},{"w":"down","t0":26.29,"t1":26.568,"est":true},{"w":"global","t0":26.568,"t1":26.957,"est":true},{"w":"heat","t0":26.957,"t1":27.236,"est":true},{"w":"circulation.","t0":27.236,"t1":27.903,"est":true}]},{"id":"freeze","text":"The planet plunged into a twelve-hundred-year deep freeze, pushing surviving human tribes to the absolute brink.","t0":29.103,"t1":34.626,"words":[{"w":"The","t0":29.103,"t1":29.306,"est":true},{"w":"planet","t0":29.306,"t1":29.66,"est":true},{"w":"plunged","t0":29.66,"t1":30.066,"est":true},{"w":"into","t0":30.066,"t1":30.319,"est":true},{"w":"a","t0":30.319,"t1":30.42,"est":true},{"w":"twelve-hundred-year","t0":30.42,"t1":31.332,"est":true},{"w":"deep","t0":31.332,"t1":31.586,"est":true},{"w":"freeze,","t0":31.586,"t1":31.941,"est":true},{"w":"pushing","t0":31.941,"t1":32.346,"est":true},{"w":"surviving","t0":32.346,"t1":32.853,"est":true},{"w":"human","t0":32.853,"t1":33.157,"est":true},{"w":"tribes","t0":33.157,"t1":33.511,"est":true},{"w":"to","t0":33.511,"t1":33.663,"est":true},{"w":"the","t0":33.663,"t1":33.866,"est":true},{"w":"absolute","t0":33.866,"t1":34.322,"est":true},{"w":"brink.","t0":34.322,"t1":34.626,"est":true}]},{"id":"gobekli","text":"When warmth abruptly returned, survivors gathered at Göbekli Tepe to carve the memory of the comet in megalithic stone.","t0":36.296,"t1":42.395,"words":[{"w":"When","t0":36.296,"t1":36.557,"est":true},{"w":"warmth","t0":36.557,"t1":36.922,"est":true},{"w":"abruptly","t0":36.922,"t1":37.391,"est":true},{"w":"returned,","t0":37.391,"t1":37.86,"est":true},{"w":"survivors","t0":37.86,"t1":38.381,"est":true},{"w":"gathered","t0":38.381,"t1":38.85,"est":true},{"w":"at","t0":38.85,"t1":39.007,"est":true},{"w":"Göbekli","t0":39.007,"t1":39.372,"est":true},{"w":"Tepe","t0":39.372,"t1":39.632,"est":true},{"w":"to","t0":39.632,"t1":39.789,"est":true},{"w":"carve","t0":39.789,"t1":40.101,"est":true},{"w":"the","t0":40.101,"t1":40.31,"est":true},{"w":"memory","t0":40.31,"t1":40.675,"est":true},{"w":"of","t0":40.675,"t1":40.831,"est":true},{"w":"the","t0":40.831,"t1":41.04,"est":true},{"w":"comet","t0":41.04,"t1":41.352,"est":true},{"w":"in","t0":41.352,"t1":41.509,"est":true},{"w":"megalithic","t0":41.509,"t1":42.082,"est":true},{"w":"stone.","t0":42.082,"t1":42.395,"est":true}]},{"id":"outro","text":"Out of cosmic ashes and catastrophic ice, humanity pivoted to agriculture and the dawn of civilization.","t0":43.505,"t1":49.277,"words":[{"w":"Out","t0":43.505,"t1":43.731,"est":true},{"w":"of","t0":43.731,"t1":43.901,"est":true},{"w":"cosmic","t0":43.901,"t1":44.297,"est":true},{"w":"ashes","t0":44.297,"t1":44.637,"est":true},{"w":"and","t0":44.637,"t1":44.863,"est":true},{"w":"catastrophic","t0":44.863,"t1":45.599,"est":true},{"w":"ice,","t0":45.599,"t1":45.825,"est":true},{"w":"humanity","t0":45.825,"t1":46.334,"est":true},{"w":"pivoted","t0":46.334,"t1":46.787,"est":true},{"w":"to","t0":46.787,"t1":46.957,"est":true},{"w":"agriculture","t0":46.957,"t1":47.636,"est":true},{"w":"and","t0":47.636,"t1":47.862,"est":true},{"w":"the","t0":47.862,"t1":48.089,"est":true},{"w":"dawn","t0":48.089,"t1":48.372,"est":true},{"w":"of","t0":48.372,"t1":48.541,"est":true},{"w":"civilization.","t0":48.541,"t1":49.277,"est":true}]}]};
+const VOICE = {"duration":50.007,"lead":0.5,"tail":0.73,"lines":[{"id":"intro","text":"Twelve thousand eight hundred years ago, Earth was thawing from the Ice Age. Suddenly, catastrophe struck.","t0":0.5,"t1":6.964,"words":[{"w":"Twelve","t0":0.5,"t1":0.8,"est":true},{"w":"thousand","t0":0.8,"t1":1.1,"est":true},{"w":"eight","t0":1.1,"t1":1.4,"est":true},{"w":"hundred","t0":1.4,"t1":1.7,"est":true},{"w":"years","t0":1.7,"t1":2.06},{"w":"ago,","t0":2.06,"t1":2.4},{"w":"Earth","t0":2.7,"t1":2.82},{"w":"was","t0":2.82,"t1":3.08},{"w":"thawing","t0":3.08,"t1":3.34},{"w":"from","t0":3.34,"t1":3.54},{"w":"the","t0":3.54,"t1":3.68},{"w":"Ice","t0":3.68,"t1":3.94},{"w":"Age.","t0":3.94,"t1":4.9},{"w":"Suddenly,","t0":5.54,"t1":5.7},{"w":"catastrophe","t0":6.06,"t1":6.44},{"w":"struck.","t0":6.44,"t1":7.14}]},{"id":"impact","text":"A fragmented comet detonated above the northern ice sheets, igniting continent-spanning firestorms.","t0":7.504,"t1":12.752,"words":[{"w":"A","t0":7.68,"t1":7.78},{"w":"fragmented","t0":7.78,"t1":8.14},{"w":"comet","t0":8.14,"t1":8.68},{"w":"detonated","t0":8.68,"t1":9.08},{"w":"above","t0":9.08,"t1":9.44},{"w":"the","t0":9.44,"t1":9.8},{"w":"northern","t0":9.8,"t1":9.92},{"w":"ice","t0":9.92,"t1":10.18},{"w":"sheets,","t0":10.18,"t1":10.54},{"w":"igniting","t0":10.86,"t1":11.18},{"w":"continent-spanning","t0":11.18,"t1":12.04,"est":true},{"w":"firestorms.","t0":12.04,"t1":13.02}]},{"id":"blackmat","text":"Beneath a dark geological layer of cosmic soot and nanodiamonds, North America's giant mammoths vanished forever.","t0":14.702,"t1":20.766,"words":[{"w":"Beneath","t0":14.86,"t1":15.08},{"w":"a","t0":15.08,"t1":15.26},{"w":"dark","t0":15.26,"t1":15.48},{"w":"geological","t0":15.48,"t1":16.08},{"w":"layer","t0":16.08,"t1":16.36},{"w":"of","t0":16.36,"t1":16.64},{"w":"cosmic","t0":16.64,"t1":16.92},{"w":"soot","t0":16.92,"t1":17.26,"est":true},{"w":"and","t0":17.26,"t1":17.5},{"w":"nanodiamonds,","t0":17.5,"t1":18.64,"est":true},{"w":"North","t0":18.64,"t1":18.74},{"w":"America's","t0":18.74,"t1":19.3},{"w":"giant","t0":19.3,"t1":19.58},{"w":"mammoths","t0":19.58,"t1":19.96},{"w":"vanished","t0":19.96,"t1":20.34},{"w":"forever.","t0":20.34,"t1":20.98}]},{"id":"megaflood","text":"Collapsing ice dams unleashed catastrophic megafloods into the oceans, shutting down global heat circulation.","t0":21.896,"t1":27.903,"words":[{"w":"Collapsing","t0":22.04,"t1":22.54},{"w":"ice","t0":22.54,"t1":22.82},{"w":"dams","t0":22.82,"t1":23.16},{"w":"unleashed","t0":23.16,"t1":23.68},{"w":"catastrophic","t0":23.68,"t1":24.28},{"w":"megafloods","t0":24.28,"t1":24.86,"est":true},{"w":"into","t0":24.86,"t1":25.08},{"w":"the","t0":25.08,"t1":25.38},{"w":"oceans,","t0":25.38,"t1":25.66},{"w":"shutting","t0":26.36,"t1":26.36},{"w":"down","t0":26.36,"t1":26.78},{"w":"global","t0":26.78,"t1":27.08},{"w":"heat","t0":27.08,"t1":27.34},{"w":"circulation.","t0":27.34,"t1":27.88}]},{"id":"freeze","text":"The planet plunged into a twelve-hundred-year deep freeze, pushing surviving human tribes to the absolute brink.","t0":29.103,"t1":34.626,"words":[{"w":"The","t0":28.68,"t1":29.32},{"w":"planet","t0":29.32,"t1":29.64},{"w":"plunged","t0":29.64,"t1":30},{"w":"into","t0":30,"t1":30.28},{"w":"a","t0":30.28,"t1":30.7},{"w":"twelve-hundred-year","t0":30.7,"t1":31.18,"est":true},{"w":"deep","t0":31.18,"t1":31.48},{"w":"freeze,","t0":31.48,"t1":31.86},{"w":"pushing","t0":32.12,"t1":32.4},{"w":"surviving","t0":32.4,"t1":32.92},{"w":"human","t0":32.92,"t1":33.24},{"w":"tribes","t0":33.24,"t1":33.52},{"w":"to","t0":33.52,"t1":33.74},{"w":"the","t0":33.74,"t1":33.98},{"w":"absolute","t0":33.98,"t1":34.26},{"w":"brink.","t0":34.26,"t1":34.626,"est":true}]},{"id":"gobekli","text":"When warmth abruptly returned, survivors gathered at Göbekli Tepe to carve the memory of the comet in megalithic stone.","t0":36.296,"t1":42.395,"words":[{"w":"When","t0":36.36,"t1":36.6},{"w":"warmth","t0":36.6,"t1":36.82},{"w":"abruptly","t0":36.82,"t1":37.3},{"w":"returned,","t0":37.3,"t1":37.82},{"w":"survivors","t0":38.18,"t1":38.6},{"w":"gathered","t0":38.6,"t1":38.96},{"w":"at","t0":38.96,"t1":39.22},{"w":"Göbekli","t0":39.22,"t1":39.56,"est":true},{"w":"Tepe","t0":39.56,"t1":39.9,"est":true},{"w":"to","t0":39.9,"t1":40.1},{"w":"carve","t0":40.1,"t1":40.3},{"w":"the","t0":40.3,"t1":40.72},{"w":"memory","t0":40.72,"t1":40.74},{"w":"of","t0":40.74,"t1":41},{"w":"the","t0":41,"t1":41.18},{"w":"comet","t0":41.18,"t1":41.34},{"w":"in","t0":41.34,"t1":41.64},{"w":"megalithic","t0":41.64,"t1":42.14},{"w":"stone.","t0":42.14,"t1":42.66}]},{"id":"outro","text":"Out of cosmic ashes and catastrophic ice, humanity pivoted to agriculture and the dawn of civilization.","t0":43.505,"t1":49.277,"words":[{"w":"Out","t0":43.66,"t1":43.76},{"w":"of","t0":43.76,"t1":44.1},{"w":"cosmic","t0":44.1,"t1":44.32},{"w":"ashes","t0":44.32,"t1":44.68},{"w":"and","t0":44.68,"t1":45.16},{"w":"catastrophic","t0":45.16,"t1":45.44},{"w":"ice,","t0":45.44,"t1":46},{"w":"humanity","t0":46.28,"t1":46.6},{"w":"pivoted","t0":46.6,"t1":47.04},{"w":"to","t0":47.04,"t1":47.3},{"w":"agriculture","t0":47.3,"t1":47.76},{"w":"and","t0":47.76,"t1":48.14},{"w":"the","t0":48.14,"t1":48.28},{"w":"dawn","t0":48.28,"t1":48.42},{"w":"of","t0":48.42,"t1":48.92},{"w":"civilization.","t0":48.92,"t1":49.14}]}]};
 // =====================================================================
 //  THE YOUNGER DRYAS — 9:16 Vertical, 50.0s @ 96 BPM, 24fps.
 //  A cut-paper animated investigation into the cosmic impact
@@ -61,6 +71,7 @@ const SHOTS = [
 
 const TIMELINE = {
   width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  gpu: true,
   format: 'morph-chain',
   shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
   cuts: [],
@@ -801,9 +812,22 @@ function tag(str, x, y, size, o = {}) {   // a torn paper tag with handwriting
   handText(str, -w / 2 + size * 0.45, size * 0.36, size, o.color ?? PAL.ink, { key: 'tagt' + str, frac: o.frac });
   ctx.restore();
 }
-// tag and caption sit inside the format's safe area (9:16: y 330 and 1440)
-const yearTag = (str) => { const f = () => tag(str, 70 + (handW(str, 80) + 72) / 2, SAFE.top + 90, 80, { rot: -0.04, s: popS(E0 + 0.2) }); if (DEFER) DEFER.push(f); else f(); };
-const capStrip = (str) => { const f = () => tag(str, CX, H - SAFE.bottom - 60, 50, { rot: 0.012, tape: false, frac: ev(E0 + 0.45, 0.6) }); if (DEFER) DEFER.push(f); else f(); };
+// tag and caption sit inside the format's safe area (9:16: y 310 and 1450), auto-sizing to fit width
+const yearTag = (str) => {
+  const f = () => {
+    const sz = str.length > 22 ? 46 : str.length > 15 ? 56 : 68;
+    const w = handW(str, sz) + sz * 0.9;
+    tag(str, Math.min(CX, 60 + w / 2), SAFE.top + 75, sz, { rot: -0.03, s: popS(E0 + 0.2) });
+  };
+  if (DEFER) DEFER.push(f); else f();
+};
+const capStrip = (str) => {
+  const f = () => {
+    const sz = str.length > 38 ? 34 : str.length > 28 ? 40 : 46;
+    tag(str, CX, H - SAFE.bottom - 45, sz, { rot: 0.01, tape: false, frac: ev(E0 + 0.45, 0.6) });
+  };
+  if (DEFER) DEFER.push(f); else f();
+};
 
 // =====================================================================
 //  STYLE — the hooks the renderer (kit/morph.js) calls. Every styles/<name>/kit.js defines one.
@@ -832,8 +856,8 @@ const STYLE = {
 };
 // =====================================================================
 //  SCENES — The Younger Dryas: Earth's Lost Cataclysm
-//  Tactile Cut-Paper Collage across 1,200 years of cosmic disaster,
-//  megafauna extinction, megafloods, and the rebirth of civilization.
+//  Refined High-Fidelity Cut-Paper Collage Animation
+//  Accurate geology, paleontology, and megalithic archaeology.
 // =====================================================================
 
 // ---------------------------------------------------------------------
@@ -842,66 +866,67 @@ const STYLE = {
 function sceneIntro() {
   const t = seg(TT, 0.0, 7.2);
 
-  // 1. Ice-Age Deep Navy Paper with subtle latitude grid
+  // 1. Deep Space Indigo Paper with Subtle Latitude Grids
   cut(rect(-30, -30, W + 60, H + 60, 0), PAL.night, {
     key: 'intro_bg', shadow: false, tear: 0,
-    pat: pat.lines('rgba(200,230,255,0.08)', 44)
+    pat: pat.lines('rgba(180,210,245,0.06)', 40)
   });
 
-  // 2. Glacial Frost Torana / Vignette Frame
-  cut(rect(50, 180, W - 100, 30, 4), PAL.snow, { key: 'frost_top', sy: 4, sb: 8 });
-  cut(rect(50, 210, 30, H - 420, 4), PAL.ice, { key: 'frost_l', sy: 4, sb: 8 });
-  cut(rect(W - 80, 210, 30, H - 420, 4), PAL.ice, { key: 'frost_r', sy: -4, sb: 8 });
+  // 2. The Earth Globe (Centered High to Clear Lower Margins)
+  const cx = CX, cy = 930;
+  const pulse = 1.0 + Math.sin(t * TAU * 0.35) * 0.015;
 
-  // 3. Planet Earth Globe & Massive Laurentide Ice Sheet
-  const cx = CX, cy = 960;
-  const pulse = 1.0 + Math.sin(t * TAU * 0.4) * 0.03;
-
-  // Ocean Globe Disc
-  cut(ellipsePts(cx, cy, 320 * pulse, 320 * pulse, 0, 48), PAL.blue, {
+  // Ocean Globe Basin
+  cut(ellipsePts(cx, cy, 310 * pulse, 310 * pulse, 0, 48), '#142c4a', {
     key: 'earth_globe', sy: 14, sb: 24,
-    pat: pat.stripes('rgba(255,255,255,0.08)', 10, 30, 0.3)
+    pat: pat.stripes('rgba(255,255,255,0.05)', 8, 28, 0.25)
   });
 
-  // Continent Landmass (Greenish-brown Tundra)
-  const landPts = [
-    [cx - 240, cy - 80], [cx - 60, cy - 220], [cx + 180, cy - 140],
-    [cx + 250, cy + 60], [cx + 100, cy + 220], [cx - 160, cy + 180],
-    [cx - 250, cy + 40]
-  ];
-  cut(landPts, PAL.lamp, { key: 'land_tundra', sy: 6, sb: 12 });
+  // Atmospheric Blue Halo
+  cut(ellipsePts(cx, cy, 324 * pulse, 324 * pulse, 0, 48), 'rgba(100,180,240,0.14)', {
+    key: 'atmos_halo', shadow: false
+  });
 
-  // Massive Northern Laurentide Ice Sheet (Pure White / Ice Blue)
-  const iceSheetPts = [
-    [cx - 200, cy - 250], [cx + 190, cy - 260],
-    [cx + 220, cy - 90],  [cx + 80, cy - 20],
-    [cx - 80, cy - 30],   [cx - 210, cy - 100]
+  // Detailed North American Continent (Accurate Steppe, Forests & Coastlines)
+  const continentPts = [
+    [cx - 210, cy - 60], [cx - 170, cy - 180], [cx - 80, cy - 240],
+    [cx + 70, cy - 230], [cx + 180, cy - 130], [cx + 220, cy - 30],
+    [cx + 180, cy + 80], [cx + 80, cy + 160],  [cx + 10, cy + 210],
+    [cx - 60, cy + 140], [cx - 140, cy + 110], [cx - 200, cy + 30]
   ];
-  cut(iceSheetPts, PAL.snow, {
+  cut(continentPts, '#33503b', { key: 'north_america', sy: 8, sb: 14 });
+
+  // Massive Laurentide & Cordilleran Ice Sheets (Dominant Glacial Cap)
+  const iceCapPts = [
+    [cx - 180, cy - 170], [cx - 70, cy - 230], [cx + 70, cy - 210],
+    [cx + 160, cy - 120], [cx + 145, cy - 40], [cx + 70, cy + 10],
+    [cx - 30, cy],        [cx - 130, cy - 40], [cx - 170, cy - 90]
+  ];
+  cut(iceCapPts, PAL.snow, {
     key: 'laurentide_ice', sy: 10, sb: 16,
-    pat: pat.dots('rgba(169,200,220,0.4)', 3, 18)
+    pat: pat.dots('rgba(160,200,230,0.30)', 3, 18)
   });
 
-  // Glacial Meltwater Streams pooling south
-  ink([[cx - 40, cy - 30], [cx - 20, cy + 70], [cx - 80, cy + 140]], { w: 6, color: PAL.ice, key: 'melt_1' });
-  ink([[cx + 40, cy - 20], [cx + 60, cy + 80], [cx + 30, cy + 150]], { w: 6, color: PAL.ice, key: 'melt_2' });
+  // Proglacial Meltwater Lakes Pooling at Ice Edge (Lake Agassiz Basin)
+  cut(ellipsePts(cx - 20, cy + 25, 65, 38, -0.25, 20), PAL.ice, { key: 'lake_agassiz', sy: 4, sb: 6 });
+  ink([[cx - 10, cy + 25], [cx + 35, cy + 80], [cx + 15, cy + 140]], { w: 4, color: PAL.ice, key: 'mississippi_melt' });
 
-  // 4. Grand Title Card Banners
-  tag('THE YOUNGER DRYAS', CX, 510, 64, {
+  // Wandering Steppe Mammoth Herd Silhouette on Southern Margin
+  cut(ellipsePts(cx - 80, cy + 70, 18, 12, 0, 10), PAL.charcoal, { key: 'herd_mam_1' });
+  cut(ellipsePts(cx - 50, cy + 85, 14, 9, 0, 10), PAL.charcoal, { key: 'herd_mam_2' });
+
+  // 3. Clean Title Banners (Well Inside Safe Zone)
+  tag('THE YOUNGER DRYAS', CX, 500, 48, {
     rot: -0.012, fill: PAL.snow, color: PAL.night, s: popS(E0 + 0.3)
   });
 
-  tag("EARTH'S LOST CATACLYSM", CX, 630, 42, {
+  tag("EARTH'S LOST CATACLYSM", CX, 590, 32, {
     rot: 0.01, fill: PAL.ice, color: PAL.ink, s: popS(E0 + 0.6)
-  });
-
-  tag('12,800 YEARS AGO • THE SUDDEN FLASH FREEZE', CX, 1390, 36, {
-    rot: -0.008, fill: PAL.paper, color: PAL.ink, s: popS(E0 + 0.9)
   });
 
   // Tags & Captions
   yearTag('12,800 BP • 10,800 BCE');
-  capStrip('Prologue • Warming Climate Interrupted by Cataclysm');
+  capStrip('Warming Earth Suddenly Interrupted by Cataclysm');
 }
 
 // ---------------------------------------------------------------------
@@ -911,60 +936,77 @@ function sceneImpact() {
   const t = seg(TT, 7.2, 14.4);
 
   // 1. Fiery Crimson-Orange Atmospheric Background
-  cut(rect(-30, -30, W + 60, H + 60, 0), '#381308', {
+  cut(rect(-30, -30, W + 60, H + 60, 0), '#320f06', {
     key: 'impact_bg', shadow: false, tear: 0,
-    pat: pat.stripes('rgba(246,207,85,0.14)', 18, 50, -0.4)
+    pat: pat.stripes('rgba(246,207,85,0.10)', 20, 50, -0.35)
   });
 
-  // 2. Exploding Core Fireball (Central Shockwave)
-  const fireX = CX;
-  const fireY = 880;
-  const blastR = 260 + Math.sin(t * TAU * 1.5) * 20;
+  // 2. Incoming Fragmented Comet Swarm (Entering from High Atmosphere)
+  const bolides = [
+    { x: CX - 10, y: 640, r: 52, tail: 380 },
+    { x: CX - 170, y: 560, r: 30, tail: 280 },
+    { x: CX + 190, y: 600, r: 35, tail: 310 }
+  ];
 
-  // Outer Shockwave Rings
-  cut(flameBurstPts(fireX, fireY, blastR + 90, 24), PAL.orange, {
-    key: 'shockwave_outer', sy: 16, sb: 28,
+  bolides.forEach((b, i) => {
+    // Billowing Black Smoke Trail Behind Plasma
+    ink([[b.x - b.tail * 0.7, b.y - b.tail * 0.7], [b.x, b.y]], {
+      w: b.r * 1.4, color: 'rgba(20,10,5,0.6)', key: 'smoke_' + i
+    });
+    // Incandescent Orange/Yellow Fire Trail
+    ink([[b.x - b.tail * 0.5, b.y - b.tail * 0.5], [b.x, b.y]], {
+      w: b.r * 0.85, color: PAL.orange, key: 'plasma_' + i
+    });
+    // White-hot Bolide Core
+    cut(ellipsePts(b.x, b.y, b.r, b.r * 1.3, -0.78, 20), PAL.snow, { key: 'bolide_core_' + i, shadow: false });
+  });
+
+  // 3. Massive Airburst Blast Epicenter (Positioned Safe at Y=820)
+  const blastX = CX + 20, blastY = 820;
+  const blastR = 240 + Math.sin(t * TAU * 1.2) * 18;
+
+  // Shockwave Distortion Ring
+  ink(arcPts(blastX, blastY, blastR + 110, 0, TAU, 36), {
+    w: 8, color: 'rgba(255,240,200,0.45)', key: 'shockwave_ring'
+  });
+
+  // Outer Thermal Radiation Front
+  cut(flameBurstPts(blastX, blastY, blastR + 80, 24), PAL.orange, {
+    key: 'blast_outer', sy: 12, sb: 22,
     rot: t * TAU * 0.2
   });
 
-  // Blazing Mid Blast Layer
-  cut(flameBurstPts(fireX, fireY, blastR, 18), PAL.yellow, {
-    key: 'shockwave_mid', sy: 10, sb: 18,
+  // Middle Luminous Firestorm
+  cut(flameBurstPts(blastX, blastY, blastR, 18), PAL.yellow, {
+    key: 'blast_mid', sy: 8, sb: 14,
     rot: -t * TAU * 0.25
   });
 
-  // Blinding Core White Detonation
-  cut(ellipsePts(fireX, fireY, 140, 140, 0, 36), PAL.snow, {
-    key: 'blast_core', shadow: false
-  });
+  // Blinding Hypersonic Core
+  cut(ellipsePts(blastX, blastY, 115, 115, 0, 32), PAL.snow, { key: 'blast_core_white', shadow: false });
 
-  // 3. Falling Comet Bolide Fragments (Streaking Streaks)
-  for (let c = 0; c < 5; c++) {
-    const sx = 200 + c * 170;
-    const sy = 240 + Math.sin(c * 1.8) * 80 + t * 90;
-    // Trailing plasma streak
-    ink([[sx - 80, sy - 200], [sx, sy]], { w: 10 + c * 2, color: PAL.orange, key: 'comet_tail_' + c });
-    ink([[sx - 50, sy - 140], [sx, sy]], { w: 6, color: PAL.yellow, key: 'comet_core_' + c });
-    cut(ellipsePts(sx, sy, 22, 34, 0.3, 14), PAL.snow, { key: 'bolide_head_' + c, shadow: false });
-  }
-
-  // 4. Shattered Melting Ice Sheet Horizon below
-  const iceHorizonY = 1460;
+  // 4. Shattered Laurentide Ice Horizon (Clear of Caption Zone)
+  const iceY = 1180;
   cut([
-    [-20, iceHorizonY], [260, iceHorizonY - 60], [540, iceHorizonY - 20],
-    [800, iceHorizonY - 80], [W + 20, iceHorizonY], [W + 20, H + 20], [-20, H + 20]
-  ], PAL.ice, { key: 'ice_horizon', sy: -10, sb: 20 });
+    [-20, iceY + 20], [220, iceY - 35], [540, iceY - 10],
+    [840, iceY - 45], [W + 20, iceY + 10], [W + 20, 1340], [-20, 1340]
+  ], PAL.ice, { key: 'shattered_ice', sy: -6, sb: 14 });
 
-  // Molten Glass Spherules / Flying Ejecta
-  for (let s = 0; s < 12; s++) {
-    const spX = 140 + (s * 73) % 800;
-    const spY = 1100 + ((s * 97) % 350) + Math.sin(t * 8 + s) * 20;
-    sparkle(spX, spY, 8 + (s % 6), PAL.yellow);
+  // Radiant Fissure Cracks in Ice
+  ink([[540, iceY - 10], [480, iceY + 90], [520, iceY + 150]], { w: 4, color: '#102236', key: 'crack_1' });
+  ink([[540, iceY - 10], [630, iceY + 60], [700, iceY + 140]], { w: 4, color: '#102236', key: 'crack_2' });
+
+  // Superheated Steam Plumes
+  for (let s = 0; s < 3; s++) {
+    const sx = 380 + s * 160;
+    ink([[sx, iceY], [sx + Math.sin(s + t * 4) * 20, iceY - 80]], {
+      w: 12, color: 'rgba(240,250,255,0.4)', key: 'steam_' + s
+    });
   }
 
   // Tags & Captions
-  yearTag('10,800 BCE • Cosmic Airburst');
-  capStrip('Fragmented Comet Detonates Over Laurentide Ice Sheet');
+  yearTag('10,800 BCE • Airburst');
+  capStrip('Fragmented Comet Detonates Over Laurentide Ice');
 }
 
 // ---------------------------------------------------------------------
@@ -974,85 +1016,78 @@ function sceneBlackMat() {
   const t = seg(TT, 14.4, 21.6);
 
   // 1. Dark Geological Stratigraphy Background
-  cut(rect(-30, -30, W + 60, H + 60, 0), PAL.charcoal, {
-    key: 'strata_bg', shadow: false, tear: 0
+  cut(rect(-30, -30, W + 60, H + 60, 0), '#18181c', { key: 'strata_bg', shadow: false, tear: 0 });
+
+  // Upper Holocene Soil Layer (Top Stratum)
+  const holoY = 400, holoH = 130;
+  cut(rect(-20, holoY, W + 40, holoH, 0), '#6e523c', {
+    key: 'holocene_layer', sy: 5, sb: 10,
+    pat: pat.stripes('rgba(255,255,255,0.06)', 6, 22, 0)
   });
 
-  // Top Holocene Sand Layer (Post-Impact)
-  cut(rect(-20, 260, W + 40, 360, 0), PAL.woodL, {
-    key: 'holocene_soil', sy: 8, sb: 14,
-    pat: pat.stripes('rgba(255,255,255,0.12)', 10, 30, 0)
-  });
-  tag('POST-IMPACT SEDIMENTS', CX, 380, 30, { fill: PAL.paper, color: PAL.ink, key: 'sed_tag' });
-
-  // 2. The Famous "BLACK MAT" Boundary Layer (Carbon, Soot & Nanodiamonds)
-  const matY = 660;
-  const matH = 140;
+  // 2. THE BLACK MAT LAYER (Prominent Carbon Soot Stratum)
+  const matY = 530, matH = 110;
   cut(rect(-20, matY, W + 40, matH, 0), PAL.ink, {
-    key: 'black_mat_layer', sy: 12, sb: 20,
-    pat: pat.dots('rgba(255,255,255,0.22)', 2.5, 16)
-  });
-  tag('THE BLACK MAT LAYER (YD BOUNDARY)', CX, matY + 70, 38, {
-    fill: PAL.mustard, color: PAL.ink, key: 'mat_tag'
+    key: 'black_mat_layer', sy: 8, sb: 16,
+    pat: pat.dots('rgba(255,255,255,0.22)', 2.2, 14)
   });
 
-  // Glistening Nanodiamonds & Iridium Peak in the soot
+  // Glistening Nanodiamonds & Iridium Peak in Soot Layer
   for (let d = 0; d < 14; d++) {
     const dx = 100 + d * 64;
-    const dy = matY + 30 + ((d * 37) % (matH - 60));
-    sparkle(dx, dy, 7 + (d % 5), PAL.snow);
+    const dy = matY + 20 + ((d * 37) % (matH - 40));
+    sparkle(dx, dy, 5 + (d % 4), PAL.snow);
   }
 
-  // 3. Pre-Impact Pleistocene Ground (Where Megafauna Lived)
-  cut(rect(-20, matY + matH, W + 40, H - (matY + matH) + 40, 0), PAL.woodD, {
-    key: 'pleistocene_soil', sy: 10, sb: 18,
-    pat: pat.grainWood('rgba(0,0,0,0.25)')
+  // Lower Pleistocene Sediment Bed (Pre-Impact Fauna Horizon)
+  const pleistY = matY + matH;
+  cut(rect(-20, pleistY, W + 40, 580, 0), '#3d2d1e', {
+    key: 'pleistocene_bed', sy: 6, sb: 12,
+    pat: pat.grainWood('rgba(0,0,0,0.18)')
   });
 
-  // 4. The Woolly Mammoth Silhouette & Bones
+  // 3. Anatomical Woolly Mammoth Silhouette (Elevated Cleanly: Y=870)
   const mamX = CX - 30;
-  const mamY = 1240 + Math.sin(t * TAU * 0.4) * 6;
+  const mamY = 870 + Math.sin(t * TAU * 0.4) * 5;
   const boneCol = PAL.cream;
 
-  // Massive Mammoth Hump & Body
+  // Massive Curved Mammoth Tusks (Distinctive Ice-Age Spiral)
+  ink([[mamX - 100, mamY - 45], [mamX - 190, mamY - 20], [mamX - 250, mamY - 120], [mamX - 200, mamY - 190]], {
+    w: 18, color: boneCol, key: 'tusk_outer'
+  });
+  ink([[mamX - 85, mamY - 50], [mamX - 160, mamY - 30], [mamX - 205, mamY - 110]], {
+    w: 11, color: PAL.ice, key: 'tusk_inner'
+  });
+
+  // Domed Skull, Sloping Back & Shaggy Body
   const mamBodyPts = [
-    [mamX - 180, mamY + 120], [mamX - 170, mamY - 80],
-    [mamX - 70, mamY - 180],  [mamX + 90, mamY - 150],
-    [mamX + 180, mamY - 40],  [mamX + 160, mamY + 130],
-    [mamX - 20, mamY + 150]
+    [mamX - 110, mamY - 110], [mamX - 50, mamY - 160], [mamX + 50, mamY - 130],
+    [mamX + 150, mamY - 35],  [mamX + 160, mamY + 100], [mamX + 80, mamY + 140],
+    [mamX - 35, mamY + 130],  [mamX - 125, mamY + 100], [mamX - 145, mamY - 25]
   ];
   cut(mamBodyPts, PAL.charcoal, { key: 'mam_body', sy: 10, sb: 16 });
 
-  // Massive Curved Mammoth Tusk (Ivory Arch)
-  ink([[mamX - 120, mamY - 60], [mamX - 240, mamY - 40], [mamX - 310, mamY - 170]], {
-    w: 22, color: boneCol, key: 'tusk_main'
-  });
-  ink([[mamX - 90, mamY - 70], [mamX - 200, mamY - 70], [mamX - 260, mamY - 190]], {
-    w: 16, color: PAL.ice, key: 'tusk_inner'
+  // Curving Trunk
+  ink([[mamX - 120, mamY - 25], [mamX - 165, mamY + 60], [mamX - 135, mamY + 150]], {
+    w: 15, color: PAL.charcoal, key: 'mam_trunk'
   });
 
-  // Mammoth Skull & Trunk
-  cut(ellipsePts(mamX - 120, mamY - 90, 75, 85, 0.2, 24), PAL.tweed, { key: 'mam_head', sy: 6, sb: 10 });
-  ink([[mamX - 150, mamY - 40], [mamX - 200, mamY + 80], [mamX - 170, mamY + 220]], {
-    w: 18, color: PAL.tweed, key: 'mam_trunk'
-  });
+  // Sturdy Legs Resting Cleanly in Pleistocene Bed (Ends at Y=1070)
+  cut(rect(mamX - 105, mamY + 90, 44, 140, 6), PAL.charcoal, { key: 'mam_leg_1' });
+  cut(rect(mamX + 85, mamY + 80, 44, 150, 6), PAL.charcoal, { key: 'mam_leg_2' });
 
-  // Sturdy Legs
-  cut(rect(mamX - 140, mamY + 100, 55, 220, 10), PAL.tweed, { key: 'mam_leg_1' });
-  cut(rect(mamX + 110, mamY + 90, 55, 230, 10), PAL.tweed, { key: 'mam_leg_2' });
-
-  // Clovis Spearhead Embedded Beside Skeleton
-  const clovX = CX + 240, clovY = 1380;
+  // 4. Clovis Fluted Spearpoint (Flint-knapped Artifact)
+  const clovX = CX + 230, clovY = 930;
   const clovisPts = [
-    [clovX, clovY - 70], [clovX + 28, clovY + 30],
-    [clovX, clovY + 60], [clovX - 28, clovY + 30]
+    [clovX, clovY - 55], [clovX + 22, clovY + 20],
+    [clovX, clovY + 48], [clovX - 22, clovY + 20]
   ];
-  cut(clovisPts, PAL.snow, { key: 'clovis_point', sy: 4, sb: 8 });
-  tag('CLOVIS POINT', clovX, clovY + 95, 22, { fill: PAL.paper, color: PAL.ink, key: 'clov_tag' });
+  cut(clovisPts, PAL.snow, { key: 'clovis_point', sy: 5, sb: 8 });
+  ink([[clovX, clovY + 40], [clovX, clovY - 10]], { w: 4, color: '#9bb8cc', key: 'clovis_flute' });
 
   // Tags & Captions
-  yearTag('The Boundary Layer • Extinction');
-  capStrip('Soot, Nanodiamonds & The Fall of Giant Megafauna');
+  yearTag('The Boundary Layer');
+  capStrip('Soot, Nanodiamonds & Mammoth Extinction');
 }
 
 // ---------------------------------------------------------------------
@@ -1061,55 +1096,48 @@ function sceneBlackMat() {
 function sceneMegaflood() {
   const t = seg(TT, 21.6, 28.8);
 
-  // 1. Churning Storm-Deluge Teal Background
-  cut(rect(-30, -30, W + 60, H + 60, 0), '#0c2236', {
+  // 1. Churning Deluge Navy/Teal Background
+  cut(rect(-30, -30, W + 60, H + 60, 0), '#0c1e30', {
     key: 'flood_bg', shadow: false, tear: 0,
-    pat: pat.stripes('rgba(169,216,220,0.12)', 24, 70, 0.2)
+    pat: pat.stripes('rgba(140,210,230,0.10)', 20, 60, 0.25)
   });
 
-  // 2. Collapsing Glacial Ice Dam at Top Right
-  const damPts = [
-    [W - 320, 220], [W + 40, 180], [W + 40, 720],
-    [W - 180, 840], [W - 280, 620]
+  // 2. Ruptured Glacial Ice Dam (Towering White Cliffs on Right)
+  const cliffPts = [
+    [W - 270, 260], [W + 40, 220], [W + 40, 720],
+    [W - 130, 770], [W - 230, 590]
   ];
-  cut(damPts, PAL.snow, { key: 'ice_dam_breach', sy: 14, sb: 24 });
-  // Shattered ice blocks tumbling
-  for (let b = 0; b < 6; b++) {
-    const bx = W - 340 + Math.sin(b * 2) * 80 - t * 40;
-    const by = 500 + b * 90 + t * 60;
-    cut(rect(bx, by, 60, 50, 4), PAL.ice, { key: 'berg_' + b, rot: b * 0.6 + t });
+  cut(cliffPts, PAL.snow, { key: 'ice_cliff', sy: 12, sb: 18 });
+
+  // Tumbling Icebergs in Torrent
+  for (let b = 0; b < 4; b++) {
+    const bx = W - 300 + Math.sin(b * 1.7) * 60 - t * 25;
+    const by = 440 + b * 85 + t * 45;
+    cut(rect(bx, by, 48, 38, 4), PAL.ice, { key: 'iceberg_' + b, rot: b * 0.5 + t });
   }
 
-  // 3. Colossal Wall of Torrents / Surging Tsunami Wave
-  const waveY = 1040 + Math.sin(t * TAU * 0.8) * 25;
+  // 3. Colossal Tsunami Tidal Wave (Surging Deluge Elevated to Y=880)
+  const waveY = 880 + Math.sin(t * TAU * 0.75) * 16;
   const wavePts = [
-    [-40, waveY + 200], [200, waveY - 80], [480, waveY - 260],
-    [760, waveY - 80],  [W + 40, waveY - 200], [W + 40, H + 40], [-40, H + 40]
+    [-40, waveY + 200], [170, waveY - 50], [450, waveY - 210],
+    [730, waveY - 50],  [W + 40, waveY - 150], [W + 40, 1280], [-40, 1280]
   ];
   cut(wavePts, PAL.teal, {
-    key: 'deluge_wave', sy: 16, sb: 28,
-    pat: pat.stripes('rgba(255,255,255,0.22)', 14, 40, -0.3)
+    key: 'deluge_wave', sy: 14, sb: 24,
+    pat: pat.stripes('rgba(255,255,255,0.18)', 14, 38, -0.3)
   });
 
-  // White Water Crests (Foam Curling)
-  cut(ellipsePts(460, waveY - 240, 180, 70, -0.2, 28), PAL.snow, { key: 'wave_crest_1', shadow: false });
-  cut(ellipsePts(220, waveY - 60, 140, 50, -0.1, 24), PAL.snow, { key: 'wave_crest_2', shadow: false });
+  // Curling White Foam Wave Crests
+  cut(ellipsePts(430, waveY - 195, 140, 52, -0.15, 24), PAL.snow, { key: 'foam_crest_1', shadow: false });
+  cut(ellipsePts(190, waveY - 40, 105, 38, -0.1, 20), PAL.snow, { key: 'foam_crest_2', shadow: false });
 
-  // 4. Glacial Erratics (Giant Boulders Ripped by Floodwaters)
-  cut(ellipsePts(320, waveY + 240, 80, 60, 0.3, 16), PAL.charcoal, { key: 'boulder_1', sy: 8, sb: 12 });
-  cut(ellipsePts(680, waveY + 310, 110, 75, -0.2, 18), PAL.charcoal, { key: 'boulder_2', sy: 8, sb: 12 });
-  tag('GLACIAL ERRATIC', 680, waveY + 310, 20, { fill: PAL.paper, color: PAL.ink, key: 'erratic_tag' });
-
-  // 5. Gulf Stream Ocean Conveyor Belt Disrupted (Halted Loop Arrow)
-  const convX = 280, convY = 460;
-  ink([[convX - 120, convY], [convX + 120, convY]], { w: 10, color: PAL.orange, key: 'conveyor_line' });
-  tag('ATLANTIC CONVEYOR: HALTED', convX + 60, convY - 40, 26, {
-    fill: PAL.mustard, color: PAL.ink, key: 'amoc_tag'
-  });
+  // 4. Glacial Erratics (Massive Scoured Boulders)
+  cut(ellipsePts(300, waveY + 180, 65, 48, 0.25, 16), PAL.charcoal, { key: 'boulder_1', sy: 7, sb: 10 });
+  cut(ellipsePts(660, waveY + 220, 80, 58, -0.2, 18), PAL.charcoal, { key: 'boulder_2', sy: 7, sb: 10 });
 
   // Tags & Captions
-  yearTag('Meltwater Pulse • Deluge');
-  capStrip('Lake Agassiz Breach Shuts Down Ocean Heat Circulation');
+  yearTag('Catastrophic Deluge');
+  capStrip('Glacial Lake Breach Shuts Down Ocean Conveyor');
 }
 
 // ---------------------------------------------------------------------
@@ -1118,64 +1146,61 @@ function sceneMegaflood() {
 function sceneFreeze() {
   const t = seg(TT, 28.8, 36.0);
 
-  // 1. Permafrost Blue-Grey Atmospheric Paper
-  cut(rect(-30, -30, W + 60, H + 60, 0), '#182434', {
+  // 1. Permafrost Blue-Grey Atmospheric Sky
+  cut(rect(-30, -30, W + 60, H + 60, 0), '#162232', {
     key: 'freeze_bg', shadow: false, tear: 0,
-    pat: pat.dots('rgba(255,255,255,0.18)', 2, 24)
+    pat: pat.dots('rgba(255,255,255,0.14)', 2, 22)
   });
 
-  // 2. Jagged Advancing Glacial Wall Across Horizon
-  const glY = 820;
+  // 2. Looming Jagged Glacial Ice Wall Across Horizon
+  const glY = 720;
   const glacierPts = [
-    [-30, glY + 60],   [140, glY - 140], [310, glY - 40],
-    [520, glY - 220],  [740, glY - 80],  [920, glY - 180],
-    [W + 30, glY - 60],[W + 30, H],     [-30, H]
+    [-30, glY + 40],   [140, glY - 110], [310, glY - 25],
+    [520, glY - 170],  [740, glY - 60],  [920, glY - 130],
+    [W + 30, glY - 40],[W + 30, 1260],   [-30, 1260]
   ];
   cut(glacierPts, PAL.snow, {
-    key: 'advancing_glacier', sy: 16, sb: 28,
-    pat: pat.stripes('rgba(160,200,230,0.25)', 12, 35, 0.4)
+    key: 'advancing_glacier', sy: 14, sb: 24,
+    pat: pat.stripes('rgba(150,190,225,0.20)', 10, 32, 0.4)
   });
 
-  // Ice Crevasses in Glacier
-  ink([[310, glY - 30], [280, glY + 180]], { w: 6, color: PAL.blue, key: 'crevasse_1' });
-  ink([[530, glY - 200], [560, glY + 120]], { w: 6, color: PAL.blue, key: 'crevasse_2' });
+  // Deep Blue Glacial Crevasses
+  ink([[310, glY - 20], [290, glY + 140]], { w: 5, color: '#163554', key: 'crevasse_1' });
+  ink([[530, glY - 150], [550, glY + 95]], { w: 5, color: '#163554', key: 'crevasse_2' });
 
-  // 3. Falling Snow & Ice Needle Grains (Driven by howling wind)
+  // 3. Falling Snow & Driven Ice Grains
   for (let sn = 0; sn < 24; sn++) {
-    const snX = (sn * 47 + t * 300) % W;
-    const snY = (sn * 71 + t * 240) % (H - 300) + 150;
-    dot(snX, snY, 2.5 + (sn % 3), '#ffffff');
+    const snX = (sn * 47 + t * 260) % W;
+    const snY = (sn * 63 + t * 200) % (H - 450) + 160;
+    dot(snX, snY, 2.2 + (sn % 2.2), '#ffffff');
   }
 
-  // 4. Human Nomadic Hunter Campfire (Survival Resilience)
+  // 4. Human Hunter Campfire & Mammoth Bone Shelter (Elevated to Y=1040)
   const campX = CX;
-  const campY = 1380;
+  const campY = 1040;
 
-  // Tent / Mammoth Bone Shelter
-  const tentPts = [
-    [campX - 180, campY + 140], [campX, campY - 120],
-    [campX + 180, campY + 140]
+  // Stretched Hide Shelter with Curved Mammoth Rib Frames
+  const shelterPts = [
+    [campX - 145, campY + 110], [campX, campY - 95],
+    [campX + 145, campY + 110]
   ];
-  cut(tentPts, PAL.woodD, { key: 'bone_tent', sy: 8, sb: 14 });
-  ink([[campX, campY - 120], [campX - 180, campY + 140]], { w: 10, color: PAL.cream, key: 'tent_rib_l' });
-  ink([[campX, campY - 120], [campX + 180, campY + 140]], { w: 10, color: PAL.cream, key: 'tent_rib_r' });
+  cut(shelterPts, PAL.woodD, { key: 'bone_shelter', sy: 7, sb: 12 });
+  ink([[campX, campY - 95], [campX - 145, campY + 110]], { w: 7, color: PAL.cream, key: 'rib_l' });
+  ink([[campX, campY - 95], [campX + 145, campY + 110]], { w: 7, color: PAL.cream, key: 'rib_r' });
 
-  // Flickering Campfire Glow
-  const flk = Math.sin(t * 16) * 10;
-  cut(ellipsePts(campX, campY + 120, 110 + flk, 50, 0, 24), PAL.orange, {
-    key: 'camp_glow', shadow: false
-  });
-  cut(ellipsePts(campX, campY + 105, 30 + flk * 0.5, 45, 0, 16), PAL.yellow, {
-    key: 'camp_flame', shadow: false
-  });
+  // Flickering Warm Fireplace
+  const flk = Math.sin(t * 16) * 7;
+  cut(ellipsePts(campX, campY + 98, 85 + flk, 38, 0, 20), PAL.orange, { key: 'camp_glow', shadow: false });
+  cut(ellipsePts(campX, campY + 90, 22 + flk * 0.4, 32, 0, 14), PAL.yellow, { key: 'camp_flame', shadow: false });
 
-  // Human Hunter Silhouette Warming Hands
-  cut(ellipsePts(campX - 90, campY + 60, 20, 20, 0, 16), PAL.ink, { key: 'hunter_head' });
-  cut(rect(campX - 105, campY + 80, 30, 60, 6), PAL.ink, { key: 'hunter_body' });
+  // Hunter Silhouette in Fur Parka Warming Hands
+  cut(ellipsePts(campX - 65, campY + 55, 16, 16, 0, 14), PAL.ink, { key: 'hunter_head' });
+  cut(rect(campX - 76, campY + 68, 22, 45, 5), PAL.ink, { key: 'hunter_body' });
+  ink([[campX - 60, campY + 80], [campX - 35, campY + 92]], { w: 4, color: PAL.ink, key: 'hunter_arm' });
 
   // Tags & Captions
-  yearTag('1,200-Year Freeze • 10,800–9,600 BCE');
-  capStrip('Sub-Zero Permafrost Tests Human Survival to the Limit');
+  yearTag('1,200-Year Freeze');
+  capStrip('Sub-Zero Permafrost Grips the Northern Hemisphere');
 }
 
 // ---------------------------------------------------------------------
@@ -1184,68 +1209,73 @@ function sceneFreeze() {
 function sceneGobekli() {
   const t = seg(TT, 36.0, 43.2);
 
-  // 1. Warm Golden Anatolian Sandstone Horizon (+10°C Flash Thaw)
-  cut(rect(-30, -30, W + 60, H + 60, 0), '#382516', {
+  // 1. Warm Golden Anatolian Sandstone Sky (+10°C Sudden Snap)
+  cut(rect(-30, -30, W + 60, H + 60, 0), '#322214', {
     key: 'anatolian_sky', shadow: false, tear: 0,
-    pat: pat.lines('rgba(255,220,130,0.14)', 36)
+    pat: pat.lines('rgba(255,220,130,0.10)', 34)
   });
 
-  // 2. Rolling Anatolian Hillside Base
+  // 2. Rolling Anatolian Limestone Ridge
   cut([
-    [-20, 1420], [260, 1360], [580, 1390],
-    [880, 1340], [W + 20, 1400], [W + 20, H + 20], [-20, H + 20]
-  ], PAL.woodL, { key: 'gobekli_hill', sy: 10, sb: 16 });
+    [-20, 1180], [240, 1140], [560, 1160],
+    [860, 1130], [W + 20, 1170], [W + 20, 1340], [-20, 1340]
+  ], PAL.woodL, { key: 'gobekli_ridge', sy: 8, sb: 14 });
 
-  // Wild Einkorn Wheat Grass Sprouting (Birth of Agriculture)
-  for (let w = 0; w < 10; w++) {
-    const wx = 120 + w * 90;
-    const wy = 1380 + Math.sin(w * 1.5) * 20;
-    ink([[wx, wy + 60], [wx + 10, wy - 30], [wx + 5, wy - 80]], {
-      w: 4, color: PAL.yellow, key: 'wheat_stem_' + w
+  // Domesticated Wild Einkorn Wheat Sprouting at Base
+  for (let w = 0; w < 8; w++) {
+    const wx = 150 + w * 110;
+    const wy = 1170 + Math.sin(w * 1.4) * 16;
+    ink([[wx, wy + 40], [wx + 6, wy - 20], [wx + 3, wy - 55]], {
+      w: 3.5, color: PAL.yellow, key: 'wheat_stem_' + w
     });
-    cut(ellipsePts(wx + 5, wy - 85, 12, 28, 0.1, 10), PAL.mustard, { key: 'wheat_head_' + w });
+    cut(ellipsePts(wx + 3, wy - 60, 9, 20, 0.1, 10), PAL.mustard, { key: 'wheat_head_' + w });
   }
 
-  // 3. Colossal Megalithic T-Shaped Pillar (Pillar 43 / Vulture Stone)
+  // 3. Colossal Megalithic T-Shaped Pillar (Pillar 43 / Vulture Stone: Elevated to Y=840)
   const pilX = CX;
-  const pilY = 940;
-  const pilW = 210, pilH = 580;
-  const capW = 420, capH = 150;
+  const pilY = 840;
+  const pilW = 180, pilH = 480;
+  const capW = 360, capH = 125;
 
   // The T-Pillar Cutout
   cut(tPillarPts(pilX, pilY, pilW, pilH, capW, capH), PAL.mustard, {
-    key: 'gobekli_tpillar', sy: 16, sb: 28,
-    pat: pat.dots('rgba(50,20,5,0.18)', 3, 22)
+    key: 'gobekli_tpillar', sy: 14, sb: 24,
+    pat: pat.dots('rgba(50,20,5,0.15)', 3, 18)
   });
 
   // 4. Carved High Reliefs on Pillar 43:
-  // A. The Celestial Vulture (Holding the Sun / Cosmic Orb)
-  const vultX = pilX - 10, vultY = pilY - 140;
-  cut(ellipsePts(vultX, vultY, 45, 60, 0.3, 20), PAL.woodD, { key: 'vulture_body', sy: 4, sb: 6 });
-  cut(ellipsePts(vultX - 45, vultY - 35, 25, 20, -0.4, 14), PAL.woodD, { key: 'vulture_head' });
-  ink([[vultX - 20, vultY - 20], [vultX + 55, vultY - 50]], { w: 8, color: PAL.woodD, key: 'vulture_wing' });
+  // A. Three Sacred Handbags / Celestial Arches along Top Lintel
+  for (let hb = 0; hb < 3; hb++) {
+    const hbx = pilX - 110 + hb * 110;
+    const hby = pilY - pilH / 2 + 45;
+    cut(rect(hbx - 28, hby, 56, 36, 5), PAL.woodD, { key: 'handbag_' + hb, sy: 3, sb: 5 });
+    ink(arcPts(hbx, hby - 4, 17, Math.PI, 0, 8), { w: 3.5, color: PAL.woodD, key: 'hb_handle_' + hb });
+  }
 
-  // Cosmic Sphere / Comet Orb balanced by vulture
-  cut(ellipsePts(vultX + 55, vultY - 80, 32, 32, 0, 18), PAL.orange, {
-    key: 'vulture_orb', sy: 4, sb: 8
+  // B. The Celestial Vulture (Balancing the Sun / Comet Orb)
+  const vultX = pilX - 15, vultY = pilY - 95;
+  cut(ellipsePts(vultX, vultY, 36, 46, 0.25, 18), PAL.woodD, { key: 'vulture_body', sy: 4, sb: 6 });
+  cut(ellipsePts(vultX - 34, vultY - 26, 19, 16, -0.3, 12), PAL.woodD, { key: 'vulture_head' });
+  ink([[vultX - 15, vultY - 12], [vultX + 44, vultY - 38]], { w: 6, color: PAL.woodD, key: 'vulture_wing' });
+
+  // Celestial Comet Orb Above Wing
+  cut(ellipsePts(vultX + 44, vultY - 60, 24, 24, 0, 16), PAL.orange, { key: 'comet_orb', sy: 4, sb: 6 });
+
+  // C. The Underworld Scorpion Relief Below
+  const scorpY = pilY + 70;
+  cut(ellipsePts(pilX, scorpY, 26, 36, 0, 14), PAL.woodD, { key: 'scorp_body', sy: 3, sb: 5 });
+  ink([[pilX, scorpY + 32], [pilX + 20, scorpY + 58], [pilX + 10, scorpY + 82]], {
+    w: 4.5, color: PAL.woodD, key: 'scorp_tail'
   });
-  tag('COMET ORB', vultX + 55, vultY - 120, 20, { fill: PAL.paper, color: PAL.ink, key: 'orb_tag' });
 
-  // B. The Scorpion of the Underworld Relief below
-  const scorpY = pilY + 80;
-  cut(ellipsePts(pilX, scorpY, 35, 50, 0, 16), PAL.woodD, { key: 'scorp_body', sy: 3, sb: 5 });
-  ink([[pilX, scorpY + 45], [pilX + 25, scorpY + 80], [pilX + 15, scorpY + 110]], {
-    w: 5, color: PAL.woodD, key: 'scorp_tail'
-  });
-
-  // C. Humanoid Relief Arms Wrapping around Pillar shaft
-  ink([[pilX - pilW / 2 + 10, pilY + 160], [pilX, pilY + 200], [pilX + pilW / 2 - 10, pilY + 160]], {
-    w: 12, color: PAL.woodD, key: 'pillar_hands'
+  // D. Humanoid Hands Meeting at Waist
+  ink([[pilX - pilW / 2 + 10, pilY + 130], [pilX, pilY + 160], [pilX + pilW / 2 - 10, pilY + 130]], {
+    w: 9, color: PAL.woodD, key: 'pillar_hands'
   });
 
   // Tags & Captions
   yearTag('9,600 BCE • Göbekli Tepe');
-  capStrip('Pillar 43 • The Memory of Cataclysm Carved in Megalithic Stone');
+  capStrip('Pillar 43 • The Comet Recorded on Megalithic Stone');
 }
 
 // ---------------------------------------------------------------------
@@ -1254,53 +1284,48 @@ function sceneGobekli() {
 function sceneOutro() {
   const t = seg(TT, 43.2, 50.0);
 
-  // 1. Deep Midnight Cosmic Blue Textured Paper
-  cut(rect(-30, -30, W + 60, H + 60, 0), '#101526', {
+  // 1. Midnight Cosmic Blue Paper with Gold Celestial Stars
+  cut(rect(-30, -30, W + 60, H + 60, 0), '#0e1322', {
     key: 'outro_bg', shadow: false, tear: 0,
-    pat: pat.dots('rgba(255,240,160,0.14)', 2.5, 32)
+    pat: pat.dots('rgba(255,235,140,0.10)', 2.2, 28)
   });
 
-  // 2. Outer Concentric Cosmic Orbit Rings (Celestial Memory)
-  const cx = CX, cy = 960;
-  const pulse = 1.0 + Math.sin(t * TAU * 0.3) * 0.03;
+  // 2. Concentric Celestial Astrolabe Rings (Elevated to Y=900)
+  const cx = CX, cy = 900;
+  const pulse = 1.0 + Math.sin(t * TAU * 0.3) * 0.025;
 
-  cut(flameBurstPts(cx, cy, 330 * pulse, 32), PAL.orange, {
-    key: 'outro_halo_outer', sy: 12, sb: 22,
+  cut(flameBurstPts(cx, cy, 280 * pulse, 32), PAL.orange, {
+    key: 'outro_halo_outer', sy: 10, sb: 18,
     rot: t * TAU * 0.1
   });
 
-  cut(iceCrystalPts(cx, cy, 270 * pulse, 8), PAL.snow, {
-    key: 'outro_crystal_mid', sy: 8, sb: 16,
+  cut(iceCrystalPts(cx, cy, 225 * pulse, 8), PAL.snow, {
+    key: 'outro_crystal_mid', sy: 7, sb: 12,
     rot: -t * TAU * 0.08
   });
 
-  // Central Golden Sun Disc (The Holocene Sunrise)
-  cut(ellipsePts(cx, cy, 180 * pulse, 180 * pulse, 0, 36), PAL.yellow, {
-    key: 'outro_sun_disc', sy: 6, sb: 10
+  // Central Golden Sun Disc (The Holocene Epoch)
+  cut(ellipsePts(cx, cy, 145 * pulse, 145 * pulse, 0, 36), PAL.yellow, {
+    key: 'outro_sun_disc', sy: 5, sb: 9
   });
 
-  // Ancient Sprouting Seed / Wheat Sheaf in core
-  cut(ellipsePts(cx, cy, 55, 90, 0, 24), PAL.lamp, { key: 'seed_leaf_l', shadow: false });
-  cut(ellipsePts(cx + 30, cy - 20, 45, 75, 0.4, 20), PAL.lamp, { key: 'seed_leaf_r', shadow: false });
-  cut(ellipsePts(cx, cy, 30, 30, 0, 16), PAL.paper, { key: 'seed_dot', shadow: false });
+  // Sprouting Wheat Sheaf in Core
+  cut(ellipsePts(cx - 18, cy, 32, 68, -0.2, 20), PAL.lamp, { key: 'leaf_l', shadow: false });
+  cut(ellipsePts(cx + 18, cy, 32, 68, 0.2, 20), PAL.lamp, { key: 'leaf_r', shadow: false });
+  cut(ellipsePts(cx, cy - 22, 22, 22, 0, 14), PAL.paper, { key: 'sun_seed', shadow: false });
 
-  // 3. Grand Epilogue Banners
-  tag('FROM CATACLYSM TO CIVILIZATION', CX, 510, 56, {
-    rot: 0.012, fill: PAL.snow, color: PAL.night, s: popS(E0 + 0.3)
+  // 3. Clean Epilogue Banners (Safe Margins strictly <= 940 width)
+  tag('FROM IMPACT TO CIVILIZATION', CX, 500, 40, {
+    rot: 0.01, fill: PAL.snow, color: PAL.night, s: popS(E0 + 0.3)
   });
 
-  tag('HOW A COMET SPARKED AGRICULTURE', CX, 630, 40, {
+  tag('HOW A COMET SPARKED AGRICULTURE', CX, 590, 30, {
     rot: -0.01, fill: PAL.mustard, color: PAL.ink, s: popS(E0 + 0.6)
   });
 
-  // Bottom Timeline Sequence Strip
-  tag('IMPACT • SOOT • FLOOD • FREEZE • REBIRTH', CX, 1420, 34, {
-    rot: 0.006, fill: PAL.paper, color: PAL.ink, s: popS(E0 + 0.8)
-  });
-
   // Tags & Captions
-  yearTag('The Holocene Begins');
-  capStrip('Epilogue • How Disaster Forged the Modern World');
+  yearTag('The Holocene Dawn');
+  capStrip('From Cataclysm to the Birth of Agriculture');
 }
 // =====================================================================
 //  ERAS, CAMERAS, BRIDGES — The Younger Dryas (Cut-Paper Style)
@@ -1319,13 +1344,13 @@ const ERA_BG = [
 ];
 
 function pieceCam(era, t) {
-  if (era === 0) return push(t, 0.4, 6.6, { z: 1.05, p: [540, 960], to: [540, 940] });
-  if (era === 1) return push(t, 7.8, 13.8, { z: 1.08, p: [540, 960], to: [540, 900] });
-  if (era === 2) return push(t, 15.0, 21.0, { z: 1.06, p: [540, 960], to: [540, 930] });
-  if (era === 3) return push(t, 22.2, 28.2, { z: 1.07, p: [540, 960], to: [540, 950] });
-  if (era === 4) return push(t, 29.4, 35.4, { z: 1.05, p: [540, 960], to: [540, 920] });
-  if (era === 5) return push(t, 36.6, 42.6, { z: 1.06, p: [540, 960], to: [540, 940] });
-  return push(t, 43.8, 49.2, { z: 1.05, p: [540, 960], to: [540, 950] });
+  if (era === 0) return push(t, 0.4, 6.6, { z: 1.02, p: [540, 960], to: [540, 955] });
+  if (era === 1) return push(t, 7.8, 13.8, { z: 1.03, p: [540, 960], to: [540, 945] });
+  if (era === 2) return push(t, 15.0, 21.0, { z: 1.02, p: [540, 960], to: [540, 950] });
+  if (era === 3) return push(t, 22.2, 28.2, { z: 1.03, p: [540, 960], to: [540, 955] });
+  if (era === 4) return push(t, 29.4, 35.4, { z: 1.02, p: [540, 960], to: [540, 950] });
+  if (era === 5) return push(t, 36.6, 42.6, { z: 1.03, p: [540, 960], to: [540, 950] });
+  return push(t, 43.8, 49.2, { z: 1.02, p: [540, 960], to: [540, 955] });
 }
 
 function iceCrystalPts(cx, cy, r, points = 6) {

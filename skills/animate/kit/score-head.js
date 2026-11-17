@@ -160,3 +160,77 @@ async function buildScore(sampleRate = 48000, part = 'mix', normIn = null) {
   }
   const claudeMotif = (t, notes, vel) => notes.forEach(([n, dt], i) => pluck(t + dt, nz(n), vel, -0.15 + i * 0.1, 0.6, 1300, 0.35));
   const childMotif = (t, notes, vel, bright = 5200, send = 0.3) => notes.forEach(([n, dt], i) => pluck(t + dt, nz(n), vel, 0.2 - i * 0.1, 0.32, bright, send));
+
+  // ---- Procedural Foley & Tactile Sound FX (Style-matched acoustic design)
+  function foleyPaper(t, o = {}) {
+    const prevTo = to; to = 's';
+    const vel = o.vel ?? 0.6, pan = o.pan ?? 0;
+    if (o.type === 'snip') {
+      noiseHit(t, 0.045, 'bandpass', 3400, 3.2, vel * 0.9, pan);
+      noiseHit(t + 0.02, 0.035, 'highpass', 4800, 2.0, vel * 0.7, pan + 0.1);
+    } else if (o.type === 'thud') {
+      const o1 = osc('sine', 160, t, t + 0.22); o1.frequency.exponentialRampToValueAtTime(45, t + 0.18);
+      const g = ac.createGain(); env(g, t, 0.003, vel * 0.85, 0.2); o1.connect(g); out(g, pan);
+      noiseHit(t, 0.06, 'lowpass', 650, 1.2, vel * 0.5, pan);
+    } else { // 'slide' default
+      sweep(t, t + (o.dur ?? 0.22), vel * 0.6, 900, 2400, pan);
+    }
+    to = prevTo;
+  }
+  function foleyPencil(t, o = {}) {
+    const prevTo = to; to = 's';
+    const dur = o.dur ?? 0.2, vel = o.vel ?? 0.55, pan = o.pan ?? 0;
+    const n = Math.floor(dur / 0.04);
+    for (let i = 0; i < n; i++) {
+      const ti = t + i * 0.038 + (Math.sin(i * 99) * 0.004);
+      noiseHit(ti, 0.028, 'bandpass', 2800 + (i % 3) * 600, 4.5, vel * (0.6 + 0.4 * Math.cos(i * 1.5)), pan);
+    }
+    to = prevTo;
+  }
+  function foleyInk(t, o = {}) {
+    const prevTo = to; to = 's';
+    const vel = o.vel ?? 0.5, pan = o.pan ?? 0;
+    blip(t, 2200, 1400, 0.025, vel * 0.7, pan);
+    noiseHit(t + 0.015, 0.08, 'bandpass', 3200, 2.5, vel * 0.5, pan);
+    to = prevTo;
+  }
+  function foleyStamp(t, o = {}) {
+    const prevTo = to; to = 's';
+    const vel = o.vel ?? 0.75, pan = o.pan ?? 0;
+    const o1 = osc('triangle', 180, t, t + 0.18); o1.frequency.exponentialRampToValueAtTime(55, t + 0.15);
+    const g = ac.createGain(); env(g, t, 0.002, vel * 0.8, 0.16); o1.connect(g); out(g, pan);
+    noiseHit(t, 0.04, 'bandpass', 1200, 1.8, vel * 0.9, pan);
+    to = prevTo;
+  }
+  function foleyBit(t, o = {}) {
+    const prevTo = to; to = 's';
+    const vel = o.vel ?? 0.6, pan = o.pan ?? 0, type = o.type ?? 'coin';
+    if (type === 'coin') {
+      const o1 = osc('square', 987.77, t, t + 0.08); // B5
+      const o2 = osc('square', 1318.51, t + 0.08, t + 0.32); // E6
+      const g1 = ac.createGain(); env(g1, t, 0.002, vel * 0.6, 0.075); o1.connect(g1); out(g1, pan);
+      const g2 = ac.createGain(); env(g2, t + 0.08, 0.002, vel * 0.75, 0.22); o2.connect(g2); out(g2, pan);
+    } else if (type === 'laser') {
+      const o1 = osc('sawtooth', 1200, t, t + 0.14); o1.frequency.exponentialRampToValueAtTime(110, t + 0.13);
+      const g = ac.createGain(); env(g, t, 0.002, vel * 0.7, 0.12); o1.connect(g); out(g, pan);
+    } else { // 'hit'
+      const o1 = osc('triangle', 240, t, t + 0.15); o1.frequency.exponentialRampToValueAtTime(60, t + 0.12);
+      const g = ac.createGain(); env(g, t, 0.002, vel * 0.8, 0.14); o1.connect(g); out(g, pan);
+      noiseHit(t, 0.08, 'lowpass', 1800, 1.2, vel * 0.7, pan);
+    }
+    to = prevTo;
+  }
+  function foleyPing(t, o = {}) {
+    const prevTo = to; to = 's';
+    const f = o.f ?? 960, vel = o.vel ?? 0.5, pan = o.pan ?? 0, dur = o.dur ?? 0.6;
+    const o1 = osc('sine', f, t, t + dur + 0.05);
+    const g = ac.createGain(); env(g, t, 0.002, vel * 0.7, dur); o1.connect(g); out(g, pan, 0.4);
+    to = prevTo;
+  }
+  function foleyRelay(t, o = {}) {
+    const prevTo = to; to = 's';
+    const vel = o.vel ?? 0.6, pan = o.pan ?? 0;
+    blip(t, 3800, 1900, 0.015, vel * 0.8, pan);
+    blip(t + 0.025, 2400, 800, 0.02, vel * 0.6, pan);
+    to = prevTo;
+  }

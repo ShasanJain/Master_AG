@@ -4,6 +4,17 @@ The `animate` skill enables autonomous procedural video generation entirely from
 
 ---
 
+## 🛑 Pre-Production Sign-off Gate (Mandatory)
+
+To prevent compute waste and unintended renders, never animate or export a full video before presenting:
+1. **Fact-checked Research & Production Plan**: Formats, core claims, sources, and transition structure.
+2. **Voice Script**: Line-by-line script with target durations and speech rate ($2.5 - 3.2\text{ words/sec}$).
+3. **Rendered Keyframe Stills**: 2–4 full-resolution style keyframe stills showing the exact visual look on canvas.
+
+Full video rendering proceeds **only after** user confirmation of the plan, script, and stills.
+
+---
+
 ## 🏛️ Core Architectural Paradigm
 
 Unlike standard DOM-based presentation tools (e.g., GSAP/HTML slide decks) or heavy timeline video editors, `animate` operates on **pure algorithmic canvas graphics** combined with **procedural WebAudio sound synthesis**.

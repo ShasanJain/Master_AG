@@ -1,0 +1,522 @@
+{
+ "duration": 43.905,
+ "lead": 0.4,
+ "tail": 1.4,
+ "lines": [
+  {
+   "id": "tax_paradox",
+   "text": "Electric cars get a tiny five percent tax in India. Hybrids are crushed with forty-three percent. Yet hybrid bookings are surging.",
+   "t0": 0.4,
+   "t1": 8.996,
+   "take": "voice/tax_paradox.mp3",
+   "words": [
+    {
+     "w": "Electric",
+     "t0": 0,
+     "t1": 0.78
+    },
+    {
+     "w": "cars",
+     "t0": 0.78,
+     "t1": 1.2
+    },
+    {
+     "w": "get",
+     "t0": 1.2,
+     "t1": 1.46
+    },
+    {
+     "w": "a",
+     "t0": 1.46,
+     "t1": 1.72
+    },
+    {
+     "w": "tiny",
+     "t0": 1.72,
+     "t1": 1.9
+    },
+    {
+     "w": "five",
+     "t0": 1.9,
+     "t1": 2.22,
+     "est": true
+    },
+    {
+     "w": "percent",
+     "t0": 2.22,
+     "t1": 2.54,
+     "est": true
+    },
+    {
+     "w": "tax",
+     "t0": 2.54,
+     "t1": 2.86
+    },
+    {
+     "w": "in",
+     "t0": 2.86,
+     "t1": 3.04
+    },
+    {
+     "w": "India.",
+     "t0": 3.04,
+     "t1": 3.9
+    },
+    {
+     "w": "Hybrids",
+     "t0": 4.52,
+     "t1": 4.68
+    },
+    {
+     "w": "are",
+     "t0": 4.68,
+     "t1": 4.98
+    },
+    {
+     "w": "crushed",
+     "t0": 4.98,
+     "t1": 5.24
+    },
+    {
+     "w": "with",
+     "t0": 5.24,
+     "t1": 5.64
+    },
+    {
+     "w": "forty-three",
+     "t0": 5.64,
+     "t1": 6.43,
+     "est": true
+    },
+    {
+     "w": "percent.",
+     "t0": 6.43,
+     "t1": 7.22,
+     "est": true
+    },
+    {
+     "w": "Yet",
+     "t0": 7.22,
+     "t1": 7.66
+    },
+    {
+     "w": "hybrid",
+     "t0": 7.66,
+     "t1": 8.04
+    },
+    {
+     "w": "bookings",
+     "t0": 8.04,
+     "t1": 8.4
+    },
+    {
+     "w": "are",
+     "t0": 8.4,
+     "t1": 8.64
+    },
+    {
+     "w": "surging.",
+     "t0": 8.64,
+     "t1": 9.3
+    }
+   ]
+  },
+  {
+   "id": "city_efficiency",
+   "text": "In chaotic city traffic, regular cars burn fuel constantly. But a strong hybrid shuts its petrol engine off, gliding on electric power to deliver twenty-eight kilometers per liter.",
+   "t0": 10.396,
+   "t1": 20.894,
+   "take": "voice/city_efficiency.mp3",
+   "words": [
+    {
+     "w": "In",
+     "t0": 10.6,
+     "t1": 10.7
+    },
+    {
+     "w": "chaotic",
+     "t0": 10.7,
+     "t1": 11.06
+    },
+    {
+     "w": "city",
+     "t0": 11.06,
+     "t1": 11.4
+    },
+    {
+     "w": "traffic,",
+     "t0": 11.4,
+     "t1": 11.86
+    },
+    {
+     "w": "regular",
+     "t0": 12.26,
+     "t1": 12.5
+    },
+    {
+     "w": "cars",
+     "t0": 12.5,
+     "t1": 12.86
+    },
+    {
+     "w": "burn",
+     "t0": 12.86,
+     "t1": 13.12
+    },
+    {
+     "w": "fuel",
+     "t0": 13.12,
+     "t1": 13.42
+    },
+    {
+     "w": "constantly.",
+     "t0": 13.42,
+     "t1": 13.9
+    },
+    {
+     "w": "But",
+     "t0": 14.9,
+     "t1": 15.14
+    },
+    {
+     "w": "a",
+     "t0": 15.14,
+     "t1": 15.26
+    },
+    {
+     "w": "strong",
+     "t0": 15.26,
+     "t1": 15.56
+    },
+    {
+     "w": "hybrid",
+     "t0": 15.56,
+     "t1": 15.98
+    },
+    {
+     "w": "shuts",
+     "t0": 15.98,
+     "t1": 16.24
+    },
+    {
+     "w": "its",
+     "t0": 16.24,
+     "t1": 16.48
+    },
+    {
+     "w": "petrol",
+     "t0": 16.48,
+     "t1": 16.78
+    },
+    {
+     "w": "engine",
+     "t0": 16.78,
+     "t1": 17.08
+    },
+    {
+     "w": "off,",
+     "t0": 17.08,
+     "t1": 17.5
+    },
+    {
+     "w": "gliding",
+     "t0": 17.74,
+     "t1": 18.04
+    },
+    {
+     "w": "on",
+     "t0": 18.04,
+     "t1": 18.26
+    },
+    {
+     "w": "electric",
+     "t0": 18.26,
+     "t1": 18.56
+    },
+    {
+     "w": "power",
+     "t0": 18.56,
+     "t1": 18.94
+    },
+    {
+     "w": "to",
+     "t0": 18.94,
+     "t1": 19.16
+    },
+    {
+     "w": "deliver",
+     "t0": 19.16,
+     "t1": 19.46
+    },
+    {
+     "w": "twenty-eight",
+     "t0": 19.46,
+     "t1": 19.89,
+     "est": true
+    },
+    {
+     "w": "kilometers",
+     "t0": 19.89,
+     "t1": 20.32,
+     "est": true
+    },
+    {
+     "w": "per",
+     "t0": 20.32,
+     "t1": 21.56
+    },
+    {
+     "w": "liter.",
+     "t0": 21.56,
+     "t1": 20.894,
+     "est": true
+    }
+   ]
+  },
+  {
+   "id": "range_freedom",
+   "text": "No broken highway chargers, no range anxiety. One fuel tank gives over one thousand kilometers of real-world freedom. It refuels in two minutes flat.",
+   "t0": 22.294,
+   "t1": 32.648,
+   "take": "voice/range_freedom.mp3",
+   "words": [
+    {
+     "w": "No",
+     "t0": 22.42,
+     "t1": 22.66
+    },
+    {
+     "w": "broken",
+     "t0": 22.66,
+     "t1": 23.02
+    },
+    {
+     "w": "highway",
+     "t0": 23.02,
+     "t1": 23.36
+    },
+    {
+     "w": "chargers,",
+     "t0": 23.36,
+     "t1": 23.94
+    },
+    {
+     "w": "no",
+     "t0": 24.22,
+     "t1": 24.48
+    },
+    {
+     "w": "range",
+     "t0": 24.48,
+     "t1": 24.76
+    },
+    {
+     "w": "anxiety.",
+     "t0": 24.76,
+     "t1": 25.32
+    },
+    {
+     "w": "One",
+     "t0": 26,
+     "t1": 26.64
+    },
+    {
+     "w": "fuel",
+     "t0": 26.64,
+     "t1": 26.94
+    },
+    {
+     "w": "tank",
+     "t0": 26.94,
+     "t1": 27.2
+    },
+    {
+     "w": "gives",
+     "t0": 27.2,
+     "t1": 27.54
+    },
+    {
+     "w": "over",
+     "t0": 27.54,
+     "t1": 27.86
+    },
+    {
+     "w": "one",
+     "t0": 27.86,
+     "t1": 28.232,
+     "est": true
+    },
+    {
+     "w": "thousand",
+     "t0": 28.232,
+     "t1": 28.604,
+     "est": true
+    },
+    {
+     "w": "kilometers",
+     "t0": 28.604,
+     "t1": 28.976,
+     "est": true
+    },
+    {
+     "w": "of",
+     "t0": 28.976,
+     "t1": 29.348,
+     "est": true
+    },
+    {
+     "w": "real-world",
+     "t0": 29.348,
+     "t1": 29.72,
+     "est": true
+    },
+    {
+     "w": "freedom.",
+     "t0": 29.72,
+     "t1": 30.18
+    },
+    {
+     "w": "It",
+     "t0": 30.96,
+     "t1": 31.18
+    },
+    {
+     "w": "refuels",
+     "t0": 31.18,
+     "t1": 31.66
+    },
+    {
+     "w": "in",
+     "t0": 31.66,
+     "t1": 31.86
+    },
+    {
+     "w": "two",
+     "t0": 31.86,
+     "t1": 32.06,
+     "est": true
+    },
+    {
+     "w": "minutes",
+     "t0": 32.06,
+     "t1": 32.34
+    },
+    {
+     "w": "flat.",
+     "t0": 32.34,
+     "t1": 33.02
+    }
+   ]
+  },
+  {
+   "id": "pragmatic_triumph",
+   "text": "While EV purists wait for charging networks, the hybrid quietly conquered the Indian road. Pragmatism beats ideology every single time.",
+   "t0": 34.048,
+   "t1": 42.505,
+   "take": "voice/pragmatic_triumph.mp3",
+   "words": [
+    {
+     "w": "While",
+     "t0": 34.12,
+     "t1": 34.38
+    },
+    {
+     "w": "EV",
+     "t0": 34.38,
+     "t1": 34.7
+    },
+    {
+     "w": "purists",
+     "t0": 34.7,
+     "t1": 35.18
+    },
+    {
+     "w": "wait",
+     "t0": 35.18,
+     "t1": 35.42
+    },
+    {
+     "w": "for",
+     "t0": 35.42,
+     "t1": 35.66
+    },
+    {
+     "w": "charging",
+     "t0": 35.66,
+     "t1": 35.98
+    },
+    {
+     "w": "networks,",
+     "t0": 35.98,
+     "t1": 36.44
+    },
+    {
+     "w": "the",
+     "t0": 36.82,
+     "t1": 36.94
+    },
+    {
+     "w": "hybrid",
+     "t0": 36.94,
+     "t1": 37.22
+    },
+    {
+     "w": "quietly",
+     "t0": 37.22,
+     "t1": 37.76
+    },
+    {
+     "w": "conquered",
+     "t0": 37.76,
+     "t1": 38.12
+    },
+    {
+     "w": "the",
+     "t0": 38.12,
+     "t1": 38.36
+    },
+    {
+     "w": "Indian",
+     "t0": 38.36,
+     "t1": 38.6
+    },
+    {
+     "w": "road.",
+     "t0": 38.6,
+     "t1": 39.14
+    },
+    {
+     "w": "Pragmatism",
+     "t0": 39.14,
+     "t1": 40.52
+    },
+    {
+     "w": "beats",
+     "t0": 40.52,
+     "t1": 40.86
+    },
+    {
+     "w": "ideology",
+     "t0": 40.86,
+     "t1": 41.4
+    },
+    {
+     "w": "every",
+     "t0": 41.4,
+     "t1": 41.92
+    },
+    {
+     "w": "single",
+     "t0": 41.92,
+     "t1": 42.22
+    },
+    {
+     "w": "time.",
+     "t0": 42.22,
+     "t1": 42.505,
+     "est": true
+    }
+   ]
+  }
+ ]
+}

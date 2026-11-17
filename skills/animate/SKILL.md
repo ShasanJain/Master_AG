@@ -14,7 +14,7 @@ All paths below are relative to this skill's base directory. Pieces live in the 
 
 ## Non-negotiables
 
-1. **No animating before the storyboard is approved.** The check-ins exist because a wrong story or look costs a full build.
+1. **Pre-Production Sign-off Gate (Mandatory):** Never animate or export full video before the user approves: (1) Fact-checked Research & Production Plan, (2) Voice script with line timings, and (3) Rendered style keyframe stills. Always present all three upfront so the user confirms before spending GPU and compute resources on full renders.
 2. **Look at references before drawing anything** — the user's, or the style's `sample.png` and demo. Then check every key frame against [grammar/FRAME.md](grammar/FRAME.md) and the style's own checklist in its `STYLE.md`.
 3. **Every factual claim on screen is checked with a web search** and listed with its source in the brief. Never claim "first" without a source.
 4. **Single file, all code:** one `index.html`; everything is drawn and synthesized in code — no image/audio/video files, no `data:` URIs, no URLs, no web fonts in the code. `tools/build.mjs` enforces it. Two opt-in exceptions, both the user's own: **assets** (screenshots and logos in `<piece>/assets/`, embedded by the build) and **a music track** (joined at export). See Assets and Music below.

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rise of Hybrid Vehicles in India</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1b1714; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  HYBRID VEHICLES IN INDIA — 9:16 vertical, 45.0s @ 108 BPM, 24fps.
+//  Crosshatch 19th-century scientific engraving style.
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 108, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 44.5;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const HAND = '"Ink Free", "Segoe Print", "Bradley Hand", "Chalkboard SE", "Comic Sans MS", "Comic Neue", cursive';
+const CX = 470;
+
+const ERA_LIST = [
+  [0.0, 10.0, () => sceneTax()],
+  [10.0, 21.6, () => scenePowertrain()],
+  [21.6, 33.4, () => sceneRange()],
+  [33.4, 44.5, () => sceneTriumph()]
+];
+
+const SHOTS = [
+  ['tax',        0,  0.0, 10.0, 'The 43% vs 5% tax paradox on the scales of justice'],
+  ['powertrain', 1, 10.0, 21.6, 'Dual-power synergy split cutaway achieving 28 km/L'],
+  ['range',      2, 21.6, 33.4, '1,000 km range compass and the crossed-out charger'],
+  ['triumph',    3, 33.4, 44.5, 'The pragmatic triumph over the map of India']
+];
+
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [9.7, 21.5, 33.3],
+  acts: [
+    { name: '1 Tax',        role: 'journey', t0:  0.0, t1: 10.0 },
+    { name: '2 Powertrain', role: 'build',   t0: 10.0, t1: 21.6 },
+    { name: '3 Range',      role: 'peak',    t0: 21.6, t1: 33.4 },
+    { name: '4 Triumph',    role: 'gift',    t0: 33.4, t1: 44.5 }
+  ],
+  board: [
+    { t: 4.5,  title: 'Tax Paradox Scale',  sound: 'gavel thud, pen scratch', next: 'gavel morphs into piston gear' },
+    { t: 15.5, title: '28 km/L Powertrain', sound: 'piston pulse, gear whir', next: 'gear morphs into compass ring' },
+    { t: 27.5, title: '1,000 KM Autonomy',  sound: 'wind sweep, needle click', next: 'compass morphs into national crest' },
+    { t: 39.5, title: 'Pragmatic Triumph',  sound: 'triumphant chime, final chord', next: 'loops' }
+  ],
+  narration: []
+};
+window.TIMELINE = TIMELINE;

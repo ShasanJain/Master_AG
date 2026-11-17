@@ -1,7 +1,7 @@
 {
   "name": "hybrid-india",
   "title": "Rise of Hybrid Vehicles in India",
-  "format": { "width": 1080, "height": 1920, "fps": 24, "bpm": 108, "duration": 45.0, "frames": 1080 },
+  "format": { "width": 1080, "height": 1920, "fps": 24, "bpm": 108, "duration": 44.5, "frames": 1068 },
   "storyFormat": "morph-chain (4 eras, 3 shape morphs)",
   "style": "crosshatch",
   "review": {

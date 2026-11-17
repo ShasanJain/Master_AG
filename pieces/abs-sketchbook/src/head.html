@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auto-Brewery: Sketchbook</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #0c1017; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: min(100vw, calc(100vh * 9 / 16));
+    height: min(100vh, calc(100vw * 16 / 9));
+    aspect-ratio: 9 / 16;
+    display: block;
+    cursor: pointer;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 96, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 16.7;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const CX = 540, CY = 960;
+const HAND = '"Ink Free", "Segoe Print", "Bradley Hand", cursive';
+
+const ERA_LIST = [
+  [0.0, 5.57, () => sceneAct1()],
+  [5.57, 11.13, () => sceneAct2()],
+  [11.13, 16.7, () => sceneAct3()]
+];
+
+const SHOTS = [
+  ['act1', 0, 0.0, 5.57, 'Act 1: Genesis'],
+  ['act2', 1, 5.57, 11.13, 'Act 2: Metamorphosis'],
+  ['act3', 2, 11.13, 16.7, 'Act 3: Resolution']
+];
+
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  gpu: true,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [5.57, 11.13],
+  cues: {},
+  acts: [
+    { name: 'Act 1', role: 'intro', t0: 0.0, t1: 5.57 },
+    { name: 'Act 2', role: 'core', t0: 5.57, t1: 11.13 },
+    { name: 'Act 3', role: 'coda', t0: 11.13, t1: 16.7 }
+  ],
+  narration: [
+    { t0: 0.30, t1: 4.12, text: "Imagine eating a slice of bread and blowing twice the legal alcohol limit." },
+    { t0: 4.47, t1: 9.78, text: "In Auto-Brewery Syndrome, overgrown gut yeast ferments everyday carbs into pure internal ethanol." },
+    { t0: 10.13, t1: 16.17, text: "Not a superpower: you suffer non-stop hangovers, liver damage, and DUI arrests without drinking." }
+  ]
+};
+window.TIMELINE = TIMELINE;

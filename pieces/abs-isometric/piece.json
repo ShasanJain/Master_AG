@@ -1,0 +1,22 @@
+{
+  "name": "abs-isometric",
+  "title": "Auto-Brewery: Isometric",
+  "format": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 24,
+    "bpm": 96,
+    "duration": 16.7,
+    "frames": 401
+  },
+  "storyFormat": "morph chain (3 acts)",
+  "style": "isometric",
+  "review": {
+    "safe": {
+      "top": 240,
+      "bottom": 420,
+      "right": 140
+    },
+    "refs": {}
+  }
+}

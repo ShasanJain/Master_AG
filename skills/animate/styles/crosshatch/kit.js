@@ -6,6 +6,7 @@
 //  Shade with density functions (dens(x, y) -> 0..1), never flat fills; world-anchor textures when the camera pans.
 // =====================================================================
 const HANDF = HAND;
+const dot = (x, y, r, c = C.ink) => { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fillStyle = c; ctx.fill(); };
 function handText(str, x, y, size, color, o = {}) {
   ctx.save();
   const R = RNG('ht', o.key ?? str, B);
@@ -123,8 +124,21 @@ function inkCard(str, x, y, size, o = {}) {
   handText(str, -w / 2 + size * 0.45, size * 0.36, size, o.color ?? C.ink, { key: 'cardt' + str, frac: o.frac });
   ctx.restore();
 }
-const inkTag = (str) => { const f = () => inkCard(str, 70 + (handW(str, 80) + 72) / 2, 330, 80, { rot: -0.04, s: popS(E0 + 0.2) }); if (DEFER) DEFER.push(f); else f(); };
-const inkCaption = (str) => { const f = () => inkCard(str, CX, 1440, 50, { rot: 0.012, frac: ev(E0 + 0.45, 0.6) }); if (DEFER) DEFER.push(f); else f(); };
+const inkTag = (str) => {
+  const f = () => {
+    const sz = str.length > 18 ? 46 : str.length > 12 ? 56 : 68;
+    const w = handW(str, sz) + sz * 0.9;
+    inkCard(str, Math.min(CX, 60 + w / 2), SAFE.top + 75, sz, { rot: -0.03, s: popS(E0 + 0.2) });
+  };
+  if (DEFER) DEFER.push(f); else f();
+};
+const inkCaption = (str) => {
+  const f = () => {
+    const sz = str.length > 34 ? 34 : str.length > 24 ? 40 : 46;
+    inkCard(str, CX, H - SAFE.bottom - 45, sz, { rot: 0.012, frac: ev(E0 + 0.45, 0.6) });
+  };
+  if (DEFER) DEFER.push(f); else f();
+};
 
 // =====================================================================
 //  STYLE — the renderer's hooks (see styles/cut-paper/kit.js for the contract)

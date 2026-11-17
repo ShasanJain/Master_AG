@@ -1,0 +1,21 @@
+{
+  "lead": 0.3,
+  "tail": 0.5,
+  "lines": [
+    {
+      "id": "hook",
+      "text": "Imagine eating a slice of bread and blowing twice the legal alcohol limit.",
+      "after": 0.35
+    },
+    {
+      "id": "mechanism",
+      "text": "In Auto-Brewery Syndrome, overgrown gut yeast ferments everyday carbs into pure internal ethanol.",
+      "after": 0.35
+    },
+    {
+      "id": "reality",
+      "text": "Not a superpower: you suffer non-stop hangovers, liver damage, and DUI arrests without drinking.",
+      "after": 0.5
+    }
+  ]
+}

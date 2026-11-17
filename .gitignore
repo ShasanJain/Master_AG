@@ -27,9 +27,10 @@ test-results/
 openwiki/
 openwiki
 
-# Video render caches
+# Video & audio render caches
 **/frames/
 **/renders/
 *.mp4
 *.png
+*.wav
 

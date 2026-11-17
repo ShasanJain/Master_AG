@@ -47,7 +47,7 @@ const parts = [], lines = [];
 let t = lead;
 for (const [i, L] of S.lines.entries()) {
   const id = L.id || `l${i + 1}`;
-  let file = L.file ? path.join(VDIR, L.file) : path.join(VDIR, `${id}.wav`);
+  let file = L.file ? path.join(VDIR, L.file) : (fs.existsSync(path.join(VDIR, `${id}.mp3`)) ? path.join(VDIR, `${id}.mp3`) : path.join(VDIR, `${id}.wav`));
   if (!fs.existsSync(file)) {
     if (!argv.includes('--scratch')) { console.error(`missing take for line "${id}": ${file} (save the take there, or run with --scratch for a timing voice)`); process.exit(1); }
     file = path.join(VDIR, `${id}.scratch.wav`);

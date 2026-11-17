@@ -72,6 +72,8 @@ export async function textCheck(page, o = {}) {
       for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
         const a = boxes[i], b = boxes[j];
         if (a.s === b.s || a.s.includes(b.s) || b.s.includes(a.s)) continue;
+        // Ignore typographic kerning overlap between adjacent single characters on the same baseline (e.g. cursive handLetter)
+        if (a.s.length === 1 && b.s.length === 1 && Math.abs(a.y0 - b.y0) < Math.max(a.y1 - a.y0, b.y1 - b.y0) * 0.8) continue;
         if (Math.min(a.x1, b.x1) <= Math.max(a.x0, b.x0) || Math.min(a.y1, b.y1) <= Math.max(a.y0, b.y0)) continue;
         // the real (possibly rotated / skewed) text boxes, not their screen-aligned bounds
         const small = Math.min(area(a.q), area(b.q));

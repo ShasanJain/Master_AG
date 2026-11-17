@@ -1,0 +1,22 @@
+{
+  "name": "abs-cut-paper",
+  "title": "Auto-Brewery Syndrome",
+  "format": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 24,
+    "bpm": 96,
+    "duration": 15,
+    "frames": 360
+  },
+  "storyFormat": "morph chain (3 acts)",
+  "style": "cut-paper",
+  "review": {
+    "safe": {
+      "top": 240,
+      "bottom": 420,
+      "right": 140
+    },
+    "refs": {}
+  }
+}

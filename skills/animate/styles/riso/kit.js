@@ -392,8 +392,15 @@ function printCard(str, x, y, size, o = {}) {
   endSheet();
 }
 const defer = (f) => { if (DEFER) DEFER.push(f); else f(); };
-const risoTag = (str) => defer(() => printTag(str, 70 + (typeW(str, 72) + 65) / 2, 330, 72, { s: popS(E0 + 0.2) }));
-const risoCaption = (str) => defer(() => printCard(str, CX, 1440, 50, { s: popS(E0 + 0.3), frac: ev(E0 + 0.45, 0.6) }));
+const risoTag = (str) => defer(() => {
+  const sz = str.length > 18 ? 44 : str.length > 12 ? 54 : 66;
+  const w = typeW(str, sz) + sz * 0.9;
+  printTag(str, Math.min(CX, 60 + w / 2), SAFE.top + 75, sz, { s: popS(E0 + 0.2) });
+});
+const risoCaption = (str) => defer(() => {
+  const sz = str.length > 28 ? 30 : str.length > 18 ? 36 : 42;
+  printCard(str, CX, H - SAFE.bottom - 85, sz, { s: popS(E0 + 0.3), frac: ev(E0 + 0.45, 0.6) });
+});
 
 // =====================================================================
 //  STYLE — the renderer's hooks (kit/morph.js). Each one prints a small sheet over what ctx shows.

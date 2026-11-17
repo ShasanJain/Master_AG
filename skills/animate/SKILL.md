@@ -47,12 +47,12 @@ Draw 2–4 of the most different beats as full-size frames. Each must pass FRAME
 Draw every beat in the approved look. Fill `TIMELINE.board` with one key time per beat (`{ t, title, sound, next }`) and render the board. Ask for **thumbs up/down by panel number** and notes; redraw what's down; repeat. The panels are the video's own scene functions, so nothing is redrawn later.
 
 ### 4. Build
-1. Write `pieces/<name>/brief.md` (spec, style, beats, bridges, sound plan, claims + sources). Keep a `LOG.md`.
-2. Animate the scenes: timed actions with `TT`, `ev(t, d)`, `popS(t)`, write-ons (see [craft.md](craft.md) → Motion). Wire eras, cameras and bridges in `src/bridges.js` (morph-joined formats) or leave `BRIDGES = []` for hard cuts.
+1. Write `pieces/<name>/brief.md` (spec, style, beats, bridges, sound plan, claims + sources). Keep a `LOG.md`. Or scaffold automatically with `node tools/new.mjs pieces/<name> --style cut-paper --duration 45 --title "Piece Title"`.
+2. Animate the scenes: timed actions with `TT`, `ev(t, d)`, `popS(t)`, write-ons (see [craft.md](craft.md) → Motion). Wire eras, cameras and bridges in `src/bridges.js` (morph-joined formats) or leave `BRIDGES = []` for hard cuts. Safe bounds for 9:16: top $y \ge 240$, bottom $y \le 1480$, right $x \le 940$. Keep focal geometry elevated ($y \approx 750–1050$) so the lower 450px is clear for captions.
 3. `node tools/build.mjs pieces/<name>` → `index.html` (the style's kit is pulled in from `piece.json` `"style"`).
 4. Test tiles while building: `node tools/tile.mjs pieces/<name> tile.png <frames...>` — look at them; tile across every morph and cut.
-5. Score in `src/score.js` (see craft.md → Sound).
-6. `node tools/export.mjs pieces/<name> --share` → frames, `audio.wav`, stems, `renders/final.mp4`, `renders/share.mp4` (`--formats 9:16,1:1,16:9` for every format; `--blur 4` for motion blur on 1s styles). Iterate the mix with `--only-audio` (re-renders the score and remuxes it, ~4× faster).
+5. Score in `src/score.js` (see craft.md → Sound) or generate neural narration with `node tools/tts.mjs pieces/<name> --voice en-US-ChristopherNeural`.
+6. `node tools/export.mjs pieces/<name> --gpu` → hardware D3D11 rasterized frames (~45ms/frame), `audio.wav`, stems, `renders/final.mp4` (clean broadcast), and `renders/final-captions.mp4` (single-line kinetic karaoke subtitles with active word highlight). Pass `--skip-frames` to rapidly re-mix audio, score, or captions without re-rendering video frames.
 7. `node tools/review.mjs pieces/<name>` → contact sheets per shot, cut grid, morph grid, story arc, anchor, **text** (cut off / overlapping / under the phone UI) and **sound** (the loudest moment, the silence before it, LUFS). Fix until it passes, view the sheets, write a per-shot PASS table in `LOG.md`. Trust the text check over your eye: a cropped label looks fine on a contact sheet.
 
 ### 5. Deliver
@@ -127,7 +127,7 @@ A 45–60s piece has 10–15 scenes; split the drawing across agents once the st
 | `kit/board.js` | the storyboard renderer | steps 2–3 |
 | `kit/score-*.js` | synth (pluck, pad, drone, bass, sub, noiseHit, sweep, riser, chime, blip), loudness stage | scoring |
 | [templates/](templates/) | `piece/` (an 8s cut-paper morph), `beat-cut/` (a 6s hard-cut piece with a 16th rush), `style/` (a blank style kit for new looks) | step 2 |
-| `tools/` | build, tile, still, storyboard, export, review, textcheck, compare (reference vs frame), gallery, framehash (pixel-identity check), beats (a supplied track's beat map), capture (screenshots of the user's site), voice (a voice-over's lines and word times); `measure/` for references (`refs.mjs` for stills, `shotlog.py` for video) | throughout |
+| `tools/` | build, tile, still, storyboard, export (`--gpu`, `--skip-frames`, kinetic ASS subtitles), review, textcheck, new (1-command piece scaffolding), tts (Edge-TTS neural synthesis), voice_words (Whisper word alignment), compare, gallery, framehash, beats, capture, voice; `measure/` for references | throughout |
 | [examples/history-of-ai/](examples/history-of-ai/) | a full 60s worked example (cut paper) | when unsure how something fits |
 
 ## Honesty about what's proven

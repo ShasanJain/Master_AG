@@ -120,15 +120,34 @@ node skills/animate/tools/tts.mjs pieces/<name> --voice en-US-ChristopherNeural 
 # 1. Compile into single standalone index.html
 node skills/animate/tools/build.mjs pieces/<name>
 
-# 2. Render test still frames at 2.5s, 8.0s, and 15.0s
+# 2. Check text boundaries, safe-zones, and UI overlaps (0 errors required)
+node skills/animate/tools/textcheck.mjs pieces/<name>
+
+# 3. Render test still frames at 2.5s, 8.0s, and 15.0s
 node skills/animate/tools/still.mjs pieces/<name> 2.5,8.0,15.0 preview.png
 
-# 3. Export broadcast master, kinetic karaoke subtitles, and auto-sync to dashboard
-node skills/animate/tools/export.mjs pieces/<name>
+# 4. Export broadcast master with Direct3D 11 GPU acceleration and kinetic karaoke subtitles
+node skills/animate/tools/export.mjs pieces/<name> --gpu
 
-# 4. Rapid audio / caption re-mix without re-rendering frames
+# 5. Rapid audio / caption re-mix without re-rendering frames (takes ~2 seconds)
 node skills/animate/tools/export.mjs pieces/<name> --skip-frames
 ```
+
+---
+
+## 📐 Safe Zone & Vertical Layout Standards (9:16)
+
+1. **Phone UI Safe Boundaries**:
+   - `SAFE = { top: 240, bottom: 420, right: 140 }`
+   - Top banner zone: $y \ge 240$ (below status bar and search icons).
+   - Bottom UI zone: $y \le 1480$ (above account tags, sound discs, and progress scrubbers).
+   - Right action column: $x \le 940$ (away from like, comment, and share buttons).
+2. **Kinetic Caption Channel**:
+   - Captions are chunked to 2–4 words per phrase (max 22 characters), centered at $y \approx 1373$ (`MarginV: 0.285 * H`).
+   - Sits cleanly on a single line, highlighted in active gold/yellow with dark outline.
+3. **Elevated Focal Geometry**:
+   - Keep primary character and landscape focal points centered at $y \approx 750–1050$.
+   - Keep camera push zoom conservative ($z \le 1.02$) to prevent perspective transforms from pushing edges into UI gutters.
 
 ---
 

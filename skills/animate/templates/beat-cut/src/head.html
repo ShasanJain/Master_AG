@@ -5,9 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Beat-cut starter</title>
 <style>
-  html, body { margin: 0; height: 100%; background: #1b1714; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #1b1714; overflow: hidden; }
   body { display: flex; align-items: center; justify-content: center; }
-  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+  canvas {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: min(100vw, calc(100vh * 9 / 16));
+    height: min(100vh, calc(100vw * 16 / 9));
+    aspect-ratio: 9 / 16;
+    display: block;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -48,6 +57,7 @@ const ERA_LIST = SHOT_LIST.map(([t0, sc], i) => [t0, i + 1 < SHOT_LIST.length ? 
 const SHOTS = SHOT_LIST.map(([t0, sc, cam], i) => [sc + '-' + cam, i, t0, ERA_LIST[i][1], `${sc} (${cam})`]);
 const TIMELINE = {
   width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  gpu: true,
   format: 'beat-cut',
   shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
   cuts: SHOT_LIST.slice(1).map(([t0]) => t0),   // every era boundary is a hard cut

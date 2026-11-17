@@ -50,6 +50,7 @@ const SHOTS = [
 ];
 const TIMELINE = {
   width: W, height: H, fps: FPS, bpm: BPM, gridOffset: GRID0, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE, aspect: FORMAT,
+  gpu: true,
   format: 'morph-chain',   // 'F2' adds the fixed-stage checks (a year counter, a still stage); 'F4' adds the mission checks
   shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
   cuts: [],              // hard cuts (seconds, on the 8th grid)

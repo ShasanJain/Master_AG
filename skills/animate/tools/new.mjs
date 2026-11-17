@@ -62,9 +62,19 @@ const headHtml = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${TITLE}</title>
 <style>
-  html, body { margin: 0; height: 100%; background: #111; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #0c1017; overflow: hidden; }
   body { display: flex; align-items: center; justify-content: center; }
-  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+  canvas {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: min(100vw, calc(100vh * 9 / 16));
+    height: min(100vh, calc(100vw * 16 / 9));
+    aspect-ratio: 9 / 16;
+    display: block;
+    cursor: pointer;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  }
 </style>
 </head>
 <body>
@@ -94,6 +104,7 @@ const SHOTS = [
 
 const TIMELINE = {
   width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  gpu: true,
   format: 'morph-chain',
   shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
   cuts: [],
@@ -115,19 +126,19 @@ const bridgesJs = `// Bridges and camera definitions
 const ERA_BG = ['#1a2035', '#2a1820', '#182520'];
 
 function pieceCam(era, t) {
-  return push(t, 0.5, DURATION - 0.5, { z: 1.05, p: [540, 960], to: [540, 940] });
+  return push(t, 0.5, DURATION - 0.5, { z: 1.02, p: [540, 960], to: [540, 950] });
 }
 
 const BRIDGES = [
   {
     tc: ${d3},
-    A: () => ({ P: ellipsePts(540, 960, 200, 200, 0, 32), c: PAL.yellow || '#f6cf55' }),
-    B: () => ({ P: ellipsePts(540, 960, 220, 220, 0, 32), c: PAL.orange || '#ec7a4f' })
+    A: () => ({ P: ellipsePts(540, 900, 190, 190, 0, 32), c: PAL.yellow || '#f6cf55' }),
+    B: () => ({ P: ellipsePts(540, 900, 210, 210, 0, 32), c: PAL.orange || '#ec7a4f' })
   },
   {
     tc: ${d23},
-    A: () => ({ P: ellipsePts(540, 960, 220, 220, 0, 32), c: PAL.orange || '#ec7a4f' }),
-    B: () => ({ P: ellipsePts(540, 960, 200, 200, 0, 32), c: PAL.teal || '#3f9f9a' })
+    A: () => ({ P: ellipsePts(540, 900, 210, 210, 0, 32), c: PAL.orange || '#ec7a4f' }),
+    B: () => ({ P: ellipsePts(540, 900, 190, 190, 0, 32), c: PAL.teal || '#3f9f9a' })
   }
 ];
 `;
@@ -138,7 +149,7 @@ const scenesJs = `// Scene implementations
 function sceneAct1() {
   const t = seg(TT, 0.0, ${d3});
   cut(rect(-30, -30, W + 60, H + 60, 0), PAL.navy || '#26315f', { key: 'bg1', shadow: false });
-  cut(ellipsePts(CX, CY, 180, 180, 0, 32), PAL.yellow || '#f6cf55', { key: 'core1' });
+  cut(ellipsePts(CX, CY - 60, 180, 180, 0, 32), PAL.yellow || '#f6cf55', { key: 'core1' });
   yearTag('Act 1: Genesis');
   capStrip('The Beginning of Form');
 }
@@ -146,7 +157,7 @@ function sceneAct1() {
 function sceneAct2() {
   const t = seg(TT, ${d3}, ${d23});
   cut(rect(-30, -30, W + 60, H + 60, 0), PAL.wood || '#c08048', { key: 'bg2', shadow: false });
-  cut(ellipsePts(CX, CY, 200, 200, 0, 32), PAL.orange || '#ec7a4f', { key: 'core2' });
+  cut(ellipsePts(CX, CY - 60, 200, 200, 0, 32), PAL.orange || '#ec7a4f', { key: 'core2' });
   yearTag('Act 2: Evolution');
   capStrip('Transformation across Time');
 }
